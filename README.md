@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/bakdata/common-kafka-streams.svg?branch=master)](https://travis-ci.org/bakdata/common-kafka-streams/)
+[![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.common-kafka-streams?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=5&branchName=master)
 [![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=bakdata-common-kafka-streams&metric=alert_status)](https://sonarcloud.io/dashboard?id=bakdata-common-kafka-streams)
 [![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=bakdata-common-kafka-streams&metric=coverage)](https://sonarcloud.io/dashboard?id=bakdata-common-kafka-streams)
 [![Maven](https://img.shields.io/maven-central/v/com.bakdata.common-kafka-streams/common-kafka-streams.svg)](https://search.maven.org/search?q=g:com.bakdata.common-kafka-streams%20AND%20a:common-kafka-streams&core=gav)
