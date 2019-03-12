@@ -25,12 +25,6 @@ import java.util.Properties;
 
 @Data
 public abstract class KafkaStreamsApplication implements Runnable {
-    @CommandLine.Option(names = "--input-topic", required = true)
-    private String inputTopic = "";
-
-    @CommandLine.Option(names = "--output-topic", required = true)
-    private String outputTopic = "";
-
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
 
