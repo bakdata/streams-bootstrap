@@ -1,3 +1,6 @@
+description = "Collection of commonly used modules when writing a Kafka Streams Application"
+
+
 plugins {
     id("net.researchgate.release") version "2.6.0"
     id("com.bakdata.sonar") version "1.1.4"
