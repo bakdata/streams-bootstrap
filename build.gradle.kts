@@ -18,9 +18,7 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven {
-            url =  java.net.URI("http://packages.confluent.io/maven/")
-        }
+        maven(url = "http://packages.confluent.io/maven/")
     }
 }
 
