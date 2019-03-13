@@ -1,3 +1,6 @@
+description = "Collection of commonly used modules when writing a Kafka Streams Application"
+
+
 plugins {
     id("net.researchgate.release") version "2.6.0"
     id("com.bakdata.sonar") version "1.1.4"
@@ -15,6 +18,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven(url = "http://packages.confluent.io/maven/")
     }
 }
 
@@ -34,7 +38,7 @@ configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
     sinceTag = findProperty("changelog.sinceTag")?.toString()
 }
 
-subprojects {
+allprojects {
     apply(plugin = "java-library")
 
     configure<JavaPluginConvention> {
@@ -46,6 +50,12 @@ subprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         "testImplementation"(group = "org.assertj", name = "assertj-core", version = "3.11.1")
+        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests", version = "1.0.1")
+
+        "implementation"(group = "info.picocli", name = "picocli", version = "2.3.0")
+        "implementation"(group = "org.apache.kafka", name = "kafka-streams", version = "2.0.0")
+        "implementation"(group = "org.apache.commons", name = "commons-lang3", version = "3.8.1")
+        "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = "5.0.0")
 
         "compileOnly"("org.projectlombok:lombok:1.18.6")
         "annotationProcessor"("org.projectlombok:lombok:1.18.6")
