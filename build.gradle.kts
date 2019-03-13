@@ -50,6 +50,7 @@ allprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.0")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         "testImplementation"(group = "org.assertj", name = "assertj-core", version = "3.11.1")
+        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests", version = "1.0.1")
 
         "implementation"(group = "info.picocli", name = "picocli", version = "2.3.0")
         "implementation"(group = "org.apache.kafka", name = "kafka-streams", version = "2.0.0")
