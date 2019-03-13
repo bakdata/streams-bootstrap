@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import picocli.CommandLine;
 
-public class WordCountTest {
+class WordCountTest {
     private static final String[] ARGS = {"--input-topic", "Input", "--output-topic", "Output",
             "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl"};
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);

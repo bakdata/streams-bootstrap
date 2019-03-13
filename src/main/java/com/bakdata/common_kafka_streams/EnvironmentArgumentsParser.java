@@ -31,13 +31,15 @@ import java.util.StringJoiner;
 
 
 /**
- * <p>This class is primarily used to inject environment variables to the passed in command line arguments in {@link KafkaStreamsApplication}.</p>
+ * <p>This class is primarily used to inject environment variables to the passed in command line arguments
+ * in {@link KafkaStreamsApplication}.</p>
  *
  * <p>In general a usage would look like this:</p>
  * <pre>{@code
  * final String[] environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX).parseVariables(System.getenv());
  * }</pre>
- * The class collects all environment variables starting with {@link #environmentPrefix} and replaces the  {@link #environmentDelimiter} with the {@link #commandLineDelimiter}.
+ * The class collects all environment variables starting with {@link #environmentPrefix} and replaces the
+ * {@link #environmentDelimiter} with the {@link #commandLineDelimiter}.
  * Furthermore it transforms all words to lowercase and prepends "--" to match the command line argument descriptors.
  * <p>Example:</p>
  * {@code

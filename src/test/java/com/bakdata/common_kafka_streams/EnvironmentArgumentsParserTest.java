@@ -24,18 +24,17 @@
 
 package com.bakdata.common_kafka_streams;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EnvironmentArgumentsParserTest {
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+class EnvironmentArgumentsParserTest {
 
     private final EnvironmentArgumentsParser parser = new EnvironmentArgumentsParser("STREAMS_");
 
     @Test
-    public void shouldFilterVariablesWithoutEnvironmentPrefix(){
+    void shouldFilterVariablesWithoutEnvironmentPrefix(){
         final String[] result = this.parser.parseVariables(Map.of(
                 "STREAMS_test1", "a",
                 "STREAMS_test2", "a",
@@ -45,7 +44,7 @@ public class EnvironmentArgumentsParserTest {
     }
 
     @Test
-    public void shouldLowerEnvironmentKeys() {
+    void shouldLowerEnvironmentKeys() {
         final String[] result = this.parser.parseVariables(Map.of(
                 "STREAMS_teST1", "a"
         ));
@@ -53,7 +52,7 @@ public class EnvironmentArgumentsParserTest {
     }
 
     @Test
-    public void shouldReplaceUnderscoreWithHyphen() {
+    void shouldReplaceUnderscoreWithHyphen() {
         final String[] result = this.parser.parseVariables(Map.of(
                 "STREAMS_teST_test_1", "a"
         ));
@@ -61,14 +60,14 @@ public class EnvironmentArgumentsParserTest {
     }
 
     @Test
-    public void shouldPassEnvironmentValueAsCommandLineParameter() {
+    void shouldPassEnvironmentValueAsCommandLineParameter() {
         final String[] result = this.parser.parseVariables(Map.of(
             "STREAMS_test1", "a"));
         assertEquals("a", result[1]);
     }
 
     @Test
-    public void shouldReturnEmptyArrayIfNoValidKeysPresent() {
+    void shouldReturnEmptyArrayIfNoValidKeysPresent() {
         final String[] result = this.parser.parseVariables(Map.of(
                 "STREAMSWRONG_test3", "a",
                 "STREAMSWRONG_test2", "a"
