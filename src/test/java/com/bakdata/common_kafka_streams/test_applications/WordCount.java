@@ -68,12 +68,9 @@ public class WordCount extends KafkaStreamsApplication {
     
         wordCounts.toStream().to(this.outputTopic, Produced.with(stringSerde, longSerde));
     }
-    
+
     public Properties getKafkaProperties() {
-        final String brokers = "localhost:9092";
-        final Properties kafkaConfig = new Properties();
-        kafkaConfig.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "wordcount");
-        kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        final Properties kafkaConfig = super.getKafkaProperties();
         kafkaConfig.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         kafkaConfig.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         return kafkaConfig;
