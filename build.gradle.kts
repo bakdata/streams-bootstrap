@@ -9,8 +9,7 @@ plugins {
 }
 
 allprojects {
-    // TODO: adjust subpackage if needed
-    group = "com.bakdata.${rootProject.name}"
+    group = "com.bakdata"
 
     tasks.withType<Test> {
         maxParallelForks = 4
