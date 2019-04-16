@@ -1,0 +1,18 @@
+nameOverride: xml2avro
+
+replicaCount: 1
+
+image: xml2avro
+imageTag: latest
+imagePullPolicy: Always
+
+configurationEnvPrefix: "APP_"
+
+env:
+  APP_INPUT_TOPIC: "test"
+  APP_OUTPUT_TOPIC: "test"
+  APP_BROKERS: "test:9092"
+  APP_ROOT_TAG: "root"
+  APP_OUTPUT_SCHEMA: "/test/schema"
+  APP_SCHEMA_REGISTRY_URL: "url:1234"
+
