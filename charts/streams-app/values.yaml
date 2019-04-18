@@ -1,8 +1,8 @@
-nameOverride: xml2avro
+nameOverride: bakdataStreamsApp
 
 replicaCount: 1
 
-image: xml2avro
+image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
