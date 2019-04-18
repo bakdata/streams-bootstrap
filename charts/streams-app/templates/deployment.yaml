@@ -1,0 +1,41 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "streams-app.fullname" . }}
+  labels:
+    app: {{ template "streams-app.name" . }}
+    chart: {{ template "streams-app.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "streams-app.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "streams-app.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ template "streams-app.name" . }}
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: {{ template "streams-app.name" . }}-container
+        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+        env:
+          - name: ENV_PREFIX
+            value: {{ .Values.configurationEnvPrefix }}
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
