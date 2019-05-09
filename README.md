@@ -6,11 +6,6 @@
 
 # common-kafka-streams
 
-Quick intro on what this does.
-
-Optional:
-You can find a [blog post on medium](https://medium.com/bakdata/xxx) with some examples and detailed explanations of how common-kafka-streams works.
-
 ## Getting Started
 
 You can add common-kafka-streams via Maven Central.
@@ -31,22 +26,6 @@ compile group: 'com.bakdata', name: 'common-kafka-streams', version: '1.0.0'
 
 
 For other build tools or versions, refer to the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.common-kafka-streams/common-kafka-streams/latest).
-
-### How to use it
-
-Here are X examples that show you how to use common-kafka-streams.
-
-#### Example 1
-
-```java
-class ExampleSnippet {
-}
-```
-
-#### More Examples
-
-You can find many more example in [this repository's XXX code](https://github.com/bakdata/common-kafka-streams/xxx).
-
 
 ## Development
 
