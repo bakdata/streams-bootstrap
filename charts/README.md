@@ -14,5 +14,8 @@ helm install bakdata-common/<chart_to_install>
 You can add new charts in a separate folder or update existing ones. To update the helm repository please run:
 
 ```
+cd <your-char-dir>
+helm package .
+cd ..
 helm repo index . --merge <your-chart>
 ```
