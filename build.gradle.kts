@@ -9,7 +9,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.bakdata"
+    group = "com.bakdata.${rootProject.name}"
 
     tasks.withType<Test> {
         maxParallelForks = 4
@@ -23,7 +23,6 @@ allprojects {
 
 configure<com.bakdata.gradle.SonatypeSettings> {
     developers {
-        // TODO: adjust
         developer {
             name.set("Arvid Heise")
             id.set("AHeise")
@@ -41,8 +40,8 @@ allprojects {
     apply(plugin = "java-library")
 
     configure<JavaPluginConvention> {
-        sourceCompatibility = org.gradle.api.JavaVersion.VERSION_11
-        targetCompatibility = org.gradle.api.JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     dependencies {
@@ -50,11 +49,14 @@ allprojects {
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.0")
         "testImplementation"(group = "org.assertj", name = "assertj-core", version = "3.11.1")
         "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests", version = "1.0.1")
+        "testImplementation"(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = "2.2.0")
 
-        "implementation"(group = "info.picocli", name = "picocli", version = "2.3.0")
-        "implementation"(group = "org.apache.kafka", name = "kafka-streams", version = "2.0.0")
-        "implementation"(group = "org.apache.commons", name = "commons-lang3", version = "3.8.1")
-        "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = "5.0.0")
+        "api"(group = "info.picocli", name = "picocli", version = "2.3.0")
+        val kafkaVersion: String by project
+        "api"(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
+        val confluentVersion: String by project
+        "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
+        "implementation"(group = "log4j", name = "log4j", version = "1.2.17")
 
         "compileOnly"("org.projectlombok:lombok:1.18.6")
         "annotationProcessor"("org.projectlombok:lombok:1.18.6")

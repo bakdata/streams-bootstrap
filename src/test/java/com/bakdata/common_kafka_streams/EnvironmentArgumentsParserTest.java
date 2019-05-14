@@ -24,8 +24,9 @@
 
 package com.bakdata.common_kafka_streams;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -35,44 +36,44 @@ class EnvironmentArgumentsParserTest {
 
     @Test
     void shouldFilterVariablesWithoutEnvironmentPrefix(){
-        final String[] result = this.parser.parseVariables(Map.of(
+        final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMS_test1", "a",
                 "STREAMS_test2", "a",
-                "STREAMSWRONG_test2", "a"
+                "STREAMSWRONG_test3", "a"
         ));
-        assertEquals(4, result.length);
+        assertThat(result).containsExactlyInAnyOrder("--test1", "a", "--test2", "a");
     }
 
     @Test
     void shouldLowerEnvironmentKeys() {
-        final String[] result = this.parser.parseVariables(Map.of(
+        final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMS_teST1", "a"
         ));
-        assertEquals("--test1", result[0]);
+        assertThat(result).containsExactlyInAnyOrder("--test1", "a");
     }
 
     @Test
     void shouldReplaceUnderscoreWithHyphen() {
-        final String[] result = this.parser.parseVariables(Map.of(
+        final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMS_teST_test_1", "a"
         ));
-        assertEquals("--test-test-1", result[0]);
+        assertThat(result).containsExactlyInAnyOrder("--test-test-1", "a");
     }
 
     @Test
     void shouldPassEnvironmentValueAsCommandLineParameter() {
-        final String[] result = this.parser.parseVariables(Map.of(
+        final List<String> result = this.parser.parseVariables(Map.of(
             "STREAMS_test1", "a"));
-        assertEquals("a", result[1]);
+        assertThat(result).containsExactlyInAnyOrder("--test1", "a");
     }
 
     @Test
     void shouldReturnEmptyArrayIfNoValidKeysPresent() {
-        final String[] result = this.parser.parseVariables(Map.of(
+        final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMSWRONG_test3", "a",
                 "STREAMSWRONG_test2", "a"
         ));
-        assertEquals(0, result.length);
+        assertThat(result).isEmpty();
     }
 
 }

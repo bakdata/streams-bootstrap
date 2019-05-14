@@ -25,7 +25,7 @@
 package com.bakdata.common_kafka_streams;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -66,8 +66,8 @@ public class EnvironmentArgumentsParser {
         this.environmentDelimiter = environmentDelimiter;
     }
 
-    public String[] parseVariables(final Map<String, String> environment) {
-        final Collection<String> environmentArguments = new ArrayList<>();
+    public List<String> parseVariables(final Map<String, String> environment) {
+        final List<String> environmentArguments = new ArrayList<>();
         environment.forEach((k, v) -> {
             if (!k.startsWith(this.environmentPrefix)) {
                 return;
@@ -75,7 +75,7 @@ public class EnvironmentArgumentsParser {
             environmentArguments.add(this.convertEnvironmentKeyToCommandLineParameter(k));
             environmentArguments.add(v);
         });
-        return environmentArguments.toArray(new String[0]);
+        return environmentArguments;
     }
 
 

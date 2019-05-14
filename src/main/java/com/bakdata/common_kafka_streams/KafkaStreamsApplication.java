@@ -26,8 +26,12 @@ package com.bakdata.common_kafka_streams;
 
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 import lombok.Data;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -35,9 +39,6 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.log4j.Level;
 import picocli.CommandLine;
-
-import java.util.Optional;
-import java.util.Properties;
 
 
 /**
@@ -47,34 +48,30 @@ import java.util.Properties;
  * Hereby it automatically populates the passed in command line arguments with matching environment
  * arguments {@link EnvironmentArgumentsParser}.
  * To implement your streaming application inherit from this class and add your custom options.
+ * Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your class from your main.
  */
-
 @Data
 public abstract class KafkaStreamsApplication implements Runnable {
-    @CommandLine.Option(names = "--brokers", required = true)
-    private String brokers = "";
-
-    @CommandLine.Option(names = "--schema-registry-url", required = true)
-    private String schemaRegistryUrl = "";
-
-    @CommandLine.Option(names = "--productive", required = false)
-    private boolean productive = true;
-
-    @CommandLine.Option(names = "--debug", required = false)
-    private boolean debug = false;
-
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
-    private boolean helpRequested = false;
-
-    private KafkaStreams streams;
-
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
+    @CommandLine.Option(names = "--brokers", required = true)
+    private String brokers = "";
+    @CommandLine.Option(names = "--schema-registry-url", required = true)
+    private String schemaRegistryUrl = "";
+    @CommandLine.Option(names = "--productive", required = false)
+    private boolean productive = true;
+    @CommandLine.Option(names = "--debug", required = false)
+    private boolean debug = false;
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
+    private boolean helpRequested = false;
+    private KafkaStreams streams;
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
-        final String[] environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
+        final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
                 .parseVariables(System.getenv());
-        return ArrayUtils.addAll(args, environmentArguments);
+        final ArrayList<String> allArgs = new ArrayList<>(environmentArguments);
+        allArgs.addAll(Arrays.asList(args));
+        return allArgs.toArray(String[]::new);
     }
 
     /**
