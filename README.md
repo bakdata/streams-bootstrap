@@ -12,7 +12,7 @@ You can add common-kafka-streams via Maven Central.
 
 #### Gradle
 ```gradle
-compile group: 'com.bakdata', name: 'common-kafka-streams', version: '1.0.0'
+compile group: 'com.bakdata', name: 'common-kafka-streams', version: '1.1.0'
 ```
 
 #### Maven
@@ -20,7 +20,7 @@ compile group: 'com.bakdata', name: 'common-kafka-streams', version: '1.0.0'
 <dependency>
     <groupId>com.bakdata</groupId>
     <artifactId>common-kafka-streams</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
