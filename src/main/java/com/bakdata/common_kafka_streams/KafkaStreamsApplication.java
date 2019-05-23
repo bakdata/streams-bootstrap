@@ -58,9 +58,9 @@ public abstract class KafkaStreamsApplication implements Runnable {
     private String brokers = "";
     @CommandLine.Option(names = "--schema-registry-url", required = true)
     private String schemaRegistryUrl = "";
-    @CommandLine.Option(names = "--productive", required = false)
+    @CommandLine.Option(names = "--productive", arity = "1")
     private boolean productive = true;
-    @CommandLine.Option(names = "--debug", required = false)
+    @CommandLine.Option(names = "--debug", arity = "1")
     private boolean debug = false;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
