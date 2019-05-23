@@ -17,5 +17,5 @@ You can add new charts in a separate folder or update existing ones. To update t
 cd <your-chart-dir>
 helm package .
 cd ..
-helm repo index . --merge <your-chart>
+helm repo index . --merge <your-chart-dir>/Chart.yaml
 ```
