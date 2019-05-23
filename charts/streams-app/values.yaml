@@ -1,4 +1,4 @@
-nameOverride: bakdataStreamsApp
+nameOverride: bakdata-streams-app
 
 replicaCount: 1
 
