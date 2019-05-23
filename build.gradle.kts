@@ -57,6 +57,7 @@ allprojects {
         val confluentVersion: String by project
         "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         "implementation"(group = "log4j", name = "log4j", version = "1.2.17")
+        "implementation" (group = "org.slf4j", name =  "slf4j-log4j12", version = "1.7.25")
 
         "compileOnly"("org.projectlombok:lombok:1.18.6")
         "annotationProcessor"("org.projectlombok:lombok:1.18.6")
