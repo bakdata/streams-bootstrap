@@ -2,12 +2,12 @@ apiVersion: v1
 entries:
   streams-app:
   - apiVersion: v1
-    created: "2019-06-20T13:53:20.746363+02:00"
+    created: "2019-06-20T17:01:24.623544+02:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: db980ac9229f498bd1597d58d330bea382445cf7ee21d73ae8506d1e8ac92173
+    digest: aa13b37990ebfa8b5ca8966bde049d505b45f92bf127451064abf9d8de5af452
     name: streams-app
     urls:
     - streams-app/streams-app-0.1.0.tgz
     version: 0.1.0
-generated: "2019-06-20T13:53:20.741361+02:00"
+generated: "2019-06-20T17:01:24.622476+02:00"

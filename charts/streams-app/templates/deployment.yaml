@@ -36,6 +36,8 @@ spec:
       - name: {{ template "streams-app.name" . }}-container
         image: "{{ .Values.image }}:{{ .Values.imageTag }}"
         imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
         env:
           - name: ENV_PREFIX
             value: {{ .Values.configurationEnvPrefix }}
