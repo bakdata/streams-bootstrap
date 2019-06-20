@@ -14,6 +14,10 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- if .Values.awsRole }}
+      annotations:
+        iam.amazonaws.com/role: {{ .Values.awsRole }}
+      {{- end }}
       labels:
         app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
