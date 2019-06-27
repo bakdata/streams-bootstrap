@@ -73,7 +73,6 @@ public abstract class KafkaStreamsApplication implements Runnable {
                 .parseVariables(System.getenv());
         final ArrayList<String> allArgs = new ArrayList<>(environmentArguments);
         allArgs.addAll(Arrays.asList(args));
-
         return allArgs.toArray(String[]::new);
     }
 
