@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -51,6 +52,7 @@ import picocli.CommandLine;
  * Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your class from your main.
  */
 @Data
+@Slf4j
 public abstract class KafkaStreamsApplication implements Runnable {
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
@@ -71,6 +73,7 @@ public abstract class KafkaStreamsApplication implements Runnable {
                 .parseVariables(System.getenv());
         final ArrayList<String> allArgs = new ArrayList<>(environmentArguments);
         allArgs.addAll(Arrays.asList(args));
+
         return allArgs.toArray(String[]::new);
     }
 
@@ -91,7 +94,7 @@ public abstract class KafkaStreamsApplication implements Runnable {
         if(this.debug) {
             org.apache.log4j.Logger.getLogger("com.bakdata").setLevel(Level.DEBUG);
         }
-
+        log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
         this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
         this.streams.start();
