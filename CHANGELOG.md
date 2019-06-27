@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.2](https://github.com/bakdata/common-kafka-streams/tree/1.1.2) (2019-06-27)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.1...1.1.2)
+
+**Merged pull requests:**
+
+- Add support for AWS roles and pod resources [\#10](https://github.com/bakdata/common-kafka-streams/pull/10) ([@SvenLehmann](https://github.com/SvenLehmann))
+- Update readme with latest release version number [\#9](https://github.com/bakdata/common-kafka-streams/pull/9) ([@fapaul](https://github.com/fapaul))
+
 ## [1.1.1](https://github.com/bakdata/common-kafka-streams/tree/1.1.1) (2019-05-24)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.0...1.1.1)
 
