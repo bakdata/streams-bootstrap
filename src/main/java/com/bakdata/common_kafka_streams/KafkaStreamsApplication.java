@@ -103,6 +103,12 @@ public abstract class KafkaStreamsApplication implements Runnable {
 
     public abstract void buildTopology(StreamsBuilder builder);
 
+    /**
+     * This must be set to an unique value within the entire Kafka cluster.
+     * Could be set to: className-inputTopic-outputTopic
+     */
+    public abstract String getUniqueAppId();
+
     public Topology createTopology() {
         final StreamsBuilder builder = new StreamsBuilder();
         this.buildTopology(builder);
@@ -141,7 +147,7 @@ public abstract class KafkaStreamsApplication implements Runnable {
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "gzip");
 
         // topology
-        kafkaConfig.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, this.getClass().getSimpleName());
+        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
         kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.setProperty(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
