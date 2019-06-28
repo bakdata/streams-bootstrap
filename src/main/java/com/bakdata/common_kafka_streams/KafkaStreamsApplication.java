@@ -104,7 +104,7 @@ public abstract class KafkaStreamsApplication implements Runnable {
     public abstract void buildTopology(StreamsBuilder builder);
 
     /**
-     * This must be set to an unique value within the entire Kafka cluster.
+     * This must be set to a unique value within the entire Kafka cluster.
      * Could be set to: className-inputTopic-outputTopic
      */
     public abstract String getUniqueAppId();
