@@ -69,6 +69,11 @@ public class WordCount extends KafkaStreamsApplication {
         wordCounts.toStream().to(this.outputTopic, Produced.with(stringSerde, longSerde));
     }
 
+    @Override
+    public String getUniqueAppId() {
+        return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+    }
+
     public Properties getKafkaProperties() {
         final Properties kafkaConfig = super.getKafkaProperties();
         kafkaConfig.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
