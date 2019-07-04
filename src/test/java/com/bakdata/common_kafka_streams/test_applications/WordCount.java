@@ -52,7 +52,11 @@ public class WordCount extends KafkaStreamsApplication {
     
     @CommandLine.Option(names = "--output-topic", required = true)
     private String outputTopic = "";
-    
+
+    public static void main(final String[] args) {
+        startApplication(new WordCount(), args);
+    }
+
     @Override
     public void buildTopology(final StreamsBuilder builder) {
         final Serde<String> stringSerde = Serdes.String();

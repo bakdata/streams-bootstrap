@@ -77,6 +77,13 @@ public abstract class KafkaStreamsApplication implements Runnable {
     }
 
     /**
+     * This variable is usually set on application start. When the application is running in debug mode it is used to
+     * reconfigure the child app package logger. On default it points to the package of this class allowing to execute
+     * the run method independently.
+     */
+    private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
+
+    /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
      * {@link KafkaStreamsApplication}.</p>
      *
@@ -84,14 +91,16 @@ public abstract class KafkaStreamsApplication implements Runnable {
      * @param args Arguments passed in by the custom application class.
      */
     protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
+        appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         CommandLine.run(app, System.out, populatedArgs);
     }
 
     @Override
     public void run() {
-        if(this.debug) {
+        if (this.debug) {
             org.apache.log4j.Logger.getLogger("com.bakdata").setLevel(Level.DEBUG);
+            org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
         }
         log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
