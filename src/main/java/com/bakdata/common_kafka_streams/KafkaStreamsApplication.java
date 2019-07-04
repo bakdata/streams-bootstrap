@@ -76,6 +76,8 @@ public abstract class KafkaStreamsApplication implements Runnable {
         return allArgs.toArray(String[]::new);
     }
 
+    private static String appPackageName = null;
+
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
      * {@link KafkaStreamsApplication}.</p>
@@ -84,14 +86,16 @@ public abstract class KafkaStreamsApplication implements Runnable {
      * @param args Arguments passed in by the custom application class.
      */
     protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
+        appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         CommandLine.run(app, System.out, populatedArgs);
     }
 
     @Override
     public void run() {
-        if(this.debug) {
+        if (this.debug) {
             org.apache.log4j.Logger.getLogger("com.bakdata").setLevel(Level.DEBUG);
+            org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
         }
         log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
