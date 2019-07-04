@@ -76,7 +76,12 @@ public abstract class KafkaStreamsApplication implements Runnable {
         return allArgs.toArray(String[]::new);
     }
 
-    private static String appPackageName = null;
+    /**
+     * This variable is usually set on application start. When the application is running in debug mode it is used to
+     * reconfigure the child app package logger. On default it points to the package of this class allowing to execute
+     * the run method independently.
+     */
+    private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
