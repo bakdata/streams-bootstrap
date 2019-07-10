@@ -40,7 +40,6 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.log4j.Level;
 import picocli.CommandLine;
-import picocli.CommandLine.Option;
 
 
 /**
