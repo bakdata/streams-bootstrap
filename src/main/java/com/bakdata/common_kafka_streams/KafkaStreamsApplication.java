@@ -66,6 +66,9 @@ public abstract class KafkaStreamsApplication implements Runnable {
     private boolean debug = false;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
+    @CommandLine.Option(names = "--reprocess", arity = "1", description = "Reprocess all data by clearing the state store beforehand")
+    private boolean forceReprocessing = false;
+
     private KafkaStreams streams;
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
@@ -105,6 +108,11 @@ public abstract class KafkaStreamsApplication implements Runnable {
         log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
         this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
+
+        if (this.forceReprocessing) {
+            this.streams.cleanUp();
+        }
+
         this.streams.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.streams.close()));
