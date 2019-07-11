@@ -42,7 +42,7 @@ class WordCountTest {
 
     @Test
     void shouldAggregateSameWordStream() {
-        this.testTopology.input(this.app.getInputTopic()).add("bla")
+        this.testTopology.input().add("bla")
                 .add("blub")
                 .add("bla");
 
