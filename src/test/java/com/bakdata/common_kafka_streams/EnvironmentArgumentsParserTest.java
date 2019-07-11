@@ -35,7 +35,7 @@ class EnvironmentArgumentsParserTest {
     private final EnvironmentArgumentsParser parser = new EnvironmentArgumentsParser("STREAMS_");
 
     @Test
-    void shouldFilterVariablesWithoutEnvironmentPrefix(){
+    void shouldFilterVariablesWithoutEnvironmentPrefix() {
         final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMS_test1", "a",
                 "STREAMS_test2", "a",
@@ -63,7 +63,7 @@ class EnvironmentArgumentsParserTest {
     @Test
     void shouldPassEnvironmentValueAsCommandLineParameter() {
         final List<String> result = this.parser.parseVariables(Map.of(
-            "STREAMS_test1", "a"));
+                "STREAMS_test1", "a"));
         assertThat(result).containsExactlyInAnyOrder("--test1", "a");
     }
 

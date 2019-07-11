@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 public class WordCount extends KafkaStreamsApplication {
     @CommandLine.Option(names = "--input-topic", required = true)
     private String inputTopic = "";
-    
+
     @CommandLine.Option(names = "--output-topic", required = true)
     private String outputTopic = "";
 
@@ -61,15 +61,15 @@ public class WordCount extends KafkaStreamsApplication {
     public void buildTopology(final StreamsBuilder builder) {
         final Serde<String> stringSerde = Serdes.String();
         final Serde<Long> longSerde = Serdes.Long();
-    
+
         final KStream<String, String> textLines = builder.stream(this.inputTopic);
-    
+
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
         final KTable<String, Long> wordCounts = textLines
                 .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
                 .groupBy((key, word) -> word)
                 .count();
-    
+
         wordCounts.toStream().to(this.outputTopic, Produced.with(stringSerde, longSerde));
     }
 

@@ -45,11 +45,10 @@ import picocli.CommandLine;
 /**
  * <p>The base class of the entry point of the streaming application.</p>
  * This class provides common configuration options e.g. {@link #brokers}, {@link #productive} for streaming
- * application.
- * Hereby it automatically populates the passed in command line arguments with matching environment
- * arguments {@link EnvironmentArgumentsParser}.
- * To implement your streaming application inherit from this class and add your custom options.
- * Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your class from your main.
+ * application. Hereby it automatically populates the passed in command line arguments with matching environment
+ * arguments {@link EnvironmentArgumentsParser}. To implement your streaming application inherit from this class and add
+ * your custom options. Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your
+ * class from your main.
  */
 @Data
 @Slf4j
@@ -66,7 +65,8 @@ public abstract class KafkaStreamsApplication implements Runnable {
     private boolean debug = false;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
-    @CommandLine.Option(names = "--reprocess", arity = "1", description = "Reprocess all data by clearing the state store beforehand")
+    @CommandLine.Option(names = "--reprocess", arity = "1",
+            description = "Reprocess all data by clearing the state store beforehand")
     private boolean forceReprocessing = false;
 
     private KafkaStreams streams;
@@ -121,8 +121,8 @@ public abstract class KafkaStreamsApplication implements Runnable {
     public abstract void buildTopology(StreamsBuilder builder);
 
     /**
-     * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal state encapsulation. 
-     * Could be set to: className-inputTopic-outputTopic
+     * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal
+     * state encapsulation. Could be set to: className-inputTopic-outputTopic
      */
     public abstract String getUniqueAppId();
 
@@ -155,7 +155,7 @@ public abstract class KafkaStreamsApplication implements Runnable {
         kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1);
 
         // resilience
-        if(this.productive) {
+        if (this.productive) {
             kafkaConfig.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);
         }
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
