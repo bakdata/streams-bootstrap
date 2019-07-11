@@ -40,7 +40,6 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Produced;
 import picocli.CommandLine.Command;
 
-@Getter
 @NoArgsConstructor
 public class WordCount extends KafkaStreamsApplication {
     public static void main(final String[] args) {
