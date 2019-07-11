@@ -42,7 +42,6 @@ import picocli.CommandLine.Command;
 
 @Command(name = "wordcount")
 @Getter
-@Setter
 @NoArgsConstructor
 public class WordCount extends KafkaStreamsApplication {
     public static void main(final String[] args) {
