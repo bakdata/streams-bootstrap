@@ -120,6 +120,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             }
             this.streams.cleanUp();
             try {
+                // Wait here to let cleanUp and resetting finish .
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
