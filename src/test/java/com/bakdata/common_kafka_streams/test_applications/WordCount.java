@@ -28,9 +28,7 @@ import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -38,7 +36,6 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Produced;
-import picocli.CommandLine.Command;
 
 @NoArgsConstructor
 public class WordCount extends KafkaStreamsApplication {

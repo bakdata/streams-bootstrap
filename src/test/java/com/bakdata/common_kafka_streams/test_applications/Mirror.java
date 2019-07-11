@@ -26,18 +26,12 @@ package com.bakdata.common_kafka_streams.test_applications;
 
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
 import java.util.Properties;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
-import picocli.CommandLine.Command;
 
-@Command(name = "mirror")
-@Getter
-@Setter
 @NoArgsConstructor
 public class Mirror extends KafkaStreamsApplication {
     @Override

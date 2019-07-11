@@ -56,21 +56,30 @@ import picocli.CommandLine;
 public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
+    public static final int RESET_SLEEP_MS = 5000;
+
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
+
     @CommandLine.Option(names = "--schema-registry-url", required = true)
     private String schemaRegistryUrl = "";
+
     @CommandLine.Option(names = "--productive", arity = "1")
     private boolean productive = true;
+
     @CommandLine.Option(names = "--debug", arity = "1")
     private boolean debug = false;
+
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
+
     @CommandLine.Option(names = "--reprocess", arity = "1",
             description = "Reprocess all data by clearing the state store beforehand")
     private boolean forceReprocessing = false;
+
     @CommandLine.Option(names = "--input-topic", description = "Input topic")
     protected String inputTopic = "";
+
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic = "";
 
@@ -120,10 +129,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             }
             this.streams.cleanUp();
             try {
-                // Wait here to let cleanUp and resetting finish .
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.sleep(RESET_SLEEP_MS);
+            } catch (final InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
         this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);

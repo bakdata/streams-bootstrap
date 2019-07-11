@@ -49,7 +49,7 @@ public class ReprocessingTest {
     private final EmbeddedKafkaCluster kafkaCluster = provisionWith(useDefaults());
     @RegisterExtension
     JUnitJupiterSoftAssertions softly = new JUnitJupiterSoftAssertions();
-    private Mirror mirror;
+    private Mirror mirror = null;
 
 
     @BeforeEach
@@ -65,9 +65,7 @@ public class ReprocessingTest {
         this.mirror.setBrokers(this.kafkaCluster.getBrokerList());
         this.mirror.setProductive(false);
 
-        this.kafkaCluster
-                .createTopic(
-                        TopicConfig.forTopic(this.mirror.getOutputTopic()).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getOutputTopic()).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getInputTopic()).useDefaults());
     }
 
@@ -88,6 +86,7 @@ public class ReprocessingTest {
 
         this.runAndAssert(3);
 
+        // Wait until all stream application are completely stopped before triggering cleanup
         Thread.sleep(10000);
         this.mirror.setForceReprocessing(true);
         this.runAndAssert(6);
@@ -100,6 +99,7 @@ public class ReprocessingTest {
 
     private void runAndAssert(final int expectedMessageCount) throws InterruptedException {
         this.mirror.run();
+        // Wait until stream application has consumed all data
         Thread.sleep(5000);
         this.mirror.close();
         final List<KeyValue<String, String>> records = this.readFromTopic(this.mirror.getOutputTopic());
