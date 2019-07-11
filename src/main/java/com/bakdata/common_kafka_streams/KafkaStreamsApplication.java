@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import kafka.tools.StreamsResetter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -52,7 +53,7 @@ import picocli.CommandLine;
  */
 @Data
 @Slf4j
-public abstract class KafkaStreamsApplication implements Runnable {
+public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
     @CommandLine.Option(names = "--brokers", required = true)
@@ -68,6 +69,10 @@ public abstract class KafkaStreamsApplication implements Runnable {
     @CommandLine.Option(names = "--reprocess", arity = "1",
             description = "Reprocess all data by clearing the state store beforehand")
     private boolean forceReprocessing = false;
+    @CommandLine.Option(names = "--input-topic", description = "Input topic")
+    protected String inputTopic = "";
+    @CommandLine.Option(names = "--output-topic", description = "Output topic")
+    protected String outputTopic = "";
 
     private KafkaStreams streams;
 
@@ -101,21 +106,37 @@ public abstract class KafkaStreamsApplication implements Runnable {
 
     @Override
     public void run() {
+        log.info("Starting application");
         if (this.debug) {
             org.apache.log4j.Logger.getLogger("com.bakdata").setLevel(Level.DEBUG);
             org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
         }
         log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
-        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
         if (this.forceReprocessing) {
+            if (!this.inputTopic.isBlank()) {
+                this.runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
+            }
             this.streams.cleanUp();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
         this.streams.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.streams.close()));
+    }
+
+
+    @Override
+    public void close() {
+        log.info("Stopping application");
+        this.streams.close();
     }
 
     public abstract void buildTopology(StreamsBuilder builder);
@@ -158,6 +179,7 @@ public abstract class KafkaStreamsApplication implements Runnable {
         if (this.productive) {
             kafkaConfig.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);
         }
+
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
 
         // compression
@@ -172,4 +194,15 @@ public abstract class KafkaStreamsApplication implements Runnable {
 
         return kafkaConfig;
     }
+
+    private void runResetter(String inputTopics, String brokers, String appId) {
+        String[] args = {
+                "--application-id", appId,
+                "--bootstrap-servers", brokers,
+                "--input-topics", inputTopics
+        };
+        final StreamsResetter resetter = new StreamsResetter();
+        resetter.run(args);
+    }
+
 }
