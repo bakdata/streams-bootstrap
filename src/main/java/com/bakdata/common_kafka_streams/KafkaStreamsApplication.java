@@ -74,7 +74,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     private boolean helpRequested = false;
 
     @CommandLine.Option(names = "--reprocess", arity = "1",
-            description = "Reprocess all data by clearing the state store beforehand")
+            description = "Reprocess all data by clearing the state store and the global Kafka offsets for the "
+                    + "consumer group. Be careful with running in production and with enabling this flag - it "
+                    + "might cause inconsistent processing with multiple replicas.")
     private boolean forceReprocessing = false;
 
     @CommandLine.Option(names = "--input-topic", description = "Input topic")
@@ -124,15 +126,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         final var kafkaProperties = this.getKafkaProperties();
 
         if (this.forceReprocessing) {
-            if (!this.inputTopic.isBlank()) {
-                this.runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
-            }
-            this.streams.cleanUp();
-            try {
-                Thread.sleep(RESET_SLEEP_MS);
-            } catch (final InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            this.cleanUp();
         }
         this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
@@ -204,8 +198,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         return kafkaConfig;
     }
 
-    private void runResetter(String inputTopics, String brokers, String appId) {
-        String[] args = {
+    private static void runResetter(final String inputTopics, final String brokers, final String appId) {
+        final String[] args = {
                 "--application-id", appId,
                 "--bootstrap-servers", brokers,
                 "--input-topics", inputTopics
@@ -214,4 +208,15 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         resetter.run(args);
     }
 
+    private void cleanUp() {
+        if (!this.inputTopic.isBlank()) {
+            runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
+        }
+        this.streams.cleanUp();
+        try {
+            Thread.sleep(RESET_SLEEP_MS);
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
