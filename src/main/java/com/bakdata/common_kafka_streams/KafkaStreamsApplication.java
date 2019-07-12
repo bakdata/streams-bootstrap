@@ -211,7 +211,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         resetter.run(args);
     }
 
-    private void cleanUp() {
+    protected void cleanUp() {
         if (!this.inputTopic.isBlank()) {
             runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
         }
