@@ -76,6 +76,12 @@ public class ReprocessingTest {
     }
 
     @Test
+    void shouldReprocessOnFirstRun() {
+        this.mirror.setForceReprocessing(true);
+        this.mirror.run();
+    }
+
+    @Test
     void shouldReprocessAlreadySeenRecords() throws InterruptedException {
         final SendValuesTransactional<String> sendRequest =
                 SendValuesTransactional.inTransaction(this.mirror.getInputTopic(),
