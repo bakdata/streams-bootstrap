@@ -124,21 +124,24 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         }
         log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
+        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
         if (this.forceReprocessing) {
             this.cleanUp();
         }
-        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
         this.streams.start();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> this.streams.close()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
 
     @Override
     public void close() {
         log.info("Stopping application");
+        if (this.streams == null) {
+            return;
+        }
         this.streams.close();
     }
 
