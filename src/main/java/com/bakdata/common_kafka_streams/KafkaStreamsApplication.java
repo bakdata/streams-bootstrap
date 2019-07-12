@@ -201,7 +201,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         return kafkaConfig;
     }
 
-    private static void runResetter(final String inputTopics, final String brokers, final String appId) {
+    protected static void runResetter(final String inputTopics, final String brokers, final String appId) {
         final String[] args = {
                 "--application-id", appId,
                 "--bootstrap-servers", brokers,
