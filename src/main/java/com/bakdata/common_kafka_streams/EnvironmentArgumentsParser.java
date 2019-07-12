@@ -38,14 +38,11 @@ import java.util.StringJoiner;
  * <pre>{@code
  * final String[] environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX).parseVariables(System.getenv());
  * }</pre>
- * The class collects all environment variables starting with {@link #environmentPrefix} and replaces the
- * {@link #environmentDelimiter} with the {@link #commandLineDelimiter}.
- * Furthermore it transforms all words to lowercase and prepends "--" to match the command line argument descriptors.
+ * The class collects all environment variables starting with {@link #environmentPrefix} and replaces the {@link
+ * #environmentDelimiter} with the {@link #commandLineDelimiter}. Furthermore it transforms all words to lowercase and
+ * prepends "--" to match the command line argument descriptors.
  * <p>Example:</p>
- * {@code
- *  var ENV_PREFIX = "APP_";
- *  Transformation: APP_INPUT_TOPIC --> --input-topic
- * }
+ * {@code var ENV_PREFIX = "APP_"; Transformation: APP_INPUT_TOPIC --> --input-topic }
  */
 public class EnvironmentArgumentsParser {
 

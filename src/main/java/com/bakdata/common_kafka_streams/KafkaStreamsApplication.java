@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import kafka.tools.StreamsResetter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -45,29 +46,44 @@ import picocli.CommandLine;
 /**
  * <p>The base class of the entry point of the streaming application.</p>
  * This class provides common configuration options e.g. {@link #brokers}, {@link #productive} for streaming
- * application.
- * Hereby it automatically populates the passed in command line arguments with matching environment
- * arguments {@link EnvironmentArgumentsParser}.
- * To implement your streaming application inherit from this class and add your custom options.
- * Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your class from your main.
+ * application. Hereby it automatically populates the passed in command line arguments with matching environment
+ * arguments {@link EnvironmentArgumentsParser}. To implement your streaming application inherit from this class and add
+ * your custom options. Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your
+ * class from your main.
  */
 @Data
 @Slf4j
-public abstract class KafkaStreamsApplication implements Runnable {
+public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
+    public static final int RESET_SLEEP_MS = 5000;
+
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
+
     @CommandLine.Option(names = "--schema-registry-url", required = true)
     private String schemaRegistryUrl = "";
+
     @CommandLine.Option(names = "--productive", arity = "1")
     private boolean productive = true;
+
     @CommandLine.Option(names = "--debug", arity = "1")
     private boolean debug = false;
+
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
-    @CommandLine.Option(names = "--reprocess", arity = "1", description = "Reprocess all data by clearing the state store beforehand")
+
+    @CommandLine.Option(names = "--reprocess", arity = "1",
+            description = "Reprocess all data by clearing the state store and the global Kafka offsets for the "
+                    + "consumer group. Be careful with running in production and with enabling this flag - it "
+                    + "might cause inconsistent processing with multiple replicas.")
     private boolean forceReprocessing = false;
+
+    @CommandLine.Option(names = "--input-topic", description = "Input topic")
+    protected String inputTopic = "";
+
+    @CommandLine.Option(names = "--output-topic", description = "Output topic")
+    protected String outputTopic = "";
 
     private KafkaStreams streams;
 
@@ -101,28 +117,36 @@ public abstract class KafkaStreamsApplication implements Runnable {
 
     @Override
     public void run() {
+        log.info("Starting application");
         if (this.debug) {
             org.apache.log4j.Logger.getLogger("com.bakdata").setLevel(Level.DEBUG);
             org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
         }
         log.debug(this.toString());
         final var kafkaProperties = this.getKafkaProperties();
-        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
         if (this.forceReprocessing) {
-            this.streams.cleanUp();
+            this.cleanUp();
         }
+        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
 
         this.streams.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.streams.close()));
     }
 
+
+    @Override
+    public void close() {
+        log.info("Stopping application");
+        this.streams.close();
+    }
+
     public abstract void buildTopology(StreamsBuilder builder);
 
     /**
-     * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal state encapsulation. 
-     * Could be set to: className-inputTopic-outputTopic
+     * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal
+     * state encapsulation. Could be set to: className-inputTopic-outputTopic
      */
     public abstract String getUniqueAppId();
 
@@ -155,9 +179,10 @@ public abstract class KafkaStreamsApplication implements Runnable {
         kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1);
 
         // resilience
-        if(this.productive) {
+        if (this.productive) {
             kafkaConfig.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);
         }
+
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
 
         // compression
@@ -171,5 +196,27 @@ public abstract class KafkaStreamsApplication implements Runnable {
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
 
         return kafkaConfig;
+    }
+
+    private static void runResetter(final String inputTopics, final String brokers, final String appId) {
+        final String[] args = {
+                "--application-id", appId,
+                "--bootstrap-servers", brokers,
+                "--input-topics", inputTopics
+        };
+        final StreamsResetter resetter = new StreamsResetter();
+        resetter.run(args);
+    }
+
+    private void cleanUp() {
+        if (!this.inputTopic.isBlank()) {
+            runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
+        }
+        this.streams.cleanUp();
+        try {
+            Thread.sleep(RESET_SLEEP_MS);
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

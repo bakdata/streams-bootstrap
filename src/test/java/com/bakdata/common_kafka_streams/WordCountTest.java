@@ -25,7 +25,7 @@
 package com.bakdata.common_kafka_streams;
 
 import com.bakdata.common_kafka_streams.test_applications.WordCount;
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import org.apache.kafka.common.serialization.Serdes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,7 +37,7 @@ class WordCountTest {
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
 
     @RegisterExtension
-    final TestTopology<Object, String> testTopology = new TestTopology<>(this.app::createTopology,
+    final TestTopologyExtension<Object, String> testTopology = new TestTopologyExtension<>(this.app::createTopology,
             this.app.getKafkaProperties());
 
     @Test

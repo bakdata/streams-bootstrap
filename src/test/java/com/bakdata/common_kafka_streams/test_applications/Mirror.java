@@ -25,38 +25,19 @@
 package com.bakdata.common_kafka_streams.test_applications;
 
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
-import java.util.Arrays;
 import java.util.Properties;
-import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
-public class WordCount extends KafkaStreamsApplication {
-    public static void main(final String[] args) {
-        startApplication(new WordCount(), args);
-    }
-
+public class Mirror extends KafkaStreamsApplication {
     @Override
     public void buildTopology(final StreamsBuilder builder) {
-        final Serde<String> stringSerde = Serdes.String();
-        final Serde<Long> longSerde = Serdes.Long();
-
-        final KStream<String, String> textLines = builder.stream(this.inputTopic);
-
-        final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
-        final KTable<String, Long> wordCounts = textLines
-                .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
-                .groupBy((key, word) -> word)
-                .count();
-
-        wordCounts.toStream().to(this.outputTopic, Produced.with(stringSerde, longSerde));
+        final KStream<String, String> input = builder.stream(this.getInputTopic());
+        input.to(this.getOutputTopic());
     }
 
     @Override
