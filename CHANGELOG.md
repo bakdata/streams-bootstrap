@@ -1,5 +1,24 @@
 # Change Log
 
+## [1.1.3](https://github.com/bakdata/common-kafka-streams/tree/1.1.3) (2019-08-01)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.2...1.1.3)
+
+**Implemented enhancements:**
+
+- Add CLI parameter to allow reprocessing of data [\#14](https://github.com/bakdata/common-kafka-streams/pull/14) ([@SvenLehmann](https://github.com/SvenLehmann))
+
+**Merged pull requests:**
+
+- Release new version of kafka\-streams chart [\#20](https://github.com/bakdata/common-kafka-streams/pull/20) ([@fapaul](https://github.com/fapaul))
+- Change clean up visibility [\#19](https://github.com/bakdata/common-kafka-streams/pull/19) ([@fapaul](https://github.com/fapaul))
+- Change reset visibility [\#18](https://github.com/bakdata/common-kafka-streams/pull/18) ([@fapaul](https://github.com/fapaul))
+- Initialize topolgy stream before cleanup [\#17](https://github.com/bakdata/common-kafka-streams/pull/17) ([@fapaul](https://github.com/fapaul))
+-  Add cleanup possibility on processor startup [\#15](https://github.com/bakdata/common-kafka-streams/pull/15) ([@fapaul](https://github.com/fapaul))
+- Fix duplicate in app name [\#16](https://github.com/bakdata/common-kafka-streams/pull/16) ([@lawben](https://github.com/lawben))
+- Change log level on debug for child app in different package [\#13](https://github.com/bakdata/common-kafka-streams/pull/13) ([@fapaul](https://github.com/fapaul))
+- Add unique AppID method [\#12](https://github.com/bakdata/common-kafka-streams/pull/12) ([@lawben](https://github.com/lawben))
+- Log initial configuration on debug [\#11](https://github.com/bakdata/common-kafka-streams/pull/11) ([@fapaul](https://github.com/fapaul))
+
 ## [1.1.2](https://github.com/bakdata/common-kafka-streams/tree/1.1.2) (2019-06-27)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.1...1.1.2)
 
