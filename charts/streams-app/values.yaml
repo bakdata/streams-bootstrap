@@ -48,6 +48,6 @@ prometheus:
       requests:
         cpu: 100m
         memory: 500Mi
-        limits:
-          memory: 2G
-          cpu: 300m
+      limits:
+        memory: 2G
+        cpu: 300m
