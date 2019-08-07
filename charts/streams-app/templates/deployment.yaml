@@ -55,6 +55,8 @@ spec:
             - name: KAFKA_JMX_PORT
               value: "{{ .Values.jmx.port }}"
           {{- end }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
         {{- if .Values.prometheus.jmx.enabled }}
           ports:
             - containerPort: {{ .Values.jmx.port }}
