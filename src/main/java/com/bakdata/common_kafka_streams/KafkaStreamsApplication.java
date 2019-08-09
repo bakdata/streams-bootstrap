@@ -29,6 +29,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import kafka.tools.StreamsResetter;
@@ -78,6 +79,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     private boolean forceReprocessing = false;
+    
+    @CommandLine.Option(names = "--streams-config")
+    private Map<String, String> streamsConfig;
 
     @CommandLine.Option(names = "--input-topic", description = "Input topic")
     protected String inputTopic = "";

@@ -24,10 +24,13 @@
 
 package com.bakdata.common_kafka_streams;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -64,15 +67,10 @@ public class EnvironmentArgumentsParser {
     }
 
     public List<String> parseVariables(final Map<String, String> environment) {
-        final List<String> environmentArguments = new ArrayList<>();
-        environment.forEach((k, v) -> {
-            if (!k.startsWith(this.environmentPrefix)) {
-                return;
-            }
-            environmentArguments.add(this.convertEnvironmentKeyToCommandLineParameter(k));
-            environmentArguments.add(v);
-        });
-        return environmentArguments;
+        return environment.entrySet().stream()
+                .filter(e -> e.getKey().startsWith(this.environmentPrefix))
+                .flatMap(this::convertEnvironmentVariable)
+                .collect(Collectors.toList());
     }
 
 
@@ -83,5 +81,20 @@ public class EnvironmentArgumentsParser {
             sj.add(word.toLowerCase());
         }
         return "--" + sj;
+    }
+
+    private Stream<String> convertEnvironmentVariable(final Entry<String, String> environmentEntry) {
+        final String key = this.convertEnvironmentKeyToCommandLineParameter(environmentEntry.getKey());
+        final String value = parseEnvironmentValue(environmentEntry.getValue());
+        return Stream.of(key, value);
+    }
+
+    private static String parseEnvironmentValue(final String value) {
+        if (!value.contains(",")) {
+            return value;
+        }
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .collect(Collectors.joining(" "));
     }
 }
