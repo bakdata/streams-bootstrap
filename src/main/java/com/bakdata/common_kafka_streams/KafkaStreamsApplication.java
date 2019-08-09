@@ -81,7 +81,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                     + "might cause inconsistent processing with multiple replicas.")
     private boolean forceReprocessing = false;
 
-    @CommandLine.Option(names = "--streams-config", split = " ", description = "Additional Kafka Streams properties")
+    @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
     private Map<String, String> streamsConfig = new HashMap<>();
 
     @CommandLine.Option(names = "--input-topic", description = "Input topic")

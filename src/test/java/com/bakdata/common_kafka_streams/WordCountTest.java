@@ -36,7 +36,7 @@ import picocli.CommandLine;
 class WordCountTest {
     private static final String[] ARGS = {"--input-topic", "Input", "--output-topic", "Output",
             "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl", "--streams-config",
-            "test.ack=1 test1.ack=2"};
+            "test.ack=1,test1.ack=2"};
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
 
     @RegisterExtension
