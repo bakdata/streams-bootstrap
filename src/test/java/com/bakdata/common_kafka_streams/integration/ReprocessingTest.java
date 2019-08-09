@@ -32,6 +32,7 @@ import com.bakdata.common_kafka_streams.test_applications.Mirror;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
@@ -64,6 +65,9 @@ public class ReprocessingTest {
         this.mirror.setOutputTopic(outputTopicName);
         this.mirror.setBrokers(this.kafkaCluster.getBrokerList());
         this.mirror.setProductive(false);
+        this.mirror.setStreamsConfig(
+                Map.of("default.value.serde", "org.apache.kafka.common.serialization.Serdes$StringSerde",
+                        "default.key.serde", "org.apache.kafka.common.serialization.Serdes$StringSerde"));
 
         this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getOutputTopic()).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getInputTopic()).useDefaults());
