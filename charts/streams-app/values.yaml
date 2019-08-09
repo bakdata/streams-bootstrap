@@ -14,8 +14,9 @@ resources:
     cpu: 200m
     memory: 300Mi
   limits:
-    memory: 2G
     cpu: 500m
+    memory: 2G
+
 
 # env:
 #   APP_INPUT_TOPIC: "test"
@@ -25,3 +26,32 @@ resources:
 #   APP_OUTPUT_SCHEMA: "/test/schema"
 #   APP_SCHEMA_REGISTRY_URL: "url:1234"
 
+## Monitoring
+## Kafka Connect JMX Settings
+## ref: https://kafka.apache.org/documentation/#connect_monitoring
+jmx:
+  port: 5555
+  metricRules:
+    - ".*"
+
+
+## Prometheus Exporter Configuration
+## ref: https://prometheus.io/docs/instrumenting/exporters/
+prometheus:
+  ## JMX Exporter Configuration
+  ## ref: https://github.com/prometheus/jmx_exporter
+  jmx:
+    enabled: true
+    image: solsson/kafka-prometheus-jmx-exporter@sha256
+    imageTag: 6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
+    port: 5556
+
+    ## Resources configuration for the JMX exporter container.
+    ## See the `resources` documentation above for details.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 500Mi
+      limits:
+        cpu: 300m
+        memory: 2G
