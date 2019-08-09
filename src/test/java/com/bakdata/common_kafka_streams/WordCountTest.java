@@ -24,6 +24,8 @@
 
 package com.bakdata.common_kafka_streams;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.bakdata.common_kafka_streams.test_applications.WordCount;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import org.apache.kafka.common.serialization.Serdes;
@@ -33,7 +35,8 @@ import picocli.CommandLine;
 
 class WordCountTest {
     private static final String[] ARGS = {"--input-topic", "Input", "--output-topic", "Output",
-            "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl"};
+            "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl", "--streams-config",
+            "test.ack=1 test1.ack=2"};
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
 
     @RegisterExtension
@@ -52,4 +55,11 @@ class WordCountTest {
                 .expectNextRecord().hasKey("bla").hasValue(2L)
                 .expectNoMoreRecord();
     }
+
+    @Test
+    void shouldSetKafkaProperties() {
+        assertThat(this.app.getKafkaProperties().getProperty("test.ack")).isEqualTo("1");
+        assertThat(this.app.getKafkaProperties().getProperty("test1.ack")).isEqualTo("2");
+    }
+
 }
