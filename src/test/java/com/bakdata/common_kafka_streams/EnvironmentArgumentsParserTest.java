@@ -79,14 +79,7 @@ class EnvironmentArgumentsParserTest {
     @Test
     void shouldConvertMapFormat() {
         final List<String> result = this.parser.parseVariables(Map.of(
-                "STREAMS_STREAM_CONFIG", "consumer.acks=all,producer.acks=none"));
-        assertThat(result).containsExactly("--stream-config", "consumer.acks=all producer.acks=none");
-    }
-
-    @Test
-    void shouldTrimMultipleValues() {
-        final List<String> result = this.parser.parseVariables(Map.of(
-                "STREAMS_STREAM_CONFIG", "consumer.acks=all ,  producer.acks=none"));
+                "STREAMS_STREAM_CONFIG", "consumer.acks=all producer.acks=none"));
         assertThat(result).containsExactly("--stream-config", "consumer.acks=all producer.acks=none");
     }
 

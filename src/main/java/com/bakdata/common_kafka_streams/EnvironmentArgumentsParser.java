@@ -24,7 +24,6 @@
 
 package com.bakdata.common_kafka_streams;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,16 +84,7 @@ public class EnvironmentArgumentsParser {
 
     private Stream<String> convertEnvironmentVariable(final Entry<String, String> environmentEntry) {
         final String key = this.convertEnvironmentKeyToCommandLineParameter(environmentEntry.getKey());
-        final String value = parseEnvironmentValue(environmentEntry.getValue());
-        return Stream.of(key, value);
+        return Stream.of(key, environmentEntry.getValue());
     }
 
-    private static String parseEnvironmentValue(final String value) {
-        if (!value.contains(",")) {
-            return value;
-        }
-        return Arrays.stream(value.split(","))
-                .map(String::trim)
-                .collect(Collectors.joining(" "));
-    }
 }
