@@ -53,3 +53,5 @@ prometheus:
         cpu: 300m
         memory: 2G
 
+jmxMetricRules:
+  - ".*"

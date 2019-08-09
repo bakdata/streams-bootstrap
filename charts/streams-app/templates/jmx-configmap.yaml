@@ -15,5 +15,7 @@ data:
     lowercaseOutputLabelNames: true
     ssl: false
     rules:
-    - pattern: ".*"
+      {{- range .Values.jmxMetricRules}}
+      - pattern: {{ . | quote }}
+      {{- end}}
 {{- end }}
