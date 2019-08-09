@@ -28,7 +28,9 @@ import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import kafka.tools.StreamsResetter;
@@ -78,6 +80,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     private boolean forceReprocessing = false;
+
+    @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
+    private Map<String, String> streamsConfig = new HashMap<>();
 
     @CommandLine.Option(names = "--input-topic", description = "Input topic")
     protected String inputTopic = "";
@@ -197,6 +202,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.setProperty(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
+
+        this.streamsConfig.forEach(kafkaConfig::setProperty);
 
         return kafkaConfig;
     }
