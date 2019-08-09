@@ -31,6 +31,9 @@ resources:
 ## ref: https://kafka.apache.org/documentation/#connect_monitoring
 jmx:
   port: 5555
+  metricRules:
+    - ".*"
+
 
 ## Prometheus Exporter Configuration
 ## ref: https://prometheus.io/docs/instrumenting/exporters/
@@ -52,6 +55,3 @@ prometheus:
       limits:
         cpu: 300m
         memory: 2G
-
-jmxMetricRules:
-  - ".*"
