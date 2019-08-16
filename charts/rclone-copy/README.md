@@ -13,7 +13,7 @@ cd my-repository
 rclone config --config "rclone.conf"
 ```
 - Select `n` for "New remote"
-- Enter name of source. Should be name of literature/patent source and match the directory name, e.g. `literature/cabi/rclone.conf` should have `cabi` as name.
+- Enter name of source. The source name what you call the rclone copy command with.
 - Select `10` for `ftp`.
 - Enter ftp URL. Should not contain `ftp://`!
 - Enter username.
@@ -61,7 +61,7 @@ Now we need to encrypt the file.
 - `rclone config --config "rclone.conf"` to open config again.
 - Select `s` to set configuration password.
 - Select `a` to add own password.
-- Enter password twice. Get the password from the gitlab environment variables.
+- Enter the password twice.
 - Select `q` to finish encryption.
 - Select `q` to close config menu.
 
