@@ -1,0 +1,47 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: rclone-cron-{{ .Release.Name }}
+spec:
+  schedule: "{{ .Values.schedule }}"
+  successfulJobsHistoryLimit: 1 
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            iam.amazonaws.com/role: {{ .Values.awsRole }}
+        spec:
+          containers:
+          - name: rclone-container
+            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
+            
+            command:
+              - rclone
+            args:
+              - copy
+              - -v
+              - --include-from
+              - /root/include-pattern.conf
+              - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
+              - "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
+            
+            volumeMounts:
+              - name: rclone-config
+                # This is the default path where the rclone implementation assumes the config is located
+                mountPath: /root/.config/rclone
+              - name: rclone-include-pattern-config
+                mountPath: /root
+            
+            resources:
+{{ toYaml .Values.resources | indent 14 }}
+          
+          restartPolicy: OnFailure
+          volumes:
+            - name: rclone-config
+              configMap:
+                name: rclone-config-{{ .Release.Name }}
+            - name: rclone-include-pattern-config
+              configMap:
+                name: rclone-include-pattern-config-{{ .Release.Name }}
