@@ -1,0 +1,21 @@
+# Standard rclone config file. See https://rclone.org/docs/ for more details.
+[my-sftp]
+type = sftp
+host = 192.168.1.100
+user = myUser
+port =
+pass = myPassword
+key_file =
+
+[my-s3]
+type = s3
+env_auth = false
+access_key_id = MYACCESSKEYID
+secret_access_key = mysecretkey
+region = eu-central-1
+endpoint =
+location_constraint = EU
+acl = private
+server_side_encryption =
+storage_class =
+
