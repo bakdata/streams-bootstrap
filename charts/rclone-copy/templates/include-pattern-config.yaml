@@ -1,6 +1,6 @@
 # This file is needed to work around the limitation that we cannot use 
 # the character '*' in the config YAML files, as this is a special character.
-# Howver, this is hidden from the values.yaml. We only need to specify a string 
+# However, this is hidden from the values.yaml. We only need to specify a string 
 # there and the templates here will do the rest.
 apiVersion: v1
 kind: ConfigMap
