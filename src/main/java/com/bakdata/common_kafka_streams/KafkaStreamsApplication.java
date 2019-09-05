@@ -26,6 +26,7 @@ package com.bakdata.common_kafka_streams;
 
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -135,9 +136,15 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             this.cleanUp();
         }
 
+        Optional.ofNullable(getUncaughtExceptionHandler())
+            .ifPresent(this.streams::setUncaughtExceptionHandler);
         this.streams.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+
+    protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return null;
     }
 
 
@@ -226,6 +233,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
