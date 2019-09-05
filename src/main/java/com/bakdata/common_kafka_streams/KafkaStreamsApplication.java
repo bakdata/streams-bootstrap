@@ -143,7 +143,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
-    public abstract UncaughtExceptionHandler getUncaughtExceptionHandler();
+    public UncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return null;
+    }
 
 
     @Override
