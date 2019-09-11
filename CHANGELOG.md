@@ -1,5 +1,19 @@
 # Change Log
 
+## [1.1.4](https://github.com/bakdata/common-kafka-streams/tree/1.1.4) (2019-09-11)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.3...1.1.4)
+
+**Closed issues:**
+
+- External stream configuration parameter cannot handle primitive data types other than String [\#23](https://github.com/bakdata/common-kafka-streams/issues/23)
+
+**Merged pull requests:**
+
+- Add hook for registering an uncaught exception handler [\#25](https://github.com/bakdata/common-kafka-streams/pull/25) ([@philipp94831](https://github.com/philipp94831))
+- Add rclone chart [\#24](https://github.com/bakdata/common-kafka-streams/pull/24) ([@lawben](https://github.com/lawben))
+- Allow kafka streams configuration with external parameter [\#22](https://github.com/bakdata/common-kafka-streams/pull/22) ([@fapaul](https://github.com/fapaul))
+- Add JMX prometheus [\#21](https://github.com/bakdata/common-kafka-streams/pull/21) ([@lawben](https://github.com/lawben))
+
 ## [1.1.3](https://github.com/bakdata/common-kafka-streams/tree/1.1.3) (2019-08-01)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.2...1.1.3)
 
