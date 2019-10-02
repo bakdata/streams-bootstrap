@@ -38,13 +38,14 @@ import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
+import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.JUnitJupiterSoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class ReprocessingTest {
+public class CleanUpTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private final EmbeddedKafkaCluster kafkaCluster = provisionWith(useDefaults());
@@ -80,9 +81,8 @@ public class ReprocessingTest {
     }
 
     @Test
-    void shouldReprocessOnFirstRun() {
-        this.mirror.setForceReprocessing(true);
-        this.mirror.run();
+    void shouldCleanUpOnFirstRun() {
+        runCleanUp();
     }
 
     @Test
@@ -93,18 +93,23 @@ public class ReprocessingTest {
         this.kafkaCluster.send(sendRequest);
 
         this.runAndAssert(3);
-
         this.runAndAssert(3);
 
         // Wait until all stream application are completely stopped before triggering cleanup
         Thread.sleep(10000);
-        this.mirror.setForceReprocessing(true);
+        this.runCleanUp();
         this.runAndAssert(6);
     }
 
-    private List<KeyValue<String, String>> readFromTopic(String topic) throws InterruptedException {
+    private List<KeyValue<String, String>> readFromTopic(final String topic) throws InterruptedException {
         final ReadKeyValues<String, String> readRequest = ReadKeyValues.from(topic).useDefaults();
         return this.kafkaCluster.read(readRequest);
+    }
+
+    private void runCleanUp() {
+        this.mirror.setCleanUp(true);
+        this.mirror.run();
+        this.mirror.setCleanUp(false);
     }
 
     private void runAndAssert(final int expectedMessageCount) throws InterruptedException {
@@ -114,7 +119,6 @@ public class ReprocessingTest {
         this.mirror.close();
         final List<KeyValue<String, String>> records = this.readFromTopic(this.mirror.getOutputTopic());
         this.softly.assertThat(records).hasSize(expectedMessageCount);
-
     }
 
 }

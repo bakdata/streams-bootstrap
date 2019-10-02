@@ -76,11 +76,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
 
-    @CommandLine.Option(names = "--reprocess", arity = "1",
-            description = "Reprocess all data by clearing the state store and the global Kafka offsets for the "
+    @CommandLine.Option(names = "--cleanUp", arity = "1",
+            description = "Clear the state store and the global Kafka offsets for the "
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
-    private boolean forceReprocessing = false;
+    private boolean cleanUp = false;
 
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
     private Map<String, String> streamsConfig = new HashMap<>();
@@ -129,18 +129,17 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
         }
         log.debug(this.toString());
+
         final var kafkaProperties = this.getKafkaProperties();
         this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
+        Optional.ofNullable(this.getUncaughtExceptionHandler())
+                .ifPresent(this.streams::setUncaughtExceptionHandler);
 
-        if (this.forceReprocessing) {
-            this.cleanUp();
+        if (this.cleanUp) {
+            this.runCleanUp();
+        } else {
+            this.runStreamsApplication();
         }
-
-        Optional.ofNullable(getUncaughtExceptionHandler())
-            .ifPresent(this.streams::setUncaughtExceptionHandler);
-        this.streams.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
     protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
@@ -225,7 +224,13 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         resetter.run(args);
     }
 
-    protected void cleanUp() {
+
+    protected void runStreamsApplication() {
+        this.streams.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+
+    protected void runCleanUp() {
         if (!this.inputTopic.isBlank()) {
             runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
         }
@@ -236,5 +241,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+        this.close();
     }
+
+
 }
