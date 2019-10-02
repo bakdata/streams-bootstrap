@@ -241,8 +241,5 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
-        this.close();
     }
-
-
 }
