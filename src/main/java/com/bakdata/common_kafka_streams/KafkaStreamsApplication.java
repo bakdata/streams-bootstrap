@@ -85,14 +85,14 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
     private Map<String, String> streamsConfig = new HashMap<>();
 
-    @CommandLine.Option(names = "--input-topic", description = "Input topic")
-    protected String inputTopic = "";
+    @CommandLine.Option(names = "--input-topics", description = "Input topics")
+    protected List<String> inputTopics = new ArrayList<>();
 
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic = "";
 
-    @CommandLine.Option(names = "--error-topic", description = "Error topic")
-    protected String errorTopic = "";
+    @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
+    protected String errorTopic = "error_topic";
 
     private KafkaStreams streams;
 
@@ -229,9 +229,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     }
 
     protected void cleanUp() {
-        if (!this.inputTopic.isBlank()) {
-            runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
-        }
+        this.inputTopics.stream()
+                .filter(topic -> !topic.isBlank())
+                .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
         this.streams.cleanUp();
         try {
             Thread.sleep(RESET_SLEEP_MS);

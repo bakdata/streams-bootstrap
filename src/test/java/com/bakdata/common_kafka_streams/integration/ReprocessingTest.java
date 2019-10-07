@@ -60,7 +60,7 @@ public class ReprocessingTest {
         this.mirror = new Mirror();
         this.mirror.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         final String inputTopicName = "input";
-        this.mirror.setInputTopic(inputTopicName);
+        this.mirror.setInputTopics(List.of(inputTopicName));
         final String outputTopicName = "output";
         this.mirror.setOutputTopic(outputTopicName);
         this.mirror.setBrokers(this.kafkaCluster.getBrokerList());
@@ -70,7 +70,7 @@ public class ReprocessingTest {
                         "default.key.serde", "org.apache.kafka.common.serialization.Serdes$StringSerde"));
 
         this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getOutputTopic()).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getInputTopic()).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.mirror.getInputTopics().get(0)).useDefaults());
     }
 
     @AfterEach
@@ -88,7 +88,7 @@ public class ReprocessingTest {
     @Test
     void shouldReprocessAlreadySeenRecords() throws InterruptedException {
         final SendValuesTransactional<String> sendRequest =
-                SendValuesTransactional.inTransaction(this.mirror.getInputTopic(),
+                SendValuesTransactional.inTransaction(this.mirror.getInputTopics().get(0),
                         Arrays.asList("a", "b", "c")).useDefaults();
         this.kafkaCluster.send(sendRequest);
 
