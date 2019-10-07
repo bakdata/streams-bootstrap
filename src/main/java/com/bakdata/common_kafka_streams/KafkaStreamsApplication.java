@@ -91,6 +91,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic = "";
 
+    @CommandLine.Option(names = "--error-topic", description = "Error topic")
+    protected String errorTopic = "";
+
     private KafkaStreams streams;
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
