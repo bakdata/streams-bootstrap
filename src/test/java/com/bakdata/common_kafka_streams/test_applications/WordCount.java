@@ -61,8 +61,8 @@ public class WordCount extends KafkaStreamsApplication {
 
     @Override
     public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + String.join("-", this.getInputTopics()) + "-" + this
-                .getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + String.join("-", this.getInputTopics()) +
+                "-" + this.getOutputTopic();
     }
 
     public Properties getKafkaProperties() {
