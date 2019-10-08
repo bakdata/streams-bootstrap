@@ -85,7 +85,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
     private Map<String, String> streamsConfig = new HashMap<>();
 
-    @CommandLine.Option(names = "--input-topics", description = "Input topics")
+    @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
 
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
