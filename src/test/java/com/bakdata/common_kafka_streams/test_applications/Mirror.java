@@ -39,6 +39,7 @@ public class Mirror extends KafkaStreamsApplication {
 
     @Override
     public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + String.join("-", this.getInputTopics()) + "-" + this.getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + String.join("-", this.getInputTopics()) +
+                "-" + this.getOutputTopic();
     }
 }
