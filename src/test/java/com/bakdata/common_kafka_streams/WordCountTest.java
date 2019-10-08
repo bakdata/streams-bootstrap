@@ -34,7 +34,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import picocli.CommandLine;
 
 class WordCountTest {
-    private static final String[] ARGS = {"--input-topic", "Input", "--output-topic", "Output",
+    private static final String[] ARGS = {"--input-topics", "Input,Input2", "--output-topic", "Output",
             "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl", "--streams-config",
             "test.ack=1,test1.ack=2"};
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
@@ -62,4 +62,9 @@ class WordCountTest {
         assertThat(this.app.getKafkaProperties().getProperty("test1.ack")).isEqualTo("2");
     }
 
+    @Test
+    void shouldParseMultipleInputTopics() {
+        assertThat(this.app.getInputTopics())
+                .containsExactly("Input", "Input2");
+    }
 }

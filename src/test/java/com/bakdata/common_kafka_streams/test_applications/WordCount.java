@@ -48,7 +48,7 @@ public class WordCount extends KafkaStreamsApplication {
         final Serde<String> stringSerde = Serdes.String();
         final Serde<Long> longSerde = Serdes.Long();
 
-        final KStream<String, String> textLines = builder.stream(this.inputTopic);
+        final KStream<String, String> textLines = builder.stream(this.inputTopics.get(0));
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
         final KTable<String, Long> wordCounts = textLines
@@ -61,7 +61,8 @@ public class WordCount extends KafkaStreamsApplication {
 
     @Override
     public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + String.join("-", this.getInputTopics()) +
+                "-" + this.getOutputTopic();
     }
 
     public Properties getKafkaProperties() {
