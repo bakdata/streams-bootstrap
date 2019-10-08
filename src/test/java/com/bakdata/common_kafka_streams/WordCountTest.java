@@ -34,7 +34,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import picocli.CommandLine;
 
 class WordCountTest {
-    private static final String[] ARGS = {"--input-topics", "Input,input2", "--output-topic", "Output",
+    private static final String[] ARGS = {"--input-topics", "Input,Input2", "--output-topic", "Output",
             "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl", "--streams-config",
             "test.ack=1,test1.ack=2"};
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
@@ -65,6 +65,6 @@ class WordCountTest {
     @Test
     void shouldParseMultipleInputTopics() {
         assertThat(this.app.getInputTopics())
-                .containsExactly("Input", "input2");
+                .containsExactly("Input", "Input2");
     }
 }
