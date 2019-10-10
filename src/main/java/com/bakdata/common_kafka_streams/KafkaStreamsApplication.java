@@ -240,4 +240,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             throw new RuntimeException(e);
         }
     }
+
+    public String getInputTopic() {
+        if (this.getInputTopics().isEmpty() || this.getInputTopics().get(0).isBlank()) {
+            throw new IllegalArgumentException("One input topic required");
+        }
+        return this.getInputTopics().get(0);
+    }
 }
