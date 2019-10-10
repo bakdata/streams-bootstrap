@@ -37,6 +37,8 @@ import java.util.Properties;
 import kafka.tools.StreamsResetter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -234,12 +236,21 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         if (!this.inputTopic.isBlank()) {
             runResetter(this.inputTopic, this.brokers, this.getUniqueAppId());
         }
+        if (!this.outputTopic.isBlank()) {
+            this.deleteOutputTopic();
+        }
         this.streams.cleanUp();
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
+        }
+    }
+
+    private void deleteOutputTopic() {
+        try (final KafkaAdminClient adminClient = (KafkaAdminClient) AdminClient.create(this.getKafkaProperties())) {
+            adminClient.deleteTopics(List.of(this.outputTopic));
         }
     }
 }
