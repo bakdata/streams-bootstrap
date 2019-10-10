@@ -78,11 +78,15 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
 
-    @CommandLine.Option(names = "--cleanUp", arity = "1",
+    @CommandLine.Option(names = "--clean-up", arity = "1",
             description = "Clear the state store and the global Kafka offsets for the "
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     private boolean cleanUp = false;
+
+    @CommandLine.Option(names = "--delete-output", arity = "1",
+            description = "Delete the output topic during the clean up. ")
+    private boolean deleteOutputTopic = false;
 
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
     private Map<String, String> streamsConfig = new HashMap<>();
@@ -235,11 +239,15 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
+    /**
+     * This methods resets the offset for all input topics and deletes internal topics, application state, and
+     * optionally the output topic.
+     */
     protected void runCleanUp() {
         this.inputTopics.stream()
                 .filter(topic -> !topic.isBlank())
                 .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
-        if (!this.outputTopic.isBlank()) {
+        if (this.deleteOutputTopic && !this.outputTopic.isBlank()) {
             this.deleteOutputTopic();
         }
         this.streams.cleanUp();
