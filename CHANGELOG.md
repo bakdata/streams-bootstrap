@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.5](https://github.com/bakdata/common-kafka-streams/tree/1.1.5) (2019-10-08)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.4...1.1.5)
+
+**Merged pull requests:**
+
+- Allow multiple input topics and add an error topic [\#27](https://github.com/bakdata/common-kafka-streams/pull/27) ([@torbsto](https://github.com/torbsto))
+
 ## [1.1.4](https://github.com/bakdata/common-kafka-streams/tree/1.1.4) (2019-09-11)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.3...1.1.4)
 
