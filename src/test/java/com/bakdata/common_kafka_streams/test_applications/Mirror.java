@@ -33,7 +33,7 @@ import org.apache.kafka.streams.kstream.KStream;
 public class Mirror extends KafkaStreamsApplication {
     @Override
     public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, String> input = builder.stream(this.getInputTopics().get(0));
+        final KStream<String, String> input = builder.stream(this.getInputTopic());
         input.to(this.getOutputTopic());
     }
 

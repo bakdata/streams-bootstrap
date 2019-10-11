@@ -264,4 +264,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             adminClient.deleteTopics(List.of(this.outputTopic));
         }
     }
+
+    public String getInputTopic() {
+        if (this.getInputTopics().isEmpty() || this.getInputTopics().get(0).isBlank()) {
+            throw new IllegalArgumentException("One input topic required");
+        }
+        return this.getInputTopics().get(0);
+    }
 }
