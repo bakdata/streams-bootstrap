@@ -85,7 +85,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     private boolean cleanUp = false;
 
     @CommandLine.Option(names = "--delete-output", arity = "1",
-            description = "Delete the output topic during the clean up. ")
+            description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic = false;
 
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")

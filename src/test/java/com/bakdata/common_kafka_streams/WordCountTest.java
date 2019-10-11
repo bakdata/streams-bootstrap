@@ -45,11 +45,11 @@ class WordCountTest {
 
     @Test
     void shouldAggregateSameWordStream() {
-        this.testTopology.input("Input").add("bla")
+        this.testTopology.input().add("bla")
                 .add("blub")
                 .add("bla");
 
-        this.testTopology.streamOutput("Output").withSerde(Serdes.String(), Serdes.Long())
+        this.testTopology.streamOutput().withSerde(Serdes.String(), Serdes.Long())
                 .expectNextRecord().hasKey("bla").hasValue(1L)
                 .expectNextRecord().hasKey("blub").hasValue(1L)
                 .expectNextRecord().hasKey("bla").hasValue(2L)
