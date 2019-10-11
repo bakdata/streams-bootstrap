@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.6](https://github.com/bakdata/common-kafka-streams/tree/1.1.6) (2019-10-11)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.5...1.1.6)
+
+**Merged pull requests:**
+
+- Add utility method for single input topic [\#28](https://github.com/bakdata/common-kafka-streams/pull/28) ([@torbsto](https://github.com/torbsto))
+
 ## [1.1.5](https://github.com/bakdata/common-kafka-streams/tree/1.1.5) (2019-10-08)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.4...1.1.5)
 
