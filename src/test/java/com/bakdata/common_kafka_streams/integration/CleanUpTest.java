@@ -29,7 +29,6 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
-import com.bakdata.common_kafka_streams.test_applications.Mirror;
 import com.bakdata.common_kafka_streams.test_applications.WordCount;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.Arrays;
@@ -97,8 +96,6 @@ public class CleanUpTest {
 
     @Test
     void shouldDeleteTopic() throws InterruptedException {
-        // create additional topology
-        final Mirror mirror = this.setupMirror();
 
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopics().get(0), List.of("blub", "bla", "blub"))
@@ -112,27 +109,13 @@ public class CleanUpTest {
                         new KeyValue<>("blub", 2L)
                 );
 
-        this.runAndAssertContent(this.app, this.app.getOutputTopic(), expectedValues,
-                "WordCount contains all elements after first run");
-        this.runAndAssertContent(mirror, mirror.getOutputTopic(), expectedValues,
-                "Mirror contains all elements after first run");
+        this.runAndAssertContent(expectedValues, "WordCount contains all elements after first run");
 
-        this.runCleanUpWithDeletion(this.app);
-        // recreate deleted topic
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.app.getOutputTopic()).useDefaults());
+        this.runCleanUpWithDeletion();
 
-        // After the clean up and running the WordCount app again, WordCount's output topic contains
-        // the same elements as after the first run
-        this.runAndAssertContent(this.app, this.app.getOutputTopic(), expectedValues,
-                "WordCount output contains 3 elements after second run");
-
-        // Mirror's output topic contains the elements from the first and second run
-        // showing that 6 records were written
-        final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
-                .flatMap(entry -> Stream.of(entry, entry))
-                .collect(Collectors.toList());
-        this.runAndAssertContent(mirror, mirror.getOutputTopic(), entriesTwice,
-                "Mirror output contains 6 elements after first run");
+        this.softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
+                .as("Output topic is deleted")
+                .isFalse();
     }
 
     @Test
@@ -149,14 +132,14 @@ public class CleanUpTest {
                 new KeyValue<>("blub", 2L)
         );
 
-        this.runAndAssertContent(this.app, this.app.getOutputTopic(), expectedValues, "First run");
+        this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run");
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.runCleanUp(this.app);
+        this.runCleanUp();
 
         final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                 .flatMap(entry -> Stream.of(entry, entry))
                 .collect(Collectors.toList());
-        this.runAndAssertContent(this.app, this.app.getOutputTopic(), entriesTwice, "Run after clean up");
+        this.runAndAssertContent(entriesTwice, "All entries are twice in the input topic after the 2nd run");
     }
 
     @Test
@@ -166,13 +149,13 @@ public class CleanUpTest {
                         Arrays.asList("a", "b", "c")).useDefaults();
         this.kafkaCluster.send(sendRequest);
 
-        this.runAndAssertSize(this.app, this.app.getOutputTopic(), 3);
-        this.runAndAssertSize(this.app, this.app.getOutputTopic(), 3);
+        this.runAndAssertSize(3);
+        this.runAndAssertSize(3);
 
         // Wait until all stream application are completely stopped before triggering cleanup
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.runCleanUp(this.app);
-        this.runAndAssertSize(this.app, this.app.getOutputTopic(), 6);
+        this.runCleanUp();
+        this.runAndAssertSize(6);
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
@@ -181,59 +164,38 @@ public class CleanUpTest {
         return this.kafkaCluster.read(readRequest);
     }
 
-
-    private void runCleanUp(final KafkaStreamsApplication streamsApp) {
-        streamsApp.setCleanUp(true);
-        streamsApp.run();
-        streamsApp.setCleanUp(false);
+    private void runCleanUp() {
+        this.app.setCleanUp(true);
+        this.app.run();
+        this.app.setCleanUp(false);
     }
 
-    private void runCleanUpWithDeletion(final KafkaStreamsApplication streamsApp) {
-        streamsApp.setDeleteOutputTopic(true);
-        this.runCleanUp(streamsApp);
-        streamsApp.setDeleteOutputTopic(false);
+    private void runCleanUpWithDeletion() {
+        this.app.setDeleteOutputTopic(true);
+        this.runCleanUp();
+        this.app.setDeleteOutputTopic(false);
     }
 
-    private void runAndAssertContent(final KafkaStreamsApplication streamsApp,
-            final String outputTopic, final Iterable<KeyValue<String, Long>> expectedValues, final String description)
+    private void runAndAssertContent(final Iterable<KeyValue<String, Long>> expectedValues, final String description)
             throws InterruptedException {
-
-        streamsApp.run();
+        this.app.run();
         // Wait until stream application has consumed all data
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        streamsApp.close();
+        this.app.close();
 
-        final List<KeyValue<String, Long>> output = this.readOutputTopic(outputTopic);
+        final List<KeyValue<String, Long>> output = this.readOutputTopic(this.app.getOutputTopic());
         this.softly.assertThat(output)
                 .as(description)
                 .containsExactlyInAnyOrderElementsOf(expectedValues);
     }
 
-    private void runAndAssertSize(final KafkaStreamsApplication streamsApp, final String outputTopic,
-            final int expectedMessageCount) throws InterruptedException {
-        streamsApp.run();
+    private void runAndAssertSize(final int expectedMessageCount) throws InterruptedException {
+        this.app.run();
         // Wait until stream application has consumed all data
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        streamsApp.close();
-        final List<KeyValue<String, Long>> records = this.readOutputTopic(outputTopic);
+        this.app.close();
+        final List<KeyValue<String, Long>> records = this.readOutputTopic(this.app.getOutputTopic());
         this.softly.assertThat(records).hasSize(expectedMessageCount);
-    }
-
-
-    private Mirror setupMirror() {
-        final Mirror mirror = new Mirror();
-        mirror.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
-        final String inputTopicName = "word_output";
-        mirror.setInputTopics(List.of(inputTopicName));
-        final String outputTopicName = "mirror_output";
-        mirror.setOutputTopic(outputTopicName);
-        mirror.setBrokers(this.kafkaCluster.getBrokerList());
-        mirror.setProductive(false);
-        mirror.setStreamsConfig(
-                Map.of("default.value.serde", "org.apache.kafka.common.serialization.Serdes$StringSerde",
-                        "default.key.serde", "org.apache.kafka.common.serialization.Serdes$StringSerde",
-                        StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0"));
-        return mirror;
     }
 
 
