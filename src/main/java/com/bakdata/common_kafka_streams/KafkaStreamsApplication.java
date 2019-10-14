@@ -37,6 +37,8 @@ import java.util.Properties;
 import kafka.tools.StreamsResetter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -76,11 +78,15 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
 
-    @CommandLine.Option(names = "--reprocess", arity = "1",
-            description = "Reprocess all data by clearing the state store and the global Kafka offsets for the "
+    @CommandLine.Option(names = "--clean-up", arity = "1",
+            description = "Clear the state store and the global Kafka offsets for the "
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
-    private boolean forceReprocessing = false;
+    private boolean cleanUp = false;
+
+    @CommandLine.Option(names = "--delete-output", arity = "1",
+            description = "Delete the output topic during the clean up.")
+    private boolean deleteOutputTopic = false;
 
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
     private Map<String, String> streamsConfig = new HashMap<>();
@@ -132,18 +138,17 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
         }
         log.debug(this.toString());
+
         final var kafkaProperties = this.getKafkaProperties();
         this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
+        Optional.ofNullable(this.getUncaughtExceptionHandler())
+                .ifPresent(this.streams::setUncaughtExceptionHandler);
 
-        if (this.forceReprocessing) {
-            this.cleanUp();
+        if (this.cleanUp) {
+            this.runCleanUp();
+        } else {
+            this.runStreamsApplication();
         }
-
-        Optional.ofNullable(getUncaughtExceptionHandler())
-            .ifPresent(this.streams::setUncaughtExceptionHandler);
-        this.streams.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
     protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
@@ -228,16 +233,35 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         resetter.run(args);
     }
 
-    protected void cleanUp() {
+
+    protected void runStreamsApplication() {
+        this.streams.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+
+    /**
+     * This methods resets the offset for all input topics and deletes internal topics, application state, and
+     * optionally the output topic.
+     */
+    protected void runCleanUp() {
         this.inputTopics.stream()
                 .filter(topic -> !topic.isBlank())
                 .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
+        if (this.deleteOutputTopic && !this.outputTopic.isBlank()) {
+            this.deleteOutputTopic();
+        }
         this.streams.cleanUp();
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
+        }
+    }
+
+    private void deleteOutputTopic() {
+        try (final KafkaAdminClient adminClient = (KafkaAdminClient) AdminClient.create(this.getKafkaProperties())) {
+            adminClient.deleteTopics(List.of(this.outputTopic));
         }
     }
 

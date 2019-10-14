@@ -35,6 +35,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
@@ -54,15 +55,14 @@ public class WordCount extends KafkaStreamsApplication {
         final KTable<String, Long> wordCounts = textLines
                 .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
                 .groupBy((key, word) -> word)
-                .count();
+                .count(Materialized.as("counts"));
 
         wordCounts.toStream().to(this.outputTopic, Produced.with(stringSerde, longSerde));
     }
 
     @Override
     public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + String.join("-", this.getInputTopics()) +
-                "-" + this.getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
     }
 
     public Properties getKafkaProperties() {
