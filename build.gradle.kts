@@ -48,7 +48,7 @@ allprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.4.0")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.4.0")
         "testImplementation"(group = "org.assertj", name = "assertj-core", version = "3.11.1")
-        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.0.2-SNAPSHOT")
+        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.0.2")
         "testImplementation"(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = "2.2.0")
         "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.0.0") {
             exclude(group = "junit")
