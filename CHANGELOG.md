@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.7](https://github.com/bakdata/common-kafka-streams/tree/1.1.7) (2019-10-16)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.6...1.1.7)
+
+**Merged pull requests:**
+
+- Change reprocessing to clean up [\#26](https://github.com/bakdata/common-kafka-streams/pull/26) ([@torbsto](https://github.com/torbsto))
+
 ## [1.1.6](https://github.com/bakdata/common-kafka-streams/tree/1.1.6) (2019-10-11)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.5...1.1.6)
 
