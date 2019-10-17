@@ -38,6 +38,7 @@ import kafka.tools.StreamsResetter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
@@ -248,7 +249,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                 .filter(topic -> !topic.isBlank())
                 .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
         if (this.deleteOutputTopic && !this.outputTopic.isBlank()) {
-            this.deleteOutputTopic();
+            this.deleteTopic(this.outputTopic);
         }
         this.streams.cleanUp();
         try {
@@ -259,9 +260,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         }
     }
 
-    private void deleteOutputTopic() {
+    protected DeleteTopicsResult deleteTopic(final String topic) {
         try (final KafkaAdminClient adminClient = (KafkaAdminClient) AdminClient.create(this.getKafkaProperties())) {
-            adminClient.deleteTopics(List.of(this.outputTopic));
+            return adminClient.deleteTopics(List.of(topic));
         }
     }
 
