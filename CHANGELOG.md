@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.8](https://github.com/bakdata/common-kafka-streams/tree/1.1.8) (2019-10-17)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.7...1.1.8)
+
+**Merged pull requests:**
+
+- Expose delete topic method to subclasses [\#29](https://github.com/bakdata/common-kafka-streams/pull/29) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.7](https://github.com/bakdata/common-kafka-streams/tree/1.1.7) (2019-10-16)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.6...1.1.7)
 
