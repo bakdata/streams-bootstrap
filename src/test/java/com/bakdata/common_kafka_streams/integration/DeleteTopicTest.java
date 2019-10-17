@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
@@ -67,7 +66,7 @@ class DeleteTopicTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException, ExecutionException {
+    void shouldDeleteTopic() throws InterruptedException {
         this.kafkaCluster.createTopic(TopicConfig.forTopic(TOPIC).useDefaults());
         assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is created")
@@ -77,8 +76,9 @@ class DeleteTopicTest {
                 .inTransaction(TOPIC, List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        final DeleteTopicsResult deleteTopicsResult = this.app.deleteTopic(TOPIC);
-        deleteTopicsResult.all().get();
+        this.app.deleteTopic(TOPIC);
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is deleted")
                 .isFalse();
