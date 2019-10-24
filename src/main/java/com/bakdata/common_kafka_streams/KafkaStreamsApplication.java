@@ -242,14 +242,19 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
 
     /**
      * This methods resets the offset for all input topics and deletes internal topics, application state, and
-     * optionally the output topic.
+     * optionally the output and error topic.
      */
     protected void runCleanUp() {
         this.inputTopics.stream()
                 .filter(topic -> !topic.isBlank())
                 .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
-        if (this.deleteOutputTopic && !this.outputTopic.isBlank()) {
-            this.deleteTopic(this.outputTopic);
+        if (this.deleteOutputTopic) {
+            if (!this.outputTopic.isBlank()) {
+                this.deleteTopic(this.outputTopic);
+            }
+            if (!this.errorTopic.isBlank()) {
+                this.deleteTopic(this.errorTopic);
+            }
         }
         this.streams.cleanUp();
         try {
