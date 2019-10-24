@@ -75,6 +75,8 @@ public class CleanUpTest {
         this.app.setInputTopics(List.of(inputTopicName));
         final String outputTopicName = "word_output";
         this.app.setOutputTopic(outputTopicName);
+        final String errorTopicName = "word_error";
+        this.app.setErrorTopic(errorTopicName);
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
         this.app.setProductive(false);
         this.app.setStreamsConfig(
@@ -115,6 +117,10 @@ public class CleanUpTest {
 
         this.softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
                 .as("Output topic is deleted")
+                .isFalse();
+
+        this.softly.assertThat(this.kafkaCluster.exists(this.app.getErrorTopic()))
+                .as("Error topic is deleted")
                 .isFalse();
     }
 
