@@ -1,0 +1,79 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "streams-app-job.fullname" . }}
+  labels:
+    app: {{ template "streams-app-job.name" . }}
+    chart: {{ template "streams-app-job.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  ttlSecondsAfterFinished: 30
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+    {{- if or .Values.awsRole .Values.prometheus.jmx.enabled }}
+      annotations:
+      {{- if .Values.awsRole }}
+        iam.amazonaws.com/role: {{ .Values.awsRole }}
+      {{- end }}
+      {{- if .Values.prometheus.jmx.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
+      {{- end }}
+    {{- end }}
+      labels:
+        app: {{ template "streams-app-job.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ template "streams-app-job.name" . }}-container
+          image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          env:
+            - name: ENV_PREFIX
+              value: {{ .Values.configurationEnvPrefix }}
+          {{- range $key, $value := .Values.env }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- if .Values.prometheus.jmx.enabled }}
+            - name: KAFKA_JMX_PORT
+              value: "{{ .Values.jmx.port }}"
+          {{- end }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+        {{- if .Values.prometheus.jmx.enabled }}
+          ports:
+            - containerPort: {{ .Values.jmx.port }}
+              name: jmx
+        {{- end }}
+      {{- if .Values.prometheus.jmx.enabled }}
+        - name: prometheus-jmx-exporter
+          image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
+          command:
+            - java
+            - -XX:+UnlockExperimentalVMOptions
+            - -XX:+UseCGroupMemoryLimitForHeap
+            - -XX:MaxRAMFraction=1
+            - -XshowSettings:vm
+            - -jar
+            - jmx_prometheus_httpserver.jar
+            - {{ .Values.prometheus.jmx.port | quote }}
+            - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
+          ports:
+            - containerPort: {{ .Values.prometheus.jmx.port }}
+          resources:
+{{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
+          volumeMounts:
+            - name: jmx-config
+              mountPath: /etc/jmx-streams-app
+      {{- end }}
+    {{- if .Values.prometheus.jmx.enabled }}
+      volumes:
+        - name: jmx-config
+          configMap:
+            name: {{ template "streams-app-job.name" . }}-jmx-configmap
+    {{- end }}
