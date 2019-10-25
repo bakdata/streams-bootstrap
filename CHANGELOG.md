@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.9](https://github.com/bakdata/common-kafka-streams/tree/1.1.9) (2019-10-25)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.8...1.1.9)
+
+**Merged pull requests:**
+
+- Delete error topic if requested [\#30](https://github.com/bakdata/common-kafka-streams/pull/30) ([@SvenLehmann](https://github.com/SvenLehmann))
+
 ## [1.1.8](https://github.com/bakdata/common-kafka-streams/tree/1.1.8) (2019-10-17)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.7...1.1.8)
 
