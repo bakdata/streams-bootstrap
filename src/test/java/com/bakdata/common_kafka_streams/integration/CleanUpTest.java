@@ -175,13 +175,10 @@ public class CleanUpTest {
     @Test
     void shouldDeleteValueSchema() throws InterruptedException, IOException, RestClientException {
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-
         this.app.setStreamsConfig(Map.of(
                 StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName()
         ));
-
         final TestRecord testRecord = TestRecord.newBuilder().setContent("val 1").build();
-
         final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(testRecord))
                 .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
@@ -198,13 +195,10 @@ public class CleanUpTest {
     @Test
     void shouldDeleteKeySchema() throws InterruptedException, IOException, RestClientException {
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-
         this.app.setStreamsConfig(Map.of(
                 StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName()
         ));
-
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-
         final SendKeyValuesTransactional<TestRecord, String> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>(testRecord, "val")))
                 .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
@@ -257,6 +251,4 @@ public class CleanUpTest {
         final List<KeyValue<String, Long>> records = this.readOutputTopic(this.app.getOutputTopic());
         this.softly.assertThat(records).hasSize(expectedMessageCount);
     }
-
-
 }

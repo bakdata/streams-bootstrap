@@ -284,11 +284,12 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
 
     private void resetSchemaRegistry() throws IOException, RestClientException {
         final SchemaRegistryClient client = new CachedSchemaRegistryClient(this.schemaRegistryUrl, 100);
-        for (final String subject : this.inputTopics) {
-            client.deleteSubject(subject + "-key");
-            client.deleteSubject(subject + "-value");
+        for (final String type : List.of("-key", "-value")) {
+            for (final String subject : this.inputTopics) {
+                client.deleteSubject(subject + type);
+            }
+            client.deleteSubject(this.outputTopic + type);
         }
-        client.deleteSubject(this.outputTopic);
     }
 
     public String getInputTopic() {
