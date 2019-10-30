@@ -28,10 +28,17 @@ package com.bakdata.common_kafka_streams.integration;
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 
+import com.bakdata.common.kafka.streams.TestRecord;
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
 import com.bakdata.common_kafka_streams.test_applications.WordCount;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -41,9 +48,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
+import net.mguenther.kafka.junit.SendKeyValuesTransactional;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.JUnitJupiterSoftAssertions;
@@ -98,7 +107,6 @@ public class CleanUpTest {
 
     @Test
     void shouldDeleteTopic() throws InterruptedException {
-
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopics().get(0), List.of("blub", "bla", "blub"))
                 .useDefaults();
@@ -162,6 +170,52 @@ public class CleanUpTest {
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUp();
         this.runAndAssertSize(6);
+    }
+
+    @Test
+    void shouldDeleteValueSchema() throws InterruptedException, IOException, RestClientException {
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+
+        this.app.setStreamsConfig(Map.of(
+                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName()
+        ));
+
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("val 1").build();
+
+        final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(testRecord))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.app.run();
+        this.softly.assertThat(client.getAllSubjects()).hasSize(1);
+        this.runCleanUp();
+        this.softly.assertThat(client.getAllSubjects()).isEmpty();
+    }
+
+    @Test
+    void shouldDeleteKeySchema() throws InterruptedException, IOException, RestClientException {
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+
+        this.app.setStreamsConfig(Map.of(
+                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName()
+        ));
+
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+
+        final SendKeyValuesTransactional<TestRecord, String> sendRequest = SendKeyValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>(testRecord, "val")))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.app.run();
+        this.softly.assertThat(client.getAllSubjects()).hasSize(1);
+        this.runCleanUp();
+        this.softly.assertThat(client.getAllSubjects()).isEmpty();
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {

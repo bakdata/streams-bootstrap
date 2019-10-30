@@ -24,8 +24,12 @@
 
 package com.bakdata.common_kafka_streams;
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -257,6 +261,13 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             }
         }
         this.streams.cleanUp();
+
+        try {
+            this.resetSchemaRegistry();
+        } catch (final IOException | RestClientException e) {
+            log.error("Could not reset schema registry", e);
+        }
+
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
@@ -269,6 +280,15 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         try (final KafkaAdminClient adminClient = (KafkaAdminClient) AdminClient.create(this.getKafkaProperties())) {
             return adminClient.deleteTopics(List.of(topic));
         }
+    }
+
+    private void resetSchemaRegistry() throws IOException, RestClientException {
+        final SchemaRegistryClient client = new CachedSchemaRegistryClient(this.schemaRegistryUrl, 100);
+        for (final String subject : this.inputTopics) {
+            client.deleteSubject(subject + "-key");
+            client.deleteSubject(subject + "-value");
+        }
+        client.deleteSubject(this.outputTopic);
     }
 
     public String getInputTopic() {

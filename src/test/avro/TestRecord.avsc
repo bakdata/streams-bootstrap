@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "namespace": "com.bakdata.common.kafka.streams",
+  "name": "TestRecord",
+  "fields": [
+    {
+      "name": "content",
+      "type": "string"
+    }
+  ]
+}
