@@ -252,21 +252,17 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         this.inputTopics.stream()
                 .filter(topic -> !topic.isBlank())
                 .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
+
         if (this.deleteOutputTopic) {
             if (!this.outputTopic.isBlank()) {
                 this.deleteTopic(this.outputTopic);
+                this.resetSchemaRegistry();
             }
             if (!this.errorTopic.isBlank()) {
                 this.deleteTopic(this.errorTopic);
             }
         }
         this.streams.cleanUp();
-
-        try {
-            this.resetSchemaRegistry();
-        } catch (final IOException | RestClientException e) {
-            log.error("Could not reset schema registry", e);
-        }
 
         try {
             Thread.sleep(RESET_SLEEP_MS);
@@ -282,13 +278,13 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         }
     }
 
-    private void resetSchemaRegistry() throws IOException, RestClientException {
+    private void resetSchemaRegistry() {
         final SchemaRegistryClient client = new CachedSchemaRegistryClient(this.schemaRegistryUrl, 100);
-        for (final String type : List.of("-key", "-value")) {
-            for (final String subject : this.inputTopics) {
-                client.deleteSubject(subject + type);
-            }
-            client.deleteSubject(this.outputTopic + type);
+        try {
+            client.deleteSubject(this.outputTopic + "-key");
+            client.deleteSubject(this.outputTopic + "-value");
+        } catch (final IOException | RestClientException e) {
+            log.error("Could not rest schema registry", e);
         }
     }
 
