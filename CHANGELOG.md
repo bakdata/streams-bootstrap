@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.10](https://github.com/bakdata/common-kafka-streams/tree/1.1.10) (2019-10-31)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.9...1.1.10)
+
+**Merged pull requests:**
+
+-  Delete schemas during clean up  [\#32](https://github.com/bakdata/common-kafka-streams/pull/32) ([@torbsto](https://github.com/torbsto))
+- Add a helm chart for running Streams App as a job [\#31](https://github.com/bakdata/common-kafka-streams/pull/31) ([@SvenLehmann](https://github.com/SvenLehmann))
+
 ## [1.1.9](https://github.com/bakdata/common-kafka-streams/tree/1.1.9) (2019-10-25)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.8...1.1.9)
 
