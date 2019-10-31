@@ -24,8 +24,12 @@
 
 package com.bakdata.common_kafka_streams;
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -248,6 +252,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         this.inputTopics.stream()
                 .filter(topic -> !topic.isBlank())
                 .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
+
         if (this.deleteOutputTopic) {
             if (!this.outputTopic.isBlank()) {
                 this.deleteTopic(this.outputTopic);
@@ -266,8 +271,19 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     }
 
     protected DeleteTopicsResult deleteTopic(final String topic) {
+        this.resetSchemaRegistry(topic);
         try (final KafkaAdminClient adminClient = (KafkaAdminClient) AdminClient.create(this.getKafkaProperties())) {
             return adminClient.deleteTopics(List.of(topic));
+        }
+    }
+
+    private void resetSchemaRegistry(final String topic) {
+        final SchemaRegistryClient client = new CachedSchemaRegistryClient(this.schemaRegistryUrl, 100);
+        try {
+            client.deleteSubject(topic + "-key");
+            client.deleteSubject(topic + "-value");
+        } catch (final IOException | RestClientException e) {
+            log.error("Could not rest schema registry", e);
         }
     }
 
