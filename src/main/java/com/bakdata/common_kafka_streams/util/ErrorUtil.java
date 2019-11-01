@@ -50,7 +50,7 @@ public class ErrorUtil {
         return Objects.toString(o1);
     }
 
-    static boolean shouldForwardError(final Exception e) {
+    public static boolean shouldForwardError(final Exception e) {
         return isSchemaRegistryTimeout(e);
     }
 

@@ -14,9 +14,30 @@ public class ErrorCapturingTransformer<K, V, KR, VR>
         implements Transformer<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> {
     private final @NonNull Transformer<? super K, ? super V, ? extends KeyValue<KR, VR>> wrapped;
 
+    /**
+     * Wrap a {@code Transformer} and capture thrown exceptions.
+     * <pre>{@code
+     * final Transformer<K, V, KeyValue<KR, VR>> transformer = ...;
+     * final KStream<K, V> input = ...;
+     * final KStream<KR, ProcessedKeyValue<K, V, VR>> processed = input.transform(() -> captureErrors(transformer));
+     * final KStream<KR, VR> output = processed.flatMapValues(ProcessedKeyValue::getValues);
+     * final KStream<K, ProcessingError<V>> errors = input.flatMap(ProcessedKeyValue::getErrors);
+     * }
+     * </pre>
+     *
+     * Recoverable Kafka exceptions such as a schema registry timeout are forwarded and not captured. See {@link
+     * ErrorUtil#shouldForwardError(Exception)}
+     *
+     * @param transformer {@code Transformer} whose exceptions should be captured
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <KR> type of output keys
+     * @param <VR> type of output values
+     * @return {@code Transformer}
+     */
     public static <K, V, KR, VR> Transformer<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> captureErrors(
-            final Transformer<? super K, ? super V, ? extends KeyValue<KR, VR>> mapper) {
-        return new ErrorCapturingTransformer<>(mapper);
+            final Transformer<? super K, ? super V, ? extends KeyValue<KR, VR>> transformer) {
+        return new ErrorCapturingTransformer<>(transformer);
     }
 
     @Override

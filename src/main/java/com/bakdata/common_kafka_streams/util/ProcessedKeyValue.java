@@ -18,11 +18,12 @@ public interface ProcessedKeyValue<K, V, VR> {
      * used as a lambda method reference and simply delegates to {@link #getErrors()}. The new key is not relevant and
      * thus omitted.</p>
      *
-     * Usage example:<br>
-     * <code>
-     * final KStream<KR, ProcessedKeyValue<K, V, VR>> input = ...;<br> final KStream<K, ProcessingError<V, VR>> errors =
-     * input.flatMap(ProcessedKeyValue::getErrors);
-     * </code>
+     * Usage example:
+     * <pre>{@code
+     * final KStream<KR, ProcessedKeyValue<K, V, VR>> input = ...;
+     * final KStream<K, ProcessingError<V>> errors = input.flatMap(ProcessedKeyValue::getErrors);
+     * }
+     * </pre>
      *
      * @param newKey the new key of a processed key-value pair. As this method extracts errors, the new key is not
      * relevant and omitted. It is only used as a parameter to use a method reference lambda when creating a streams

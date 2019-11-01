@@ -11,7 +11,21 @@ public final class ErrorDescribingValueTransformer<V, VR> extends DecoratorValue
         super(wrapped);
     }
 
-    public static <V, R> DecoratorValueTransformer<V, R> describeErrors(final ValueTransformer<V, R> transformer) {
+    /**
+     * Wrap a {@code ValueTransformer} and describe thrown exceptions with input key and value.
+     * <pre>{@code
+     * final ValueTransformer<V, VR> transformer = ...;
+     * final KStream<K, V> input = ...;
+     * final KStream<K, VR> output = input.transformValues(() -> describeErrors(transformer));
+     * }
+     * </pre>
+     *
+     * @param transformer {@code ValueTransformer} whose exceptions should be described
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueTransformer}
+     */
+    public static <V, VR> DecoratorValueTransformer<V, VR> describeErrors(final ValueTransformer<V, VR> transformer) {
         return new ErrorDescribingValueTransformer<>(transformer);
     }
 

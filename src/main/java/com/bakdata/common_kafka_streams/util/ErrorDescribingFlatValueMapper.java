@@ -8,7 +8,21 @@ import org.apache.kafka.streams.kstream.ValueMapper;
 public class ErrorDescribingFlatValueMapper<V, VR> implements ValueMapper<V, Iterable<VR>> {
     private final @NonNull ValueMapper<? super V, ? extends Iterable<VR>> wrapped;
 
-    public static <T, R> ValueMapper<T, Iterable<R>> describeErrors(final ValueMapper<? super T, ? extends Iterable<R>> mapper) {
+    /**
+     * Wrap a {@code ValueMapper} and describe thrown exceptions with input key and value.
+     * <pre>{@code
+     * final ValueMapper<V, Iterable<VR>> mapper = ...;
+     * final KStream<K, V> input = ...;
+     * final KStream<KR, VR> output = input.flatMapValues(describeErrors(mapper));
+     * }
+     * </pre>
+     *
+     * @param mapper {@code ValueMapper} whose exceptions should be described
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueMapper}
+     */
+    public static <V, VR> ValueMapper<V, Iterable<VR>> describeErrors(final ValueMapper<? super V, ? extends Iterable<VR>> mapper) {
         return new ErrorDescribingFlatValueMapper<>(mapper);
     }
 

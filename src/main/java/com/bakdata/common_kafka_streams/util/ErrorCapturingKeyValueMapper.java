@@ -12,6 +12,27 @@ public class ErrorCapturingKeyValueMapper<K, V, KR, VR>
         implements KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> {
     private final @NonNull KeyValueMapper<? super K, ? super V, ? extends KeyValue<KR, VR>> wrapped;
 
+    /**
+     * Wrap a {@code KeyValueMapper} and capture thrown exceptions.
+     * <pre>{@code
+     * final KeyValueMapper<K, V, KeyValue<KR, VR>> mapper = ...;
+     * final KStream<K, V> input = ...;
+     * final KStream<KR, ProcessedKeyValue<K, V, VR>> processed = input.map(captureErrors(mapper));
+     * final KStream<KR, VR> output = processed.flatMapValues(ProcessedKeyValue::getValues);
+     * final KStream<K, ProcessingError<V>> errors = input.flatMap(ProcessedKeyValue::getErrors);
+     * }
+     * </pre>
+     *
+     * Recoverable Kafka exceptions such as a schema registry timeout are forwarded and not captured. See {@link
+     * ErrorUtil#shouldForwardError(Exception)}
+     *
+     * @param mapper {@code KeyValueMapper} whose exceptions should be captured
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <KR> type of output keys
+     * @param <VR> type of output values
+     * @return {@code KeyValueMapper}
+     */
     public static <K, V, KR, VR> KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> captureErrors(
             final KeyValueMapper<? super K, ? super V, ? extends KeyValue<KR, VR>> mapper) {
         return new ErrorCapturingKeyValueMapper<>(mapper);
