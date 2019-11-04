@@ -4,7 +4,14 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 
-@Slf4j
+/**
+ * Wrap a {@code ValueTransformerWithKey} and describe thrown exceptions with input key and value.
+ *
+ * @param <K> type of input keys
+ * @param <V> type of input values
+ * @param <VR> type of output values
+ * @see #describeErrors(ValueTransformerWithKey)
+ */
 public final class ErrorDescribingValueTransformerWithKey<K, V, VR> extends DecoratorValueTransformerWithKey<K, V, VR> {
 
     private ErrorDescribingValueTransformerWithKey(final @NonNull ValueTransformerWithKey<K, V, VR> wrapped) {
@@ -14,9 +21,9 @@ public final class ErrorDescribingValueTransformerWithKey<K, V, VR> extends Deco
     /**
      * Wrap a {@code ValueTransformerWithKey} and describe thrown exceptions with input key and value.
      * <pre>{@code
-     * final ValueTransformerWithKey<K, V, VR> transformer = ...;
+     * final ValueTransformerWithKeySupplier<K, V, VR> transformer = ...;
      * final KStream<K, V> input = ...;
-     * final KStream<K, VR> output = input.transformValues(() -> describeErrors(transformer));
+     * final KStream<K, VR> output = input.transformValues(() -> describeErrors(transformer.get()));
      * }
      * </pre>
      *

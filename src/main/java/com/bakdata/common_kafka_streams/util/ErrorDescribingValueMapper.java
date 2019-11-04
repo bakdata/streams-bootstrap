@@ -5,7 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueMapper;
 
-@Slf4j
+/**
+ * Wrap a {@code ValueMapper} and describe thrown exceptions with input key and value.
+ *
+ * @param <V> type of input values
+ * @param <VR> type of output values
+ * @see #describeErrors(ValueMapper)
+ */
 @RequiredArgsConstructor
 public class ErrorDescribingValueMapper<V, VR> implements ValueMapper<V, VR> {
     private final @NonNull ValueMapper<? super V, ? extends VR> wrapped;

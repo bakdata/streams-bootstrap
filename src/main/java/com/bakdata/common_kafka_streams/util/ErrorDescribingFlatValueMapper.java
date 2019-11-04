@@ -4,6 +4,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.kstream.ValueMapper;
 
+/**
+ * Wrap a {@code ValueMapper} and describe thrown exceptions with input key and value.
+ *
+ * @param <V> type of input values
+ * @param <VR> type of output values
+ * @see #describeErrors(ValueMapper)
+ */
 @RequiredArgsConstructor
 public class ErrorDescribingFlatValueMapper<V, VR> implements ValueMapper<V, Iterable<VR>> {
     private final @NonNull ValueMapper<? super V, ? extends Iterable<VR>> wrapped;
@@ -22,7 +29,8 @@ public class ErrorDescribingFlatValueMapper<V, VR> implements ValueMapper<V, Ite
      * @param <VR> type of output values
      * @return {@code ValueMapper}
      */
-    public static <V, VR> ValueMapper<V, Iterable<VR>> describeErrors(final ValueMapper<? super V, ? extends Iterable<VR>> mapper) {
+    public static <V, VR> ValueMapper<V, Iterable<VR>> describeErrors(
+            final ValueMapper<? super V, ? extends Iterable<VR>> mapper) {
         return new ErrorDescribingFlatValueMapper<>(mapper);
     }
 

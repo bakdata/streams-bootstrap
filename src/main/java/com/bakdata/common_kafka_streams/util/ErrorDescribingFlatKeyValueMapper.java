@@ -5,7 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 
-@Slf4j
+/**
+ * Wrap a {@code KeyValueMapper} and describe thrown exceptions with input key and value.
+ *
+ * @param <K> type of input keys
+ * @param <V> type of input values
+ * @param <R> type of map result
+ * @see #describeErrors(KeyValueMapper)
+ */
 @RequiredArgsConstructor
 public class ErrorDescribingFlatKeyValueMapper<K, V, R> implements KeyValueMapper<K, V, Iterable<R>> {
     private final @NonNull KeyValueMapper<? super K, ? super V, ? extends Iterable<R>> wrapped;

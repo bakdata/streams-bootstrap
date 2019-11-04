@@ -4,19 +4,26 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.Transformer;
 
-@Slf4j
-public final class ErrorDescribingTransformer<K, V, VR> extends DecoratorTransformer<K, V, VR> {
+/**
+ * Wrap a {@code Transformer} and describe thrown exceptions with input key and value.
+ *
+ * @param <K> type of input keys
+ * @param <V> type of input values
+ * @param <R> type of transformation result
+ * @see #describeErrors(Transformer)
+ */
+public final class ErrorDescribingTransformer<K, V, R> extends DecoratorTransformer<K, V, R> {
 
-    private ErrorDescribingTransformer(final @NonNull Transformer<K, V, VR> wrapped) {
+    private ErrorDescribingTransformer(final @NonNull Transformer<K, V, R> wrapped) {
         super(wrapped);
     }
 
     /**
      * Wrap a {@code Transformer} and describe thrown exceptions with input key and value.
      * <pre>{@code
-     * final Transformer<K, V, KeyValue<KR, VR>> transformer = ...;
+     * final TransformerSupplier<K, V, KeyValue<KR, VR>> transformer = ...;
      * final KStream<K, V> input = ...;
-     * final KStream<KR, VR> output = input.transform(() -> describeErrors(transformer));
+     * final KStream<KR, VR> output = input.transform(() -> describeErrors(transformer.get()));
      * }
      * </pre>
      *
@@ -31,7 +38,7 @@ public final class ErrorDescribingTransformer<K, V, VR> extends DecoratorTransfo
     }
 
     @Override
-    public VR transform(final K key, final V value) {
+    public R transform(final K key, final V value) {
         try {
             return super.transform(key, value);
         } catch (final Exception e) {

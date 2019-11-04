@@ -1,17 +1,40 @@
 package com.bakdata.common_kafka_streams.util;
 
 import java.util.List;
+import java.util.function.Predicate;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.jooq.lambda.Seq;
 
-@Slf4j
-@RequiredArgsConstructor
-public class ErrorCapturingFlatValueMapperWithKey<K, V, VR>
+/**
+ * Wrap a {@code ValueMapperWithKey} and capture thrown exceptions.
+ *
+ * @param <K> type of input keys
+ * @param <V> type of input values
+ * @param <VR> type of output values
+ * @see #captureErrors(ValueMapperWithKey)
+ * @see #captureErrors(ValueMapperWithKey, Predicate)
+ */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ErrorCapturingFlatValueMapperWithKey<K, V, VR>
         implements ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> {
     private final @NonNull ValueMapperWithKey<? super K, ? super V, ? extends Iterable<VR>> wrapped;
+    private final @NonNull Predicate<Exception> errorFilter;
+
+    /**
+     * Wrap a {@code ValueMapperWithKey} and capture thrown exceptions. Recoverable Kafka exceptions such as a schema
+     * registry timeout are forwarded and not captured.
+     *
+     * @see #captureErrors(ValueMapperWithKey, Predicate)
+     * @see ErrorUtil#shouldForwardError(Exception)
+     */
+    public static <K, V, VR> ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> captureErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<VR>> mapper) {
+        return captureErrors(mapper, ErrorUtil::shouldForwardError);
+    }
 
     /**
      * Wrap a {@code ValueMapperWithKey} and capture thrown exceptions.
@@ -24,18 +47,17 @@ public class ErrorCapturingFlatValueMapperWithKey<K, V, VR>
      * }
      * </pre>
      *
-     * Recoverable Kafka exceptions such as a schema registry timeout are forwarded and not captured. See {@link
-     * ErrorUtil#shouldForwardError(Exception)}
-     *
      * @param mapper {@code ValueMapperWithKey} whose exceptions should be captured
+     * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param <K> type of input keys
      * @param <V> type of input values
      * @param <VR> type of output values
      * @return {@code ValueMapperWithKey}
      */
     public static <K, V, VR> ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> captureErrors(
-            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<VR>> mapper) {
-        return new ErrorCapturingFlatValueMapperWithKey<>(mapper);
+            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<VR>> mapper,
+            final Predicate<Exception> errorFilter) {
+        return new ErrorCapturingFlatValueMapperWithKey<>(mapper, errorFilter);
     }
 
     @Override
@@ -44,7 +66,7 @@ public class ErrorCapturingFlatValueMapperWithKey<K, V, VR>
             final Iterable<VR> newValues = this.wrapped.apply(key, value);
             return Seq.seq(newValues).map(SuccessValue::of);
         } catch (final Exception e) {
-            if (ErrorUtil.shouldForwardError(e)) {
+            if (this.errorFilter.test(e)) {
                 throw e;
             }
             return List.of(ErrorValue.of(value, e));

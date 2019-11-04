@@ -1,16 +1,40 @@
 package com.bakdata.common_kafka_streams.util;
 
+import java.util.function.Predicate;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 
-@Slf4j
-@RequiredArgsConstructor
-public class ErrorCapturingKeyValueMapper<K, V, KR, VR>
+/**
+ * Wrap a {@code KeyValueMapper} and capture thrown exceptions.
+ *
+ * @param <K> type of input keys
+ * @param <V> type of input values
+ * @param <KR> type of output keys
+ * @param <VR> type of output values
+ * @see #captureErrors(KeyValueMapper)
+ * @see #captureErrors(KeyValueMapper, Predicate)
+ */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ErrorCapturingKeyValueMapper<K, V, KR, VR>
         implements KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> {
     private final @NonNull KeyValueMapper<? super K, ? super V, ? extends KeyValue<KR, VR>> wrapped;
+    private final @NonNull Predicate<Exception> errorFilter;
+
+    /**
+     * Wrap a {@code KeyValueMapper} and capture thrown exceptions. Recoverable Kafka exceptions such as a schema
+     * registry timeout are forwarded and not captured.
+     *
+     * @see #captureErrors
+     * @see ErrorUtil#shouldForwardError(Exception)
+     */
+    public static <K, V, KR, VR> KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> captureErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<KR, VR>> mapper) {
+        return captureErrors(mapper, ErrorUtil::shouldForwardError);
+    }
 
     /**
      * Wrap a {@code KeyValueMapper} and capture thrown exceptions.
@@ -23,10 +47,8 @@ public class ErrorCapturingKeyValueMapper<K, V, KR, VR>
      * }
      * </pre>
      *
-     * Recoverable Kafka exceptions such as a schema registry timeout are forwarded and not captured. See {@link
-     * ErrorUtil#shouldForwardError(Exception)}
-     *
      * @param mapper {@code KeyValueMapper} whose exceptions should be captured
+     * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param <K> type of input keys
      * @param <V> type of input values
      * @param <KR> type of output keys
@@ -34,8 +56,9 @@ public class ErrorCapturingKeyValueMapper<K, V, KR, VR>
      * @return {@code KeyValueMapper}
      */
     public static <K, V, KR, VR> KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> captureErrors(
-            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<KR, VR>> mapper) {
-        return new ErrorCapturingKeyValueMapper<>(mapper);
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<KR, VR>> mapper,
+            final Predicate<Exception> errorFilter) {
+        return new ErrorCapturingKeyValueMapper<>(mapper, errorFilter);
     }
 
     @Override
@@ -45,7 +68,7 @@ public class ErrorCapturingKeyValueMapper<K, V, KR, VR>
             final ProcessedKeyValue<K, V, VR> recordWithOldKey = SuccessKeyValue.of(newKeyValue.value);
             return KeyValue.pair(newKeyValue.key, recordWithOldKey);
         } catch (final Exception e) {
-            if (ErrorUtil.shouldForwardError(e)) {
+            if (this.errorFilter.test(e)) {
                 throw e;
             }
             final ProcessedKeyValue<K, V, VR> errorWithOldKey = ErrorKeyValue.of(key, value, e);
