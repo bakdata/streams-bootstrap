@@ -24,14 +24,17 @@
 
 package com.bakdata.common_kafka_streams.util;
 
+/**
+ * {@link Exception} thrown by error descriptors. The message contains information about input key and value.
+ */
 public class ProcessingException extends RuntimeException {
     private static final long serialVersionUID = 6328000609687736610L;
 
-    public ProcessingException(final Object value, final Throwable cause) {
+    ProcessingException(final Object value, final Throwable cause) {
         super("Cannot process " + ErrorUtil.toString(value), cause);
     }
 
-    public ProcessingException(final Object key, final Object value, final Throwable cause) {
+    ProcessingException(final Object key, final Object value, final Throwable cause) {
         super("Cannot process ('" + ErrorUtil.toString(key) + "', '" + ErrorUtil.toString(value) + "')", cause);
     }
 }
