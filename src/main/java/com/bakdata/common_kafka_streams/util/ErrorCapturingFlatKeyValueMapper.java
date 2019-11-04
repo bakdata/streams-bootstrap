@@ -29,7 +29,6 @@ import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.jooq.lambda.Seq;
@@ -54,12 +53,18 @@ public final class ErrorCapturingFlatKeyValueMapper<K, V, KR, VR>
      * Wrap a {@code KeyValueMapper} and capture thrown exceptions. Recoverable Kafka exceptions such as a schema
      * registry timeout are forwarded and not captured.
      *
+     * @param mapper {@code KeyValueMapper} whose exceptions should be captured
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <KR> type of output keys
+     * @param <VR> type of output values
+     * @return {@code KeyValueMapper}
      * @see #captureErrors(KeyValueMapper, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <K, V, KR, VR> KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>>
     captureErrors(final KeyValueMapper<? super K, ? super V, ? extends Iterable<KeyValue<KR, VR>>> mapper) {
-        return captureErrors(mapper, ErrorUtil::shouldForwardError);
+        return captureErrors(mapper, ErrorUtil::isRecoverable);
     }
 
     /**

@@ -65,8 +65,7 @@ public class ErrorDescribingValueMapperWithKey<K, V, VR> implements ValueMapperW
         try {
             return this.wrapped.apply(key, value);
         } catch (final Exception e) {
-            throw new RuntimeException(
-                    "Cannot process ('" + ErrorUtil.toString(key) + "', '" + ErrorUtil.toString(value) + "')", e);
+            throw new ProcessingException(key, value, e);
         }
     }
 }

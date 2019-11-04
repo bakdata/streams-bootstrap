@@ -50,12 +50,16 @@ public final class ErrorCapturingValueTransformer<V, VR> implements ValueTransfo
      * Wrap a {@code ValueTransformer} and capture thrown exceptions. Recoverable Kafka exceptions such as a schema
      * registry timeout are forwarded and not captured.
      *
+     * @param transformer {@code ValueTransformer} whose exceptions should be captured
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueTransformer}
      * @see #captureErrors(ValueTransformer, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <V, VR> ValueTransformer<V, ProcessedValue<V, VR>> captureErrors(
             final ValueTransformer<? super V, ? extends VR> transformer) {
-        return captureErrors(transformer, ErrorUtil::shouldForwardError);
+        return captureErrors(transformer, ErrorUtil::isRecoverable);
     }
 
     /**

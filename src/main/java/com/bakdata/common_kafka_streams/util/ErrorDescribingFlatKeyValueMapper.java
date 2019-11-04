@@ -26,7 +26,6 @@ package com.bakdata.common_kafka_streams.util;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 
 /**
@@ -66,8 +65,7 @@ public class ErrorDescribingFlatKeyValueMapper<K, V, R> implements KeyValueMappe
         try {
             return this.wrapped.apply(key, value);
         } catch (final Exception e) {
-            throw new RuntimeException(
-                    "Cannot process ('" + ErrorUtil.toString(key) + "', '" + ErrorUtil.toString(value) + "')", e);
+            throw new ProcessingException(key, value, e);
         }
     }
 }

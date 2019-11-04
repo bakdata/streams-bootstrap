@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
-import org.apache.kafka.streams.processor.To;
 
 /**
  * Wrap a {@code Transformer} and log thrown exceptions with input key and value.
@@ -52,12 +51,17 @@ public final class ErrorLoggingTransformer<K, V, R> implements Transformer<K, V,
      * Wrap a {@code Transformer} and log thrown exceptions with input key and value. Recoverable Kafka exceptions such
      * as a schema registry timeout are forwarded and not captured.
      *
+     * @param transformer {@code Transformer} whose exceptions should be logged
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <R> type of transformation result
+     * @return {@code Transformer}
      * @see #logErrors(Transformer, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <K, V, R> Transformer<K, V, R> logErrors(
             final Transformer<? super K, ? super V, ? extends R> transformer) {
-        return logErrors(transformer, ErrorUtil::shouldForwardError);
+        return logErrors(transformer, ErrorUtil::isRecoverable);
     }
 
     /**

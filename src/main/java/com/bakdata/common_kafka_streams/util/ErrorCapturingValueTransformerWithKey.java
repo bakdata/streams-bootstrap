@@ -28,7 +28,6 @@ import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
@@ -51,12 +50,17 @@ public final class ErrorCapturingValueTransformerWithKey<K, V, VR>
      * Wrap a {@code ValueTransformerWithKey} and capture thrown exceptions. Recoverable Kafka exceptions such as a
      * schema registry timeout are forwarded and not captured.
      *
+     * @param transformer {@code ValueTransformerWithKey} whose exceptions should be captured
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueTransformerWithKey}
      * @see #captureErrors(ValueTransformerWithKey, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <K, V, VR> ValueTransformerWithKey<K, V, ProcessedValue<V, VR>> captureErrors(
             final ValueTransformerWithKey<? super K, ? super V, ? extends VR> transformer) {
-        return captureErrors(transformer, ErrorUtil::shouldForwardError);
+        return captureErrors(transformer, ErrorUtil::isRecoverable);
     }
 
     /**

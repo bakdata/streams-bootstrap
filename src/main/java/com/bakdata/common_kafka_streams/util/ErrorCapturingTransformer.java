@@ -53,12 +53,18 @@ public final class ErrorCapturingTransformer<K, V, KR, VR>
      * Wrap a {@code Transformer} and capture thrown exceptions. Recoverable Kafka exceptions such as a schema registry
      * timeout are forwarded and not captured.
      *
+     * @param transformer {@code Transformer} whose exceptions should be captured
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <KR> type of output keys
+     * @param <VR> type of output values
+     * @return {@code Transformer}
      * @see #captureErrors(Transformer, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <K, V, KR, VR> Transformer<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> captureErrors(
             final Transformer<? super K, ? super V, ? extends KeyValue<KR, VR>> transformer) {
-        return captureErrors(transformer, ErrorUtil::shouldForwardError);
+        return captureErrors(transformer, ErrorUtil::isRecoverable);
     }
 
     /**

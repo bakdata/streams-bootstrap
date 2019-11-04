@@ -64,7 +64,7 @@ public final class ErrorDescribingValueTransformer<V, VR> extends DecoratorValue
         try {
             return super.transform(value);
         } catch (final Exception e) {
-            throw new RuntimeException("Cannot process " + ErrorUtil.toString(value), e);
+            throw new ProcessingException(value, e);
         }
     }
 

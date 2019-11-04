@@ -66,8 +66,7 @@ public final class ErrorDescribingTransformer<K, V, R> extends DecoratorTransfor
         try {
             return super.transform(key, value);
         } catch (final Exception e) {
-            throw new RuntimeException(
-                    "Cannot process ('" + ErrorUtil.toString(key) + "', '" + ErrorUtil.toString(value) + "')", e);
+            throw new ProcessingException(key, value, e);
         }
     }
 

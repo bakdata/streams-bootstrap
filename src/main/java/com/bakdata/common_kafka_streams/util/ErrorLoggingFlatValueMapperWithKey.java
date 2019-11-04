@@ -52,12 +52,17 @@ public final class ErrorLoggingFlatValueMapperWithKey<K, V, VR> implements Value
      * Wrap a {@code ValueMapperWithKey} and log thrown exceptions with input key and value. Recoverable Kafka
      * exceptions such as a schema registry timeout are forwarded and not captured.
      *
+     * @param mapper {@code ValueMapperWithKey} whose exceptions should be logged
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueMapperWithKey}
      * @see #logErrors(ValueMapperWithKey, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <K, V, VR> ValueMapperWithKey<K, V, Iterable<VR>> logErrors(
             final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<VR>> mapper) {
-        return logErrors(mapper, ErrorUtil::shouldForwardError);
+        return logErrors(mapper, ErrorUtil::isRecoverable);
     }
 
     /**

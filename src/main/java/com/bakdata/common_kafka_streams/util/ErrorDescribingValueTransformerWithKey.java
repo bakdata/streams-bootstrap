@@ -25,7 +25,6 @@
 package com.bakdata.common_kafka_streams.util;
 
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 
 /**
@@ -67,8 +66,7 @@ public final class ErrorDescribingValueTransformerWithKey<K, V, VR> extends Deco
         try {
             return super.transform(key, value);
         } catch (final Exception e) {
-            throw new RuntimeException(
-                    "Cannot process ('" + ErrorUtil.toString(key) + "', '" + ErrorUtil.toString(value) + "')", e);
+            throw new ProcessingException(key, value, e);
         }
     }
 

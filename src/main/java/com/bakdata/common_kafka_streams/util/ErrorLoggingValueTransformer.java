@@ -53,12 +53,16 @@ public final class ErrorLoggingValueTransformer<V, VR> implements ValueTransform
      * Wrap a {@code ValueTransformer} and log thrown exceptions with input key and value. Recoverable Kafka exceptions
      * such as a schema registry timeout are forwarded and not captured.
      *
+     * @param transformer {@code ValueTransformer} whose exceptions should be logged
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueTransformer}
      * @see #logErrors(ValueTransformer, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <V, VR> ValueTransformer<V, Iterable<VR>> logErrors(
             final ValueTransformer<? super V, ? extends VR> transformer) {
-        return logErrors(transformer, ErrorUtil::shouldForwardError);
+        return logErrors(transformer, ErrorUtil::isRecoverable);
     }
 
     /**

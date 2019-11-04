@@ -59,11 +59,11 @@ public class ErrorDescribingValueMapper<V, VR> implements ValueMapper<V, VR> {
     }
 
     @Override
-    public VR apply(final V v) {
+    public VR apply(final V value) {
         try {
-            return this.wrapped.apply(v);
+            return this.wrapped.apply(value);
         } catch (final Exception e) {
-            throw new RuntimeException("Cannot process " + ErrorUtil.toString(v), e);
+            throw new ProcessingException(value, e);
         }
     }
 }

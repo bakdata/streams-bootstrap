@@ -28,7 +28,6 @@ import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 
 /**
@@ -50,12 +49,17 @@ public final class ErrorCapturingValueMapperWithKey<K, V, VR>
      * Wrap a {@code ValueMapperWithKey} and capture thrown exceptions. Recoverable Kafka exceptions such as a schema
      * registry timeout are forwarded and not captured.
      *
+     * @param mapper {@code ValueMapperWithKey} whose exceptions should be captured
+     * @param <K> type of input keys
+     * @param <V> type of input values
+     * @param <VR> type of output values
+     * @return {@code ValueMapperWithKey}
      * @see #captureErrors(ValueMapperWithKey, Predicate)
-     * @see ErrorUtil#shouldForwardError(Exception)
+     * @see ErrorUtil#isRecoverable(Exception)
      */
     public static <K, V, VR> ValueMapperWithKey<K, V, ProcessedValue<V, VR>> captureErrors(
             final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper) {
-        return captureErrors(mapper, ErrorUtil::shouldForwardError);
+        return captureErrors(mapper, ErrorUtil::isRecoverable);
     }
 
     /**
