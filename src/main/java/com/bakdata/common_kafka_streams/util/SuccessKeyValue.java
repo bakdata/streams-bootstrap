@@ -29,12 +29,10 @@ import static java.util.Collections.emptyList;
 import java.util.Collections;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.apache.kafka.streams.KeyValue;
 
-@Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class SuccessKeyValue<K, V, VR> implements ProcessedKeyValue<K, V, VR> {
+final class SuccessKeyValue<K, V, VR> implements ProcessedKeyValue<K, V, VR> {
 
     private final VR record;
 

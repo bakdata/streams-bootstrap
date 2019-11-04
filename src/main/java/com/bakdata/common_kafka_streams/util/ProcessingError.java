@@ -25,9 +25,11 @@
 package com.bakdata.common_kafka_streams.util;
 
 import java.util.Optional;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 
@@ -37,9 +39,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
  *
  * @param <V> type of input value
  */
-@Value
+@Getter
 @Builder
-public class ProcessingError<V> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ProcessingError<V> {
 
     private final V value;
     private final @NonNull Throwable throwable;

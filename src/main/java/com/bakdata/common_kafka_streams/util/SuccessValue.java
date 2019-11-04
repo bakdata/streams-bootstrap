@@ -29,11 +29,9 @@ import static java.util.Collections.emptyList;
 import java.util.Collections;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
-@Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class SuccessValue<V, VR> implements ProcessedValue<V, VR> {
+final class SuccessValue<V, VR> implements ProcessedValue<V, VR> {
 
     private final VR record;
 

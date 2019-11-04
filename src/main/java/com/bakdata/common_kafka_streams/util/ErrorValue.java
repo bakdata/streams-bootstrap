@@ -30,11 +30,9 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
-@Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class ErrorValue<V, VR> implements ProcessedValue<V, VR> {
+final class ErrorValue<V, VR> implements ProcessedValue<V, VR> {
     private final @NonNull ProcessingError<V> error;
 
     static <V, VR> ProcessedValue<V, VR> of(final V value, final Throwable throwable) {

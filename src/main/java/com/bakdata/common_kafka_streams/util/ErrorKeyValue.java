@@ -30,12 +30,10 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.apache.kafka.streams.KeyValue;
 
-@Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class ErrorKeyValue<K, V, VR> implements ProcessedKeyValue<K, V, VR> {
+final class ErrorKeyValue<K, V, VR> implements ProcessedKeyValue<K, V, VR> {
     private final K oldKey;
     private final @NonNull ProcessingError<V> error;
 
