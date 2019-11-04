@@ -81,7 +81,7 @@ public class ErrorUtil {
      * @param record record to be serialized
      * @return JSON representation of record or record if an error occured
      */
-    public static Object toString(final SpecificRecord record) {
+    private static Object toString(final SpecificRecord record) {
         try {
             return writeAsJson(record);
         } catch (final IOException ex) {
