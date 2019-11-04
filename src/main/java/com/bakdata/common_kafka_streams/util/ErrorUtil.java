@@ -53,10 +53,9 @@ public class ErrorUtil {
      * Check if an excption is recoverable and thus shoudl be thrown so that the process is restarted by the execution
      * environment.
      * <p>Recoverable errors are:
-     * <li>
-     *     <ul>Schema registry timeout</ul>
-     * </li>
-     * </p>
+     * <ul>
+     * <li>Schema registry timeout
+     * </ul>
      *
      * @param e exception
      * @return whether exception is recoverable or not
