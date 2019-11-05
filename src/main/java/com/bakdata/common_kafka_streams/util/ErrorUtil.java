@@ -43,14 +43,14 @@ import org.apache.kafka.common.errors.SerializationException;
 
 /**
  * This class provides utility methods for dealing with errors in Kafka streams, such as serializing values to string
- * and classifying errors as revoverable.
+ * and classifying errors as recoverable.
  */
 @Slf4j
 @UtilityClass
 public class ErrorUtil {
 
     /**
-     * Check if an excption is recoverable and thus shoudl be thrown so that the process is restarted by the execution
+     * Check if an exception is recoverable and thus should be thrown so that the process is restarted by the execution
      * environment.
      * <p>Recoverable errors are:
      * <ul>
