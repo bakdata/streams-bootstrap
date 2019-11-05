@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.11](https://github.com/bakdata/common-kafka-streams/tree/1.1.11) (2019-11-05)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.10...1.1.11)
+
+**Merged pull requests:**
+
+- Improve code quality [\#34](https://github.com/bakdata/common-kafka-streams/pull/34) ([@philipp94831](https://github.com/philipp94831))
+- Add common error handlers [\#33](https://github.com/bakdata/common-kafka-streams/pull/33) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.10](https://github.com/bakdata/common-kafka-streams/tree/1.1.10) (2019-10-31)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.9...1.1.10)
 
