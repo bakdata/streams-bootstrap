@@ -58,8 +58,13 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
         final KStream<Integer, String> input = builder.stream(INPUT_TOPIC, Consumed.with(null, STRING_SERDE));
         final KStream<Double, Long> mapped =
                 input.transform(() -> ErrorDescribingTransformer.describeErrors(this.mapper));
-        mapped
-                .to(OUTPUT_TOPIC, Produced.with(DOUBLE_SERDE, LONG_SERDE));
+        mapped.to(OUTPUT_TOPIC, Produced.with(DOUBLE_SERDE, LONG_SERDE));
+    }
+
+    @Test
+    void shouldNotAllowNullTransformer(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorDescribingTransformer.describeErrors(null))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -67,6 +72,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
         final Error throwable = mock(Error.class);
         this.mapper = new Transformer<>() {
             private ProcessorContext context = null;
+
+            @Override
+            public void close() {
+
+            }
 
             @Override
             public void init(final ProcessorContext context) {
@@ -80,11 +90,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                 }
                 throw new UnsupportedOperationException();
             }
-
-            @Override
-            public void close() {
-
-            }
         };
         this.createTopology();
         softly.assertThatThrownBy(() -> this.topology.input()
@@ -97,6 +102,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
     void shouldCaptureTransformerError(final SoftAssertions softly) {
         this.mapper = new Transformer<>() {
             private ProcessorContext context = null;
+
+            @Override
+            public void close() {
+
+            }
 
             @Override
             public void init(final ProcessorContext context) {
@@ -116,11 +126,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                     return null;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -157,6 +162,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
         this.mapper = new Transformer<>() {
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
             }
 
@@ -166,11 +176,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                     return KeyValue.pair(2.0, 2L);
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -197,6 +202,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
         this.mapper = new Transformer<>() {
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
             }
 
@@ -206,11 +216,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                     throw new RuntimeException("Cannot process");
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -232,6 +237,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
@@ -243,11 +253,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                     return null;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -275,6 +280,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
@@ -289,11 +299,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                     return null;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -328,6 +333,11 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
@@ -342,11 +352,6 @@ class ErrorDescribingTransformerTopologyTest extends ErrorCaptureTopologyTest {
                     return null;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();

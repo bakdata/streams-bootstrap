@@ -62,6 +62,12 @@ class ErrorLoggingValueTransformerTopologyTest extends ErrorCaptureTopologyTest 
     }
 
     @Test
+    void shouldNotAllowNullTransformer(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorLoggingValueTransformer.logErrors(null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     void shouldForwardSchemaRegistryTimeout(final SoftAssertions softly) {
         final RuntimeException throwable = createSchemaRegistryTimeoutException();
         this.mapper = new ValueTransformer<>() {

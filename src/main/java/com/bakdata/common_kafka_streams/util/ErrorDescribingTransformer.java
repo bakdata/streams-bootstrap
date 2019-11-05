@@ -25,7 +25,6 @@
 package com.bakdata.common_kafka_streams.util;
 
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.Transformer;
 
 /**

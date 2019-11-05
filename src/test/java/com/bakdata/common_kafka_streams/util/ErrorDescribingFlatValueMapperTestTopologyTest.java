@@ -64,8 +64,15 @@ class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopolog
     protected void buildTopology(final StreamsBuilder builder) {
         final KStream<Integer, String> input = builder.stream(INPUT_TOPIC, Consumed.with(null, STRING_SERDE));
 
-        input.flatMapValues(ErrorDescribingFlatValueMapper.describeErrors(this.mapper))
-                .to(OUTPUT_TOPIC, Produced.valueSerde(LONG_SERDE));
+        final KStream<Integer, Long> mapped =
+                input.flatMapValues(ErrorDescribingFlatValueMapper.describeErrors(this.mapper));
+        mapped.to(OUTPUT_TOPIC, Produced.valueSerde(LONG_SERDE));
+    }
+
+    @Test
+    void shouldNotAllowNullMapper(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorDescribingFlatValueMapper.describeErrors(null))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

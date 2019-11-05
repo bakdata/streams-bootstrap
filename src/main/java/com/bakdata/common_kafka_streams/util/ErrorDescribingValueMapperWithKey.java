@@ -24,9 +24,9 @@
 
 package com.bakdata.common_kafka_streams.util;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 
 /**
@@ -36,8 +36,8 @@ import org.apache.kafka.streams.kstream.ValueMapperWithKey;
  * @param <V> type of input values
  * @param <VR> type of output values
  */
-@RequiredArgsConstructor
-public class ErrorDescribingValueMapperWithKey<K, V, VR> implements ValueMapperWithKey<K, V, VR> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ErrorDescribingValueMapperWithKey<K, V, VR> implements ValueMapperWithKey<K, V, VR> {
     private final @NonNull ValueMapperWithKey<? super K, ? super V, ? extends VR> wrapped;
 
     /**

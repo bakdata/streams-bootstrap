@@ -24,9 +24,9 @@
 
 package com.bakdata.common_kafka_streams.util;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 
 /**
@@ -37,8 +37,8 @@ import org.apache.kafka.streams.kstream.KeyValueMapper;
  * @param <R> type of map result
  * @see #describeErrors(KeyValueMapper)
  */
-@RequiredArgsConstructor
-public class ErrorDescribingKeyValueMapper<K, V, R> implements KeyValueMapper<K, V, R> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ErrorDescribingKeyValueMapper<K, V, R> implements KeyValueMapper<K, V, R> {
     private final @NonNull KeyValueMapper<? super K, ? super V, ? extends R> wrapped;
 
     /**

@@ -68,6 +68,12 @@ class ErrorCapturingTransformerTopologyTest extends ErrorCaptureTopologyTest {
     }
 
     @Test
+    void shouldNotAllowNullTransformer(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorCapturingTransformer.captureErrors(null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     void shouldForwardSchemaRegistryTimeout(final SoftAssertions softly) {
         final RuntimeException throwable = createSchemaRegistryTimeoutException();
         this.mapper = new Transformer<>() {

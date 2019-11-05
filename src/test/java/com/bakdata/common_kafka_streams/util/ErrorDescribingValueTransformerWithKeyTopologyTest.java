@@ -57,8 +57,13 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
         final KStream<Integer, String> input = builder.stream(INPUT_TOPIC, Consumed.with(null, STRING_SERDE));
         final KStream<Integer, Long> mapped =
                 input.transformValues(() -> ErrorDescribingValueTransformerWithKey.describeErrors(this.mapper));
-        mapped
-                .to(OUTPUT_TOPIC, Produced.with(INTEGER_SERDE, LONG_SERDE));
+        mapped.to(OUTPUT_TOPIC, Produced.with(INTEGER_SERDE, LONG_SERDE));
+    }
+
+    @Test
+    void shouldNotAllowNullTransformer(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorDescribingValueTransformerWithKey.describeErrors(null))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -66,6 +71,11 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
         final Error throwable = mock(Error.class);
         this.mapper = new ValueTransformerWithKey<>() {
             private ProcessorContext context = null;
+
+            @Override
+            public void close() {
+
+            }
 
             @Override
             public void init(final ProcessorContext context) {
@@ -78,11 +88,6 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
                     throw throwable;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -98,6 +103,11 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
@@ -111,11 +121,6 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
                     return 2L;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -144,6 +149,11 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
         this.mapper = new ValueTransformerWithKey<>() {
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
             }
 
@@ -153,11 +163,6 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
                     return 2L;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -184,6 +189,11 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
         this.mapper = new ValueTransformerWithKey<>() {
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
             }
 
@@ -193,11 +203,6 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
                     throw new RuntimeException("Cannot process");
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -219,21 +224,21 @@ class ErrorDescribingValueTransformerWithKeyTopologyTest extends ErrorCaptureTop
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
 
             @Override
             public Long transform(final Integer key, final String value) {
-                if ( "bar".equals(value)) {
+                if ("bar".equals(value)) {
                     return null;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();

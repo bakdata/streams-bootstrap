@@ -69,6 +69,12 @@ class ErrorLoggingValueMapperTopologyTest extends ErrorCaptureTopologyTest {
     }
 
     @Test
+    void shouldNotAllowNullMapper(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorLoggingValueMapper.logErrors(null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     void shouldForwardSchemaRegistryTimeout(final SoftAssertions softly) {
         when(this.mapper.apply("foo")).thenThrow(createSchemaRegistryTimeoutException());
         this.createTopology();
