@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019 bakdata
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.bakdata.common_kafka_streams.util;
 
 import static org.mockito.Mockito.mock;
@@ -33,8 +57,13 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
         final KStream<Integer, String> input = builder.stream(INPUT_TOPIC, Consumed.with(null, STRING_SERDE));
         final KStream<Integer, Long> mapped =
                 input.transformValues(() -> ErrorDescribingValueTransformer.describeErrors(this.mapper));
-        mapped
-                .to(OUTPUT_TOPIC, Produced.with(INTEGER_SERDE, LONG_SERDE));
+        mapped.to(OUTPUT_TOPIC, Produced.with(INTEGER_SERDE, LONG_SERDE));
+    }
+
+    @Test
+    void shouldNotAllowNullTransformer(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorDescribingValueTransformer.describeErrors(null))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -42,6 +71,11 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
         final Error throwable = mock(Error.class);
         this.mapper = new ValueTransformer<>() {
             private ProcessorContext context = null;
+
+            @Override
+            public void close() {
+
+            }
 
             @Override
             public void init(final ProcessorContext context) {
@@ -54,11 +88,6 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
                     throw throwable;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -74,6 +103,11 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
@@ -87,11 +121,6 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
                     return 2L;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -120,6 +149,11 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
         this.mapper = new ValueTransformer<>() {
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
             }
 
@@ -129,11 +163,6 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
                     return 2L;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -160,6 +189,11 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
         this.mapper = new ValueTransformer<>() {
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
             }
 
@@ -169,11 +203,6 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
                     throw new RuntimeException("Cannot process");
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();
@@ -195,6 +224,11 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
             private ProcessorContext context = null;
 
             @Override
+            public void close() {
+
+            }
+
+            @Override
             public void init(final ProcessorContext context) {
                 this.context = context;
             }
@@ -205,11 +239,6 @@ class ErrorDescribingValueTransformerTopologyTest extends ErrorCaptureTopologyTe
                     return null;
                 }
                 throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void close() {
-
             }
         };
         this.createTopology();

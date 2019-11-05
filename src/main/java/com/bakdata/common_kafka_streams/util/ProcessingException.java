@@ -24,30 +24,17 @@
 
 package com.bakdata.common_kafka_streams.util;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.apache.kafka.streams.kstream.ValueTransformer;
-import org.apache.kafka.streams.processor.ProcessorContext;
-
 /**
- * Base class for decorating a {@code ValueTransformer}
+ * {@link Exception} thrown by error descriptors. The message contains information about input key and value.
  */
-@RequiredArgsConstructor
-public abstract class DecoratorValueTransformer<V, R> implements ValueTransformer<V, R> {
-    private final @NonNull ValueTransformer<V, R> wrapped;
+public class ProcessingException extends RuntimeException {
+    private static final long serialVersionUID = 6328000609687736610L;
 
-    @Override
-    public void close() {
-        this.wrapped.close();
+    ProcessingException(final Object value, final Throwable cause) {
+        super("Cannot process " + ErrorUtil.toString(value), cause);
     }
 
-    @Override
-    public void init(final ProcessorContext context) {
-        this.wrapped.init(context);
-    }
-
-    @Override
-    public R transform(final V value) {
-        return this.wrapped.transform(value);
+    ProcessingException(final Object key, final Object value, final Throwable cause) {
+        super("Cannot process ('" + ErrorUtil.toString(key) + "', '" + ErrorUtil.toString(value) + "')", cause);
     }
 }

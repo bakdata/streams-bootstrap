@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019 bakdata
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.bakdata.common_kafka_streams.util;
 
 import java.io.ByteArrayOutputStream;
@@ -14,18 +38,75 @@ import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.io.JsonEncoder;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecord;
+import org.apache.commons.compress.utils.Charsets;
 import org.apache.kafka.common.errors.SerializationException;
 
+/**
+ * This class provides utility methods for dealing with errors in Kafka streams, such as serializing values to string
+ * and classifying errors as recoverable.
+ */
 @Slf4j
 @UtilityClass
 public class ErrorUtil {
+
+    /**
+     * Check if an exception is recoverable and thus should be thrown so that the process is restarted by the execution
+     * environment.
+     * <p>Recoverable errors are:
+     * <ul>
+     * <li>Schema registry timeout
+     * </ul>
+     *
+     * @param e exception
+     * @return whether exception is recoverable or not
+     */
+    public static boolean isRecoverable(final Exception e) {
+        return isSchemaRegistryTimeout(e);
+    }
+
+    /**
+     * Check if an exception represents a schema registry timeout. Such exceptions are usually recoverable.
+     *
+     * @param e exception
+     * @return whether the exception represents a schema registry timeout or not
+     */
+    public static boolean isSchemaRegistryTimeout(final Exception e) {
+        return e instanceof SerializationException && e.getCause() instanceof SocketTimeoutException;
+    }
+
+    /**
+     * Convert a {@code SpecificRecord} to {@code String} using JSON serialization.
+     *
+     * @param record record to be serialized
+     * @return JSON representation of record or record if an error occured
+     */
+    private static Object toString(final SpecificRecord record) {
+        try {
+            return writeAsJson(record);
+        } catch (final IOException ex) {
+            log.warn("Failed to write to json", ex);
+            return record;
+        }
+    }
+
+    /**
+     * Convert an object to {@code String}. {@code SpecificRecord} will be serialized using {@link
+     * #toString(SpecificRecord)}.
+     *
+     * @param o object to be serialized
+     * @return {@code String} representation of record
+     */
+    public static String toString(final Object o) {
+        final Object o1 = o instanceof SpecificRecord ? toString((SpecificRecord) o) : o;
+        return Objects.toString(o1);
+    }
 
     private static String writeAsJson(final SpecificRecord itemRecord) throws IOException {
         final Schema targetSchema = itemRecord.getSchema();
         final DatumWriter<SpecificRecord> writer = new SpecificDatumWriter<>(targetSchema);
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             writeJson(itemRecord, writer, out);
-            return new String(out.toByteArray());
+            return new String(out.toByteArray(), Charsets.ISO_8859_1);
         }
     }
 
@@ -34,27 +115,5 @@ public class ErrorUtil {
         final JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(itemRecord.getSchema(), out);
         writer.write(itemRecord, jsonEncoder);
         jsonEncoder.flush();
-    }
-
-    private static Object toString(final SpecificRecord value) {
-        try {
-            return writeAsJson(value);
-        } catch (final IOException ex) {
-            log.warn("Failed to write to json", ex);
-            return value;
-        }
-    }
-
-    public static String toString(final Object o) {
-        final Object o1 = o instanceof SpecificRecord ? toString((SpecificRecord) o) : o;
-        return Objects.toString(o1);
-    }
-
-    public static boolean shouldForwardError(final Exception e) {
-        return isSchemaRegistryTimeout(e);
-    }
-
-    private static boolean isSchemaRegistryTimeout(final Exception e) {
-        return e instanceof SerializationException && e.getCause() instanceof SocketTimeoutException;
     }
 }

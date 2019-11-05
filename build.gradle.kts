@@ -47,6 +47,7 @@ allprojects {
 
     dependencies {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.4.0")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-params:5.4.0")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.4.0")
         "testImplementation"(group = "org.assertj", name = "assertj-core", version = "3.13.2")
         "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.0.3")
