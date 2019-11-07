@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.12](https://github.com/bakdata/common-kafka-streams/tree/1.1.12) (2019-11-07)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.11...1.1.12)
+
+**Merged pull requests:**
+
+- Fix schema registry clean up [\#35](https://github.com/bakdata/common-kafka-streams/pull/35) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.11](https://github.com/bakdata/common-kafka-streams/tree/1.1.11) (2019-11-05)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.10...1.1.11)
 
