@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,13 +278,26 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         }
     }
 
-    private void resetSchemaRegistry(final String topic) {
+    protected void resetSchemaRegistry(final String topic) {
         final SchemaRegistryClient client = new CachedSchemaRegistryClient(this.schemaRegistryUrl, 100);
         try {
-            client.deleteSubject(topic + "-key");
-            client.deleteSubject(topic + "-value");
+            final Collection<String> allSubjects = client.getAllSubjects();
+            final String keySubject = topic + "-key";
+            if (allSubjects.contains(keySubject)) {
+                client.deleteSubject(keySubject);
+                log.info("Cleaned key schema of topic {}", topic);
+            } else {
+                log.info("No key schema for topic {} available", topic);
+            }
+            final String valueSubject = topic + "-value";
+            if (allSubjects.contains(valueSubject)) {
+                client.deleteSubject(valueSubject);
+                log.info("Cleaned value schema of topic {}", topic);
+            } else {
+                log.info("No value schema for topic {} available", topic);
+            }
         } catch (final IOException | RestClientException e) {
-            log.error("Could not rest schema registry", e);
+            log.error("Could not reset schema registry", e);
         }
     }
 
