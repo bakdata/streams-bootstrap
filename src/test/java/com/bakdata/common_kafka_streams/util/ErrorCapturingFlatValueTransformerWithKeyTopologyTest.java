@@ -24,12 +24,8 @@
 
 package com.bakdata.common_kafka_streams.util;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.SerializationException;
@@ -39,53 +35,67 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.ValueMapper;
+import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
+import org.apache.kafka.streams.processor.ProcessorContext;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.jooq.lambda.Seq;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(SoftAssertionsExtension.class)
-class ErrorCapturingFlatValueMapperTestTopologyTest extends ErrorCaptureTopologyTest {
+class ErrorCapturingFlatValueTransformerWithKeyTopologyTest extends ErrorCaptureTopologyTest {
+
     private static final String ERROR_TOPIC = "errors";
     private static final String OUTPUT_TOPIC = "output";
     private static final String INPUT_TOPIC = "input";
     private static final Serde<String> STRING_SERDE = Serdes.String();
     private static final Serde<Long> LONG_SERDE = Serdes.Long();
-    @Mock
-    ValueMapper<String, Iterable<Long>> mapper;
+    private static final Serde<Integer> INTEGER_SERDE = Serdes.Integer();
+    private ValueTransformerWithKey<Integer, String, Iterable<Long>> mapper = null;
 
     @Override
     protected void buildTopology(final StreamsBuilder builder) {
         final KStream<Integer, String> input = builder.stream(INPUT_TOPIC, Consumed.with(null, STRING_SERDE));
-
         final KStream<Integer, ProcessedValue<String, Long>> mapped =
-                input.flatMapValues(ErrorCapturingFlatValueMapper.captureErrors(this.mapper));
-
+                input.flatTransformValues(() -> ErrorCapturingFlatValueTransformerWithKey.captureErrors(this.mapper));
         mapped.flatMapValues(ProcessedValue::getValues)
-                .to(OUTPUT_TOPIC, Produced.valueSerde(LONG_SERDE));
-
+                .to(OUTPUT_TOPIC, Produced.with(INTEGER_SERDE, LONG_SERDE));
         mapped.flatMapValues(ProcessedValue::getErrors)
                 .mapValues(error -> error.createDeadLetter("Description"))
                 .to(ERROR_TOPIC);
     }
 
     @Test
-    void shouldNotAllowNullMapper(final SoftAssertions softly) {
-        softly.assertThatThrownBy(() -> ErrorCapturingFlatValueMapper.captureErrors(null))
+    void shouldNotAllowNullTransformer(final SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> ErrorCapturingFlatValueTransformerWithKey.captureErrors(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void shouldForwardSchemaRegistryTimeout(final SoftAssertions softly) {
-        when(this.mapper.apply("foo")).thenThrow(createSchemaRegistryTimeoutException());
+        final RuntimeException throwable = createSchemaRegistryTimeoutException();
+        this.mapper = new ValueTransformerWithKey<>() {
+            private ProcessorContext context = null;
+
+            @Override
+            public void init(final ProcessorContext context) {
+                this.context = context;
+            }
+
+            @Override
+            public Iterable<Long> transform(final Integer key, final String value) {
+                if ("foo".equals(value)) {
+                    throw throwable;
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
         this.createTopology();
         softly.assertThatThrownBy(() -> this.topology.input()
                 .withValueSerde(STRING_SERDE)
@@ -106,8 +116,28 @@ class ErrorCapturingFlatValueMapperTestTopologyTest extends ErrorCaptureTopology
 
     @Test
     void shouldNotCaptureThrowable(final SoftAssertions softly) {
-        final Throwable throwable = mock(Error.class);
-        when(this.mapper.apply("foo")).thenThrow(throwable);
+        final Error throwable = mock(Error.class);
+        this.mapper = new ValueTransformerWithKey<>() {
+            private ProcessorContext context = null;
+
+            @Override
+            public void init(final ProcessorContext context) {
+                this.context = context;
+            }
+
+            @Override
+            public Iterable<Long> transform(final Integer key, final String value) {
+                if ("foo".equals(value)) {
+                    throw throwable;
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
         this.createTopology();
         softly.assertThatThrownBy(() -> this.topology.input()
                 .withValueSerde(STRING_SERDE)
@@ -116,22 +146,45 @@ class ErrorCapturingFlatValueMapperTestTopologyTest extends ErrorCaptureTopology
     }
 
     @Test
-    void shouldCaptureValueMapperError(final SoftAssertions softly) {
-        doThrow(new RuntimeException("Cannot process")).when(this.mapper).apply("foo");
-        doReturn(List.of(6L, 15L, 15L)).when(this.mapper).apply("bar");
+    void shouldCaptureTransformerError(final SoftAssertions softly) {
+        this.mapper = new ValueTransformerWithKey<>() {
+            private ProcessorContext context = null;
+
+            @Override
+            public void init(final ProcessorContext context) {
+                this.context = context;
+            }
+
+            @Override
+            public Iterable<Long> transform(final Integer key, final String value) {
+                if ("foo".equals(value)) {
+                    throw new RuntimeException("Cannot process");
+                }
+                if ("bar".equals(value)) {
+                    return List.of(6L, 15L, 15L);
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
         this.createTopology();
         this.topology.input()
                 .withValueSerde(STRING_SERDE)
                 .add(1, "foo")
                 .add(2, "bar");
         final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
+                .withKeySerde(INTEGER_SERDE)
                 .withValueSerde(LONG_SERDE))
                 .toList();
         softly.assertThat(records)
                 .hasSize(3)
+                .allSatisfy(record -> softly.assertThat(record.key()).isEqualTo(2))
                 .extracting(ProducerRecord::value)
                 .containsExactlyInAnyOrder(6L, 15L, 15L);
-
         final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
                 .withValueType(DeadLetter.class))
                 .toList();
@@ -151,20 +204,39 @@ class ErrorCapturingFlatValueMapperTestTopologyTest extends ErrorCaptureTopology
     }
 
     @Test
-    void shouldHandleNullInput(final SoftAssertions softly) {
-        when(this.mapper.apply(null)).thenReturn(List.of(2L, 5L));
+    void shouldReturnOnNullInput(final SoftAssertions softly) {
+        this.mapper = new ValueTransformerWithKey<>() {
+
+            @Override
+            public void init(final ProcessorContext context) {
+            }
+
+            @Override
+            public Iterable<Long> transform(final Integer key, final String value) {
+                if (value == null) {
+                    return List.of(2L, 5L);
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
         this.createTopology();
         this.topology.input()
                 .withValueSerde(STRING_SERDE)
-                .add(2, null);
+                .add(null, null);
         final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
+                .withKeySerde(INTEGER_SERDE)
                 .withValueSerde(LONG_SERDE))
                 .toList();
         softly.assertThat(records)
                 .hasSize(2)
+                .allSatisfy(record -> softly.assertThat(record.key()).isNull())
                 .extracting(ProducerRecord::value)
                 .containsExactlyInAnyOrder(2L, 5L);
-
         final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
                 .withValueType(DeadLetter.class))
                 .toList();
@@ -174,12 +246,31 @@ class ErrorCapturingFlatValueMapperTestTopologyTest extends ErrorCaptureTopology
 
     @Test
     void shouldHandleErrorOnNullInput(final SoftAssertions softly) {
-        when(this.mapper.apply(null)).thenThrow(new RuntimeException("Cannot process"));
+        this.mapper = new ValueTransformerWithKey<>() {
+
+            @Override
+            public void init(final ProcessorContext context) {
+            }
+
+            @Override
+            public Iterable<Long> transform(final Integer key, final String value) {
+                if (value == null) {
+                    throw new RuntimeException("Cannot process");
+                }
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
         this.createTopology();
         this.topology.input()
                 .withValueSerde(STRING_SERDE)
                 .add(null, null);
         final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
+                .withKeySerde(INTEGER_SERDE)
                 .withValueSerde(LONG_SERDE))
                 .toList();
         softly.assertThat(records)
@@ -201,27 +292,4 @@ class ErrorCapturingFlatValueMapperTestTopologyTest extends ErrorCaptureTopology
                     softly.assertThat(deadLetter.getCause().getStackTrace()).isNotNull();
                 });
     }
-
-    @Test
-    void shouldHandleNullValue(final SoftAssertions softly) {
-        when(this.mapper.apply("bar")).thenReturn(Arrays.asList(5L, null, 2L));
-        this.createTopology();
-        this.topology.input()
-                .withValueSerde(STRING_SERDE)
-                .add(2, "bar");
-        final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
-                .withValueSerde(LONG_SERDE))
-                .toList();
-        softly.assertThat(records)
-                .hasSize(3)
-                .extracting(ProducerRecord::value)
-                .containsExactlyInAnyOrder(5L, null, 2L);
-
-        final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
-                .withValueType(DeadLetter.class))
-                .toList();
-        softly.assertThat(errors)
-                .isEmpty();
-    }
-
 }
