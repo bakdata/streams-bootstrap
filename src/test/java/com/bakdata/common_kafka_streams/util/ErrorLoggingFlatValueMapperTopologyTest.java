@@ -53,7 +53,7 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(SoftAssertionsExtension.class)
-class ErrorLoggingFlatValueMapperTestTopologyTest extends ErrorCaptureTopologyTest {
+class ErrorLoggingFlatValueMapperTopologyTest extends ErrorCaptureTopologyTest {
     private static final String OUTPUT_TOPIC = "output";
     private static final String INPUT_TOPIC = "input";
     private static final Serde<String> STRING_SERDE = Serdes.String();

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -52,7 +53,8 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(SoftAssertionsExtension.class)
-class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopologyTest {
+class ErrorCapturingFlatValueMapperTopologyTest extends ErrorCaptureTopologyTest {
+    private static final String ERROR_TOPIC = "errors";
     private static final String OUTPUT_TOPIC = "output";
     private static final String INPUT_TOPIC = "input";
     private static final Serde<String> STRING_SERDE = Serdes.String();
@@ -64,15 +66,42 @@ class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopolog
     protected void buildTopology(final StreamsBuilder builder) {
         final KStream<Integer, String> input = builder.stream(INPUT_TOPIC, Consumed.with(null, STRING_SERDE));
 
-        final KStream<Integer, Long> mapped =
-                input.flatMapValues(ErrorDescribingValueMapper.describeErrors(this.mapper));
-        mapped.to(OUTPUT_TOPIC, Produced.valueSerde(LONG_SERDE));
+        final KStream<Integer, ProcessedValue<String, Long>> mapped =
+                input.flatMapValues(ErrorCapturingFlatValueMapper.captureErrors(this.mapper));
+
+        mapped.flatMapValues(ProcessedValue::getValues)
+                .to(OUTPUT_TOPIC, Produced.valueSerde(LONG_SERDE));
+
+        mapped.flatMapValues(ProcessedValue::getErrors)
+                .mapValues(error -> error.createDeadLetter("Description"))
+                .to(ERROR_TOPIC);
     }
 
     @Test
     void shouldNotAllowNullMapper(final SoftAssertions softly) {
-        softly.assertThatThrownBy(() -> ErrorDescribingValueMapper.describeErrors(null))
+        softly.assertThatThrownBy(() -> ErrorCapturingFlatValueMapper.captureErrors(null))
                 .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void shouldForwardSchemaRegistryTimeout(final SoftAssertions softly) {
+        when(this.mapper.apply("foo")).thenThrow(createSchemaRegistryTimeoutException());
+        this.createTopology();
+        softly.assertThatThrownBy(() -> this.topology.input()
+                .withValueSerde(STRING_SERDE)
+                .add(1, "foo"))
+                .hasCauseInstanceOf(SerializationException.class);
+        final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
+                .withValueSerde(LONG_SERDE))
+                .toList();
+        softly.assertThat(records)
+                .isEmpty();
+
+        final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
+                .withValueType(DeadLetter.class))
+                .toList();
+        softly.assertThat(errors)
+                .isEmpty();
     }
 
     @Test
@@ -91,11 +120,10 @@ class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopolog
         doThrow(new RuntimeException("Cannot process")).when(this.mapper).apply("foo");
         doReturn(List.of(6L, 15L, 15L)).when(this.mapper).apply("bar");
         this.createTopology();
-        softly.assertThatThrownBy(() -> this.topology.input()
+        this.topology.input()
                 .withValueSerde(STRING_SERDE)
-                .add(2, "bar")
-                .add(1, "foo"))
-                .hasMessage("Cannot process " + ErrorUtil.toString("foo"));
+                .add(1, "foo")
+                .add(2, "bar");
         final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
                 .withValueSerde(LONG_SERDE))
                 .toList();
@@ -103,6 +131,23 @@ class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopolog
                 .hasSize(3)
                 .extracting(ProducerRecord::value)
                 .containsExactlyInAnyOrder(6L, 15L, 15L);
+
+        final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
+                .withValueType(DeadLetter.class))
+                .toList();
+        softly.assertThat(errors)
+                .hasSize(1)
+                .first()
+                .isNotNull()
+                .satisfies(record -> softly.assertThat(record.key()).isEqualTo(1))
+                .extracting(ProducerRecord::value)
+                .isInstanceOf(DeadLetter.class)
+                .satisfies(deadLetter -> {
+                    softly.assertThat(deadLetter.getInputValue()).isEqualTo("foo");
+                    softly.assertThat(deadLetter.getDescription()).isEqualTo("Description");
+                    softly.assertThat(deadLetter.getCause().getMessage()).isEqualTo("Cannot process");
+                    softly.assertThat(deadLetter.getCause().getStackTrace()).isNotNull();
+                });
     }
 
     @Test
@@ -119,21 +164,42 @@ class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopolog
                 .hasSize(2)
                 .extracting(ProducerRecord::value)
                 .containsExactlyInAnyOrder(2L, 5L);
+
+        final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
+                .withValueType(DeadLetter.class))
+                .toList();
+        softly.assertThat(errors)
+                .isEmpty();
     }
 
     @Test
     void shouldHandleErrorOnNullInput(final SoftAssertions softly) {
         when(this.mapper.apply(null)).thenThrow(new RuntimeException("Cannot process"));
         this.createTopology();
-        softly.assertThatThrownBy(() -> this.topology.input()
+        this.topology.input()
                 .withValueSerde(STRING_SERDE)
-                .add(null, null))
-                .hasMessage("Cannot process " + ErrorUtil.toString(null));
+                .add(null, null);
         final List<ProducerRecord<Integer, Long>> records = Seq.seq(this.topology.streamOutput(OUTPUT_TOPIC)
                 .withValueSerde(LONG_SERDE))
                 .toList();
         softly.assertThat(records)
                 .isEmpty();
+        final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
+                .withValueType(DeadLetter.class))
+                .toList();
+        softly.assertThat(errors)
+                .hasSize(1)
+                .first()
+                .isNotNull()
+                .satisfies(record -> softly.assertThat(record.key()).isNull())
+                .extracting(ProducerRecord::value)
+                .isInstanceOf(DeadLetter.class)
+                .satisfies(deadLetter -> {
+                    softly.assertThat(deadLetter.getInputValue()).isNull();
+                    softly.assertThat(deadLetter.getDescription()).isEqualTo("Description");
+                    softly.assertThat(deadLetter.getCause().getMessage()).isEqualTo("Cannot process");
+                    softly.assertThat(deadLetter.getCause().getStackTrace()).isNotNull();
+                });
     }
 
     @Test
@@ -150,6 +216,12 @@ class ErrorDescribingFlatValueMapperTestTopologyTest extends ErrorCaptureTopolog
                 .hasSize(3)
                 .extracting(ProducerRecord::value)
                 .containsExactlyInAnyOrder(5L, null, 2L);
+
+        final List<ProducerRecord<Integer, DeadLetter>> errors = Seq.seq(this.topology.streamOutput(ERROR_TOPIC)
+                .withValueType(DeadLetter.class))
+                .toList();
+        softly.assertThat(errors)
+                .isEmpty();
     }
 
 }
