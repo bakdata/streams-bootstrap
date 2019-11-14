@@ -33,11 +33,11 @@ spec:
         {{- if .Values.antiAffinityRequiredEnabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - {{ template "streams-app.name" . }}
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - {{ template "streams-app.name" . }}
             topologyKey: "kubernetes.io/hostname"
         {{- else }}
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -48,7 +48,7 @@ spec:
                 operator: In
                 values:
                 - {{ template "streams-app.name" . }}
-              topologyKey: "kubernetes.io/hostname"
+            topologyKey: "kubernetes.io/hostname"
         {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}-container
