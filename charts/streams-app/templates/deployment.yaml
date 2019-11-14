@@ -41,13 +41,13 @@ spec:
             topologyKey: "kubernetes.io/hostname"
         {{- else }}
           preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              preference:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - {{ template "streams-app.name" . }}
+          - weight: 1
+            preference:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - {{ template "streams-app.name" . }}
             topologyKey: "kubernetes.io/hostname"
         {{- end }}
       containers:
