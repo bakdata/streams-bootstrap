@@ -30,11 +30,8 @@ spec:
     spec:
       affinity:
         podAntiAffinity:
-          {{- if .Values.antiAffinityRequiredEnabled }}
+        {{- if .Values.antiAffinityRequiredEnabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
-          {{- else }}
-          preferredDuringSchedulingIgnoredDuringExecution:
-          {{- end }}
           - labelSelector:
               matchExpressions:
               - key: app
@@ -42,6 +39,17 @@ spec:
                 values:
                 - {{ template "streams-app.name" . }}
             topologyKey: "kubernetes.io/hostname"
+        {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ template "streams-app.name" . }}
+              topologyKey: "kubernetes.io/hostname"
+        {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}-container
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
