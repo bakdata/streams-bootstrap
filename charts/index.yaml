@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   rclone-copy:
   - apiVersion: v1
-    created: "2019-11-14T16:14:39.192001+01:00"
+    created: "2019-11-14T16:39:34.352105+01:00"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 40ce12fa2377bf99cfe30207ae1891af24de9b3406fe79686100e38046042376
     name: rclone-copy
@@ -11,17 +11,17 @@ entries:
     version: 1.0.0
   streams-app:
   - apiVersion: v1
-    created: "2019-11-14T16:14:39.193246+01:00"
+    created: "2019-11-14T16:39:34.353407+01:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 3dc25e71e7382380aebceff6fd97058679111c9a93b60c137cb0c219e52f79c8
+    digest: c566b03fdea779799cede49b5c61710ced0f04d2de01b3b93414d056a3540b5b
     name: streams-app
     urls:
     - streams-app/streams-app-0.1.0.tgz
     version: 0.1.0
   streams-app-job:
   - apiVersion: v1
-    created: "2019-11-14T16:14:39.19481+01:00"
+    created: "2019-11-14T16:39:34.355078+01:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: ba19edc31fcb839330b56585086c6db64034d92e662ae03c043775e987f6c5d5
@@ -29,4 +29,4 @@ entries:
     urls:
     - streams-app-job/streams-app-job-0.1.0.tgz
     version: 0.1.0
-generated: "2019-11-14T16:14:39.190992+01:00"
+generated: "2019-11-14T16:39:34.351054+01:00"

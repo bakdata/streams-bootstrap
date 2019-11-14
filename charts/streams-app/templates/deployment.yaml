@@ -42,13 +42,14 @@ spec:
         {{- else }}
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
-            preference:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - {{ template "streams-app.name" . }}
-            topologyKey: "kubernetes.io/hostname"
+            podAffinityTerm:
+              topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - {{ template "streams-app.name" . }}
         {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}-container
