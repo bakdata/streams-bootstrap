@@ -28,6 +28,7 @@ spec:
         app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.antiAffinityEnabled }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -38,6 +39,7 @@ spec:
                 values:
                 - {{ template "streams-app.name" . }}
             topologyKey: "kubernetes.io/hostname"
+      {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}-container
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
