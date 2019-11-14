@@ -42,7 +42,6 @@ spec:
                 values:
                 - {{ template "streams-app.name" . }}
             topologyKey: "kubernetes.io/hostname"
-
       containers:
         - name: {{ template "streams-app.name" . }}-container
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
