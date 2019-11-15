@@ -30,6 +30,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
+import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
 class DeleteTopicTest {
@@ -48,6 +50,8 @@ class DeleteTopicTest {
     private static final String TOPIC = "topic";
     private EmbeddedKafkaCluster kafkaCluster = null;
     private DeleteTopicTestApplication app = null;
+    @RegisterExtension
+    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
 
 
     @BeforeEach
@@ -58,6 +62,7 @@ class DeleteTopicTest {
 
         this.app = new DeleteTopicTestApplication();
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
     }
 
     @AfterEach
