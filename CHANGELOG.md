@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.1.13](https://github.com/bakdata/common-kafka-streams/tree/1.1.13) (2019-11-15)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.12...1.1.13)
+
+**Merged pull requests:**
+
+- Add S3 backed Serde [\#39](https://github.com/bakdata/common-kafka-streams/pull/39) ([@philipp94831](https://github.com/philipp94831))
+- Classify all Kafka errors as recoverable bar some exceptions [\#38](https://github.com/bakdata/common-kafka-streams/pull/38) ([@philipp94831](https://github.com/philipp94831))
+- Make PodAffinity rule configurable [\#37](https://github.com/bakdata/common-kafka-streams/pull/37) ([@SvenLehmann](https://github.com/SvenLehmann))
+- Add flat value transformers for error handling [\#36](https://github.com/bakdata/common-kafka-streams/pull/36) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.1.12](https://github.com/bakdata/common-kafka-streams/tree/1.1.12) (2019-11-07)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.11...1.1.12)
 
