@@ -26,7 +26,6 @@ package com.bakdata.common_kafka_streams.util;
 
 import static java.util.Collections.emptyList;
 
-import java.util.Collections;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.NonNull;

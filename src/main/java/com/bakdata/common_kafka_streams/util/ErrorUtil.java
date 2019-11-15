@@ -85,6 +85,7 @@ public class ErrorUtil {
                 return false;
             }
             if (e instanceof SerializationException) {
+                // socket timeouts usually indicate that the schema registry is temporarily down
                 return e.getCause() instanceof SocketTimeoutException;
             }
             return true;
