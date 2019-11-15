@@ -30,7 +30,7 @@ spec:
     spec:
       affinity:
         podAntiAffinity:
-        {{- if .Values.antiAffinityRequiredEnabled }}
+        {{- if .Values.requirePodAntiAffinity }}
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
             matchExpressions:
