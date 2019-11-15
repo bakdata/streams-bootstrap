@@ -70,6 +70,7 @@ allprojects {
         "api"(group = "org.apache.avro", name = "avro", version = "1.8.2")
         "api"(group = "org.jooq", name = "jool", version = "0.9.14")
         "api"(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
+        "api"(group = "com.amazonaws", name = "aws-java-sdk-s3", version = "1.11.636")
 
         "compileOnly"("org.projectlombok:lombok:1.18.6")
         "annotationProcessor"("org.projectlombok:lombok:1.18.6")
@@ -78,6 +79,7 @@ allprojects {
 
         "testImplementation"(group = "org.mockito", name = "mockito-core", version = "2.28.2")
         "testImplementation"(group = "org.mockito", name = "mockito-junit-jupiter", version = "2.28.2")
+        "testImplementation"(group = "com.adobe.testing", name = "s3mock-junit5", version = "2.1.8")
     }
 }
 
