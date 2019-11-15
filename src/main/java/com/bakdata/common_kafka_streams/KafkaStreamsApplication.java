@@ -297,7 +297,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                 log.info("No value schema for topic {} available", topic);
             }
         } catch (final IOException | RestClientException e) {
-            log.error("Could not reset schema registry", e);
+            throw new RuntimeException("Could not reset schema registry for topic " + topic, e);
         }
     }
 

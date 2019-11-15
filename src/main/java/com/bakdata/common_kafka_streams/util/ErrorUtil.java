@@ -39,6 +39,7 @@ import org.apache.avro.io.JsonEncoder;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.commons.compress.utils.Charsets;
+import org.apache.kafka.common.errors.RecordTooLargeException;
 import org.apache.kafka.common.errors.SerializationException;
 
 /**
@@ -49,29 +50,58 @@ import org.apache.kafka.common.errors.SerializationException;
 @UtilityClass
 public class ErrorUtil {
 
+    private static final String ORG_APACHE_KAFKA_COMMON_ERRORS = "org.apache.kafka.common.errors";
+
     /**
      * Check if an exception is recoverable and thus should be thrown so that the process is restarted by the execution
      * environment.
      * <p>Recoverable errors are:
      * <ul>
-     * <li>Schema registry timeout
+     *     <li>{@link #isRecoverableKafkaError(Exception)}
      * </ul>
      *
      * @param e exception
      * @return whether exception is recoverable or not
      */
     public static boolean isRecoverable(final Exception e) {
-        return isSchemaRegistryTimeout(e);
+        return isRecoverableKafkaError(e);
     }
 
     /**
-     * Check if an exception represents a schema registry timeout. Such exceptions are usually recoverable.
+     * Check if an exception is thrown by Kafka, i.e., located in package {@code org.apache.kafka.common.errors}, and is
+     * recoverable.
+     * <p>Non-recoverable Kafka errors are:
+     * <ul>
+     *     <li>{@link RecordTooLargeException}
+     *     <li>{@link SerializationException} which is not caused by timeout
+     * </ul>
      *
      * @param e exception
-     * @return whether the exception represents a schema registry timeout or not
+     * @return whether exception is thrown by Kafka and recoverable or not
      */
-    public static boolean isSchemaRegistryTimeout(final Exception e) {
-        return e instanceof SerializationException && e.getCause() instanceof SocketTimeoutException;
+    public static boolean isRecoverableKafkaError(final Exception e) {
+        if (ORG_APACHE_KAFKA_COMMON_ERRORS.equals(e.getClass().getPackageName())) {
+            if (e instanceof RecordTooLargeException) {
+                return false;
+            }
+            if (e instanceof SerializationException) {
+                return e.getCause() instanceof SocketTimeoutException;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Convert an object to {@code String}. {@code SpecificRecord} will be serialized using {@link
+     * #toString(SpecificRecord)}.
+     *
+     * @param o object to be serialized
+     * @return {@code String} representation of record
+     */
+    public static String toString(final Object o) {
+        final Object o1 = o instanceof SpecificRecord ? toString((SpecificRecord) o) : o;
+        return Objects.toString(o1);
     }
 
     /**
@@ -87,18 +117,6 @@ public class ErrorUtil {
             log.warn("Failed to write to json", ex);
             return record;
         }
-    }
-
-    /**
-     * Convert an object to {@code String}. {@code SpecificRecord} will be serialized using {@link
-     * #toString(SpecificRecord)}.
-     *
-     * @param o object to be serialized
-     * @return {@code String} representation of record
-     */
-    public static String toString(final Object o) {
-        final Object o1 = o instanceof SpecificRecord ? toString((SpecificRecord) o) : o;
-        return Objects.toString(o1);
     }
 
     private static String writeAsJson(final SpecificRecord itemRecord) throws IOException {
