@@ -24,6 +24,7 @@
 
 package com.bakdata.common_kafka_streams.s3backed;
 
+import static com.bakdata.common_kafka_streams.s3backed.S3BackedSerializer.CHARSET;
 import static com.bakdata.common_kafka_streams.s3backed.S3BackedSerializer.IS_BACKED;
 import static com.bakdata.common_kafka_streams.s3backed.S3BackedSerializer.IS_NOT_BACKED;
 
@@ -36,9 +37,21 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 
+/**
+ * Kafka {@code Deserializer} that deserializes messages serialized by {@link S3BackedSerializer}.
+ * <p>
+ * A message that is deserialized by this deserializer flags if it contains the actual message or if the actual
+ * message is backed on Amazon S3. If the message is backed on S3, the actual message is downloaded. In any case, the
+ * deserialization is delegated to a proper deserializer of this message type.
+ * <p>
+ * For configuration options, see {@link S3BackedSerdeConfig}.
+ *
+ * @param <T> type of records that can be deserialized by this instance
+ */
 @NoArgsConstructor
 @Slf4j
 public class S3BackedDeserializer<T> implements Deserializer<T> {
@@ -47,7 +60,7 @@ public class S3BackedDeserializer<T> implements Deserializer<T> {
 
     static String deserializeUri(final byte[] data) {
         final byte[] uriBytes = getBytes(data);
-        return new String(uriBytes);
+        return new String(uriBytes, CHARSET);
     }
 
     static byte[] getBytes(final byte[] data) {
@@ -93,7 +106,7 @@ public class S3BackedDeserializer<T> implements Deserializer<T> {
             log.info("Extracted large object from S3: {}", uri);
             return bytes;
         } catch (final IOException e) {
-            throw new RuntimeException("Cannot handle S3 backed object: " + s3URI, e);
+            throw new SerializationException("Cannot handle S3 backed object: " + s3URI, e);
         }
     }
 }

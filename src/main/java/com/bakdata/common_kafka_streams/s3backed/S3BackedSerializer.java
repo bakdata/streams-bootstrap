@@ -30,20 +30,38 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
+/**
+ * Kafka {@code Serializer} that serializes large messages on Amazon S3 in order to cope with messages exceeding the
+ * broker side maximum message size, usually indicated by
+ * {@link org.apache.kafka.common.errors.RecordTooLargeException}.
+ * <p>
+ * Each message is serialized by a proper serializer for the message type. If the message size exceeds a defined
+ * threshold, the payload is uploaded to Amazon S3. The message forwarded to Kafka contains a flag if the message has
+ * been backed or not. In case it was backed, the flag is followed by the URI of the S3 object. If the message was not
+ * backed, it contains the actual serialized message.
+ * <p>
+ * For configuration options, see {@link S3BackedSerdeConfig}.
+ *
+ * @param <T> type of records that can be serialized by this instance
+ */
 @NoArgsConstructor
 @Slf4j
 public class S3BackedSerializer<T> implements Serializer<T> {
     public static final byte IS_NOT_BACKED = 0;
     public static final byte IS_BACKED = 1;
+    static final Charset CHARSET = StandardCharsets.UTF_8;
     private static final String VALUE_PREFIX = "values";
     private static final String KEY_PREFIX = "keys";
     private AmazonS3 s3;
@@ -69,7 +87,7 @@ public class S3BackedSerializer<T> implements Serializer<T> {
     }
 
     static byte[] serialize(final String uri) {
-        final byte[] uriBytes = uri.getBytes();
+        final byte[] uriBytes = uri.getBytes(CHARSET);
         return serialize(uriBytes, IS_BACKED);
     }
 
@@ -127,7 +145,7 @@ public class S3BackedSerializer<T> implements Serializer<T> {
             log.info("Stored large object on S3: {}", uri);
             return uri;
         } catch (final IOException e) {
-            throw new RuntimeException("Error uploading object to S3", e);
+            throw new SerializationException("Error uploading object to S3", e);
         }
     }
 
