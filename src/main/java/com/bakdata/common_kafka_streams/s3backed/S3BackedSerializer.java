@@ -142,10 +142,10 @@ public class S3BackedSerializer<T> implements Serializer<T> {
             metadata.setContentLength(bytes.length);
             this.s3.putObject(bucket, key, content, metadata);
             final String uri = "s3://" + bucket + "/" + key;
-            log.info("Stored large object on S3: {}", uri);
+            log.info("Stored large message on S3: {}", uri);
             return uri;
         } catch (final IOException e) {
-            throw new SerializationException("Error uploading object to S3", e);
+            throw new SerializationException("Error backing message on S3", e);
         }
     }
 

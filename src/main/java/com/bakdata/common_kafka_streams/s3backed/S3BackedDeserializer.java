@@ -103,10 +103,10 @@ public class S3BackedDeserializer<T> implements Deserializer<T> {
         try (final S3Object s3Object = this.s3.getObject(s3URI.getBucket(), s3URI.getKey());
                 final InputStream in = s3Object.getObjectContent()) {
             final byte[] bytes = in.readAllBytes();
-            log.info("Extracted large object from S3: {}", uri);
+            log.info("Extracted large message from S3: {}", uri);
             return bytes;
         } catch (final IOException e) {
-            throw new SerializationException("Cannot handle S3 backed object: " + s3URI, e);
+            throw new SerializationException("Cannot handle S3 backed message: " + s3URI, e);
         }
     }
 }

@@ -154,8 +154,8 @@ public class S3BackedSerdeConfig extends AbstractConfig {
     }
 
     private Optional<AWSCredentialsProvider> getCredentialsProvider() {
-        final String accessKey = this.getString(S3_ACCESS_KEY_CONFIG);
-        final String secretKey = this.getString(S3_SECRET_KEY_CONFIG);
+        final String accessKey = this.getPassword(S3_ACCESS_KEY_CONFIG).value();
+        final String secretKey = this.getPassword(S3_SECRET_KEY_CONFIG).value();
         if (StringUtils.isEmpty(accessKey) || StringUtils.isEmpty(secretKey)) {
             return Optional.empty();
         } else {
