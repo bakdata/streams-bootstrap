@@ -42,35 +42,57 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes.ByteArraySerde;
 
+/**
+ * This class provides configuration options for {@link S3BackedSerde}. It offers configuration of the following
+ * properties:
+ * <p>
+ * <ul>
+ *     <li> S3 endpoint
+ *     <li> S3 region
+ *     <li> S3 access key
+ *     <li> S3 secret key
+ *     <li> S3 enable path-style access
+ *     <li> key serde class
+ *     <li> value serde class
+ *     <li> maximum message size
+ *     <li> S3 base path
+ * </ul>
+ */
 public class S3BackedSerdeConfig extends AbstractConfig {
-    public static final String S3_ENDPOINT_DOC = "S3 endpoint to use for connecting to Amazon S3";
-    public static final String S3_ENDPOINT_DEFAULT = "";
-    public static final String S3_REGION_DOC = "S3 region to use";
-    public static final String S3_REGION_DEFAULT = "";
-    public static final String S3_ACCESS_KEY_DOC = "S3 access key to use";
-    public static final String S3_ACCESS_KEY_DEFAULT = "";
-    public static final String S3_SECRET_KEY_DOC = "S3 secret key to use";
-    public static final String S3_SECRET_KEY_DEFAULT = "";
-    public static final String S3_ENABLE_PATH_STYLE_ACCESS_DOC = "Whether to verify SSL when connecting to S3";
-    public static final boolean S3_ENABLE_PATH_STYLE_ACCESS_DEFAULT = false;
-    public static final String KEY_SERDE_CLASS_DOC = "Key serde class to use";
-    public static final Class<? extends Serde<?>> KEY_SERDE_CLASS_DEFAULT = ByteArraySerde.class;
-    public static final String VALUE_SERDE_CLASS_DOC = "Value serde class to use";
-    public static final Class<? extends Serde<?>> VALUE_SERDE_CLASS_DEFAULT = ByteArraySerde.class;
-    public static final String MAX_SIZE_DOC = "Max size before storing large messages on S3";
-    public static final int MAX_SIZE_DEFAULT = 1000 * 1000;
-    public static final String BASE_PATH_DOC = "Base path to store data";
-    public static final String BASE_PATH_DEFAULT = "";
     public static final String PREFIX = "s3backed.";
     public static final String S3_ENDPOINT_CONFIG = PREFIX + "endpoint";
+    public static final String S3_ENDPOINT_DEFAULT = "";
     public static final String S3_REGION_CONFIG = PREFIX + "region";
+    public static final String S3_ENDPOINT_DOC = "Endpoint to use for connection to Amazon S3. Must be configured in"
+            + " conjunction with " + S3_REGION_CONFIG + ". Leave empty if default S3 endpoint should be used.";
+    public static final String S3_REGION_DOC = "S3 region to use. Must be configured in conjunction"
+            + " with " + S3_ENDPOINT_CONFIG + ". Leave empty if default S3 region should be used.";
+    public static final String S3_REGION_DEFAULT = "";
     public static final String S3_ACCESS_KEY_CONFIG = PREFIX + "access.key";
+    public static final String S3_ACCESS_KEY_DOC =
+            "AWS access key to use for connecting to S3. Leave empty if AWS credential provider chain should be used.";
+    public static final String S3_ACCESS_KEY_DEFAULT = "";
     public static final String S3_SECRET_KEY_CONFIG = PREFIX + "secret.key";
+    public static final String S3_SECRET_KEY_DOC =
+            "AWS secret key to use for connecting to S3. Leave empty if AWS credential provider chain should be used.";
+    public static final String S3_SECRET_KEY_DEFAULT = "";
     public static final String S3_ENABLE_PATH_STYLE_ACCESS_CONFIG = PREFIX + "path.style.access";
+    public static final String S3_ENABLE_PATH_STYLE_ACCESS_DOC = "Enable path-style access for S3 client.";
+    public static final boolean S3_ENABLE_PATH_STYLE_ACCESS_DEFAULT = false;
     public static final String KEY_SERDE_CLASS_CONFIG = PREFIX + "key.serde";
+    public static final String KEY_SERDE_CLASS_DOC = "Key serde class to use.";
     public static final String VALUE_SERDE_CLASS_CONFIG = PREFIX + "value.serde";
+    public static final Class<? extends Serde<?>> KEY_SERDE_CLASS_DEFAULT = ByteArraySerde.class;
+    public static final String VALUE_SERDE_CLASS_DOC = "Value serde class to use.";
+    public static final Class<? extends Serde<?>> VALUE_SERDE_CLASS_DEFAULT = ByteArraySerde.class;
     public static final String MAX_SIZE_CONFIG = PREFIX + "max.size";
+    public static final String MAX_SIZE_DOC = "Maximum message size before serialized messages are stored on S3.";
+    public static final int MAX_SIZE_DEFAULT = 1000 * 1000;
     public static final String BASE_PATH_CONFIG = PREFIX + "base.path";
+    public static final String BASE_PATH_DOC =
+            "Base path to store data. Must include bucket and any prefix that should be used, e.g., "
+                    + "'s3://my-bucket/my/prefix/'.";
+    public static final String BASE_PATH_DEFAULT = "";
     private static final ConfigDef config = baseConfigDef();
 
     protected S3BackedSerdeConfig(final Map<?, ?> originals) {
@@ -127,16 +149,13 @@ public class S3BackedSerdeConfig extends AbstractConfig {
     private Optional<EndpointConfiguration> getEndpointConfiguration() {
         final String endpoint = this.getString(S3_ENDPOINT_CONFIG);
         final String region = this.getString(S3_REGION_CONFIG);
-        if (StringUtils.isEmpty(endpoint) || StringUtils.isEmpty(region)) {
-            return Optional.empty();
-        } else {
-            return Optional.of(new EndpointConfiguration(endpoint, region));
-        }
+        return StringUtils.isEmpty(endpoint) || StringUtils.isEmpty(region) ? Optional.empty()
+                : Optional.of(new EndpointConfiguration(endpoint, region));
     }
 
     private Optional<AWSCredentialsProvider> getCredentialsProvider() {
-        final String accessKey = this.getString(S3_ENDPOINT_CONFIG);
-        final String secretKey = this.getString(S3_REGION_CONFIG);
+        final String accessKey = this.getString(S3_ACCESS_KEY_CONFIG);
+        final String secretKey = this.getString(S3_SECRET_KEY_CONFIG);
         if (StringUtils.isEmpty(accessKey) || StringUtils.isEmpty(secretKey)) {
             return Optional.empty();
         } else {
