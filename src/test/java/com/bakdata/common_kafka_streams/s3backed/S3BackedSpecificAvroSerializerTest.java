@@ -184,7 +184,7 @@ class S3BackedSpecificAvroSerializerTest {
         final String basePath = "s3://" + bucket + "/base/";
         final Properties properties = new Properties();
         properties.put(S3BackedSerdeConfig.MAX_SIZE_CONFIG, 0);
-        properties.put(S3BackedSerdeConfig.BASE_PATH_CONFIG, basePath);
+        properties.setProperty(S3BackedSerdeConfig.BASE_PATH_CONFIG, basePath);
         this.createTopology(S3BackedSpecificAvroSerializerTest::createKeyTopology, properties);
         final AmazonS3 s3Client = S3_MOCK.createS3Client();
         s3Client.createBucket(bucket);
@@ -209,7 +209,7 @@ class S3BackedSpecificAvroSerializerTest {
         final String basePath = "s3://" + bucket + "/base/";
         final Properties properties = new Properties();
         properties.put(S3BackedSerdeConfig.MAX_SIZE_CONFIG, 0);
-        properties.put(S3BackedSerdeConfig.BASE_PATH_CONFIG, basePath);
+        properties.setProperty(S3BackedSerdeConfig.BASE_PATH_CONFIG, basePath);
         this.createTopology(S3BackedSpecificAvroSerializerTest::createValueTopology, properties);
         final AmazonS3 s3Client = S3_MOCK.createS3Client();
         s3Client.createBucket(bucket);

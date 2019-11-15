@@ -79,7 +79,9 @@ allprojects {
 
         "testImplementation"(group = "org.mockito", name = "mockito-core", version = "2.28.2")
         "testImplementation"(group = "org.mockito", name = "mockito-junit-jupiter", version = "2.28.2")
-        "testImplementation"(group = "com.adobe.testing", name = "s3mock-junit5", version = "2.1.8")
+        "testImplementation"(group = "com.adobe.testing", name = "s3mock-junit5", version = "2.1.8") {
+            exclude(group = "ch.qos.logback")
+        }
     }
 }
 
