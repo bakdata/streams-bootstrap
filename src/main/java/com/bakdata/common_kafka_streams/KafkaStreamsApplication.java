@@ -24,27 +24,18 @@
 
 package com.bakdata.common_kafka_streams;
 
-import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import kafka.tools.StreamsResetter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.DeleteTopicsResult;
-import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -229,16 +220,6 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         return kafkaConfig;
     }
 
-    protected static void runResetter(final String inputTopics, final String brokers, final String appId) {
-        final String[] args = {
-                "--application-id", appId,
-                "--bootstrap-servers", brokers,
-                "--input-topics", inputTopics
-        };
-        final StreamsResetter resetter = new StreamsResetter();
-        resetter.run(args);
-    }
-
 
     protected void runStreamsApplication() {
         this.streams.start();
@@ -250,55 +231,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      * optionally the output and error topic.
      */
     protected void runCleanUp() {
-        this.inputTopics.stream()
-                .filter(topic -> !topic.isBlank())
-                .forEach(topic -> runResetter(topic, this.brokers, this.getUniqueAppId()));
-
-        if (this.deleteOutputTopic) {
-            if (!this.outputTopic.isBlank()) {
-                this.deleteTopic(this.outputTopic);
-            }
-            if (!this.errorTopic.isBlank()) {
-                this.deleteTopic(this.errorTopic);
-            }
-        }
-        this.streams.cleanUp();
-        try {
-            Thread.sleep(RESET_SLEEP_MS);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected DeleteTopicsResult deleteTopic(final String topic) {
-        this.resetSchemaRegistry(topic);
-        try (final KafkaAdminClient adminClient = (KafkaAdminClient) AdminClient.create(this.getKafkaProperties())) {
-            return adminClient.deleteTopics(List.of(topic));
-        }
-    }
-
-    protected void resetSchemaRegistry(final String topic) {
-        final SchemaRegistryClient client = new CachedSchemaRegistryClient(this.schemaRegistryUrl, 100);
-        try {
-            final Collection<String> allSubjects = client.getAllSubjects();
-            final String keySubject = topic + "-key";
-            if (allSubjects.contains(keySubject)) {
-                client.deleteSubject(keySubject);
-                log.info("Cleaned key schema of topic {}", topic);
-            } else {
-                log.info("No key schema for topic {} available", topic);
-            }
-            final String valueSubject = topic + "-value";
-            if (allSubjects.contains(valueSubject)) {
-                client.deleteSubject(valueSubject);
-                log.info("Cleaned value schema of topic {}", topic);
-            } else {
-                log.info("No value schema for topic {} available", topic);
-            }
-        } catch (final IOException | RestClientException e) {
-            throw new RuntimeException("Could not reset schema registry for topic " + topic, e);
-        }
+        final CleanUpRunner cleanUpRunner = new CleanUpRunner(this);
+        cleanUpRunner.run();
     }
 
     public String getInputTopic() {

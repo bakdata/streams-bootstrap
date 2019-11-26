@@ -30,6 +30,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 
 import com.bakdata.common.kafka.streams.TestRecord;
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
+import com.bakdata.common_kafka_streams.test_applications.ComplexTopologyApplication;
 import com.bakdata.common_kafka_streams.test_applications.MirrorKeyWithAvro;
 import com.bakdata.common_kafka_streams.test_applications.MirrorValueWithAvro;
 import com.bakdata.common_kafka_streams.test_applications.WordCount;
@@ -52,9 +53,11 @@ import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValuesTransactional;
 import net.mguenther.kafka.junit.SendValuesTransactional;
+import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -175,9 +178,7 @@ class CleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.app.run();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.app.close();
+        this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-value", this.app.getInputTopic() + "-value");
@@ -203,9 +204,7 @@ class CleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.app.run();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.app.close();
+        this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-key", this.app.getInputTopic() + "-key");
@@ -213,6 +212,65 @@ class CleanUpTest {
         softly.assertThat(client.getAllSubjects())
                 .doesNotContain(this.app.getOutputTopic() + "-key")
                 .contains(this.app.getInputTopic() + "-key");
+    }
+
+    @Test
+    void shouldDeleteSchemaOfInternalTopic(final SoftAssertions softly)
+            throws InterruptedException, IOException, RestClientException {
+        this.app = this.createBuffer();
+        final String manualTopic = "internal-topic";
+        final String automaticTopic =
+                this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
+
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+        final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.runApp();
+
+        softly.assertThat(client.getAllSubjects())
+                .contains(automaticTopic + "-value", manualTopic + "-value", this.app.getInputTopic() + "-value");
+
+        this.runCleanUpWithDeletion();
+
+        softly.assertThat(client.getAllSubjects())
+                .doesNotContain(automaticTopic + "-value", manualTopic + "-value")
+                .contains(this.app.getInputTopic() + "-value");
+    }
+
+    @Test
+    void shouldDeleteSchemaOfBackingTopic(final SoftAssertions softly)
+            throws IOException, RestClientException, InterruptedException {
+        this.app = this.createBuffer();
+
+        final String backingTopic =
+                this.app.getUniqueAppId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog-value";
+
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+        final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.runApp();
+
+        softly.assertThat(client.getAllSubjects()).contains(backingTopic, this.app.getInputTopic() + "-value");
+
+        this.runCleanUpWithDeletion();
+
+        softly.assertThat(client.getAllSubjects())
+                .doesNotContain(backingTopic)
+                .contains(this.app.getInputTopic() + "-value");
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
@@ -236,10 +294,7 @@ class CleanUpTest {
     private void runAndAssertContent(final SoftAssertions softly, final Iterable<KeyValue<String, Long>> expectedValues,
             final String description)
             throws InterruptedException {
-        this.app.run();
-        // Wait until stream application has consumed all data
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.app.close();
+        this.runApp();
 
         final List<KeyValue<String, Long>> output = this.readOutputTopic(this.app.getOutputTopic());
         softly.assertThat(output)
@@ -249,12 +304,17 @@ class CleanUpTest {
 
     private void runAndAssertSize(final SoftAssertions softly, final int expectedMessageCount)
             throws InterruptedException {
+        this.runApp();
+        final List<KeyValue<String, Long>> records = this.readOutputTopic(this.app.getOutputTopic());
+        softly.assertThat(records).hasSize(expectedMessageCount);
+    }
+
+    private void runApp() throws InterruptedException {
         this.app.run();
         // Wait until stream application has consumed all data
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.app.close();
-        final List<KeyValue<String, Long>> records = this.readOutputTopic(this.app.getOutputTopic());
-        softly.assertThat(records).hasSize(expectedMessageCount);
+
     }
 
     private KafkaStreamsApplication createWordCountApplication() {
@@ -267,6 +327,11 @@ class CleanUpTest {
 
     private KafkaStreamsApplication createMirrorKeyApplication() {
         return this.setupApp(new MirrorKeyWithAvro(), "input", "output", "value_error");
+    }
+
+    private KafkaStreamsApplication createBuffer() {
+        this.kafkaCluster.createTopic(TopicConfig.forTopic("internal-topic").useDefaults());
+        return this.setupApp(new ComplexTopologyApplication(), "input", "output", "value_error");
     }
 
     private KafkaStreamsApplication setupApp(final KafkaStreamsApplication application, final String inputTopicName,
