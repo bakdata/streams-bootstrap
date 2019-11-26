@@ -20,6 +20,7 @@ import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyDescription.Processor;
 import org.apache.kafka.streams.TopologyDescription.Sink;
 
+
 @Slf4j
 public class CleanUpRunner {
     private final Topology topology;
@@ -69,11 +70,11 @@ public class CleanUpRunner {
     protected void deleteTopics() {
         final List<Node> nodes = this.getNodes(this.topology);
 
-        this.getAutomaticallyCreatedTopics(nodes).forEach(this::resetSchemaRegistry);
+        this.getInternalTopics(nodes).forEach(this::resetSchemaRegistry);
 
-        final List<String> manuallyCreatedTopics = this.getManuallyCreatedTopics(nodes);
-        manuallyCreatedTopics.forEach(this::deleteTopic);
-        manuallyCreatedTopics.forEach(this::resetSchemaRegistry);
+        final List<String> externalTopics = this.getExternalTopics(nodes);
+        externalTopics.forEach(this::deleteTopic);
+        externalTopics.forEach(this::resetSchemaRegistry);
     }
 
     protected void deleteTopic(final String topic) {
@@ -114,26 +115,26 @@ public class CleanUpRunner {
                 .collect(Collectors.toList());
     }
 
-    private List<String> getManuallyCreatedTopics(final Collection<Node> nodes) {
-        return this.getSinkTopics(nodes)
+    private List<String> getExternalTopics(final Collection<Node> nodes) {
+        return this.getAllSinks(nodes)
                 .filter(this::isExternalTopic)
                 .collect(Collectors.toList());
     }
 
-    private List<String> getAutomaticallyCreatedTopics(final Collection<Node> nodes) {
-        final Stream<String> sinkTopics = this.getAutomaticSinkTopics(nodes);
+    private List<String> getInternalTopics(final Collection<Node> nodes) {
+        final Stream<String> internalSinks = this.getInternalSinks(nodes);
         final Stream<String> backingTopics = this.getBackingTopics(nodes);
 
-        return Stream.concat(sinkTopics, backingTopics).collect(Collectors.toList());
+        return Stream.concat(internalSinks, backingTopics).collect(Collectors.toList());
     }
 
-    private Stream<String> getAutomaticSinkTopics(final Collection<Node> nodes) {
-        return this.getSinkTopics(nodes)
+    private Stream<String> getInternalSinks(final Collection<Node> nodes) {
+        return this.getAllSinks(nodes)
                 .filter(this::isInternalTopic)
                 .map(topic -> String.format("%s-%s", this.streamsId, topic));
     }
 
-    private Stream<String> getSinkTopics(final Collection<Node> nodes) {
+    private Stream<String> getAllSinks(final Collection<Node> nodes) {
         return nodes.stream()
                 .filter(node -> node instanceof Sink)
                 .map(node -> ((Sink) node))
@@ -149,8 +150,7 @@ public class CleanUpRunner {
     }
 
     private boolean isInternalTopic(final String topic) {
-        return (topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-")) &&
-                (topic.endsWith("-repartition") || topic.endsWith("-changelog"));
+        return topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-");
     }
 
     private boolean isExternalTopic(final String topic) {
