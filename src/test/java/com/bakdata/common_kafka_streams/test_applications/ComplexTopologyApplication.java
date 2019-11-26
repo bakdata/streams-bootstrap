@@ -16,11 +16,14 @@ import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.kstream.Windowed;
 
 public class ComplexTopologyApplication extends KafkaStreamsApplication {
+
+    public static final String THROUGH_TOPIC = "internal-topic";
+
     @Override
     public void buildTopology(final StreamsBuilder builder) {
         final KStream<String, TestRecord> input = builder.stream(this.getInputTopic());
 
-        final KTable<Windowed<String>, TestRecord> reduce = input.through("internal-topic")
+        final KTable<Windowed<String>, TestRecord> reduce = input.through(THROUGH_TOPIC)
                 .groupByKey()
                 .windowedBy(TimeWindows.of(5))
                 .reduce((a, b) -> a);

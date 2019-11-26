@@ -231,8 +231,17 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      * optionally the output and error topic.
      */
     protected void runCleanUp() {
-        final CleanUpRunner cleanUpRunner = new CleanUpRunner(this);
-        cleanUpRunner.run();
+        final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
+                .topology(this.createTopology())
+                .appId(this.getUniqueAppId())
+                .kafkaProperties(this.getKafkaProperties())
+                .schemaRegistryUrl(this.schemaRegistryUrl)
+                .inputTopics(this.inputTopics)
+                .brokers(this.brokers)
+                .streams(this.streams)
+                .build();
+
+        cleanUpRunner.run(this.deleteOutputTopic);
     }
 
     public String getInputTopic() {

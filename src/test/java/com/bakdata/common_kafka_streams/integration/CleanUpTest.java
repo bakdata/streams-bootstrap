@@ -218,7 +218,7 @@ class CleanUpTest {
     void shouldDeleteSchemaOfInternalTopic(final SoftAssertions softly)
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createBuffer();
-        final String manualTopic = "internal-topic";
+        final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
         final String automaticTopic =
                 this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
 
