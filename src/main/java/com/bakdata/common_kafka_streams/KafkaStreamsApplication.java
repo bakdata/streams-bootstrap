@@ -241,6 +241,10 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                 .streams(this.streams)
                 .build();
 
+        this.cleanUpRun(cleanUpRunner);
+    }
+
+    protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
         cleanUpRunner.run(this.deleteOutputTopic);
     }
 

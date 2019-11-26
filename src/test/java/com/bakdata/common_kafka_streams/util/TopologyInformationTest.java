@@ -10,43 +10,35 @@ import org.junit.jupiter.api.Test;
 
 class TopologyInformationTest {
 
-    private KafkaStreamsApplication application = null;
+    private KafkaStreamsApplication app = null;
+    private TopologyInformation topologyInformation = null;
 
     @BeforeEach
     void setup() {
-        this.application = new ComplexTopologyApplication();
-        this.application.setInputTopics(List.of("input"));
-        this.application.setOutputTopic("output");
+        this.app = new ComplexTopologyApplication();
+        this.app.setInputTopics(List.of("input"));
+        this.app.setOutputTopic("output");
+        this.topologyInformation = new TopologyInformation(this.app.createTopology(), this.app.getUniqueAppId());
     }
 
     @Test
     void shouldReturnAllExternalSinkTopics() {
-        this.setup();
-
-        final TopologyInformation topologyInformation =
-                new TopologyInformation(this.application.createTopology(), this.application.getUniqueAppId());
-        assertThat(topologyInformation.getExternalSinkTopics())
+        assertThat(this.topologyInformation.getExternalSinkTopics())
                 .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC,
-                        this.application.getOutputTopic());
+                        this.app.getOutputTopic());
     }
 
     @Test
     void shouldNotReturnInputTopics() {
-        this.setup();
-
-        final TopologyInformation topologyInformation =
-                new TopologyInformation(this.application.createTopology(), this.application.getUniqueAppId());
-        assertThat(topologyInformation.getExternalSinkTopics())
-                .doesNotContain(this.application.getInputTopic());
+        assertThat(this.topologyInformation.getExternalSinkTopics())
+                .doesNotContain(this.app.getInputTopic());
     }
 
     @Test
     void shouldReturnAllInternalTopics() {
-        final TopologyInformation topologyInformation =
-                new TopologyInformation(this.application.createTopology(), this.application.getUniqueAppId());
-        assertThat(topologyInformation.getInternalTopics())
+        assertThat(this.topologyInformation.getInternalTopics())
                 .hasSize(3)
-                .allMatch(topic -> topic.startsWith(this.application.getUniqueAppId()))
+                .allMatch(topic -> topic.startsWith(this.app.getUniqueAppId()))
                 .allMatch(topic -> topic.contains("-KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
     }

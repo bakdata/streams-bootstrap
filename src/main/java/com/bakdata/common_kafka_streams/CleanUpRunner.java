@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019 bakdata GmbH
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.bakdata.common_kafka_streams;
 
 import static com.bakdata.common_kafka_streams.KafkaStreamsApplication.RESET_SLEEP_MS;
@@ -57,7 +81,7 @@ public class CleanUpRunner {
         }
     }
 
-    protected static void runResetter(final String inputTopics, final String brokers, final String appId) {
+    public static void runResetter(final String inputTopics, final String brokers, final String appId) {
         final String[] args = {
                 "--application-id", appId,
                 "--bootstrap-servers", brokers,
@@ -67,22 +91,26 @@ public class CleanUpRunner {
         resetter.run(args);
     }
 
-    protected void deleteTopics() {
+    public void deleteTopics() {
         // the StreamsResetter is responsible for deleting internal topics
         this.topologyInformation.getInternalTopics().forEach(this::resetSchemaRegistry);
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
-        externalTopics.forEach(this::deleteTopic);
-        externalTopics.forEach(this::resetSchemaRegistry);
+        externalTopics.forEach(this::deleteTopicAndResetSchemaRegistry);
     }
 
-    protected void deleteTopic(final String topic) {
+    public void deleteTopicAndResetSchemaRegistry(final String topic) {
+        this.deleteTopic(topic);
+        this.resetSchemaRegistry(topic);
+    }
+
+    public void deleteTopic(final String topic) {
         log.info("Delete topic: {}", topic);
         try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
             adminClient.deleteTopics(List.of(topic));
         }
     }
 
-    protected void resetSchemaRegistry(final String topic) {
+    public void resetSchemaRegistry(final String topic) {
         log.info("Reset topic: {}", topic);
         try {
             final Collection<String> allSubjects = this.client.getAllSubjects();
