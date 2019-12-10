@@ -6,9 +6,6 @@ metadata:
     app: {{ template "streams-app.name" . }}
     chart: {{ template "streams-app.chart" . }}
     release: {{ .Release.Name }}
-    {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
-    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -30,6 +27,9 @@ spec:
       labels:
         app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
+        {{- range $key, $value := .Values.labels }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
     spec:
       affinity:
         podAntiAffinity:
