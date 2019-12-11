@@ -1,5 +1,5 @@
 /*
- * MIT License
+ * MIT LICENCE
  *
  * Copyright (c) 2019 bakdata GmbH
  *
@@ -29,16 +29,18 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
+import com.bakdata.common_kafka_streams.CleanUpRunner;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
-import org.apache.kafka.clients.admin.DeleteTopicsResult;
-import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.Topology;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,20 +51,29 @@ class DeleteTopicTest {
     private static final int TIMEOUT_SECONDS = 10;
     private static final String TOPIC = "topic";
     private EmbeddedKafkaCluster kafkaCluster = null;
-    private DeleteTopicTestApplication app = null;
+    private CleanUpRunner cleanUpRunner = null;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
 
 
     @BeforeEach
-    void setup() throws InterruptedException {
+    void setup() {
         this.kafkaCluster = provisionWith(useDefaults());
         this.kafkaCluster.start();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
 
-        this.app = new DeleteTopicTestApplication();
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        final Properties kafkaProperties = new Properties();
+        kafkaProperties.put("application.id", "id");
+        kafkaProperties.put("bootstrap.servers", kafkaCluster.getBrokerList());
+
+        this.cleanUpRunner = CleanUpRunner.builder()
+                .topology(new Topology())
+                .appId("id")
+                .kafkaProperties(kafkaProperties)
+                .schemaRegistryUrl(schemaRegistryMockExtension.getUrl())
+                .inputTopics(Collections.emptyList())
+                .brokers(kafkaCluster.getBrokerList())
+                .streams(new KafkaStreams(new Topology(), kafkaProperties))
+                .build();
     }
 
     @AfterEach
@@ -81,7 +92,7 @@ class DeleteTopicTest {
                 .inTransaction(TOPIC, List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        this.app.deleteTopic(TOPIC);
+        this.cleanUpRunner.deleteTopic(TOPIC);
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.exists(TOPIC))
@@ -89,20 +100,4 @@ class DeleteTopicTest {
                 .isFalse();
     }
 
-    private static class DeleteTopicTestApplication extends KafkaStreamsApplication {
-        @Override
-        public void buildTopology(final StreamsBuilder builder) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUniqueAppId() {
-            return "foo";
-        }
-
-        @Override
-        protected DeleteTopicsResult deleteTopic(final String topic) {
-            return super.deleteTopic(topic);
-        }
-    }
 }
