@@ -215,12 +215,16 @@ class CleanUpTest {
     }
 
     @Test
-    void shouldDeleteSchemaOfInternalTopic(final SoftAssertions softly)
+    void shouldDeleteSchemaOfIntermediateTopics(final SoftAssertions softly)
             throws InterruptedException, IOException, RestClientException {
-        this.app = this.createBuffer();
-        final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
-        final String automaticTopic =
-                this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
+        this.app = this.createComplexApplication();
+
+        final String inputSubject = this.app.getInputTopic() + "-value";
+        final String internalSubject =
+                this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition" + "-value";
+        final String backingSubject =
+                this.app.getUniqueAppId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog" + "-value";
+        final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
 
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
@@ -235,42 +239,13 @@ class CleanUpTest {
         this.runApp();
 
         softly.assertThat(client.getAllSubjects())
-                .contains(automaticTopic + "-value", manualTopic + "-value", this.app.getInputTopic() + "-value");
+                .contains(inputSubject, internalSubject, backingSubject, manualSubject);
 
         this.runCleanUpWithDeletion();
 
         softly.assertThat(client.getAllSubjects())
-                .doesNotContain(automaticTopic + "-value", manualTopic + "-value")
-                .contains(this.app.getInputTopic() + "-value");
-    }
-
-    @Test
-    void shouldDeleteSchemaOfBackingTopic(final SoftAssertions softly)
-            throws IOException, RestClientException, InterruptedException {
-        this.app = this.createBuffer();
-
-        final String backingTopic =
-                this.app.getUniqueAppId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog-value";
-
-        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-        final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
-                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
-                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
-                .build();
-
-        this.kafkaCluster.send(sendRequest);
-        this.runApp();
-
-        softly.assertThat(client.getAllSubjects()).contains(backingTopic, this.app.getInputTopic() + "-value");
-
-        this.runCleanUpWithDeletion();
-
-        softly.assertThat(client.getAllSubjects())
-                .doesNotContain(backingTopic)
-                .contains(this.app.getInputTopic() + "-value");
+                .doesNotContain(internalSubject, backingSubject, manualSubject)
+                .contains(inputSubject);
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
@@ -329,8 +304,8 @@ class CleanUpTest {
         return this.setupApp(new MirrorKeyWithAvro(), "input", "output", "value_error");
     }
 
-    private KafkaStreamsApplication createBuffer() {
-        this.kafkaCluster.createTopic(TopicConfig.forTopic("internal-topic").useDefaults());
+    private KafkaStreamsApplication createComplexApplication() {
+        this.kafkaCluster.createTopic(TopicConfig.forTopic(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
         return this.setupApp(new ComplexTopologyApplication(), "input", "output", "value_error");
     }
 

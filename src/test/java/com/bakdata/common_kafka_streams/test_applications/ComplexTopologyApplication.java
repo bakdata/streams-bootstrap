@@ -17,7 +17,7 @@ import org.apache.kafka.streams.kstream.Windowed;
 
 public class ComplexTopologyApplication extends KafkaStreamsApplication {
 
-    public static final String THROUGH_TOPIC = "internal-topic";
+    public static final String THROUGH_TOPIC = "through-topic";
 
     @Override
     public void buildTopology(final StreamsBuilder builder) {
