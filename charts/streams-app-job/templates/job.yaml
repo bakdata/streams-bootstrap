@@ -6,6 +6,9 @@ metadata:
     app: {{ template "streams-app-job.name" . }}
     chart: {{ template "streams-app-job.chart" . }}
     release: {{ .Release.Name }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 spec:
   ttlSecondsAfterFinished: 30
   replicas: {{ .Values.replicaCount }}
@@ -18,6 +21,9 @@ spec:
       labels:
         app: {{ template "streams-app-job.name" . }}
         release: {{ .Release.Name }}
+        {{- range $key, $value := .Values.labels }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
     spec:
       restartPolicy: Never
       containers:
