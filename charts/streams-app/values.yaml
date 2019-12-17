@@ -6,8 +6,7 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
-configurationEnvPrefix: "APP_"
-
+configurationEnvPrefix: "APP"
 
 resources:
   requests:
@@ -17,14 +16,26 @@ resources:
     cpu: 500m
     memory: 2G
 
-
-# env:
-#   APP_INPUT_TOPIC: "test"
-#   APP_OUTPUT_TOPIC: "test"
-#   APP_BROKERS: "test:9092"
-#   APP_ROOT_TAG: "root"
-#   APP_OUTPUT_SCHEMA: "/test/schema"
-#   APP_SCHEMA_REGISTRY_URL: "url:1234"
+streams:
+#  brokers: "test:9092"
+#  schemaRegistryUrl: "url:1234"
+  config:
+#    max.poll.records: 500
+#    max.request.size: 1000000
+#  inputTopics:
+#  - input
+#  - input2
+#  outputTopic: output
+#  errorTopic: error
+#  productive: true
+#
+#commandLine:
+#  MY_CLI_PARAM: "foo-bar"
+#
+#debug: false
+#
+env:
+#  MY_ENV_VARIABLE: foo-bar
 
 ## Monitoring
 ## Kafka Connect JMX Settings

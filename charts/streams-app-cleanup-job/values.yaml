@@ -1,0 +1,39 @@
+nameOverride: bakdata-streams-app-job
+
+replicaCount: 1
+
+image: streamsApp
+imageTag: latest
+imagePullPolicy: Always
+
+configurationEnvPrefix: "APP"
+
+streams:
+#  brokers: "test:9092"
+#  schemaRegistryUrl: "url:1234"
+  config:
+#    max.poll.records: 500
+#    max.request.size: 1000000
+#  inputTopics:
+#  - input
+#  - input2
+#  outputTopic: output
+#  errorTopic: error
+#  productive: true
+#
+deleteOutput: false
+#commandLine:
+#  MY_CLI_PARAM: "foo-bar"
+#
+#debug: false
+#
+env:
+#  MY_ENV_VARIABLE: foo-bar
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 300Mi
+  limits:
+    cpu: 500m
+    memory: 2G
