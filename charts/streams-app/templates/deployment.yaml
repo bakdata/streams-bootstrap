@@ -67,7 +67,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
           env:
             - name: ENV_PREFIX
-              value: {{ .Values.configurationEnvPrefix }}
+              value: {{ .Values.configurationEnvPrefix }}_
           {{- range $key, $value := .Values.env }}
             - name: {{ $key | quote }}
               value: {{ $value | quote }}
