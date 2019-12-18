@@ -55,13 +55,13 @@ spec:
               value: "true"
             {{- if hasKey .Values.streams "deleteOutput" }}
             - name: "{{ .Values.configurationEnvPrefix }}_DELETE_OUTPUT"
-              value: {{ .Value.streams.deleteOutput | quote }}
+              value: {{ .Values.streams.deleteOutput | quote }}
             {{- end }}
             {{- if hasKey .Values.streams "inputTopics" }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
               value: {{ .Values.streams.inputTopics | join "," | quote }}
-                    {{- end }}
-                    {{- if hasKey .Values.streams "outputTopic" }}
+            {{- end }}
+            {{- if hasKey .Values.streams "outputTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
               value: {{ .Values.streams.outputTopic | quote }}
             {{- end }}
