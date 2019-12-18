@@ -13,7 +13,8 @@ streams:
 #  schemaRegistryUrl: "url:1234"
   config:
 #    max.poll.records: 500
-#    max.request.size: 1000000
+#    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+#    max.request.size: "1000000"
 #  inputTopics:
 #  - input
 #  - input2
