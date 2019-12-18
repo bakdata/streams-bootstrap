@@ -68,10 +68,6 @@ spec:
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
-          {{- range $key, $value := .Values.env }}
-            - name: {{ $key | quote }}
-              value: {{ $value | quote }}
-          {{- end }}
           {{- range $key, $value := .Values.commandLine }}
             - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
               value: {{ $value | quote }}
@@ -105,6 +101,10 @@ spec:
           {{- if hasKey .Values.streams "errorTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
+          {{- end }}
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
