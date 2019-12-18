@@ -7,7 +7,7 @@ metadata:
   labels:
     app: {{ template "streams-app-cleanup-job.name" . }}
     chart: {{ template "streams-app-cleanup-job.chart" . }}
-    release: {{ .Release.Name }}-clean
+    release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
     {{- end }}
