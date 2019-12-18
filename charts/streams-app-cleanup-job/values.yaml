@@ -21,8 +21,8 @@ streams:
 #  outputTopic: output
 #  errorTopic: error
 #  productive: true
-#
   deleteOutput: false
+
 #commandLine:
 #  MY_CLI_PARAM: "foo-bar"
 #
