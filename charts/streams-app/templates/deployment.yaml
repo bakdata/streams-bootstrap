@@ -99,12 +99,12 @@ spec:
               value: {{ .Values.streams.errorTopic | quote }}
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
-          - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-            value: {{ $value | quote }}
+            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+              value: {{ $value | quote }}
           {{- end }}
           {{- range $key, $value := .Values.env }}
-          - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-            value: {{ $value | quote }}
+            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+              value: {{ $value | quote }}
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
