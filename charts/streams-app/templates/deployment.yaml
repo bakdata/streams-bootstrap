@@ -103,7 +103,7 @@ spec:
             value: {{ $value | quote }}
           {{- end }}
           {{- range $key, $value := .Values.env }}
-          - name: {{ $key | quote }}
+          - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
             value: {{ $value | quote }}
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
