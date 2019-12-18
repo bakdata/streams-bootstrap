@@ -68,10 +68,6 @@ spec:
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
-          {{- range $key, $value := .Values.commandLine }}
-            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-              value: {{ $value | quote }}
-          {{- end }}
             - name: "{{ .Values.configurationEnvPrefix }}_STREAMS_CONFIG"
               value: "{{- range $key, $value := .Values.streams.config }}{{ $key }}={{ $value }},{{- end }}"
           {{- if .Values.prometheus.jmx.enabled }}
@@ -101,6 +97,10 @@ spec:
           {{- if hasKey .Values.streams "errorTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
+          {{- end }}
+          {{- range $key, $value := .Values.commandLine }}
+          - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+            value: {{ $value | quote }}
           {{- end }}
           {{- range $key, $value := .Values.env }}
           - name: {{ $key | quote }}
