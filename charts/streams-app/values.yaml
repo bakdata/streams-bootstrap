@@ -46,6 +46,9 @@ jmx:
   metricRules:
     - ".*"
 
+annotations:
+  MY_ANNOTATION: "foo-bar"
+
 
 ## Prometheus Exporter Configuration
 ## ref: https://prometheus.io/docs/instrumenting/exporters/
