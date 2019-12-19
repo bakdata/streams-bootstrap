@@ -19,7 +19,7 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or .Values.awsRole .Values.prometheus.jmx.enabled }}
+    {{- if or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.annotations }}
       annotations:
       {{- if .Values.awsRole }}
         iam.amazonaws.com/role: {{ .Values.awsRole }}
@@ -27,6 +27,9 @@ spec:
       {{- if .Values.prometheus.jmx.enabled }}
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
+      {{- end }}
+      {{- range $key, $value := .Values.annotations }}
+        {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
     {{- end }}
       labels:
