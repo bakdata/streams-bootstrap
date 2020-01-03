@@ -177,21 +177,36 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     }
 
     /**
-     * <p>This method should give a default topic configuration to run your streaming application with.</p>
+     * <p>This method specifies the configuration to run your streaming application with.</p>
+     * To add a custom configuration please override {@link #createKafkaProperties()}. Configuration properties
+     * specified via cli option {@code --streams-config} are always applied with highest priority.
+     *
+     * @return Returns Kafka Streams configuration {@link Properties}
+     */
+    public final Properties getKafkaProperties() {
+        final Properties kafkaConfig = this.createKafkaProperties();
+
+        this.streamsConfig.forEach(kafkaConfig::setProperty);
+
+        return kafkaConfig;
+    }
+
+    /**
+     * <p>This method should give a default configuration to run your streaming application with.</p>
      * To add a custom configuration please add a similar method to your custom application class:
      * <pre>{@code
-     *   public Properties getKafkaProperties() {
+     *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
-     *       Properties kafkaConfig = super.getKafkaProperties();
+     *       Properties kafkaConfig = super.createKafkaProperties();
      *       kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
      *       kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
      *       return kafkaConfig;
      *   }
      * }</pre>
      *
-     * @return Returns a default kafka configuration {@link Properties}
+     * @return Returns a default Kafka Streams configuration {@link Properties}
      */
-    public Properties getKafkaProperties() {
+    protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
 
         // exactly once and order
@@ -214,12 +229,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.setProperty(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
-
-        this.streamsConfig.forEach(kafkaConfig::setProperty);
-
         return kafkaConfig;
     }
-
 
     protected void runStreamsApplication() {
         this.streams.start();

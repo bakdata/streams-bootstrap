@@ -42,8 +42,8 @@ public class ComplexTopologyApplication extends KafkaStreamsApplication {
     }
 
     @Override
-    public Properties getKafkaProperties() {
-        final Properties kafkaConfig = super.getKafkaProperties();
+    public Properties createKafkaProperties() {
+        final Properties kafkaConfig = super.createKafkaProperties();
         kafkaConfig.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         kafkaConfig.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
         return kafkaConfig;
