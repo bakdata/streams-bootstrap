@@ -146,6 +146,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         } else {
             this.runStreamsApplication();
         }
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
     protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
@@ -234,7 +235,6 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
 
     protected void runStreamsApplication() {
         this.streams.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
     /**
