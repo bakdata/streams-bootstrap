@@ -30,6 +30,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 
 import com.bakdata.common.kafka.streams.TestRecord;
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
+import com.bakdata.common_kafka_streams.test_applications.CloseFlagApp;
 import com.bakdata.common_kafka_streams.test_applications.ComplexTopologyApplication;
 import com.bakdata.common_kafka_streams.test_applications.MirrorKeyWithAvro;
 import com.bakdata.common_kafka_streams.test_applications.MirrorValueWithAvro;
@@ -248,6 +249,15 @@ class CleanUpTest {
                 .contains(inputSubject);
     }
 
+    @Test
+    void shouldCallClose(final SoftAssertions softly) {
+        final CloseFlagApp closeApplication = this.createCloseApplication();
+        this.app = closeApplication;
+        softly.assertThat(closeApplication.isClosed()).isFalse();
+        this.runCleanUpWithDeletion();
+        softly.assertThat(closeApplication.isClosed()).isTrue();
+    }
+
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
         final ReadKeyValues<String, Long> readRequest = ReadKeyValues.from(outputTopic, Long.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class).build();
@@ -300,6 +310,10 @@ class CleanUpTest {
         return this.setupApp(new MirrorValueWithAvro(), "input", "output", "key_error");
     }
 
+    private CloseFlagApp createCloseApplication() {
+        return this.setupApp(new CloseFlagApp(), "input", "output", "key_error");
+    }
+
     private KafkaStreamsApplication createMirrorKeyApplication() {
         return this.setupApp(new MirrorKeyWithAvro(), "input", "output", "value_error");
     }
@@ -309,7 +323,7 @@ class CleanUpTest {
         return this.setupApp(new ComplexTopologyApplication(), "input", "output", "value_error");
     }
 
-    private KafkaStreamsApplication setupApp(final KafkaStreamsApplication application, final String inputTopicName,
+    private <T extends KafkaStreamsApplication> T setupApp(final T application, final String inputTopicName,
             final String outputTopicName, final String errorTopicName) {
         application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         application.setInputTopics(List.of(inputTopicName));
