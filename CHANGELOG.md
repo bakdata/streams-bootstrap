@@ -1,5 +1,21 @@
 # Change Log
 
+## [1.2.0](https://github.com/bakdata/common-kafka-streams/tree/1.2.0) (2020-01-08)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.13...1.2.0)
+
+**Implemented enhancements:**
+
+- Call close after application clean up [\#46](https://github.com/bakdata/common-kafka-streams/pull/46) ([@philipp94831](https://github.com/philipp94831))
+- Apply overridden Kafka config before CLI passed configuration [\#44](https://github.com/bakdata/common-kafka-streams/issues/44)
+
+**Merged pull requests:**
+
+- Prioritize Kafka Streams Config passed via CLI over overridden properties [\#45](https://github.com/bakdata/common-kafka-streams/pull/45) ([@philipp94831](https://github.com/philipp94831))
+- Add custom annotations [\#43](https://github.com/bakdata/common-kafka-streams/pull/43) ([@SvenLehmann](https://github.com/SvenLehmann))
+- Improve values.yaml structure [\#42](https://github.com/bakdata/common-kafka-streams/pull/42) ([@SvenLehmann](https://github.com/SvenLehmann))
+- Allow custom labels for jobs and deployments [\#41](https://github.com/bakdata/common-kafka-streams/pull/41) ([@SvenLehmann](https://github.com/SvenLehmann))
+- Reset internal topics [\#40](https://github.com/bakdata/common-kafka-streams/pull/40) ([@torbsto](https://github.com/torbsto))
+
 ## [1.1.13](https://github.com/bakdata/common-kafka-streams/tree/1.1.13) (2019-11-15)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.12...1.1.13)
 
