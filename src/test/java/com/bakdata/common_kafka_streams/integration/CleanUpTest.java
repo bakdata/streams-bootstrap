@@ -125,6 +125,42 @@ class CleanUpTest {
     }
 
     @Test
+    void shouldDeleteInternalTopics(final SoftAssertions softly) throws InterruptedException {
+        this.app = this.createComplexApplication();
+
+        final String inputTopic = this.app.getInputTopic();
+        final String internalTopic =
+                this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
+        final String backingTopic =
+                this.app.getUniqueAppId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
+        final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
+
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+        final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.runApp();
+
+        softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
+        softly.assertThat(this.kafkaCluster.exists(internalTopic)).isTrue();
+        softly.assertThat(this.kafkaCluster.exists(backingTopic)).isTrue();
+        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        this.runCleanUpWithDeletion();
+
+        softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
+        softly.assertThat(this.kafkaCluster.exists(internalTopic)).isFalse();
+        softly.assertThat(this.kafkaCluster.exists(backingTopic)).isFalse();
+        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isFalse();
+    }
+
+    @Test
     void shouldDeleteState(final SoftAssertions softly) throws InterruptedException {
         this.app = this.createWordCountApplication();
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
