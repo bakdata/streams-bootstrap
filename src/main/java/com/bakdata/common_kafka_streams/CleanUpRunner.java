@@ -40,6 +40,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 
@@ -60,11 +61,17 @@ public class CleanUpRunner {
             final @NonNull KafkaStreams streams) {
         this.appId = appId;
         this.kafkaProperties = kafkaProperties;
-        this.client = new CachedSchemaRegistryClient(schemaRegistryUrl, 100);
+        this.client = createSchemaRegistryClient(kafkaProperties, schemaRegistryUrl);
         this.inputTopics = inputTopics;
         this.brokers = brokers;
         this.streams = streams;
         this.topologyInformation = new TopologyInformation(topology, appId);
+    }
+
+    private static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
+            @NonNull final String schemaRegistryUrl) {
+        final StreamsConfig streamsConfig = new StreamsConfig(kafkaProperties);
+        return new CachedSchemaRegistryClient(schemaRegistryUrl, 100, streamsConfig.originals());
     }
 
     public void run(final boolean deleteOutputTopic) {
