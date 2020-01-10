@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.2.1](https://github.com/bakdata/common-kafka-streams/tree/1.2.1) (2020-01-10)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.2.0...1.2.1)
+
+**Merged pull requests:**
+
+- Configure StreamsResetter with application properties [\#48](https://github.com/bakdata/common-kafka-streams/pull/48) ([@torbsto](https://github.com/torbsto))
+- Support schema registry authentication [\#47](https://github.com/bakdata/common-kafka-streams/pull/47) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.2.0](https://github.com/bakdata/common-kafka-streams/tree/1.2.0) (2020-01-08)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.1.13...1.2.0)
 
