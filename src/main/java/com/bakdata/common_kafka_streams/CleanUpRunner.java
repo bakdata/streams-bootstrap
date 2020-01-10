@@ -105,19 +105,6 @@ public class CleanUpRunner {
         resetter.run(args);
     }
 
-    private static File createTemporaryPropertiesFile(final String appId, final Properties config) {
-        try {
-            final File tempFile = File.createTempFile(appId + "-reset", "temp");
-            tempFile.deleteOnExit();
-            try (final FileOutputStream out = new FileOutputStream(tempFile)) {
-                config.store(out, "");
-            }
-            return tempFile;
-        } catch (final IOException e) {
-            throw new RuntimeException("Could not run StreamsResetter", e);
-        }
-    }
-
     public void deleteTopics() {
         // the StreamsResetter is responsible for deleting internal topics
         this.topologyInformation.getInternalTopics().forEach(this::resetSchemaRegistry);
@@ -160,5 +147,25 @@ public class CleanUpRunner {
         }
     }
 
+    protected static File createTemporaryPropertiesFile(final String appId, final Properties config) {
+        // Writing properties requires Map<String, String>
+        final Properties parsedProperties = toStringBasedProperties(config);
+        try {
+            final File tempFile = File.createTempFile(appId + "-reset", "temp");
+            tempFile.deleteOnExit();
+            try (final FileOutputStream out = new FileOutputStream(tempFile)) {
+                parsedProperties.store(out, "");
+            }
+            return tempFile;
+        } catch (final IOException e) {
+            throw new RuntimeException("Could not run StreamsResetter", e);
+        }
+    }
+
+    protected static Properties toStringBasedProperties(final Properties config) {
+        final Properties parsedProperties = new Properties();
+        config.forEach((key, value) -> parsedProperties.setProperty(key.toString(), value.toString()));
+        return parsedProperties;
+    }
 
 }
