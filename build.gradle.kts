@@ -46,19 +46,19 @@ allprojects {
     }
 
     dependencies {
+        val kafkaVersion: String by project
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.4.0")
         "testImplementation"("org.junit.jupiter:junit-jupiter-params:5.4.0")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.4.0")
         "testImplementation"(group = "org.assertj", name = "assertj-core", version = "3.13.2")
-        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.0.4")
-        "testImplementation"(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = "2.2.0")
-        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.0.4") {
+        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.1.0")
+        "testImplementation"(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
+        "testImplementation"(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.1.0") {
             exclude(group = "junit")
         }
-        "testImplementation"(group = "net.mguenther.kafka", name = "kafka-junit", version = "2.1.0") {
+        "testImplementation"(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaVersion) {
             exclude(group = "org.projectlombok")
         }
-        val kafkaVersion: String by project
         "implementation"(group = "org.apache.kafka", name = "kafka_2.11", version = kafkaVersion)
 
         "api"(group = "info.picocli", name = "picocli", version = "2.3.0")
@@ -67,7 +67,8 @@ allprojects {
         "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         "implementation"(group = "log4j", name = "log4j", version = "1.2.17")
         "implementation"(group = "org.slf4j", name = "slf4j-log4j12", version = "1.7.25")
-        "api"(group = "org.apache.avro", name = "avro", version = "1.8.2")
+        val avroVersion: String by project
+        "api"(group = "org.apache.avro", name = "avro", version = avroVersion)
         "api"(group = "org.jooq", name = "jool", version = "0.9.14")
         "api"(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
 
