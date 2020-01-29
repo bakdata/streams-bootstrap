@@ -83,4 +83,12 @@ class EnvironmentArgumentsParserTest {
         assertThat(result).containsExactly("--stream-config", "consumer.acks=all,producer.acks=none");
     }
 
+    @Test
+    void shouldConvertParameterWithEnvPrefixInName() {
+        final List<String> result = this.parser.parseVariables(Map.of(
+                "STREAMS_STREAMS_TEST", "a"
+        ));
+        assertThat(result).containsExactlyInAnyOrder("--streams-test", "a");
+    }
+
 }

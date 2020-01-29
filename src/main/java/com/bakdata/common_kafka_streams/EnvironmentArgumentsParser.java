@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,7 +76,8 @@ public class EnvironmentArgumentsParser {
 
     private String convertEnvironmentKeyToCommandLineParameter(final String environmentKey) {
         final StringJoiner sj = new StringJoiner(this.commandLineDelimiter);
-        final String[] words = environmentKey.split(this.environmentPrefix)[1].split(this.environmentDelimiter);
+        final String[] words = environmentKey.replaceAll("^" + Pattern.quote(this.environmentPrefix), "")
+                .split(this.environmentDelimiter);
         for (final String word : words) {
             sj.add(word.toLowerCase());
         }
