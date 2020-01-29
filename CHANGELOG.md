@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.0](https://github.com/bakdata/common-kafka-streams/tree/1.3.0) (2020-01-29)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.2.1...1.3.0)
+
+**Merged pull requests:**
+
+- Update Kafka to 2.4.0 [\#49](https://github.com/bakdata/common-kafka-streams/pull/49) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.2.1](https://github.com/bakdata/common-kafka-streams/tree/1.2.1) (2020-01-10)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.2.0...1.2.1)
 
