@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.3.1](https://github.com/bakdata/common-kafka-streams/tree/1.3.1) (2020-01-30)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.0...1.3.1)
+
+**Merged pull requests:**
+
+- Add hook for Streams state transitions [\#51](https://github.com/bakdata/common-kafka-streams/pull/51) ([@philipp94831](https://github.com/philipp94831))
+- Fix parsing of environment parameters with ENV\_PREFIX in name [\#50](https://github.com/bakdata/common-kafka-streams/pull/50) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.0](https://github.com/bakdata/common-kafka-streams/tree/1.3.0) (2020-01-29)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.2.1...1.3.0)
 
