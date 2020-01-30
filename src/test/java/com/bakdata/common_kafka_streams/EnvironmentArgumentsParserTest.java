@@ -41,7 +41,10 @@ class EnvironmentArgumentsParserTest {
                 "STREAMS_test2", "a",
                 "STREAMSWRONG_test3", "a"
         ));
-        assertThat(result).containsExactlyInAnyOrder("--test1", "a", "--test2", "a");
+        assertThat(result)
+                .hasSize(4)
+                .containsSequence("--test1", "a")
+                .containsSequence("--test2", "a");
     }
 
     @Test
@@ -49,7 +52,7 @@ class EnvironmentArgumentsParserTest {
         final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMS_teST1", "a"
         ));
-        assertThat(result).containsExactlyInAnyOrder("--test1", "a");
+        assertThat(result).containsExactly("--test1", "a");
     }
 
     @Test
@@ -57,14 +60,15 @@ class EnvironmentArgumentsParserTest {
         final List<String> result = this.parser.parseVariables(Map.of(
                 "STREAMS_teST_test_1", "a"
         ));
-        assertThat(result).containsExactlyInAnyOrder("--test-test-1", "a");
+        assertThat(result).containsExactly("--test-test-1", "a");
     }
 
     @Test
     void shouldPassEnvironmentValueAsCommandLineParameter() {
         final List<String> result = this.parser.parseVariables(Map.of(
-                "STREAMS_test1", "a"));
-        assertThat(result).containsExactlyInAnyOrder("--test1", "a");
+                "STREAMS_test1", "a"
+        ));
+        assertThat(result).containsExactly("--test1", "a");
     }
 
     @Test
@@ -79,8 +83,17 @@ class EnvironmentArgumentsParserTest {
     @Test
     void shouldConvertMapFormat() {
         final List<String> result = this.parser.parseVariables(Map.of(
-                "STREAMS_STREAM_CONFIG", "consumer.acks=all,producer.acks=none"));
+                "STREAMS_STREAM_CONFIG", "consumer.acks=all,producer.acks=none"
+        ));
         assertThat(result).containsExactly("--stream-config", "consumer.acks=all,producer.acks=none");
+    }
+
+    @Test
+    void shouldConvertParameterWithEnvPrefixInName() {
+        final List<String> result = this.parser.parseVariables(Map.of(
+                "STREAMS_STREAMS_TEST", "a"
+        ));
+        assertThat(result).containsExactly("--streams-test", "a");
     }
 
 }
