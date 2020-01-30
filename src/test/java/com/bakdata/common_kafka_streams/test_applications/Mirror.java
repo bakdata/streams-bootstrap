@@ -25,8 +25,11 @@
 package com.bakdata.common_kafka_streams.test_applications;
 
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
+import java.util.Properties;
 import lombok.NoArgsConstructor;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
@@ -40,5 +43,13 @@ public class Mirror extends KafkaStreamsApplication {
     @Override
     public String getUniqueAppId() {
         return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+    }
+
+    @Override
+    protected Properties createKafkaProperties() {
+        final Properties kafkaProperties = super.createKafkaProperties();
+        kafkaProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
+        kafkaProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
+        return kafkaProperties;
     }
 }

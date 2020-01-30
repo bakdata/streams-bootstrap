@@ -61,7 +61,7 @@ allprojects {
         }
         "implementation"(group = "org.apache.kafka", name = "kafka_2.11", version = kafkaVersion)
 
-        "api"(group = "info.picocli", name = "picocli", version = "2.3.0")
+        "api"(group = "info.picocli", name = "picocli", version = "4.0.4")
         "api"(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
         val confluentVersion: String by project
         "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
