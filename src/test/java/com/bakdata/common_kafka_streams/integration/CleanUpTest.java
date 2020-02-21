@@ -96,6 +96,7 @@ class CleanUpTest {
         this.kafkaCluster.stop();
     }
 
+    //FIXME
     @Test
     void shouldDeleteTopic(final SoftAssertions softly) throws InterruptedException {
         this.app = this.createWordCountApplication();
@@ -113,6 +114,7 @@ class CleanUpTest {
 
         this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
 
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
 
         softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
@@ -251,6 +253,7 @@ class CleanUpTest {
                 .contains(this.app.getInputTopic() + "-key");
     }
 
+    //FIXME
     @Test
     void shouldDeleteSchemaOfIntermediateTopics(final SoftAssertions softly)
             throws InterruptedException, IOException, RestClientException {
@@ -274,7 +277,7 @@ class CleanUpTest {
 
         this.kafkaCluster.send(sendRequest);
         this.runApp();
-
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         softly.assertThat(client.getAllSubjects())
                 .contains(inputSubject, internalSubject, backingSubject, manualSubject);
 
@@ -285,6 +288,7 @@ class CleanUpTest {
                 .contains(inputSubject);
     }
 
+    //FIXME
     @Test
     void shouldCallClose(final SoftAssertions softly) {
         final CloseFlagApp closeApplication = this.createCloseApplication();
