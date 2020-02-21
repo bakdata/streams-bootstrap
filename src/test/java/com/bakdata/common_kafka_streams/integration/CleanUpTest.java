@@ -113,6 +113,7 @@ class CleanUpTest {
 
         this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
 
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
 
         softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
@@ -274,7 +275,7 @@ class CleanUpTest {
 
         this.kafkaCluster.send(sendRequest);
         this.runApp();
-
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         softly.assertThat(client.getAllSubjects())
                 .contains(inputSubject, internalSubject, backingSubject, manualSubject);
 
@@ -286,12 +287,24 @@ class CleanUpTest {
     }
 
     @Test
-    void shouldCallClose(final SoftAssertions softly) {
+    void shouldCallClose(final SoftAssertions softly) throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
         softly.assertThat(closeApplication.isClosed()).isFalse();
+        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.app.getInputTopic()).useDefaults());
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
         softly.assertThat(closeApplication.isClosed()).isTrue();
+    }
+
+    @Test
+    void shouldThrowExceptionOnResetterError(final SoftAssertions softly) throws InterruptedException {
+        this.app = this.createMirrorKeyApplication();
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        //should throw exception because input topic does not exist yet
+        softly.assertThatThrownBy(this::runCleanUpWithDeletion)
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error running streams resetter. Exit code 1");
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
