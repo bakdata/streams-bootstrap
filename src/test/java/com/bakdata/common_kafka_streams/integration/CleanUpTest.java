@@ -291,9 +291,20 @@ class CleanUpTest {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
         softly.assertThat(closeApplication.isClosed()).isFalse();
+        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.app.getInputTopic()).useDefaults());
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
         softly.assertThat(closeApplication.isClosed()).isTrue();
+    }
+
+    @Test
+    void shouldThrowExceptionOnResetterError(final SoftAssertions softly) throws InterruptedException {
+        this.app = this.createMirrorKeyApplication();
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        //should throw exception because input topic does not exist yet
+        softly.assertThatThrownBy(this::runCleanUpWithDeletion)
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error running streams resetter. Exit code 1");
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
