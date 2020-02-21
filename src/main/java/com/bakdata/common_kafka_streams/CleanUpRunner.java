@@ -35,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
@@ -49,6 +48,7 @@ import org.apache.kafka.streams.Topology;
 
 @Slf4j
 public class CleanUpRunner {
+    private static final int EXIT_CODE_SUCCESS = 0;
     private final String appId;
     private final Properties kafkaProperties;
     private final SchemaRegistryClient client;
@@ -102,7 +102,10 @@ public class CleanUpRunner {
                 "--config-file", tempFile.toString()
         };
         final StreamsResetter resetter = new StreamsResetter();
-        resetter.run(args);
+        final int returnCode = resetter.run(args);
+        if (returnCode != EXIT_CODE_SUCCESS) {
+            throw new RuntimeException("Error running streams resetter. Exit code " + returnCode);
+        }
     }
 
     public void deleteTopics() {
