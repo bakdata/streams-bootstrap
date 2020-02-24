@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.2](https://github.com/bakdata/common-kafka-streams/tree/1.3.2) (2020-02-24)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.1...1.3.2)
+
+**Merged pull requests:**
+
+- Check for errors when running streams resetter [\#52](https://github.com/bakdata/common-kafka-streams/pull/52) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.1](https://github.com/bakdata/common-kafka-streams/tree/1.3.1) (2020-01-30)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.0...1.3.1)
 
