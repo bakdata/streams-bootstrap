@@ -26,6 +26,7 @@ package com.bakdata.common_kafka_streams;
 
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,7 +114,9 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
         appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        CommandLine.run(app, System.out, populatedArgs);
+        final CommandLine commandLine = new CommandLine(app);
+        final int exitCode = commandLine.setOut(new PrintWriter(System.out)).execute(populatedArgs);
+        System.exit(exitCode);
     }
 
     @Override
