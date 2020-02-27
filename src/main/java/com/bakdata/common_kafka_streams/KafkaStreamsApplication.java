@@ -114,8 +114,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
         appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = new CommandLine(app);
-        final int exitCode = commandLine.setOut(new PrintWriter(System.out)).execute(populatedArgs);
+        final int exitCode = new CommandLine(app).setOut(new PrintWriter(System.out)).execute(populatedArgs);
         System.exit(exitCode);
     }
 

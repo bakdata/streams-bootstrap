@@ -59,6 +59,7 @@ allprojects {
         "testImplementation"(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaVersion) {
             exclude(group = "org.projectlombok")
         }
+        "testImplementation"("com.ginsberg:junit5-system-exit:1.0.0")
         "implementation"(group = "org.apache.kafka", name = "kafka_2.11", version = kafkaVersion)
 
         "api"(group = "info.picocli", name = "picocli", version = "4.0.4")
