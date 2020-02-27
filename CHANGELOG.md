@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.3](https://github.com/bakdata/common-kafka-streams/tree/1.3.3) (2020-02-27)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.2...1.3.3)
+
+**Merged pull requests:**
+
+- Exit application with proper code [\#53](https://github.com/bakdata/common-kafka-streams/pull/53) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.2](https://github.com/bakdata/common-kafka-streams/tree/1.3.2) (2020-02-24)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.1...1.3.2)
 
