@@ -24,6 +24,7 @@
 
 package com.bakdata.common_kafka_streams;
 
+import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.io.PrintWriter;
@@ -97,6 +98,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     private KafkaStreams streams;
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
+        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),
+                "Prefix '" + EnvironmentStreamsConfigParser.PREFIX + "' is reserved for Streams config");
         final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
                 .parseVariables(System.getenv());
         final ArrayList<String> allArgs = new ArrayList<>(environmentArguments);
@@ -168,13 +171,16 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     /**
      * <p>This method specifies the configuration to run your streaming application with.</p>
      * To add a custom configuration please override {@link #createKafkaProperties()}. Configuration properties
-     * specified via cli option {@code --streams-config} are always applied with highest priority.
+     * specified via environment (starting with STREAMS_) or via cli option {@code --streams-config} are always applied
+     * with highest priority.
      *
      * @return Returns Kafka Streams configuration {@link Properties}
      */
     public final Properties getKafkaProperties() {
         final Properties kafkaConfig = this.createKafkaProperties();
 
+        EnvironmentStreamsConfigParser.parseVariables(System.getenv())
+                .forEach(kafkaConfig::setProperty);
         this.streamsConfig.forEach(kafkaConfig::setProperty);
 
         return kafkaConfig;
