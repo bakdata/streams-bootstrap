@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.4](https://github.com/bakdata/common-kafka-streams/tree/1.3.4) (2020-03-10)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.3...1.3.4)
+
+**Merged pull requests:**
+
+- Parse streams config from separate environment variables [\#54](https://github.com/bakdata/common-kafka-streams/pull/54) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.3](https://github.com/bakdata/common-kafka-streams/tree/1.3.3) (2020-02-27)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.2...1.3.3)
 
