@@ -172,7 +172,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      * <p>This method specifies the configuration to run your streaming application with.</p>
      * To add a custom configuration please override {@link #createKafkaProperties()}. Configuration properties
      * specified via environment (starting with STREAMS_) or via cli option {@code --streams-config} are always applied
-     * with highest priority.
+     * with highest priority (the latter overrides the former).
      *
      * @return Returns Kafka Streams configuration {@link Properties}
      */
