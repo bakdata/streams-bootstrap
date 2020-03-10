@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.4.0](https://github.com/bakdata/common-kafka-streams/tree/1.4.0) (2020-03-10)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.4...1.4.0)
+
+**Merged pull requests:**
+
+- Remove DeadLetter [\#56](https://github.com/bakdata/common-kafka-streams/pull/56) ([@philipp94831](https://github.com/philipp94831))
+- Move error handlers to com.bakdata.kafka:error\-handling [\#55](https://github.com/bakdata/common-kafka-streams/pull/55) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.3.4](https://github.com/bakdata/common-kafka-streams/tree/1.3.4) (2020-03-10)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.3...1.3.4)
 
