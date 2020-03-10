@@ -37,8 +37,10 @@ spec:
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
-            - name: "{{ .Values.configurationEnvPrefix }}_STREAMS_CONFIG"
-              value: "{{- range $key, $value := .Values.streams.config }}{{ $key }}={{ $value }},{{- end }}"
+            {{- range $key, $value := .Values.streams.config }}
+            - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
             - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
               value: {{ .Values.streams.brokers | quote }}
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
