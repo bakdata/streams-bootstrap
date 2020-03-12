@@ -290,8 +290,11 @@ class CleanUpTest {
     void shouldCallClose(final SoftAssertions softly) throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
-        softly.assertThat(closeApplication.isClosed()).isFalse();
         this.kafkaCluster.createTopic(TopicConfig.forTopic(this.app.getInputTopic()).useDefaults());
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        // if we don't run the app, the coordinator will be unavailable
+        this.runApp();
+        closeApplication.setClosed(false);
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
         softly.assertThat(closeApplication.isClosed()).isTrue();
