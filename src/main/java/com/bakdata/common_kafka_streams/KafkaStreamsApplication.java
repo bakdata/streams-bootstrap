@@ -118,7 +118,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final int exitCode = new CommandLine(app).setOut(new PrintWriter(System.out)).execute(populatedArgs);
-        System.exit(exitCode);
+        // do not exit application
     }
 
     @Override
@@ -248,6 +248,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected void runStreamsApplication() {
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        //TODO wait for streams to terminate and exit application with proper code
     }
 
     /**

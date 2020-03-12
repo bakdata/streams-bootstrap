@@ -28,6 +28,7 @@ import com.bakdata.common.kafka.streams.TestRecord;
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
@@ -35,6 +36,7 @@ import org.apache.kafka.streams.kstream.KStream;
 public class CloseFlagApp extends KafkaStreamsApplication {
 
     @Getter
+    @Setter
     private boolean closed = false;
 
     @Override
