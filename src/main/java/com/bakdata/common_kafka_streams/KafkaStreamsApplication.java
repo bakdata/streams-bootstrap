@@ -81,16 +81,16 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     private String schemaRegistryUrl = "";
     @CommandLine.Option(names = "--productive", arity = "1")
     private boolean productive = true;
-    @CommandLine.Option(names = "--debug", arity = "1")
+    @CommandLine.Option(names = "--debug", arity = "0..1")
     private boolean debug = false;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
-    @CommandLine.Option(names = "--clean-up", arity = "1",
+    @CommandLine.Option(names = "--clean-up", arity = "0..1",
             description = "Clear the state store and the global Kafka offsets for the "
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     private boolean cleanUp = false;
-    @CommandLine.Option(names = "--delete-output", arity = "1",
+    @CommandLine.Option(names = "--delete-output", arity = "0..1",
             description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic = false;
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
