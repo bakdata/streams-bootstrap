@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig;
 import net.mguenther.kafka.junit.EmbeddedKafkaConfig;
@@ -42,21 +41,22 @@ import org.junit.jupiter.api.Test;
 
 class TopicClientTest {
 
-    private static final int TIMEOUT_SECONDS = 20;
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
-    private EmbeddedKafkaCluster kafkaCluster;
+    private final EmbeddedKafkaCluster kafkaCluster = createKafkaCluster();
 
-    @BeforeEach
-    void setup() throws InterruptedException {
+    private static EmbeddedKafkaCluster createKafkaCluster() {
         final EmbeddedKafkaConfig kafkaConfig = EmbeddedKafkaConfig.create()
                 .withNumberOfBrokers(2)
                 .build();
         final EmbeddedKafkaClusterConfig clusterConfig = EmbeddedKafkaClusterConfig.create()
                 .provisionWith(kafkaConfig)
                 .build();
-        this.kafkaCluster = provisionWith(clusterConfig);
+        return provisionWith(clusterConfig);
+    }
+
+    @BeforeEach
+    void setup() {
         this.kafkaCluster.start();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
     }
 
     @AfterEach

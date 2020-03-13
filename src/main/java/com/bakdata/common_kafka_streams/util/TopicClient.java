@@ -53,7 +53,7 @@ public final class TopicClient implements Closeable {
     private final @NonNull Duration timeout;
 
     /**
-     * Create a new {@code TopicClient} using the specified configuration.
+     * Creates a new {@code TopicClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Map)}
      * @param timeout timeout for waiting for Kafka admin calls
@@ -76,14 +76,14 @@ public final class TopicClient implements Closeable {
     public void createIfNotExists(final String topicName, final TopicSettings settings,
             final Map<String, String> config) {
         if (this.exists(topicName)) {
-            log.debug("Topic {} already exists, no need to create.", topicName);
+            log.info("Topic {} already exists, no need to create.", topicName);
         } else {
             this.createTopic(topicName, settings, config);
         }
     }
 
     /**
-     * Describe the current configuration of a Kafka topic.
+     * Describes the current configuration of a Kafka topic.
      *
      * @param topicName the topic name
      * @return settings of topic including number of partitions and replicationFactor
@@ -105,7 +105,7 @@ public final class TopicClient implements Closeable {
                     .partitions(partitions.size())
                     .build();
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
-            throw new RuntimeException("Failed to retrieve description of topic " + topicName, e);
+            throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
         }
     }
 
@@ -115,7 +115,7 @@ public final class TopicClient implements Closeable {
     }
 
     /**
-     * Check whether a Kafka topic exists.
+     * Checks whether a Kafka topic exists.
      *
      * @param topicName the topic name
      * @return whether a Kafka topic with the specified name exists or not
@@ -130,13 +130,13 @@ public final class TopicClient implements Closeable {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
                 return false;
             } else {
-                throw new RuntimeException("Failed to check if Kafka topic " + topicName + " exists", e);
+                throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
             }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Failed to check if Kafka topic " + topicName + " exists", e);
+            throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
         } catch (final TimeoutException e) {
-            throw new RuntimeException("Failed to check if Kafka topic " + topicName + " exists", e);
+            throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
         }
     }
 
@@ -156,7 +156,7 @@ public final class TopicClient implements Closeable {
                     .all()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-            throw new RuntimeException("Failed to create topic " + topicName, ex);
+            throw new KafkaAdminException("Failed to create topic " + topicName, ex);
         }
     }
 }
