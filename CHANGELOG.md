@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.4.1](https://github.com/bakdata/common-kafka-streams/tree/1.4.1) (2020-03-13)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.0...1.4.1)
+
+**Merged pull requests:**
+
+- Allow specification of boolean flags without any value [\#59](https://github.com/bakdata/common-kafka-streams/pull/59) ([@philipp94831](https://github.com/philipp94831))
+- Add topic client [\#58](https://github.com/bakdata/common-kafka-streams/pull/58) ([@philipp94831](https://github.com/philipp94831))
+- Do not exit application [\#57](https://github.com/bakdata/common-kafka-streams/pull/57) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.0](https://github.com/bakdata/common-kafka-streams/tree/1.4.0) (2020-03-10)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.3.4...1.4.0)
 
