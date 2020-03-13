@@ -55,8 +55,9 @@ class TopicClientTest {
     }
 
     @BeforeEach
-    void setup() {
+    void setup() throws InterruptedException {
         this.kafkaCluster.start();
+        Thread.sleep(Duration.ofSeconds(20).toMillis());
     }
 
     @AfterEach
