@@ -32,6 +32,7 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyDescription.Processor;
 import org.apache.kafka.streams.TopologyDescription.Sink;
+import org.apache.kafka.streams.TopologyDescription.Source;
 
 public class TopologyInformation {
     private final String streamsId;
@@ -55,6 +56,12 @@ public class TopologyInformation {
                 .collect(Collectors.toList());
     }
 
+    public List<String> getExternalSourceTopics() {
+        return this.getAllSources(this.nodes)
+                .filter(this::isExternalTopic)
+                .collect(Collectors.toList());
+    }
+
     private static List<Node> getNodes(final Topology topology) {
         return topology.describe().subtopologies()
                 .stream()
@@ -66,6 +73,14 @@ public class TopologyInformation {
         return this.getAllSinks(nodes)
                 .filter(this::isInternalTopic)
                 .map(topic -> String.format("%s-%s", this.streamsId, topic));
+    }
+
+    private Stream<String> getAllSources(final Collection<Node> nodes) {
+        return nodes.stream()
+                .filter(node -> node instanceof Source)
+                .map(node -> (Source) node)
+                .map(Source::topicSet)
+                .flatMap(Collection::stream);
     }
 
     private Stream<String> getAllSinks(final Collection<Node> nodes) {

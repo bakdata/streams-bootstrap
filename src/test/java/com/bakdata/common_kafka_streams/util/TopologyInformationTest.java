@@ -16,7 +16,7 @@ class TopologyInformationTest {
     @BeforeEach
     void setup() {
         this.app = new ComplexTopologyApplication();
-        this.app.setInputTopics(List.of("input"));
+        this.app.setInputTopics(List.of("input", "input2"));
         this.app.setOutputTopic("output");
         this.topologyInformation = new TopologyInformation(this.app.createTopology(), this.app.getUniqueAppId());
     }
@@ -29,9 +29,17 @@ class TopologyInformationTest {
     }
 
     @Test
+    void shouldReturnAllExternalSourceTopics() {
+        assertThat(this.topologyInformation.getExternalSourceTopics())
+                .hasSize(3)
+                .containsAll(this.app.getInputTopics())
+                .contains(ComplexTopologyApplication.THROUGH_TOPIC);
+    }
+
+    @Test
     void shouldNotReturnInputTopics() {
         assertThat(this.topologyInformation.getExternalSinkTopics())
-                .doesNotContain(this.app.getInputTopic());
+                .doesNotContainAnyElementsOf(this.app.getInputTopics());
     }
 
     @Test

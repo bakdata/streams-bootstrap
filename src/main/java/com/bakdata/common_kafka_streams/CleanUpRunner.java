@@ -27,6 +27,7 @@ package com.bakdata.common_kafka_streams;
 import static com.bakdata.common_kafka_streams.KafkaStreamsApplication.RESET_SLEEP_MS;
 
 import com.bakdata.common_kafka_streams.util.TopologyInformation;
+import com.google.common.collect.ImmutableList;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -78,7 +79,7 @@ public class CleanUpRunner {
     }
 
     public void run(final boolean deleteOutputTopic) {
-        runResetter(String.join(",", this.inputTopics), this.brokers, this.appId, this.kafkaProperties);
+        runResetter(this.topologyInformation.getExternalSourceTopics(), this.brokers, this.appId, this.kafkaProperties);
         if (deleteOutputTopic) {
             this.deleteTopics();
         }
@@ -87,20 +88,22 @@ public class CleanUpRunner {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error waiting for clean up", e);
         }
     }
 
-    public static void runResetter(final String inputTopics, final String brokers, final String appId,
+    public static void runResetter(final List<String> inputTopics, final String brokers, final String appId,
             final Properties config) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final File tempFile = createTemporaryPropertiesFile(appId, config);
-        final String[] args = {
-                "--application-id", appId,
-                "--bootstrap-servers", brokers,
-                "--input-topics", inputTopics,
-                "--config-file", tempFile.toString()
-        };
+        final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
+                .add("--application-id", appId)
+                .add("--bootstrap-servers", brokers)
+                .add("--config-file", tempFile.toString());
+        if (!inputTopics.isEmpty()) {
+            argList.add("--input-topics", String.join(",", inputTopics));
+        }
+        final String[] args = argList.build().toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
         final int returnCode = resetter.run(args);
         if (returnCode != EXIT_CODE_SUCCESS) {
