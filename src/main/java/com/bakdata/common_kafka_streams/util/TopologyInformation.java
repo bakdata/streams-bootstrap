@@ -43,6 +43,28 @@ public class TopologyInformation {
         this.streamsId = streamsId;
     }
 
+    private static List<Node> getNodes(final Topology topology) {
+        return topology.describe().subtopologies()
+                .stream()
+                .flatMap(subtopology -> subtopology.nodes().stream())
+                .collect(Collectors.toList());
+    }
+
+    private static Stream<String> getAllSources(final Collection<Node> nodes) {
+        return nodes.stream()
+                .filter(node -> node instanceof Source)
+                .map(node -> (Source) node)
+                .map(Source::topicSet)
+                .flatMap(Collection::stream);
+    }
+
+    private static Stream<String> getAllSinks(final Collection<Node> nodes) {
+        return nodes.stream()
+                .filter(node -> node instanceof Sink)
+                .map(node -> ((Sink) node))
+                .map(Sink::topic);
+    }
+
     public List<String> getInternalTopics() {
         final Stream<String> internalSinks = this.getInternalSinks(this.nodes);
         final Stream<String> backingTopics = this.getBackingTopics(this.nodes);
@@ -51,43 +73,23 @@ public class TopologyInformation {
     }
 
     public List<String> getExternalSinkTopics() {
-        return this.getAllSinks(this.nodes)
+        return getAllSinks(this.nodes)
                 .filter(this::isExternalTopic)
                 .collect(Collectors.toList());
     }
 
     public List<String> getExternalSourceTopics() {
-        return this.getAllSources(this.nodes)
+        final List<String> sinks = this.getExternalSinkTopics();
+        return getAllSources(this.nodes)
                 .filter(this::isExternalTopic)
-                .collect(Collectors.toList());
-    }
-
-    private static List<Node> getNodes(final Topology topology) {
-        return topology.describe().subtopologies()
-                .stream()
-                .flatMap(subtopology -> subtopology.nodes().stream())
+                .filter(t -> !sinks.contains(t))
                 .collect(Collectors.toList());
     }
 
     private Stream<String> getInternalSinks(final Collection<Node> nodes) {
-        return this.getAllSinks(nodes)
+        return getAllSinks(nodes)
                 .filter(this::isInternalTopic)
                 .map(topic -> String.format("%s-%s", this.streamsId, topic));
-    }
-
-    private Stream<String> getAllSources(final Collection<Node> nodes) {
-        return nodes.stream()
-                .filter(node -> node instanceof Source)
-                .map(node -> (Source) node)
-                .map(Source::topicSet)
-                .flatMap(Collection::stream);
-    }
-
-    private Stream<String> getAllSinks(final Collection<Node> nodes) {
-        return nodes.stream()
-                .filter(node -> node instanceof Sink)
-                .map(node -> ((Sink) node))
-                .map(Sink::topic);
     }
 
     private Stream<String> getBackingTopics(final Collection<Node> nodes) {

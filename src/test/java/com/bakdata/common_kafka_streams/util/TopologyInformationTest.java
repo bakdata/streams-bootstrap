@@ -31,9 +31,9 @@ class TopologyInformationTest {
     @Test
     void shouldReturnAllExternalSourceTopics() {
         assertThat(this.topologyInformation.getExternalSourceTopics())
-                .hasSize(3)
+                .hasSize(2)
                 .containsAll(this.app.getInputTopics())
-                .contains(ComplexTopologyApplication.THROUGH_TOPIC);
+                .doesNotContain(ComplexTopologyApplication.THROUGH_TOPIC);
     }
 
     @Test
