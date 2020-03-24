@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.4.2](https://github.com/bakdata/common-kafka-streams/tree/1.4.2) (2020-03-24)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.1...1.4.2)
+
+**Merged pull requests:**
+
+- Run streams resetter for external source topics and intermediate topics [\#61](https://github.com/bakdata/common-kafka-streams/pull/61) ([@philipp94831](https://github.com/philipp94831))
+- Add helm chart to deploy streams app as statefulset with static group membership [\#60](https://github.com/bakdata/common-kafka-streams/pull/60) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.1](https://github.com/bakdata/common-kafka-streams/tree/1.4.1) (2020-03-13)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.0...1.4.1)
 
