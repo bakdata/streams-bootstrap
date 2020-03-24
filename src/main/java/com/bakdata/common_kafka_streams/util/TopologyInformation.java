@@ -66,7 +66,8 @@ public class TopologyInformation {
     }
 
     private static boolean isInternalTopic(final String topic) {
-        return topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-");
+        return topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-")
+                || topic.endsWith("-repartition") || topic.endsWith("-changelog");
     }
 
     private static boolean isExternalTopic(final String topic) {

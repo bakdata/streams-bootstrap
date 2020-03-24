@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.bakdata.common_kafka_streams.KafkaStreamsApplication;
 import com.bakdata.common_kafka_streams.test_applications.ComplexTopologyApplication;
 import java.util.List;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,21 @@ class TopologyInformationTest {
                 .hasSize(1)
                 .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC)
                 .doesNotContainAnyElementsOf(this.app.getInputTopics());
+    }
+
+    @Test
+    void shouldNotReturnRepartitionTopicAsIntermediateTopic() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        streamsBuilder.stream("input")
+                // select key to force repartition
+                .selectKey((k, v) -> v)
+                .groupByKey()
+                .count(Materialized.as("counts"))
+                .toStream()
+                .to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getIntermediateTopics())
+                .isEmpty();
     }
 
     @Test
