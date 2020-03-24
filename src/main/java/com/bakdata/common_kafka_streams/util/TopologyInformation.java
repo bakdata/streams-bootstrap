@@ -35,6 +35,8 @@ import org.apache.kafka.streams.TopologyDescription.Sink;
 import org.apache.kafka.streams.TopologyDescription.Source;
 
 public class TopologyInformation {
+    private static final String CHANGELOG_SUFFIX = "-changelog";
+    private static final String REPARTITION_SUFFIX = "-repartition";
     private final String streamsId;
     private final Collection<Node> nodes;
 
@@ -65,32 +67,32 @@ public class TopologyInformation {
                 .map(Sink::topic);
     }
 
-    private static boolean isInternalTopic(final String topic) {
-        return topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-")
-                || topic.endsWith("-repartition") || topic.endsWith("-changelog");
-    }
-
-    private static boolean isExternalTopic(final String topic) {
-        return !isInternalTopic(topic);
+    private static Stream<String> getAllStores(final Collection<Node> nodes) {
+        return nodes.stream()
+                .filter(node -> node instanceof Processor)
+                .map(node -> ((Processor) node))
+                .flatMap(processor -> processor.stores().stream());
     }
 
     public List<String> getInternalTopics() {
-        final Stream<String> internalSinks = this.getInternalSinks(this.nodes);
-        final Stream<String> backingTopics = this.getBackingTopics(this.nodes);
+        final Stream<String> internalSinks = this.getInternalSinks();
+        final Stream<String> changelogTopics = this.getChangelogTopics();
+        final Stream<String> repartitionTopics = this.getRepartitionTopics();
 
-        return Stream.concat(internalSinks, backingTopics).collect(Collectors.toList());
+        return Stream.concat(Stream.concat(internalSinks, changelogTopics), repartitionTopics)
+                .collect(Collectors.toList());
     }
 
     public List<String> getExternalSinkTopics() {
         return getAllSinks(this.nodes)
-                .filter(TopologyInformation::isExternalTopic)
+                .filter(this::isExternalTopic)
                 .collect(Collectors.toList());
     }
 
     public List<String> getExternalSourceTopics() {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
-                .filter(TopologyInformation::isExternalTopic)
+                .filter(this::isExternalTopic)
                 .filter(t -> !sinks.contains(t))
                 .collect(Collectors.toList());
     }
@@ -98,22 +100,43 @@ public class TopologyInformation {
     public List<String> getIntermediateTopics() {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
-                .filter(TopologyInformation::isExternalTopic)
+                .filter(this::isExternalTopic)
                 .filter(sinks::contains)
                 .collect(Collectors.toList());
     }
 
-    private Stream<String> getInternalSinks(final Collection<Node> nodes) {
-        return getAllSinks(nodes)
-                .filter(TopologyInformation::isInternalTopic)
+    private boolean isInternalTopic(final String topic) {
+        if (topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-")) {
+            return true;
+        }
+        if (topic.endsWith(CHANGELOG_SUFFIX)) {
+            final List<String> changelogTopics = this.getChangelogTopics().collect(Collectors.toList());
+            return changelogTopics.contains(topic);
+        }
+        if (topic.endsWith(REPARTITION_SUFFIX)) {
+            final List<String> repartitionTopics = this.getRepartitionTopics().collect(Collectors.toList());
+            return repartitionTopics.contains(topic);
+        }
+        return false;
+    }
+
+    private boolean isExternalTopic(final String topic) {
+        return !this.isInternalTopic(topic);
+    }
+
+    private Stream<String> getInternalSinks() {
+        return getAllSinks(this.nodes)
+                .filter(this::isInternalTopic)
                 .map(topic -> String.format("%s-%s", this.streamsId, topic));
     }
 
-    private Stream<String> getBackingTopics(final Collection<Node> nodes) {
-        return nodes.stream()
-                .filter(node -> node instanceof Processor)
-                .map(node -> ((Processor) node))
-                .flatMap(processor -> processor.stores().stream())
-                .map(store -> String.format("%s-%s-changelog", this.streamsId, store));
+    private Stream<String> getChangelogTopics() {
+        return getAllStores(this.nodes)
+                .map(store -> String.format("%s-%s%s", this.streamsId, store, CHANGELOG_SUFFIX));
+    }
+
+    private Stream<String> getRepartitionTopics() {
+        return getAllStores(this.nodes)
+                .map(store -> String.format("%s%s", store, REPARTITION_SUFFIX));
     }
 }

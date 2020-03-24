@@ -70,9 +70,9 @@ class TopologyInformationTest {
     @Test
     void shouldReturnAllInternalTopics() {
         assertThat(this.topologyInformation.getInternalTopics())
-                .hasSize(3)
-                .allMatch(topic -> topic.startsWith(this.app.getUniqueAppId()))
-                .allMatch(topic -> topic.contains("-KSTREAM-"))
+                .hasSize(5)
+                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId())
+                        || topic.startsWith("KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
     }
 
