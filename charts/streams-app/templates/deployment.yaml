@@ -63,7 +63,7 @@ spec:
                       - {{ template "streams-app.name" . }}
         {{- end }}
       containers:
-        - name: {{ template "streams-app.name" . }}-container2
+        - name: {{ template "streams-app.name" . }}-container
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -115,7 +115,7 @@ spec:
               value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
         {{- if .Values.log4jConfig }}
           volumeMounts:
-            - name: {{ template "deployment-chart.name" . }}-log4j-config-volume
+            - name: {{ template "streams-app.name" . }}-log4j-config-volume
               mountPath: app/resources/log4j.properties
               subPath: log4j.properties
         {{- end }}
@@ -153,9 +153,9 @@ spec:
             name: {{ template "streams-app.name" . }}-jmx-configmap
         {{- end }}
         {{ if .Values.log4jConfig }}
-        - name: {{ template "deployment-chart.name" . }}-log4j-config-volume
+        - name: {{ template "streams-app.name" . }}-log4j-config-volume
           configMap:
-            name: {{ template "deployment-chart.name" . }}-log4j-configmap
+            name: {{ template "streams-app.name" . }}-log4j-configmap
             items:
               - key: log4j.properties
                 path: log4j.properties
