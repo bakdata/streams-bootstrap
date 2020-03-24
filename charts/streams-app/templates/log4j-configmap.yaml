@@ -1,1 +1,9 @@
-{{ if .Values.log4jConfig }}apiVersion: v1kind: ConfigMapmetadata:  name: {{ template "streams-app.name" . }}-log4j-configmapdata:  log4j.properties: |{{ .Values.log4jConfig | indent 4 }}{{ end }}
+{{ if .Values.log4jConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "streams-app.name" . }}-log4j-configmap
+data:
+  log4j.properties: |
+{{ .Values.log4jConfig | indent 4 }}
+{{ end }}
