@@ -27,6 +27,7 @@ package com.bakdata.common_kafka_streams;
 import static com.bakdata.common_kafka_streams.KafkaStreamsApplication.RESET_SLEEP_MS;
 
 import com.bakdata.common_kafka_streams.util.TopologyInformation;
+import com.google.common.collect.ImmutableList;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -52,7 +53,6 @@ public class CleanUpRunner {
     private final String appId;
     private final Properties kafkaProperties;
     private final SchemaRegistryClient client;
-    private final List<String> inputTopics;
     private final String brokers;
     private final KafkaStreams streams;
     private final TopologyInformation topologyInformation;
@@ -60,15 +60,35 @@ public class CleanUpRunner {
     @Builder
     public CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
             final @NonNull Properties kafkaProperties, final @NonNull String schemaRegistryUrl,
-            final @NonNull List<String> inputTopics, final @NonNull String brokers,
-            final @NonNull KafkaStreams streams) {
+            final @NonNull String brokers, final @NonNull KafkaStreams streams) {
         this.appId = appId;
         this.kafkaProperties = kafkaProperties;
         this.client = createSchemaRegistryClient(kafkaProperties, schemaRegistryUrl);
-        this.inputTopics = inputTopics;
         this.brokers = brokers;
         this.streams = streams;
         this.topologyInformation = new TopologyInformation(topology, appId);
+    }
+
+    public static void runResetter(final List<String> inputTopics, final List<String> intermediateTopics,
+            final String brokers, final String appId, final Properties config) {
+        // StreamsResetter's internal AdminClient can only be configured with a properties file
+        final File tempFile = createTemporaryPropertiesFile(appId, config);
+        final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
+                .add("--application-id", appId)
+                .add("--bootstrap-servers", brokers)
+                .add("--config-file", tempFile.toString());
+        if (!inputTopics.isEmpty()) {
+            argList.add("--input-topics", String.join(",", inputTopics));
+        }
+        if (!intermediateTopics.isEmpty()) {
+            argList.add("--intermediate-topics", String.join(",", intermediateTopics));
+        }
+        final String[] args = argList.build().toArray(String[]::new);
+        final StreamsResetter resetter = new StreamsResetter();
+        final int returnCode = resetter.run(args);
+        if (returnCode != EXIT_CODE_SUCCESS) {
+            throw new RuntimeException("Error running streams resetter. Exit code " + returnCode);
+        }
     }
 
     private static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
@@ -77,8 +97,31 @@ public class CleanUpRunner {
         return new CachedSchemaRegistryClient(schemaRegistryUrl, 100, streamsConfig.originals());
     }
 
+    protected static File createTemporaryPropertiesFile(final String appId, final Properties config) {
+        // Writing properties requires Map<String, String>
+        final Properties parsedProperties = toStringBasedProperties(config);
+        try {
+            final File tempFile = File.createTempFile(appId + "-reset", "temp");
+            tempFile.deleteOnExit();
+            try (final FileOutputStream out = new FileOutputStream(tempFile)) {
+                parsedProperties.store(out, "");
+            }
+            return tempFile;
+        } catch (final IOException e) {
+            throw new RuntimeException("Could not run StreamsResetter", e);
+        }
+    }
+
+    protected static Properties toStringBasedProperties(final Properties config) {
+        final Properties parsedProperties = new Properties();
+        config.forEach((key, value) -> parsedProperties.setProperty(key.toString(), value.toString()));
+        return parsedProperties;
+    }
+
     public void run(final boolean deleteOutputTopic) {
-        runResetter(String.join(",", this.inputTopics), this.brokers, this.appId, this.kafkaProperties);
+        final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
+        final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
+        runResetter(inputTopics, intermediateTopics, this.brokers, this.appId, this.kafkaProperties);
         if (deleteOutputTopic) {
             this.deleteTopics();
         }
@@ -87,24 +130,7 @@ public class CleanUpRunner {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void runResetter(final String inputTopics, final String brokers, final String appId,
-            final Properties config) {
-        // StreamsResetter's internal AdminClient can only be configured with a properties file
-        final File tempFile = createTemporaryPropertiesFile(appId, config);
-        final String[] args = {
-                "--application-id", appId,
-                "--bootstrap-servers", brokers,
-                "--input-topics", inputTopics,
-                "--config-file", tempFile.toString()
-        };
-        final StreamsResetter resetter = new StreamsResetter();
-        final int returnCode = resetter.run(args);
-        if (returnCode != EXIT_CODE_SUCCESS) {
-            throw new RuntimeException("Error running streams resetter. Exit code " + returnCode);
+            throw new RuntimeException("Error waiting for clean up", e);
         }
     }
 
@@ -148,27 +174,6 @@ public class CleanUpRunner {
         } catch (final IOException | RestClientException e) {
             throw new RuntimeException("Could not reset schema registry for topic " + topic, e);
         }
-    }
-
-    protected static File createTemporaryPropertiesFile(final String appId, final Properties config) {
-        // Writing properties requires Map<String, String>
-        final Properties parsedProperties = toStringBasedProperties(config);
-        try {
-            final File tempFile = File.createTempFile(appId + "-reset", "temp");
-            tempFile.deleteOnExit();
-            try (final FileOutputStream out = new FileOutputStream(tempFile)) {
-                parsedProperties.store(out, "");
-            }
-            return tempFile;
-        } catch (final IOException e) {
-            throw new RuntimeException("Could not run StreamsResetter", e);
-        }
-    }
-
-    protected static Properties toStringBasedProperties(final Properties config) {
-        final Properties parsedProperties = new Properties();
-        config.forEach((key, value) -> parsedProperties.setProperty(key.toString(), value.toString()));
-        return parsedProperties;
     }
 
 }
