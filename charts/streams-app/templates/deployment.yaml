@@ -113,6 +113,12 @@ spec:
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+        {{- if .Values.log4jConfig }}
+          volumeMounts:
+            - name: {{ template "streams-app.name" . }}-log4j-config-volume
+              mountPath: app/resources/log4j.properties
+              subPath: log4j.properties
+        {{- end }}
         {{- if .Values.prometheus.jmx.enabled }}
           ports:
             - containerPort: {{ .Values.jmx.port }}
@@ -139,9 +145,19 @@ spec:
             - name: jmx-config
               mountPath: /etc/jmx-streams-app
       {{- end }}
-    {{- if .Values.prometheus.jmx.enabled }}
+      {{- if or (.Values.prometheus.jmx.enabled) (.Values.log4jConfig) }}
       volumes:
+        {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
             name: {{ template "streams-app.name" . }}-jmx-configmap
-    {{- end }}
+        {{- end }}
+        {{ if .Values.log4jConfig }}
+        - name: {{ template "streams-app.name" . }}-log4j-config-volume
+          configMap:
+            name: {{ template "streams-app.name" . }}-log4j-configmap
+            items:
+              - key: log4j.properties
+                path: log4j.properties
+        {{- end }}
+      {{- end }}
