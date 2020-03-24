@@ -21,7 +21,7 @@ public class ComplexTopologyApplication extends KafkaStreamsApplication {
 
     @Override
     public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, TestRecord> input = builder.stream(this.getInputTopic());
+        final KStream<String, TestRecord> input = builder.stream(this.getInputTopics());
 
         final KTable<Windowed<String>, TestRecord> reduce = input.through(THROUGH_TOPIC)
                 .groupByKey()
