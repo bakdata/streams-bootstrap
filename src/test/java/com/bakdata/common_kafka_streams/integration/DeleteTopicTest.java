@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.common_kafka_streams.CleanUpRunner;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -63,15 +62,14 @@ class DeleteTopicTest {
 
         final Properties kafkaProperties = new Properties();
         kafkaProperties.put("application.id", "id");
-        kafkaProperties.put("bootstrap.servers", kafkaCluster.getBrokerList());
+        kafkaProperties.put("bootstrap.servers", this.kafkaCluster.getBrokerList());
 
         this.cleanUpRunner = CleanUpRunner.builder()
                 .topology(new Topology())
                 .appId("id")
                 .kafkaProperties(kafkaProperties)
-                .schemaRegistryUrl(schemaRegistryMockExtension.getUrl())
-                .inputTopics(Collections.emptyList())
-                .brokers(kafkaCluster.getBrokerList())
+                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
+                .brokers(this.kafkaCluster.getBrokerList())
                 .streams(new KafkaStreams(new Topology(), kafkaProperties))
                 .build();
     }

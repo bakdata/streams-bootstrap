@@ -37,6 +37,14 @@ class TopologyInformationTest {
     }
 
     @Test
+    void shouldReturnAllIntermediateTopics() {
+        assertThat(this.topologyInformation.getIntermediateTopics())
+                .hasSize(1)
+                .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC)
+                .doesNotContainAnyElementsOf(this.app.getInputTopics());
+    }
+
+    @Test
     void shouldNotReturnInputTopics() {
         assertThat(this.topologyInformation.getExternalSinkTopics())
                 .doesNotContainAnyElementsOf(this.app.getInputTopics());

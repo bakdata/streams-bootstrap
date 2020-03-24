@@ -284,7 +284,6 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
                 .appId(this.getUniqueAppId())
                 .kafkaProperties(this.getKafkaProperties())
                 .schemaRegistryUrl(this.schemaRegistryUrl)
-                .inputTopics(this.inputTopics)
                 .brokers(this.brokers)
                 .streams(this.streams)
                 .build();
