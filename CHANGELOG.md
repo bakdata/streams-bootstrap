@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.4.3](https://github.com/bakdata/common-kafka-streams/tree/1.4.3) (2020-04-02)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.2...1.4.3)
+
+**Implemented enhancements:**
+
+- Override log4j.properties when using provided [\#62](https://github.com/bakdata/common-kafka-streams/pull/62) ([@BJennWare](https://github.com/BJennWare))
+
+**Merged pull requests:**
+
+- Revert PicoCli api usage to exit application properly [\#63](https://github.com/bakdata/common-kafka-streams/pull/63) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.2](https://github.com/bakdata/common-kafka-streams/tree/1.4.2) (2020-03-24)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.1...1.4.2)
 
