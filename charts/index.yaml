@@ -17,7 +17,7 @@ entries:
     digest: 556b84688af6be0f474111df8cd172246f7085f9a57052e05bab15453ecbf938
     name: streams-app
     urls:
-    - streams-app%5C/streams-app-0.1.0.tgz
+    - streams-app/streams-app-0.1.0.tgz
     version: 0.1.0
   streams-app-cleanup-job:
   - apiVersion: v1
