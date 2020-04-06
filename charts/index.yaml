@@ -7,7 +7,7 @@ entries:
     digest: 40ce12fa2377bf99cfe30207ae1891af24de9b3406fe79686100e38046042376
     name: rclone-copy
     urls:
-    - rclone-copy%5C/rclone-copy-1.0.0.tgz
+    - rclone-copy/rclone-copy-1.0.0.tgz
     version: 1.0.0
   streams-app:
   - apiVersion: v1
@@ -27,7 +27,7 @@ entries:
     digest: 1c117a4d4dce2052240e4df1c014f303615c6181df4074218bf30e5b376c22b8
     name: streams-app-cleanup-job
     urls:
-    - streams-app-cleanup-job%5C/streams-app-cleanup-job-0.1.0.tgz
+    - streams-app-cleanup-job/streams-app-cleanup-job-0.1.0.tgz
     version: 0.1.0
   streams-app-static:
   - apiVersion: v1
@@ -37,6 +37,6 @@ entries:
     digest: d213d34830dc3b085650f7a0327709a97b000fa264bb3b0e08c15c0618ffa012
     name: streams-app-static
     urls:
-    - streams-app-static%5C/streams-app-static-0.1.0.tgz
+    - streams-app-static/streams-app-static-0.1.0.tgz
     version: 0.1.0
 generated: 2020-04-06T08:57:12.1533655+02:00
