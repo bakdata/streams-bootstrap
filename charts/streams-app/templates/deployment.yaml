@@ -1,3 +1,5 @@
+# save the context to use templating inside of loops 
+# (eg. $root.Values.configurationEnvPrefix instead of .Values.configurationEnvPrefix)
 {{- $root := . -}}
 
 apiVersion: apps/v1beta2
@@ -107,7 +109,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: test123
+                  name: {{ template "streams-app.fullname" $root }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
