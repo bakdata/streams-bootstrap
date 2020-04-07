@@ -104,10 +104,10 @@ spec:
               value: {{ .Values.streams.errorTopic | quote }}
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
-            - name: SECRET_USERNAME
+            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+                  name: "{{ $root.Values.configurationEnvPrefix }}-{{ $key }}"
                   key: value
           {{- end }}
           {{- range $key, $value := .Values.env }}
@@ -169,7 +169,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+  name: "{{ $root.Values.configurationEnvPrefix }}-{{ $key }}"
 type: Opaque
 stringData:
   value: {{ $value }}
