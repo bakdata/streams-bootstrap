@@ -107,7 +107,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app.name" . }}
+                  name: {{ include "streams-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
