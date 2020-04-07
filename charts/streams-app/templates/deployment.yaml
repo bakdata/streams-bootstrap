@@ -104,8 +104,11 @@ spec:
               value: {{ .Values.streams.errorTopic | quote }}
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
-            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-              value: {{ $value | quote }}
+            - name: SECRET_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+                  key: value
           {{- end }}
           {{- range $key, $value := .Values.env }}
             - name: {{ $key | quote }}
@@ -161,3 +164,13 @@ spec:
                 path: log4j.properties
         {{- end }}
       {{- end }}
+{{- range $key, $value := .Values.commandLine }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+type: Opaque
+data:
+  value: {{ $value | base64 }}
+{{- end }}
