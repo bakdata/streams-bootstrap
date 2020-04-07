@@ -1,0 +1,10 @@
+{{- range $key, $value := .Values.secrets }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ $key | lower }}"
+type: Opaque
+stringData:
+  value: {{ $value | quote }}
+---
+{{- end }}
