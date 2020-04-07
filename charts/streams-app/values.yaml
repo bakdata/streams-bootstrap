@@ -19,6 +19,7 @@ resources:
 streams:
 #  brokers: "test:9092"
 #  schemaRegistryUrl: "url:1234"
+  staticMembership: false
   config:
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
@@ -49,6 +50,7 @@ jmx:
 annotations:
 #  MY_ANNOTATION: "foo-bar"
 
+statefulSet: false
 
 ## Prometheus Exporter Configuration
 ## ref: https://prometheus.io/docs/instrumenting/exporters/
