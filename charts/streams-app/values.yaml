@@ -38,7 +38,7 @@ streams:
 env:
 #  MY_ENV_VARIABLE: foo-bar
 #
-secrets:
+#secrets:
 #  MY_SECRET: fo-bar
 
 ## Monitoring
