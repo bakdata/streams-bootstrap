@@ -176,5 +176,5 @@ metadata:
   name: "{{ $key | lower}}"
 type: Opaque
 stringData:
-  value: {{ $value }}
+  value: {{ $value | quote }}
 {{- end }}
