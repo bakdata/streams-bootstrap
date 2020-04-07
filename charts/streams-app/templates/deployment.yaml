@@ -1,7 +1,6 @@
 # save the context to use templating inside of loops 
 # (eg. $root.Values.configurationEnvPrefix instead of .Values.configurationEnvPrefix)
 {{- $root := . -}}
-{{- $fullname := template "streams-app.fullname" . -}}
 
 apiVersion: apps/v1beta2
 kind: Deployment
@@ -18,7 +17,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "streams-app.name" . }}
+      app: {{ template "streams-app.name" $ }}
       release: {{ .Release.Name }}
   template:
     metadata:
