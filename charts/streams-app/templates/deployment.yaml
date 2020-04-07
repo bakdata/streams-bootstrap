@@ -110,6 +110,10 @@ spec:
                   name: "{{ $root.Values.configurationEnvPrefix | lower}}-{{ $key | lower}}"
                   key: value
           {{- end }}
+          {{- range $key, $value := .Values.commandLine }}
+            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+              value: {{ $value | quote }}
+          {{- end }}
           {{- range $key, $value := .Values.env }}
             - name: {{ $key | quote }}
               value: {{ $value | quote }}
