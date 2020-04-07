@@ -104,7 +104,7 @@ spec:
               value: {{ .Values.streams.errorTopic | quote }}
           {{- end }}
           {{- range $key, $value := .Values.secrets }}
-            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
+            - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
                   name: "{{ $key | lower}}"
