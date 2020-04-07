@@ -37,6 +37,9 @@ streams:
 #
 env:
 #  MY_ENV_VARIABLE: foo-bar
+#
+# secrets:
+#   MY_SECRET: "foo-bar"
 
 ## Monitoring
 ## Kafka Connect JMX Settings

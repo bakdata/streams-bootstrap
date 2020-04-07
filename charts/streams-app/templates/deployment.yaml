@@ -103,7 +103,7 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
           {{- end }}
-          {{- range $key, $value := .Values.commandLine }}
+          {{- range $key, $value := .Values.secrets }}
             - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
               valueFrom:
                 secretKeyRef:
@@ -164,7 +164,7 @@ spec:
                 path: log4j.properties
         {{- end }}
       {{- end }}
-{{- range $key, $value := .Values.commandLine }}
+{{- range $key, $value := .Values.secrets }}
 ---
 apiVersion: v1
 kind: Secret
