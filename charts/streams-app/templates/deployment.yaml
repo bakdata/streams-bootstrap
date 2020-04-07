@@ -1,7 +1,11 @@
 {{- $root := . -}}
 
 apiVersion: apps/v1beta2
+{{- if .Values.statefulSet }}
+kind: StatefulSet
+{{- else }}
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
   labels:

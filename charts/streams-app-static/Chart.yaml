@@ -1,4 +1,0 @@
-apiVersion: v1
-name: streams-app-static
-description: A helm chart for deploying a kafka streams application based on the bakdata KafkaStreamsApplication template.
-version: 0.1.0
