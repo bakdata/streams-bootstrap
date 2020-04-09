@@ -15,7 +15,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "streams-app.name" $ }}
+      app: {{ template "streams-app.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
