@@ -1,5 +1,3 @@
-# save the context to use templating inside of loops 
-# (eg. $root.Values.configurationEnvPrefix instead of .Values.configurationEnvPrefix)
 {{- $root := . -}}
 
 {{- define "fullname" -}}
