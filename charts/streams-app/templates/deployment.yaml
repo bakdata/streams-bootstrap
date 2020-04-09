@@ -1,7 +1,11 @@
 {{- $root := . -}}
 
 apiVersion: apps/v1beta2
+{{- if .Values.statefulSet }}
+kind: StatefulSet
+{{- else }}
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
   labels:
@@ -74,6 +78,12 @@ spec:
           {{- range $key, $value := .Values.streams.config }}
             - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
+          {{- end }}
+          {{- if .Values.streams.staticMembership }}
+            - name: STREAMS_GROUP_INSTANCE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           {{- end }}
           {{- if .Values.prometheus.jmx.enabled }}
             - name: KAFKA_JMX_PORT
