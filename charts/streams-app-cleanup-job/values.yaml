@@ -30,6 +30,9 @@ streams:
 #
 env:
 #  MY_ENV_VARIABLE: foo-bar
+#
+#secrets:
+#  MY_SECRET: fo-bar
 
 resources:
   requests:

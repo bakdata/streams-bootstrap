@@ -113,6 +113,13 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
           {{- end }}
+          {{- range $key, $value := .Values.secrets }}
+            - name: "{{ $key }}"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "streams-app.fullname" $ }}
+                  key: "{{ $key }}"
+          {{- end }}
           {{- range $key, $value := .Values.commandLine }}
             - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
               value: {{ $value | quote }}

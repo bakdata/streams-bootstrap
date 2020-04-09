@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   rclone-copy:
   - apiVersion: v1
-    created: 2020-04-07T17:00:47.0838676+02:00
+    created: "2020-04-09T13:23:06.415862335+02:00"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 40ce12fa2377bf99cfe30207ae1891af24de9b3406fe79686100e38046042376
     name: rclone-copy
@@ -11,22 +11,22 @@ entries:
     version: 1.0.0
   streams-app:
   - apiVersion: v1
-    created: 2020-04-07T17:00:47.0858667+02:00
+    created: "2020-04-09T13:23:06.418246004+02:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 3114fa4597540986a9cf779d0f0ce2632d5ca8cddc0507ba3bf6a546625cf143
+    digest: 3398b4afe28474cf716d092442cf7506efe8224129fba798f41c6cbaa91806f6
     name: streams-app
     urls:
     - streams-app/streams-app-0.1.0.tgz
     version: 0.1.0
   streams-app-cleanup-job:
   - apiVersion: v1
-    created: 2020-04-07T17:00:47.0868667+02:00
+    created: "2020-04-09T13:23:06.418940359+02:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 1c117a4d4dce2052240e4df1c014f303615c6181df4074218bf30e5b376c22b8
+    digest: bb4be470238978f59f61b18fdcba6533c174e7810bacb9e5d4bf4b026a9aecd1
     name: streams-app-cleanup-job
     urls:
     - streams-app-cleanup-job/streams-app-cleanup-job-0.1.0.tgz
     version: 0.1.0
-generated: 2020-04-07T17:00:47.0828669+02:00
+generated: "2020-04-09T13:23:06.415447191+02:00"
