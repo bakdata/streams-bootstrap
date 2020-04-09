@@ -1,9 +1,5 @@
 {{- $root := . -}}
 
-{{- define "fullname" -}}
-{{- print "foo" -}}
-{{- end -}}
-
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -111,7 +107,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "fullname" $ }}
+                  name: {{ template "streams-app.fullname" $ }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
