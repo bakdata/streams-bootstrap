@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.4.4](https://github.com/bakdata/common-kafka-streams/tree/1.4.4) (2020-04-14)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.3...1.4.4)
+
+**Merged pull requests:**
+
+- Close resources on streams creation error [\#67](https://github.com/bakdata/common-kafka-streams/pull/67) ([@philipp94831](https://github.com/philipp94831))
+- Only run streams resetter for existing topics [\#66](https://github.com/bakdata/common-kafka-streams/pull/66) ([@philipp94831](https://github.com/philipp94831))
+- Use Kubernetes secrets for password parameters [\#64](https://github.com/bakdata/common-kafka-streams/pull/64) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Merge streams chart for statefulset and deployment [\#65](https://github.com/bakdata/common-kafka-streams/pull/65) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.3](https://github.com/bakdata/common-kafka-streams/tree/1.4.3) (2020-04-02)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.2...1.4.3)
 
