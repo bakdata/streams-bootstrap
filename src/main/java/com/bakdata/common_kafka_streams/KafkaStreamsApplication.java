@@ -129,17 +129,22 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         }
         log.debug(this.toString());
 
-        final var kafkaProperties = this.getKafkaProperties();
-        this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
-        Optional.ofNullable(this.getUncaughtExceptionHandler())
-                .ifPresent(this.streams::setUncaughtExceptionHandler);
-        Optional.ofNullable(this.getStateListener())
-                .ifPresent(this.streams::setStateListener);
+        try {
+            final var kafkaProperties = this.getKafkaProperties();
+            this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
+            Optional.ofNullable(this.getUncaughtExceptionHandler())
+                    .ifPresent(this.streams::setUncaughtExceptionHandler);
+            Optional.ofNullable(this.getStateListener())
+                    .ifPresent(this.streams::setStateListener);
 
-        if (this.cleanUp) {
-            this.runCleanUp();
-        } else {
-            this.runStreamsApplication();
+            if (this.cleanUp) {
+                this.runCleanUp();
+            } else {
+                this.runStreamsApplication();
+            }
+        } catch (final Exception e) {
+            this.closeResources();
+            throw e;
         }
     }
 
