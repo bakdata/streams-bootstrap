@@ -26,6 +26,7 @@ package com.bakdata.common_kafka_streams;
 
 import static com.bakdata.common_kafka_streams.KafkaStreamsApplication.RESET_SLEEP_MS;
 
+import com.bakdata.common_kafka_streams.util.TopicClient;
 import com.bakdata.common_kafka_streams.util.TopologyInformation;
 import com.google.common.collect.ImmutableList;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
@@ -34,9 +35,11 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
 import lombok.NonNull;
@@ -69,7 +72,7 @@ public class CleanUpRunner {
         this.topologyInformation = new TopologyInformation(topology, appId);
     }
 
-    public static void runResetter(final List<String> inputTopics, final List<String> intermediateTopics,
+    public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
             final String brokers, final String appId, final Properties config) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final File tempFile = createTemporaryPropertiesFile(appId, config);
@@ -77,11 +80,32 @@ public class CleanUpRunner {
                 .add("--application-id", appId)
                 .add("--bootstrap-servers", brokers)
                 .add("--config-file", tempFile.toString());
-        if (!inputTopics.isEmpty()) {
-            argList.add("--input-topics", String.join(",", inputTopics));
-        }
-        if (!intermediateTopics.isEmpty()) {
-            argList.add("--intermediate-topics", String.join(",", intermediateTopics));
+        try (final TopicClient topicClient = TopicClient.create(config, Duration.ofSeconds(10L))) {
+            final Collection<String> allTopics = topicClient.listTopics();
+            final Collection<String> existingInputTopics = inputTopics.stream()
+                    .filter(topicName -> {
+                        final boolean exists = allTopics.contains(topicName);
+                        if (!exists) {
+                            log.warn("Not resetting missing input topic {}", topicName);
+                        }
+                        return exists;
+                    })
+                    .collect(Collectors.toList());
+            if (!existingInputTopics.isEmpty()) {
+                argList.add("--input-topics", String.join(",", existingInputTopics));
+            }
+            final Collection<String> existingIntermediateTopics = intermediateTopics.stream()
+                    .filter(topicName -> {
+                        final boolean exists = allTopics.contains(topicName);
+                        if (!exists) {
+                            log.warn("Not resetting missing intermediate topic {}", topicName);
+                        }
+                        return exists;
+                    })
+                    .collect(Collectors.toList());
+            if (!existingIntermediateTopics.isEmpty()) {
+                argList.add("--intermediate-topics", String.join(",", existingIntermediateTopics));
+            }
         }
         final String[] args = argList.build().toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
