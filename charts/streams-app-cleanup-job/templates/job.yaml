@@ -86,3 +86,6 @@ spec:
             - name: {{ $key | quote }}
               value: {{ $value | quote }}
             {{- end }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
+                {{ .Values.javaOptions.others | join " " }}'
