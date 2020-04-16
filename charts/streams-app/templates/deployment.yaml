@@ -129,7 +129,7 @@ spec:
               value: {{ $value | quote }}
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
-              value: "-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+              value: '{{ .Values.javaOptions | join " " }} -Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false'
         {{- if .Values.log4jConfig }}
           volumeMounts:
             - name: {{ template "streams-app.name" . }}-log4j-config-volume
