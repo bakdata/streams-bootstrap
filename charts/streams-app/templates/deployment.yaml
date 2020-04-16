@@ -133,7 +133,7 @@ spec:
                 -Dcom.sun.management.jmxremote.authenticate=false
                 -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
-                {{ .Values.javaOptions.others | default [] | join " " }}'
+                {{ .Values.javaOptions.others | join " " }}'
         {{- if .Values.log4jConfig }}
           volumeMounts:
             - name: {{ template "streams-app.name" . }}-log4j-config-volume

@@ -57,7 +57,7 @@ statefulSet: false
 
 javaOptions:
   maxRAMPercentage: 75
-  others:
+  others: []
 #   - "-XX:MinRAMPercentage=50.0"
 
 ## Prometheus Exporter Configuration
