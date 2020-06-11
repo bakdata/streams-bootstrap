@@ -67,7 +67,7 @@ spec:
                       - {{ template "streams-app.name" . }}
         {{- end }}
       containers:
-        - name: {{ template "streams-app.name" . }}-container
+        - name: {{ template "streams-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
