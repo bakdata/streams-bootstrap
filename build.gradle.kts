@@ -60,7 +60,7 @@ allprojects {
             exclude(group = "org.projectlombok")
         }
         "testImplementation"("com.ginsberg:junit5-system-exit:1.0.0")
-        "implementation"(group = "org.apache.kafka", name = "kafka_2.11", version = kafkaVersion)
+        "implementation"(group = "org.apache.kafka", name = "kafka_2.13", version = kafkaVersion)
 
         "api"(group = "info.picocli", name = "picocli", version = "4.0.4")
         "api"(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
@@ -68,6 +68,7 @@ allprojects {
         "implementation"(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         "implementation"(group = "log4j", name = "log4j", version = "1.2.17")
         "implementation"(group = "org.slf4j", name = "slf4j-log4j12", version = "1.7.25")
+        "implementation"(group = "com.google.guava", name = "guava", version = "29.0-jre")
         val avroVersion: String by project
         "api"(group = "org.apache.avro", name = "avro", version = avroVersion)
         "api"(group = "org.jooq", name = "jool", version = "0.9.14")
