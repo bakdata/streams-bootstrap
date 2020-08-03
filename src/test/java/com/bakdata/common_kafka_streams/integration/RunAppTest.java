@@ -121,7 +121,7 @@ class RunAppTest {
     }
 
     //FIXME
-    @Disabled("Not yet wroking with Kafka 2.5.0")
+    @Disabled("Not yet working with Kafka 2.5.0")
     @Test
     void shouldCallCloseResourcesOnMapError() throws InterruptedException {
         final String input = "input";

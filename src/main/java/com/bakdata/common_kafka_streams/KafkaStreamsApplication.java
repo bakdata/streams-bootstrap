@@ -142,7 +142,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             } else {
                 this.runStreamsApplication();
             }
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             this.closeResources();
             throw e;
         }
