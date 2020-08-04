@@ -74,6 +74,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected String outputTopic = "";
     @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
     protected String errorTopic = "error_topic";
+    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
+    protected Map<String, String> extraOutputTopics = new HashMap<>();
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
     @CommandLine.Option(names = "--schema-registry-url", required = true)
@@ -195,6 +197,10 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             throw new IllegalArgumentException("One input topic required");
         }
         return this.getInputTopics().get(0);
+    }
+
+    protected Optional<String> getOutputTopic(final String role) {
+        return Optional.ofNullable(this.extraOutputTopics.get(role));
     }
 
     /**

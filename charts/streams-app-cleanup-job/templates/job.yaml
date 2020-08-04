@@ -76,6 +76,8 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
             {{- end }}
+            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
               valueFrom:
