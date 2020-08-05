@@ -199,8 +199,16 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         return this.getInputTopics().get(0);
     }
 
-    protected Optional<String> getOutputTopic(final String role) {
-        return Optional.ofNullable(this.extraOutputTopics.get(role));
+    /**
+     * Get extra output topic for a specified role
+     *
+     * @param role role of output topic specified in CLI argument
+     * @return topic name
+     */
+    protected String getOutputTopic(final String role) {
+        final String topic = this.extraOutputTopics.get(role);
+        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+        return topic;
     }
 
     /**
