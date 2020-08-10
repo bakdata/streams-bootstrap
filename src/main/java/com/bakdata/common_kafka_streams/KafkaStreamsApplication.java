@@ -153,11 +153,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @Override
     public void close() {
         log.info("Stopping application");
-        this.closeResources();
-        if (this.streams == null) {
-            return;
+        if (this.streams != null) {
+            this.streams.close();
         }
-        this.streams.close();
+        // close resources after streams because messages currently processed might depend on resources
+        this.closeResources();
     }
 
     public abstract void buildTopology(StreamsBuilder builder);
