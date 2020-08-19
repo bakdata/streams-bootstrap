@@ -74,6 +74,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected String outputTopic = "";
     @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
     protected String errorTopic = "error_topic";
+    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
+    protected Map<String, String> extraOutputTopics = new HashMap<>();
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
     @CommandLine.Option(names = "--schema-registry-url", required = true)
@@ -151,11 +153,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @Override
     public void close() {
         log.info("Stopping application");
-        this.closeResources();
-        if (this.streams == null) {
-            return;
+        if (this.streams != null) {
+            this.streams.close();
         }
-        this.streams.close();
+        // close resources after streams because messages currently processed might depend on resources
+        this.closeResources();
     }
 
     public abstract void buildTopology(StreamsBuilder builder);
@@ -195,6 +197,18 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             throw new IllegalArgumentException("One input topic required");
         }
         return this.getInputTopics().get(0);
+    }
+
+    /**
+     * Get extra output topic for a specified role
+     *
+     * @param role role of output topic specified in CLI argument
+     * @return topic name
+     */
+    protected String getOutputTopic(final String role) {
+        final String topic = this.extraOutputTopics.get(role);
+        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+        return topic;
     }
 
     /**

@@ -16,9 +16,14 @@ spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
-    {{- if .Values.awsRole }}
+    {{- if or .Values.awsRole .Values.annotations }}
       annotations:
+      {{- if .Values.awsRole }}
         iam.amazonaws.com/role: {{ .Values.awsRole }}
+      {{- end }}
+      {{- range $key, $value := .Values.annotations }}
+        {{ $key | quote }}: {{ $value | quote }}
+      {{- end }}
     {{- end }}
       labels:
         app: {{ template "streams-app-cleanup-job.name" . }}
@@ -70,6 +75,10 @@ spec:
             {{- if hasKey .Values.streams "errorTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
+            {{- end }}
+            {{- if and (hasKey .Values.streams "extraOutputTopics") (.Values.streams.extraOutputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

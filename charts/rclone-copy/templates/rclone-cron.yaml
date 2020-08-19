@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: rclone-cron-{{ .Release.Name }}
+  name: rclone-cron-{{ .Release.Name | trunc 40 | trimSuffix "-" }}
 spec:
   schedule: "{{ .Values.schedule }}"
   successfulJobsHistoryLimit: 1 
