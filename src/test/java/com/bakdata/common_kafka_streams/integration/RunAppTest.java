@@ -125,7 +125,8 @@ class RunAppTest {
         final String output = "output";
         this.kafkaCluster.createTopic(TopicConfig.forTopic(input).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.forTopic(output).useDefaults());
-        final CloseResourcesApplication2 closeResourcesApplication = new CloseResourcesApplication2();
+        final DontCloseResourcesOnCloseApplication closeResourcesApplication =
+                new DontCloseResourcesOnCloseApplication();
         this.app = closeResourcesApplication;
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
@@ -173,7 +174,7 @@ class RunAppTest {
         }
     }
 
-    private static class CloseResourcesApplication2 extends KafkaStreamsApplication {
+    private static class DontCloseResourcesOnCloseApplication extends KafkaStreamsApplication {
         @Getter
         private int called = 0;
 
