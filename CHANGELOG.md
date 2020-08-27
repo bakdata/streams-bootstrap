@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.4.6](https://github.com/bakdata/common-kafka-streams/tree/1.4.6) (2020-08-26)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.5...1.4.6)
+
+**Merged pull requests:**
+
+- Close resources after streams client [\#78](https://github.com/bakdata/common-kafka-streams/pull/78) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.5](https://github.com/bakdata/common-kafka-streams/tree/1.4.5) (2020-08-06)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.4...1.4.5)
 
