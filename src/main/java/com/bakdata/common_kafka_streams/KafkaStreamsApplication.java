@@ -25,7 +25,7 @@
 package com.bakdata.common_kafka_streams;
 
 import com.google.common.base.Preconditions;
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             } else {
                 this.runStreamsApplication();
             }
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             this.closeResources();
             throw e;
         }
@@ -219,7 +219,10 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      * @see KafkaStreams#setUncaughtExceptionHandler(UncaughtExceptionHandler)
      */
     protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return null;
+        return (t, e) -> {
+            log.debug("Closing resources because of uncaught exception");
+            this.closeResources();
+        };
     }
 
     /**
@@ -258,7 +261,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
         kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        kafkaConfig.setProperty(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
+        kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
         return kafkaConfig;
     }
@@ -285,8 +288,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected StateListener getStateListener() {
         return (newState, oldState) -> {
             if (newState == State.ERROR) {
-                log.info("Kafka Streams transitioned from {} to {}", oldState, State.ERROR);
-                KafkaStreamsApplication.this.closeResources();
+                log.debug("Closing resources because of state transition from {} to {}", oldState, State.ERROR);
+                this.closeResources();
             }
         };
     }
