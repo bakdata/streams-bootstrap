@@ -26,6 +26,12 @@ spec:
             {{ $key | quote }}: {{ $value | quote }}
           {{- end }}
         {{- end }}
+          labels:
+            app: {{ template "rclone-copy.name" . }}
+            release: {{ .Release.Name }}
+            {{- range $key, $value := .Values.labels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
         spec:
           containers:
           - name: rclone-container
