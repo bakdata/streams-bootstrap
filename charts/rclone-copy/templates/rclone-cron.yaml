@@ -1,7 +1,14 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name | trunc 52 | trimSuffix "-" }}
+  name: {{ template "rclone-copy.fullname" . }}
+  labels:
+    app: {{ template "rclone-copy.name" . }}
+    chart: {{ template "rclone-copy.chart" . }}
+    release: {{ .Release.Name }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 spec:
   schedule: "{{ .Values.schedule }}"
   successfulJobsHistoryLimit: 1 
@@ -10,8 +17,15 @@ spec:
     spec:
       template:
         metadata:
+        {{- if or .Values.awsRole .Values.annotations }}
           annotations:
+          {{- if .Values.awsRole }}
             iam.amazonaws.com/role: {{ .Values.awsRole }}
+          {{- end }}
+          {{- range $key, $value := .Values.annotations }}
+            {{ $key | quote }}: {{ $value | quote }}
+          {{- end }}
+        {{- end }}
         spec:
           containers:
           - name: rclone-container
