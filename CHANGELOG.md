@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.5.0](https://github.com/bakdata/common-kafka-streams/tree/1.5.0) (2020-09-29)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.6...1.5.0)
+
+**Merged pull requests:**
+
+- Add labels, annotations and configurable name to rclone CronJob [\#80](https://github.com/bakdata/common-kafka-streams/pull/80) ([@philipp94831](https://github.com/philipp94831))
+- Update Kafka to 2.5.1 and Confluent to 5.5.1 [\#79](https://github.com/bakdata/common-kafka-streams/pull/79) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.6](https://github.com/bakdata/common-kafka-streams/tree/1.4.6) (2020-08-26)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.5...1.4.6)
 
