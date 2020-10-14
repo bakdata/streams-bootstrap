@@ -50,6 +50,23 @@ jmx:
   metricRules:
     - ".*"
 
+# Scaled Object
+so:
+  enabled: false
+  minReplicas: 0
+  maxReplicas: 50
+  pollingInterval: 30
+  cooldownPeriod: 300
+  # triggers:
+  #   - type: kafka
+  #     metadata:
+  #       bootstrapServers: "broker-0.namespace:9092, broker-1.namespace:9092"
+  #       consumerGroup: foo
+  #       topic: bar
+  #       lagThreshold: "500"
+  #       offsetResetPolicy: latest
+  #   - type: ...
+
 annotations:
 #  MY_ANNOTATION: "foo-bar"
 

@@ -1,0 +1,15 @@
+{{ if .Values.so.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ template "streams-app.fullname" . }}-so
+spec:
+  scaleTargetRef:
+    name: {{ template "streams-app.fullname" . }}
+  pollingInterval: {{ .Values.so.pollingInterval }}
+  cooldownPeriod:  {{ .Values.so.cooldownPeriod }}
+  minReplicaCount: {{ .Values.so.minReplicas }}
+  maxReplicaCount: {{ .Values.so.maxReplicas }}
+  triggers:
+    {{ toYaml .Values.so.triggers | indent 4 }}
+{{ end }}
