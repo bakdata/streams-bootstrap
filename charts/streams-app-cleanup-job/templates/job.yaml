@@ -34,7 +34,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: {{ template "streams-app-cleanup-job.name" . }}-container
+        - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
