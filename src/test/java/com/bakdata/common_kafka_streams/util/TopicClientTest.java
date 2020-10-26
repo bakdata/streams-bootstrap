@@ -81,6 +81,17 @@ class TopicClientTest {
     }
 
     @Test
+    void shouldListTopics() {
+        this.kafkaCluster.createTopic(TopicConfig.forTopic("foo").useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.forTopic("bar").useDefaults());
+        try (final TopicClient client = this.createClient()) {
+            assertThat(client.listTopics())
+                    .hasSize(2)
+                    .containsExactlyInAnyOrder("foo", "bar");
+        }
+    }
+
+    @Test
     void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();

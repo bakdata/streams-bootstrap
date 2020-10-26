@@ -26,12 +26,13 @@ package com.bakdata.common_kafka_streams.util;
 
 import java.io.Closeable;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 /**
  * This class offers helpers to interact with Kafka topics.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
 public final class TopicClient implements Closeable {
 
@@ -60,6 +61,17 @@ public final class TopicClient implements Closeable {
      * @return {@code TopicClient}
      */
     public static TopicClient create(final Map<String, Object> configs, final Duration timeout) {
+        return new TopicClient(AdminClient.create(configs), timeout);
+    }
+
+    /**
+     * Creates a new {@code TopicClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param timeout timeout for waiting for Kafka admin calls
+     * @return {@code TopicClient}
+     */
+    public static TopicClient create(final Properties configs, final Duration timeout) {
         return new TopicClient(AdminClient.create(configs), timeout);
     }
 
@@ -157,6 +169,17 @@ public final class TopicClient implements Closeable {
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to create topic " + topicName, ex);
+        }
+    }
+
+    public Collection<String> listTopics() {
+        try {
+            return this.adminClient
+                    .listTopics()
+                    .names()
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+            throw new KafkaAdminException("Failed to list topics", ex);
         }
     }
 }
