@@ -76,6 +76,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected String errorTopic = "error_topic";
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
     protected Map<String, String> extraOutputTopics = new HashMap<>();
+    @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
+    protected Map<String, String> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
     @CommandLine.Option(names = "--schema-registry-url", required = true)
@@ -208,6 +210,18 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected String getOutputTopic(final String role) {
         final String topic = this.extraOutputTopics.get(role);
         Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+        return topic;
+    }
+
+    /**
+     * Get extra input topic for a specified role
+     *
+     * @param role role of input topic specified in CLI argument
+     * @return topic name
+     */
+    protected String getInputTopic(final String role) {
+        final String topic = this.extraInputTopics.get(role);
+        Preconditions.checkNotNull(topic, "No input topic for role '%s' available", role);
         return topic;
     }
 
