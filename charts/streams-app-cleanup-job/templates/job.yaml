@@ -80,6 +80,10 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
               value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
+            {{- if and (hasKey .Values.streams "extraInputTopics") (.Values.streams.extraInputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.streams.extraInputTopics }}{{ $key }}={{ $value }},{{- end }}"
+            {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
               valueFrom:
