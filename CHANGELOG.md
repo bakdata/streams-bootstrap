@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.5.1](https://github.com/bakdata/common-kafka-streams/tree/1.5.1) (2020-11-03)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.0...1.5.1)
+
+**Fixed bugs:**
+
+- Container can not be launched if name exceeds 63 characters [\#69](https://github.com/bakdata/common-kafka-streams/issues/69)
+
+**Merged pull requests:**
+
+- Add extra input topics to streams app [\#81](https://github.com/bakdata/common-kafka-streams/pull/81) ([@philipp94831](https://github.com/philipp94831))
+- Remove container suffix from container name [\#73](https://github.com/bakdata/common-kafka-streams/pull/73) ([@yannick-roeder](https://github.com/yannick-roeder))
+
 ## [1.5.0](https://github.com/bakdata/common-kafka-streams/tree/1.5.0) (2020-09-29)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.6...1.5.0)
 
