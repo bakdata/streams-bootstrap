@@ -53,15 +53,17 @@ jmx:
 autoscaling:
   enabled: false
   # consumergroup: foo
-  # topics:
-  #   - bar
-  #   - baz
   lagThreshold: "1000"
   pollingInterval: 30
   cooldownPeriod: 300
   offsetResetPolicy: earliest
   minReplicas: 0
   maxReplicas: 50
+  ## all topics from streams.inputTopics are automatically taken, so
+  ## only use the 'additionalTopics' option for adding more topics
+  # additionalTopics:
+  #   - bar
+  #   - baz
 
 annotations:
 #  MY_ANNOTATION: "foo-bar"

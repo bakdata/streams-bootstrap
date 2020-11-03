@@ -12,6 +12,15 @@ spec:
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
   triggers:
+    {{- range .Values.streams.inputTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        topic: {{ . | title | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
     {{- range .Values.autoscaling.topics }}
     - type: kafka
       metadata:
