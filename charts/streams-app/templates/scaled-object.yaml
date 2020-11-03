@@ -1,4 +1,5 @@
-{{ if .Values.so.enabled }}
+{{ if .Values.autoscaling.enabled }}
+{{- $root := . -}}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -6,10 +7,18 @@ metadata:
 spec:
   scaleTargetRef:
     name: {{ template "streams-app.fullname" . }}
-  pollingInterval: {{ .Values.so.pollingInterval }}
-  cooldownPeriod:  {{ .Values.so.cooldownPeriod }}
-  minReplicaCount: {{ .Values.so.minReplicas }}
-  maxReplicaCount: {{ .Values.so.maxReplicas }}
+  pollingInterval: {{ .Values.autoscaling.pollingInterval }}
+  cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
+  minReplicaCount: {{ .Values.autoscaling.minReplicas }}
+  maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
   triggers:
-{{ toYaml .Values.so.triggers | indent 2 }}
+    {{- range .Values.autoscaling.topics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        topic: {{ . | title | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
 {{ end }}
