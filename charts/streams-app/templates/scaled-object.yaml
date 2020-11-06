@@ -18,16 +18,16 @@ spec:
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
         topic: {{ . | title | quote }}
-        lagThreshold: {{ $root.Values.autoscaling.lagThreshold }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- range .Values.autoscaling.topics }}
     - type: kafka
       metadata:
-        bootstrapServers: {{ $root.Values.streams.brokers | quote }}
-        consumerGroup: {{ $root.Values.autoscaling.consumergroup | quote }}
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
         topic: {{ . | title | quote }}
-        lagThreshold: "{{ $root.Values.autoscaling.lagThreshold | quote  }}"
-        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
 {{ end }}
