@@ -24,10 +24,10 @@ spec:
     {{- range .Values.autoscaling.topics }}
     - type: kafka
       metadata:
-        bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        bootstrapServers: {{ $root.Values.streams.brokers | quote }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup | quote }}
         topic: {{ . | title | quote }}
-        lagThreshold: {{ $root.Values.autoscaling.lagThreshold }}
-        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+        lagThreshold: "{{ $root.Values.autoscaling.lagThreshold | quote  }}"
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy | quote }}
     {{- end }}
 {{ end }}
