@@ -17,7 +17,7 @@ spec:
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
-        topic: {{ . | title | quote }}
+        topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
@@ -26,7 +26,7 @@ spec:
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
-        topic: {{ . | title | quote }}
+        topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
