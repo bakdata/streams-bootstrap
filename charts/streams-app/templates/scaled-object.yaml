@@ -1,6 +1,5 @@
 {{ if .Values.autoscaling.enabled }}
 {{- $root := . -}}
-{{ $topics := concat .Values.streams.inputTopics .Values.autoscaling.topics }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -13,7 +12,18 @@ spec:
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
   triggers:
-    {{- range $topics }}
+    # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to 
+    # minimize number of loops when we don't need to support helm 2 anymore
+    {{- range .Values.streams.inputTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        topic: {{ . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range .Values.autoscaling.topics }}
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
