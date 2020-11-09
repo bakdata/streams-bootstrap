@@ -53,7 +53,7 @@ jmx:
 autoscaling:
   enabled: false
   # consumergroup: foo
-  lagThreshold: "1000"
+  # lagThreshold: "1000"
   pollingInterval: 30
   cooldownPeriod: 300
   offsetResetPolicy: earliest

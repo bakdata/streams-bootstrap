@@ -1,5 +1,6 @@
 {{ if .Values.autoscaling.enabled }}
 {{- $root := . -}}
+{{ $topics := concat .Values.streams.inputTopics .Values.autoscaling.topics }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -12,7 +13,7 @@ spec:
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
   triggers:
-    {{- range .Values.streams.inputTopics }}
+    {{- range $topics }}
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
@@ -21,7 +22,7 @@ spec:
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
-    {{- range .Values.autoscaling.topics }}
+    {{- range $key, $value := .Values.streams.extraInputTopics }}
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
