@@ -59,9 +59,9 @@ autoscaling:
   offsetResetPolicy: earliest
   minReplicas: 0
   # maxReplicas: 50
-  ## all topics from streams.inputTopics are automatically taken, so
-  ## only use the 'additionalTopics' option for adding more topics
-  # additionalTopics:
+  ## all topics from streams.inputTopics and streams.extraInputTopics are automatically taken, so
+  ## only use the 'topics' option for adding more topics, e.g., internal topics
+  # topics:
   #   - bar
   #   - baz
 
