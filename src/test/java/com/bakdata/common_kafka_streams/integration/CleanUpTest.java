@@ -45,7 +45,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,8 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValuesTransactional;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
@@ -123,6 +127,45 @@ class CleanUpTest {
         softly.assertThat(this.kafkaCluster.exists(this.app.getErrorTopic()))
                 .as("Error topic is deleted")
                 .isFalse();
+    }
+
+    @Test
+    void shouldDeleteConsumerGroup(final SoftAssertions softly) throws InterruptedException {
+        this.app = this.createWordCountApplication();
+        final SendValuesTransactional<String> sendRequest = SendValuesTransactional
+                .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
+                .useDefaults();
+        this.kafkaCluster.send(sendRequest);
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+
+        final List<KeyValue<String, Long>> expectedValues =
+                List.of(new KeyValue<>("blub", 1L),
+                        new KeyValue<>("bla", 1L),
+                        new KeyValue<>("blub", 2L)
+                );
+
+        this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
+
+        try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
+            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                    .extracting(ConsumerGroupListing::groupId)
+                    .as("Consumer group exists")
+                    .contains(this.app.getUniqueAppId());
+        } catch (final TimeoutException | ExecutionException e) {
+            throw new RuntimeException("Error retrieving consumer groups", e);
+        }
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        this.runCleanUpWithDeletion();
+
+        try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
+            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                    .extracting(ConsumerGroupListing::groupId)
+                    .as("Consumer group is deleted")
+                    .doesNotContain(this.app.getUniqueAppId());
+        } catch (final TimeoutException | ExecutionException e) {
+            throw new RuntimeException("Error retrieving consumer groups", e);
+        }
     }
 
     @Test
