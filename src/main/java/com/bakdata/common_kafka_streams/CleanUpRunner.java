@@ -148,11 +148,13 @@ public class CleanUpRunner {
         runResetter(inputTopics, intermediateTopics, this.brokers, this.appId, this.kafkaProperties);
         if (deleteOutputTopic) {
             this.deleteTopics();
+        }
+        this.streams.cleanUp();
+        if (deleteOutputTopic) {
             try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
                 adminClient.deleteConsumerGroups(List.of(this.appId));
             }
         }
-        this.streams.cleanUp();
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
