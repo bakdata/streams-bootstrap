@@ -149,15 +149,7 @@ public class CleanUpRunner {
         runResetter(inputTopics, intermediateTopics, this.brokers, this.appId, this.kafkaProperties);
         if (deleteOutputTopic) {
             this.deleteTopics();
-            try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
-                adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
-                log.info("Deleted consumer group");
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Error waiting for clean up", e);
-            } catch (final ExecutionException e) {
-                throw new RuntimeException("Error deleting consumer group", e);
-            }
+            this.deleteConsumerGroup();
         }
         this.streams.cleanUp();
         try {
@@ -207,6 +199,18 @@ public class CleanUpRunner {
             }
         } catch (final IOException | RestClientException e) {
             throw new RuntimeException("Could not reset schema registry for topic " + topic, e);
+        }
+    }
+
+    private void deleteConsumerGroup() {
+        try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
+            adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
+            log.info("Deleted consumer group");
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Error waiting for clean up", e);
+        } catch (final ExecutionException e) {
+            throw new RuntimeException("Error deleting consumer group", e);
         }
     }
 
