@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.5.2](https://github.com/bakdata/common-kafka-streams/tree/1.5.2) (2020-11-23)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.1...1.5.2)
+
+**Merged pull requests:**
+
+- Delete consumer groups on delete output [\#84](https://github.com/bakdata/common-kafka-streams/pull/84) ([@philipp94831](https://github.com/philipp94831))
+- Fix comment for autoscaling [\#83](https://github.com/bakdata/common-kafka-streams/pull/83) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Add scaled object for autoscaling with keda [\#82](https://github.com/bakdata/common-kafka-streams/pull/82) ([@yannick-roeder](https://github.com/yannick-roeder))
+
 ## [1.5.1](https://github.com/bakdata/common-kafka-streams/tree/1.5.1) (2020-11-03)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.0...1.5.1)
 
