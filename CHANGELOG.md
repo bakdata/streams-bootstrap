@@ -1,5 +1,49 @@
 # Change Log
 
+## [1.5.1](https://github.com/bakdata/common-kafka-streams/tree/1.5.1) (2020-11-03)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.0...1.5.1)
+
+**Fixed bugs:**
+
+- Container can not be launched if name exceeds 63 characters [\#69](https://github.com/bakdata/common-kafka-streams/issues/69)
+
+**Merged pull requests:**
+
+- Add extra input topics to streams app [\#81](https://github.com/bakdata/common-kafka-streams/pull/81) ([@philipp94831](https://github.com/philipp94831))
+- Remove container suffix from container name [\#73](https://github.com/bakdata/common-kafka-streams/pull/73) ([@yannick-roeder](https://github.com/yannick-roeder))
+
+## [1.5.0](https://github.com/bakdata/common-kafka-streams/tree/1.5.0) (2020-09-29)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.6...1.5.0)
+
+**Merged pull requests:**
+
+- Add labels, annotations and configurable name to rclone CronJob [\#80](https://github.com/bakdata/common-kafka-streams/pull/80) ([@philipp94831](https://github.com/philipp94831))
+- Update Kafka to 2.5.1 and Confluent to 5.5.1 [\#79](https://github.com/bakdata/common-kafka-streams/pull/79) ([@philipp94831](https://github.com/philipp94831))
+
+## [1.4.6](https://github.com/bakdata/common-kafka-streams/tree/1.4.6) (2020-08-26)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.5...1.4.6)
+
+**Merged pull requests:**
+
+- Close resources after streams client [\#78](https://github.com/bakdata/common-kafka-streams/pull/78) ([@philipp94831](https://github.com/philipp94831))
+
+## [1.4.5](https://github.com/bakdata/common-kafka-streams/tree/1.4.5) (2020-08-06)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.4...1.4.5)
+
+**Closed issues:**
+
+- Use inheritance for streams helm charts [\#71](https://github.com/bakdata/common-kafka-streams/issues/71)
+
+**Merged pull requests:**
+
+- Make helm chart backwards compatible [\#77](https://github.com/bakdata/common-kafka-streams/pull/77) ([@philipp94831](https://github.com/philipp94831))
+- Specify additional output topics via default CLI [\#75](https://github.com/bakdata/common-kafka-streams/pull/75) ([@philipp94831](https://github.com/philipp94831))
+- Trim rclone job name [\#76](https://github.com/bakdata/common-kafka-streams/pull/76) ([@philipp94831](https://github.com/philipp94831))
+- Add annotations to clean up job [\#74](https://github.com/bakdata/common-kafka-streams/pull/74) ([@philipp94831](https://github.com/philipp94831))
+- Remove duplicated streams chart [\#72](https://github.com/bakdata/common-kafka-streams/pull/72) ([@philipp94831](https://github.com/philipp94831))
+- Fix yaml file for kubernetes \> 1.16 [\#70](https://github.com/bakdata/common-kafka-streams/pull/70) ([@VictorKuenstler](https://github.com/VictorKuenstler))
+- Make JAVA\_TOOL\_OPTIONS configurable [\#68](https://github.com/bakdata/common-kafka-streams/pull/68) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.4.4](https://github.com/bakdata/common-kafka-streams/tree/1.4.4) (2020-04-14)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.4.3...1.4.4)
 

@@ -25,7 +25,7 @@
 package com.bakdata.common_kafka_streams;
 
 import com.google.common.base.Preconditions;
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
@@ -74,6 +74,10 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected String outputTopic = "";
     @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
     protected String errorTopic = "error_topic";
+    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
+    protected Map<String, String> extraOutputTopics = new HashMap<>();
+    @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
+    protected Map<String, String> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--brokers", required = true)
     private String brokers = "";
     @CommandLine.Option(names = "--schema-registry-url", required = true)
@@ -142,7 +146,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
             } else {
                 this.runStreamsApplication();
             }
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             this.closeResources();
             throw e;
         }
@@ -151,11 +155,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     @Override
     public void close() {
         log.info("Stopping application");
-        this.closeResources();
-        if (this.streams == null) {
-            return;
+        if (this.streams != null) {
+            this.streams.close();
         }
-        this.streams.close();
+        // close resources after streams because messages currently processed might depend on resources
+        this.closeResources();
     }
 
     public abstract void buildTopology(StreamsBuilder builder);
@@ -198,6 +202,30 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     }
 
     /**
+     * Get extra output topic for a specified role
+     *
+     * @param role role of output topic specified in CLI argument
+     * @return topic name
+     */
+    protected String getOutputTopic(final String role) {
+        final String topic = this.extraOutputTopics.get(role);
+        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+        return topic;
+    }
+
+    /**
+     * Get extra input topic for a specified role
+     *
+     * @param role role of input topic specified in CLI argument
+     * @return topic name
+     */
+    protected String getInputTopic(final String role) {
+        final String topic = this.extraInputTopics.get(role);
+        Preconditions.checkNotNull(topic, "No input topic for role '%s' available", role);
+        return topic;
+    }
+
+    /**
      * Create an {@link UncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if {@code null} is
      * returned.
      *
@@ -205,7 +233,10 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      * @see KafkaStreams#setUncaughtExceptionHandler(UncaughtExceptionHandler)
      */
     protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return null;
+        return (t, e) -> {
+            log.debug("Closing resources because of uncaught exception");
+            this.closeResources();
+        };
     }
 
     /**
@@ -244,7 +275,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
         kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        kafkaConfig.setProperty(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
+        kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
         return kafkaConfig;
     }
@@ -271,8 +302,8 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     protected StateListener getStateListener() {
         return (newState, oldState) -> {
             if (newState == State.ERROR) {
-                log.info("Kafka Streams transitioned from {} to {}", oldState, State.ERROR);
-                KafkaStreamsApplication.this.closeResources();
+                log.debug("Closing resources because of state transition from {} to {}", oldState, State.ERROR);
+                this.closeResources();
             }
         };
     }

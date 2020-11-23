@@ -34,7 +34,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: {{ template "streams-app-cleanup-job.name" . }}-container
+        - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -75,6 +75,14 @@ spec:
             {{- if hasKey .Values.streams "errorTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.streams.errorTopic | quote }}
+            {{- end }}
+            {{- if and (hasKey .Values.streams "extraOutputTopics") (.Values.streams.extraOutputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+            {{- end }}
+            {{- if and (hasKey .Values.streams "extraInputTopics") (.Values.streams.extraInputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.streams.extraInputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

@@ -125,7 +125,8 @@ class RunAppTest {
         final String output = "output";
         this.kafkaCluster.createTopic(TopicConfig.forTopic(input).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.forTopic(output).useDefaults());
-        final CloseResourcesApplication closeResourcesApplication = new CloseResourcesApplication();
+        final DontCloseResourcesOnCloseApplication closeResourcesApplication =
+                new DontCloseResourcesOnCloseApplication();
         this.app = closeResourcesApplication;
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
@@ -139,6 +140,8 @@ class RunAppTest {
                         .build();
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        // in Kafka 2.5.0, UncaughtExceptionHandler is only called after close
+        this.app.close();
         assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
     }
 
@@ -155,6 +158,43 @@ class RunAppTest {
         @Override
         public String getUniqueAppId() {
             return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+        }
+
+        @Override
+        protected void closeResources() {
+            this.called++;
+        }
+
+        @Override
+        protected Properties createKafkaProperties() {
+            final Properties kafkaProperties = super.createKafkaProperties();
+            kafkaProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
+            kafkaProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
+            return kafkaProperties;
+        }
+    }
+
+    private static class DontCloseResourcesOnCloseApplication extends KafkaStreamsApplication {
+        @Getter
+        private int called = 0;
+
+        @Override
+        public void buildTopology(final StreamsBuilder builder) {
+            final KStream<String, String> input = builder.stream(this.getInputTopic());
+            input.map((k, v) -> {throw new RuntimeException();}).to(this.getOutputTopic());
+        }
+
+        @Override
+        public String getUniqueAppId() {
+            return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+        }
+
+        @Override
+        public void close() {
+            if (this.getStreams() == null) {
+                return;
+            }
+            this.getStreams().close();
         }
 
         @Override

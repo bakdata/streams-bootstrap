@@ -1,0 +1,44 @@
+{{ if .Values.autoscaling.enabled }}
+{{- $root := . -}}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ template "streams-app.fullname" . }}-so
+spec:
+  scaleTargetRef:
+    name: {{ template "streams-app.fullname" . }}
+  pollingInterval: {{ .Values.autoscaling.pollingInterval }}
+  cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
+  minReplicaCount: {{ .Values.autoscaling.minReplicas }}
+  maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
+  triggers:
+    # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to 
+    # minimize number of loops when we don't need to support helm 2 anymore
+    {{- range .Values.streams.inputTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        topic: {{ . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range .Values.autoscaling.topics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        topic: {{ . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range $key, $value := .Values.streams.extraInputTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
+        topic: {{ $value | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+{{ end }}

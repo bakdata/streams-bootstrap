@@ -39,6 +39,8 @@ import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,16 +63,19 @@ class DeleteTopicTest {
         this.kafkaCluster.start();
 
         final Properties kafkaProperties = new Properties();
-        kafkaProperties.put("application.id", "id");
-        kafkaProperties.put("bootstrap.servers", this.kafkaCluster.getBrokerList());
+        kafkaProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "id");
+        kafkaProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
 
+        final StreamsBuilder builder = new StreamsBuilder();
+        builder.stream("input").to("output");
+        final Topology topology = builder.build();
         this.cleanUpRunner = CleanUpRunner.builder()
-                .topology(new Topology())
+                .topology(topology)
                 .appId("id")
                 .kafkaProperties(kafkaProperties)
                 .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
                 .brokers(this.kafkaCluster.getBrokerList())
-                .streams(new KafkaStreams(new Topology(), kafkaProperties))
+                .streams(new KafkaStreams(topology, kafkaProperties))
                 .build();
     }
 
