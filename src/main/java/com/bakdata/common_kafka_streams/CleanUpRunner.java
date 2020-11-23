@@ -39,6 +39,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
@@ -148,13 +149,17 @@ public class CleanUpRunner {
         runResetter(inputTopics, intermediateTopics, this.brokers, this.appId, this.kafkaProperties);
         if (deleteOutputTopic) {
             this.deleteTopics();
-        }
-        this.streams.cleanUp();
-        if (deleteOutputTopic) {
             try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
-                adminClient.deleteConsumerGroups(List.of(this.appId));
+                adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
+                log.info("Deleted consumer group");
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Error waiting for clean up", e);
+            } catch (final ExecutionException e) {
+                throw new RuntimeException("Error deleting consumer group", e);
             }
         }
+        this.streams.cleanUp();
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
