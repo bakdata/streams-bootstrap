@@ -169,6 +169,46 @@ class CleanUpTest {
     }
 
     @Test
+    void shouldNotThrowAnErrorIfConsumerGroupDoesNotExist(final SoftAssertions softly) throws InterruptedException {
+        this.app = this.createWordCountApplication();
+        final SendValuesTransactional<String> sendRequest = SendValuesTransactional
+                .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
+                .useDefaults();
+        this.kafkaCluster.send(sendRequest);
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+
+        final List<KeyValue<String, Long>> expectedValues =
+                List.of(new KeyValue<>("blub", 1L),
+                        new KeyValue<>("bla", 1L),
+                        new KeyValue<>("blub", 2L)
+                );
+
+        this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
+
+        try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
+            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                    .extracting(ConsumerGroupListing::groupId)
+                    .as("Consumer group exists")
+                    .contains(this.app.getUniqueAppId());
+        } catch (final TimeoutException | ExecutionException e) {
+            throw new RuntimeException("Error retrieving consumer groups", e);
+        }
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+
+        try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
+            adminClient.deleteConsumerGroups(List.of(this.app.getUniqueAppId())).all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                    .extracting(ConsumerGroupListing::groupId)
+                    .as("Consumer group is deleted")
+                    .doesNotContain(this.app.getUniqueAppId());
+        } catch (final TimeoutException | ExecutionException e) {
+            throw new RuntimeException("Error deleting consumer group", e);
+        }
+        softly.assertThatCode(this::runCleanUpWithDeletion).doesNotThrowAnyException();
+    }
+
+    @Test
     void shouldDeleteInternalTopics(final SoftAssertions softly) throws InterruptedException {
         this.app = this.createComplexApplication();
 
