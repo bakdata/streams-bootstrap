@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.3](https://github.com/bakdata/common-kafka-streams/tree/1.5.3) (2020-11-24)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.2...1.5.3)
+
+**Merged pull requests:**
+
+- Do not delete consumer group if it does not exist [\#85](https://github.com/bakdata/common-kafka-streams/pull/85) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.5.2](https://github.com/bakdata/common-kafka-streams/tree/1.5.2) (2020-11-23)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.1...1.5.2)
 
