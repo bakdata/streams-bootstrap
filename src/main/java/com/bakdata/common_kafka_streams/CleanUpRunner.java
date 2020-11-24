@@ -45,7 +45,9 @@ import kafka.tools.StreamsResetter;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -143,6 +145,13 @@ public class CleanUpRunner {
         return parsedProperties;
     }
 
+    private static boolean doesConsumerGroupExist(final Admin adminClient, final String groupId)
+            throws InterruptedException, ExecutionException {
+        final Collection<ConsumerGroupListing> consumerGroups = adminClient.listConsumerGroups().all().get();
+        return consumerGroups.stream()
+                .anyMatch(c -> c.groupId().equals(groupId));
+    }
+
     public void run(final boolean deleteOutputTopic) {
         final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
         final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
@@ -204,8 +213,10 @@ public class CleanUpRunner {
 
     private void deleteConsumerGroup() {
         try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
-            adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
-            log.info("Deleted consumer group");
+            if (doesConsumerGroupExist(adminClient, this.appId)) {
+                adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
+                log.info("Deleted consumer group");
+            }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Error waiting for clean up", e);
