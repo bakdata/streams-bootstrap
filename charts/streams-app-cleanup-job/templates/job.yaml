@@ -33,6 +33,12 @@ spec:
         {{- end }}
     spec:
       restartPolicy: Never
+      {{- if .Values.tolerations.key }}
+      tolerations:
+        - key: {{ .Values.tolerations.key }}
+          operator: {{ .Values.tolerations.operator | default "Exists" }}
+          effect: {{ .Values.tolerations.effect | default "NoSchedule" }}
+      {{- end }}
       containers:
         - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
