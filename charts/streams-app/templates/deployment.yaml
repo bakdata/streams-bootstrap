@@ -46,6 +46,12 @@ spec:
         {{ $key }}: {{ $value }}
         {{- end }}
     spec:
+      {{- if .Values.tolerations.key }}
+      tolerations:
+        - key: {{ .Values.tolerations.key }}
+          operator: {{ .Values.tolerations.operator | default "Exists" }}
+          effect: {{ .Values.tolerations.effect | default "NoSchedule" }}
+      {{- end }}
       affinity:
         podAntiAffinity:
         {{- if .Values.requirePodAntiAffinity }}
