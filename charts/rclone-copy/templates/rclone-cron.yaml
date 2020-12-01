@@ -33,11 +33,9 @@ spec:
             {{ $key }}: {{ $value }}
             {{- end }}
         spec:
-          {{- if .Values.tolerations.key }}
+          {{- if .Values.tolerations }}
           tolerations:
-            - key: {{ .Values.tolerations.key }}
-              operator: {{ .Values.tolerations.operator | default "Exists" }}
-              effect: {{ .Values.tolerations.effect | default "NoSchedule" }}
+{{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
           containers:
           - name: rclone-container

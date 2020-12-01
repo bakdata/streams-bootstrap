@@ -33,11 +33,9 @@ spec:
         {{- end }}
     spec:
       restartPolicy: Never
-      {{- if .Values.tolerations.key }}
+      {{- if .Values.tolerations }}
       tolerations:
-        - key: {{ .Values.tolerations.key }}
-          operator: {{ .Values.tolerations.operator | default "Exists" }}
-          effect: {{ .Values.tolerations.effect | default "NoSchedule" }}
+{{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
       containers:
         - name: {{ template "streams-app-cleanup-job.name" . }}

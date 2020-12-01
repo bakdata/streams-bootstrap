@@ -39,9 +39,12 @@ awsRole: ""
 imageRelease: 1.46
 
 # tolerations:
-#   key: "foo"
-#   operator: "Exists"
-#   effect: "NoSchedule"
+#   - key: "foo"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+#   - key: "bar"
+#     operator: "Exists"
+#     effect: "NoSchedule"
 
 resources:
   requests:
