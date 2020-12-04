@@ -38,6 +38,14 @@ awsRole: ""
 # You probably don't need to change this.
 imageRelease: 1.46
 
+# tolerations:
+#   - key: "foo"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+#   - key: "bar"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+
 resources:
   requests:
     cpu: 200m

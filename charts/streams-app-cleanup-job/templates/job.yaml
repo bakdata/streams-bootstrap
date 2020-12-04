@@ -33,6 +33,10 @@ spec:
         {{- end }}
     spec:
       restartPolicy: Never
+      {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
       containers:
         - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"

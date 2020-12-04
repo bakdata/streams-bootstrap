@@ -34,6 +34,14 @@ env:
 #secrets:
 #  MY_SECRET: fo-bar
 
+# tolerations:
+#   - key: "foo"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+#   - key: "bar"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+
 resources:
   requests:
     cpu: 200m
