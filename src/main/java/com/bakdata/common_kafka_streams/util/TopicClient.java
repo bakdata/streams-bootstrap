@@ -207,4 +207,10 @@ public final class TopicClient implements Closeable {
             throw new KafkaAdminException("Failed to list topics", ex);
         }
     }
+
+    public void deleteTopicIfExists(final String topic) {
+        if (this.exists(topic)) {
+            this.deleteTopic(topic);
+        }
+    }
 }

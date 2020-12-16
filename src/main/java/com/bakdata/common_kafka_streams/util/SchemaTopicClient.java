@@ -62,7 +62,7 @@ public final class SchemaTopicClient implements Closeable {
     }
 
     public void deleteTopicAndResetSchemaRegistry(final String topic) {
-        this.topicClient.deleteTopic(topic);
+        this.topicClient.deleteTopicIfExists(topic);
         this.resetSchemaRegistry(topic);
     }
 
