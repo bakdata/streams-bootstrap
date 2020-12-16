@@ -46,6 +46,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         System.exit(exitCode);
     }
 
+    @Override
     public void run() {
         log.info("Starting application");
         if (this.debug) {
