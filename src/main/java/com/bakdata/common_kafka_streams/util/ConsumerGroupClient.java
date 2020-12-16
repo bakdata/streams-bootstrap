@@ -79,6 +79,7 @@ public final class ConsumerGroupClient implements Closeable {
             this.adminClient.deleteConsumerGroups(List.of(groupName))
                     .all()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+            log.info("Deleted consumer group'{}'", groupName);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
@@ -115,6 +116,12 @@ public final class ConsumerGroupClient implements Closeable {
             throw new KafkaAdminException("Failed to list consumer groups", ex);
         } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to list consumer groups", ex);
+        }
+    }
+
+    public void deleteGroupIfExists(final String appId) {
+        if (this.exists(appId)) {
+            this.deleteConsumerGroup(appId);
         }
     }
 }

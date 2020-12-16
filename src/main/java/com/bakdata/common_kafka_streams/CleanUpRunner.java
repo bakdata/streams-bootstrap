@@ -152,10 +152,7 @@ public final class CleanUpRunner {
 
     private void deleteConsumerGroup() {
         final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-        if (consumerGroupClient.exists(this.appId)) {
-            consumerGroupClient.deleteConsumerGroup(this.appId);
-            log.info("Deleted consumer group");
-        }
+        consumerGroupClient.deleteGroupIfExists(this.appId);
     }
 
 }
