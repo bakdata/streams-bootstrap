@@ -24,6 +24,7 @@
 
 package com.bakdata.common_kafka_streams;
 
+import com.bakdata.common_kafka_streams.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -252,11 +253,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      */
     @Override
     protected void runCleanUp() {
-        final TopicCleaner topicCleaner = this.createTopicCleaner();
+        final ImprovedAdminClient adminClient = this.createAdminClient();
         final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
                 .topology(this.createTopology())
                 .appId(this.getUniqueAppId())
-                .topicCleaner(topicCleaner)
+                .adminClient(adminClient)
                 .streams(this.streams)
                 .build();
 

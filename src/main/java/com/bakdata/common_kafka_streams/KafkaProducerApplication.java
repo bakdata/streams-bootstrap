@@ -1,5 +1,7 @@
 package com.bakdata.common_kafka_streams;
 
+import com.bakdata.common_kafka_streams.util.ImprovedAdminClient;
+import com.bakdata.common_kafka_streams.util.SchemaTopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Properties;
@@ -13,10 +15,10 @@ import picocli.CommandLine;
 
 
 /**
- * <p>The base class of the entry point of the streaming application.</p>
- * This class provides common configuration options e.g. {@link #brokers} for streaming application. Hereby it
+ * <p>The base class of the entry point of a producer application.</p>
+ * This class provides common configuration options, e.g., {@link #brokers}, for producer applications. Hereby it
  * automatically populates the passed in command line arguments with matching environment arguments {@link
- * EnvironmentArgumentsParser}. To implement your streaming application inherit from this class and add your custom
+ * EnvironmentArgumentsParser}. To implement your producer application inherit from this class and add your custom
  * options. Call {@link #startApplication(KafkaProducerApplication, String[])} with a fresh instance of your class from
  * your main.
  */
@@ -61,19 +63,19 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     protected abstract void runApplication();
 
     /**
-     * <p>This method should give a default configuration to run your streaming application with.</p>
+     * <p>This method should give a default configuration to run your producer application with.</p>
      * To add a custom configuration please add a similar method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
      *       Properties kafkaConfig = super.createKafkaProperties();
-     *       kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
-     *       kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
+     *       kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, GenericAvroSerializer.class);
+     *       kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GenericAvroSerializer.class);
      *       return kafkaConfig;
      *   }
      * }</pre>
      *
-     * @return Returns a default Kafka Streams configuration {@link Properties}
+     * @return Returns a default Kafka configuration {@link Properties}
      */
     protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
@@ -102,15 +104,15 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
      * This methods deletes all output topics.
      */
     protected void runCleanUp() {
-        final TopicCleaner topicCleaner = this.createTopicCleaner();
+        final ImprovedAdminClient improvedAdminClient = this.createAdminClient();
 
-        this.cleanUpRun(topicCleaner);
+        this.cleanUpRun(improvedAdminClient.getSchemaTopicClient());
     }
 
-    protected void cleanUpRun(final TopicCleaner topicCleaner) {
+    protected void cleanUpRun(final SchemaTopicClient schemaTopicClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
 
-        outputTopics.forEach(topicCleaner::deleteTopicAndResetSchemaRegistry);
+        outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {

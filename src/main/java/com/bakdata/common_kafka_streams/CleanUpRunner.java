@@ -26,58 +26,53 @@ package com.bakdata.common_kafka_streams;
 
 import static com.bakdata.common_kafka_streams.KafkaApplication.RESET_SLEEP_MS;
 
+import com.bakdata.common_kafka_streams.util.ConsumerGroupClient;
+import com.bakdata.common_kafka_streams.util.ImprovedAdminClient;
+import com.bakdata.common_kafka_streams.util.SchemaTopicClient;
 import com.bakdata.common_kafka_streams.util.TopicClient;
 import com.bakdata.common_kafka_streams.util.TopologyInformation;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.Admin;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 
 
 @Slf4j
-public class CleanUpRunner {
+public final class CleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
     private final String appId;
     private final KafkaStreams streams;
-    private final String brokers;
     private final TopologyInformation topologyInformation;
-    private final @NonNull TopicCleaner topicCleaner;
+    private final @NonNull ImprovedAdminClient adminClient;
 
     @Builder
-    public CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
-            final @NonNull TopicCleaner topicCleaner, final @NonNull String brokers,
-            final @NonNull KafkaStreams streams) {
-        this.topicCleaner = topicCleaner;
+    private CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
+            final @NonNull ImprovedAdminClient adminClient, final @NonNull KafkaStreams streams) {
         this.appId = appId;
-        this.brokers = brokers;
+        this.adminClient = adminClient;
         this.streams = streams;
         this.topologyInformation = new TopologyInformation(topology, appId);
     }
 
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final String brokers, final String appId, final Properties config) {
+            final String brokers, final String appId, final Properties config, final TopicClient topicClient) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final File tempFile = createTemporaryPropertiesFile(appId, config);
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
                 .add("--bootstrap-servers", brokers)
                 .add("--config-file", tempFile.toString());
-        final Collection<String> allTopics = listTopics(config);
+        final Collection<String> allTopics = topicClient.listTopics();
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
             argList.add("--input-topics", String.join(",", existingInputTopics));
@@ -107,13 +102,7 @@ public class CleanUpRunner {
                 .collect(Collectors.toList());
     }
 
-    private static Collection<String> listTopics(final Properties config) {
-        try (final TopicClient topicClient = TopicClient.create(config, Duration.ofSeconds(10L))) {
-            return topicClient.listTopics();
-        }
-    }
-
-    protected static File createTemporaryPropertiesFile(final String appId, final Properties config) {
+    static File createTemporaryPropertiesFile(final String appId, final Properties config) {
         // Writing properties requires Map<String, String>
         final Properties parsedProperties = toStringBasedProperties(config);
         try {
@@ -128,24 +117,18 @@ public class CleanUpRunner {
         }
     }
 
-    protected static Properties toStringBasedProperties(final Properties config) {
+    static Properties toStringBasedProperties(final Properties config) {
         final Properties parsedProperties = new Properties();
         config.forEach((key, value) -> parsedProperties.setProperty(key.toString(), value.toString()));
         return parsedProperties;
     }
 
-    private static boolean doesConsumerGroupExist(final Admin adminClient, final String groupId)
-            throws InterruptedException, ExecutionException {
-        final Collection<ConsumerGroupListing> consumerGroups = adminClient.listConsumerGroups().all().get();
-        return consumerGroups.stream()
-                .anyMatch(c -> c.groupId().equals(groupId));
-    }
-
     public void run(final boolean deleteOutputTopic) {
         final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
         final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
-        runResetter(inputTopics, intermediateTopics, this.brokers, this.appId,
-                this.topicCleaner.getKafkaProperties());
+        final String brokers = this.adminClient.getBrokers();
+        runResetter(inputTopics, intermediateTopics, brokers, this.appId, this.adminClient.getProperties(),
+                this.adminClient.getTopicClient());
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();
@@ -160,23 +143,18 @@ public class CleanUpRunner {
     }
 
     public void deleteTopics() {
+        final SchemaTopicClient schemaTopicClient = this.adminClient.getSchemaTopicClient();
         // the StreamsResetter is responsible for deleting internal topics
-        this.topologyInformation.getInternalTopics().forEach(this.topicCleaner::resetSchemaRegistry);
+        this.topologyInformation.getInternalTopics().forEach(schemaTopicClient::resetSchemaRegistry);
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
-        externalTopics.forEach(this.topicCleaner::deleteTopicAndResetSchemaRegistry);
+        externalTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
     }
 
     private void deleteConsumerGroup() {
-        try (final AdminClient adminClient = this.topicCleaner.createAdminClient()) {
-            if (doesConsumerGroupExist(adminClient, this.appId)) {
-                adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
-                log.info("Deleted consumer group");
-            }
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Error waiting for clean up", e);
-        } catch (final ExecutionException e) {
-            throw new RuntimeException("Error deleting consumer group", e);
+        final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
+        if (consumerGroupClient.exists(this.appId)) {
+            consumerGroupClient.deleteConsumerGroup(this.appId);
+            log.info("Deleted consumer group");
         }
     }
 

@@ -92,6 +92,19 @@ class TopicClientTest {
     }
 
     @Test
+    void shouldDeleteTopic() {
+        this.kafkaCluster.createTopic(TopicConfig.forTopic("foo").useDefaults());
+        try (final TopicClient client = this.createClient()) {
+            assertThat(client.listTopics())
+                    .hasSize(1)
+                    .containsExactlyInAnyOrder("foo");
+            client.deleteTopic("foo");
+            assertThat(client.listTopics())
+                    .isEmpty();
+        }
+    }
+
+    @Test
     void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();

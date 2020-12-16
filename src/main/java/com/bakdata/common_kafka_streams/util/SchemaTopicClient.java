@@ -22,36 +22,39 @@
  * SOFTWARE.
  */
 
-package com.bakdata.common_kafka_streams;
+package com.bakdata.common_kafka_streams.util;
 
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import java.io.Closeable;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.AdminClient;
 
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
-public final class TopicCleaner {
-    private final @NonNull Properties kafkaProperties;
-    private final @NonNull SchemaRegistryClient client;
+public final class SchemaTopicClient implements Closeable {
+    private final @NonNull TopicClient topicClient;
+    private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
-    public static TopicCleaner create(final Properties kafkaProperties, final String schemaRegistryUrl) {
-        return new TopicCleaner(kafkaProperties, createSchemaRegistryClient(kafkaProperties, schemaRegistryUrl));
+    public static SchemaTopicClient create(final Properties kafkaProperties, final String schemaRegistryUrl,
+            final Duration timeout) {
+        final SchemaRegistryClient schemaRegistryClient =
+                createSchemaRegistryClient(kafkaProperties, schemaRegistryUrl);
+        final TopicClient topicClient = TopicClient.create(kafkaProperties, timeout);
+        return new SchemaTopicClient(topicClient, schemaRegistryClient);
     }
 
-    private static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
+    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
             @NonNull final String schemaRegistryUrl) {
         final Map<String, Object> originals = new HashMap<>();
         kafkaProperties.forEach((key, value) -> originals.put(key.toString(), value));
@@ -59,31 +62,24 @@ public final class TopicCleaner {
     }
 
     public void deleteTopicAndResetSchemaRegistry(final String topic) {
-        this.deleteTopic(topic);
+        this.topicClient.deleteTopic(topic);
         this.resetSchemaRegistry(topic);
-    }
-
-    public void deleteTopic(final String topic) {
-        log.info("Delete topic: {}", topic);
-        try (final AdminClient adminClient = this.createAdminClient()) {
-            adminClient.deleteTopics(List.of(topic));
-        }
     }
 
     public void resetSchemaRegistry(final String topic) {
         log.info("Reset topic: {}", topic);
         try {
-            final Collection<String> allSubjects = this.client.getAllSubjects();
+            final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
             final String keySubject = topic + "-key";
             if (allSubjects.contains(keySubject)) {
-                this.client.deleteSubject(keySubject);
+                this.schemaRegistryClient.deleteSubject(keySubject);
                 log.info("Cleaned key schema of topic {}", topic);
             } else {
                 log.info("No key schema for topic {} available", topic);
             }
             final String valueSubject = topic + "-value";
             if (allSubjects.contains(valueSubject)) {
-                this.client.deleteSubject(valueSubject);
+                this.schemaRegistryClient.deleteSubject(valueSubject);
                 log.info("Cleaned value schema of topic {}", topic);
             } else {
                 log.info("No value schema for topic {} available", topic);
@@ -93,7 +89,8 @@ public final class TopicCleaner {
         }
     }
 
-    public AdminClient createAdminClient() {
-        return AdminClient.create(this.kafkaProperties);
+    @Override
+    public void close() {
+        this.topicClient.close();
     }
 }

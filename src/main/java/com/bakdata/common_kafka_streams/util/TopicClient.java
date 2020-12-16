@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 @Slf4j
 public final class TopicClient implements Closeable {
 
+    @Getter
     private final @NonNull AdminClient adminClient;
     private final @NonNull Duration timeout;
 
@@ -94,6 +96,20 @@ public final class TopicClient implements Closeable {
         }
     }
 
+    public void deleteTopic(final String topicName) {
+        log.info("Deleting topic '{}'", topicName);
+        try {
+            this.adminClient.deleteTopics(List.of(topicName))
+                    .all()
+                        .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
+        } catch (final ExecutionException | TimeoutException ex) {
+            throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
+        }
+    }
+
     /**
      * Describes the current configuration of a Kafka topic.
      *
@@ -116,7 +132,10 @@ public final class TopicClient implements Closeable {
                     .replicationFactor((short) replicationFactor)
                     .partitions(partitions.size())
                     .build();
-        } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
+        } catch (final ExecutionException | TimeoutException e) {
             throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
         }
     }
@@ -167,7 +186,10 @@ public final class TopicClient implements Closeable {
                     .createTopics(List.of(newTopic.configs(config)))
                     .all()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to create topic " + topicName, ex);
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to create topic " + topicName, ex);
         }
     }
@@ -178,7 +200,10 @@ public final class TopicClient implements Closeable {
                     .listTopics()
                     .names()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to list topics", ex);
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to list topics", ex);
         }
     }

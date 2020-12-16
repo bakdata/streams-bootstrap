@@ -29,8 +29,9 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.common_kafka_streams.TopicCleaner;
+import com.bakdata.common_kafka_streams.util.SchemaTopicClient;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -45,13 +46,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
-class DeleteTopicTest {
+class SchemaTopicClientTest {
     private static final int TIMEOUT_SECONDS = 10;
     private static final String TOPIC = "topic";
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private EmbeddedKafkaCluster kafkaCluster = null;
-    private TopicCleaner topicCleaner = null;
+    private SchemaTopicClient schemaTopicClient = null;
 
     @BeforeEach
     void setup() {
@@ -61,7 +62,8 @@ class DeleteTopicTest {
         final Properties kafkaProperties = new Properties();
         kafkaProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
 
-        this.topicCleaner = TopicCleaner.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
+        this.schemaTopicClient = SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
+                Duration.ofSeconds(10L));
     }
 
     @AfterEach
@@ -80,7 +82,7 @@ class DeleteTopicTest {
                 .inTransaction(TOPIC, List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        this.topicCleaner.deleteTopic(TOPIC);
+        this.schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.exists(TOPIC))

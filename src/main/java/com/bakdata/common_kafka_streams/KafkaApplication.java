@@ -24,7 +24,9 @@
 
 package com.bakdata.common_kafka_streams;
 
+import com.bakdata.common_kafka_streams.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,11 +38,19 @@ import java.util.Properties;
 import lombok.Data;
 import picocli.CommandLine;
 
+/**
+ * <p>The base class of the entry point of the Kafka application.</p>
+ * This class provides common configuration options, e.g., {@link #brokers}, for Kafka applications. Hereby it
+ * automatically populates the passed in command line arguments with matching environment arguments {@link
+ * EnvironmentArgumentsParser}. To implement your Kafka application inherit from this class and add your custom
+ * options.
+ */
 @Data
 public abstract class KafkaApplication implements Runnable {
     public static final int RESET_SLEEP_MS = 5000;
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
+    public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic = "";
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
@@ -102,8 +112,12 @@ public abstract class KafkaApplication implements Runnable {
         return topic;
     }
 
-    public TopicCleaner createTopicCleaner() {
-        return TopicCleaner.create(this.getKafkaProperties(), this.schemaRegistryUrl);
+    public ImprovedAdminClient createAdminClient() {
+        return ImprovedAdminClient.builder()
+                .properties(this.createKafkaProperties())
+                .schemaRegistryUrl(this.getSchemaRegistryUrl())
+                .timeout(ADMIN_TIMEOUT)
+                .build();
     }
 
     protected abstract Properties createKafkaProperties();
