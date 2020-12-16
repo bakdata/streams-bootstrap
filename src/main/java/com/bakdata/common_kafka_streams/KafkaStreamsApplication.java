@@ -253,15 +253,16 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      */
     @Override
     protected void runCleanUp() {
-        final ImprovedAdminClient adminClient = this.createAdminClient();
-        final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
-                .topology(this.createTopology())
-                .appId(this.getUniqueAppId())
-                .adminClient(adminClient)
-                .streams(this.streams)
-                .build();
+        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+            final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
+                    .topology(this.createTopology())
+                    .appId(this.getUniqueAppId())
+                    .adminClient(adminClient)
+                    .streams(this.streams)
+                    .build();
 
-        this.cleanUpRun(cleanUpRunner);
+            this.cleanUpRun(cleanUpRunner);
+        }
         this.close();
     }
 

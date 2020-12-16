@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +50,6 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 @Slf4j
 public final class TopicClient implements Closeable {
 
-    @Getter
     private final @NonNull AdminClient adminClient;
     private final @NonNull Duration timeout;
 
@@ -96,12 +94,17 @@ public final class TopicClient implements Closeable {
         }
     }
 
+    /**
+     * Delete a Kafka topic.
+     *
+     * @param topicName the topic name
+     */
     public void deleteTopic(final String topicName) {
         log.info("Deleting topic '{}'", topicName);
         try {
             this.adminClient.deleteTopics(List.of(topicName))
                     .all()
-                        .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
@@ -194,6 +197,11 @@ public final class TopicClient implements Closeable {
         }
     }
 
+    /**
+     * List Kafka topics.
+     *
+     * @return name of all existing Kafka topics
+     */
     public Collection<String> listTopics() {
         try {
             return this.adminClient
@@ -208,6 +216,11 @@ public final class TopicClient implements Closeable {
         }
     }
 
+    /**
+     * Delete a Kafka topic only if it exists.
+     *
+     * @param topic the topic name
+     */
     public void deleteTopicIfExists(final String topic) {
         if (this.exists(topic)) {
             this.deleteTopic(topic);

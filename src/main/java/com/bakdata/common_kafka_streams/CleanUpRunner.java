@@ -29,7 +29,6 @@ import static com.bakdata.common_kafka_streams.KafkaApplication.RESET_SLEEP_MS;
 import com.bakdata.common_kafka_streams.util.ConsumerGroupClient;
 import com.bakdata.common_kafka_streams.util.ImprovedAdminClient;
 import com.bakdata.common_kafka_streams.util.SchemaTopicClient;
-import com.bakdata.common_kafka_streams.util.TopicClient;
 import com.bakdata.common_kafka_streams.util.TopologyInformation;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
@@ -65,14 +64,14 @@ public final class CleanUpRunner {
     }
 
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final String brokers, final String appId, final Properties config, final TopicClient topicClient) {
+            final ImprovedAdminClient adminClient, final String appId) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
-        final File tempFile = createTemporaryPropertiesFile(appId, config);
+        final File tempFile = createTemporaryPropertiesFile(appId, adminClient.getProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
-                .add("--bootstrap-servers", brokers)
+                .add("--bootstrap-servers", adminClient.getBootstrapServers())
                 .add("--config-file", tempFile.toString());
-        final Collection<String> allTopics = topicClient.listTopics();
+        final Collection<String> allTopics = adminClient.getTopicClient().listTopics();
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
             argList.add("--input-topics", String.join(",", existingInputTopics));
@@ -89,9 +88,9 @@ public final class CleanUpRunner {
         }
     }
 
-    private static Collection<String> filterExistingTopics(final Collection<String> inputTopics,
+    private static Collection<String> filterExistingTopics(final Collection<String> topics,
             final Collection<String> allTopics) {
-        return inputTopics.stream()
+        return topics.stream()
                 .filter(topicName -> {
                     final boolean exists = allTopics.contains(topicName);
                     if (!exists) {
@@ -126,9 +125,7 @@ public final class CleanUpRunner {
     public void run(final boolean deleteOutputTopic) {
         final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
         final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
-        final String brokers = this.adminClient.getBrokers();
-        runResetter(inputTopics, intermediateTopics, brokers, this.appId, this.adminClient.getProperties(),
-                this.adminClient.getTopicClient());
+        runResetter(inputTopics, intermediateTopics, this.adminClient, this.appId);
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();

@@ -34,40 +34,65 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
 
 @Slf4j
 @RequiredArgsConstructor
-@Getter
 public final class SchemaTopicClient implements Closeable {
     private final @NonNull TopicClient topicClient;
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
-    public static SchemaTopicClient create(final Properties kafkaProperties, final String schemaRegistryUrl,
+    /**
+     * Creates a new {@code SchemaTopicClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param schemaRegistryUrl URL of schema registry
+     * @param timeout timeout for waiting for Kafka admin calls
+     * @return {@code SchemaTopicClient}
+     */
+    public static SchemaTopicClient create(final Properties configs, final String schemaRegistryUrl,
             final Duration timeout) {
         final SchemaRegistryClient schemaRegistryClient =
-                createSchemaRegistryClient(kafkaProperties, schemaRegistryUrl);
-        final TopicClient topicClient = TopicClient.create(kafkaProperties, timeout);
+                createSchemaRegistryClient(configs, schemaRegistryUrl);
+        final TopicClient topicClient = TopicClient.create(configs, timeout);
         return new SchemaTopicClient(topicClient, schemaRegistryClient);
     }
 
-    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
+    /**
+     * Creates a new {@link CachedSchemaRegistryClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link CachedSchemaRegistryClient#CachedSchemaRegistryClient(String, int,
+     * Map)}
+     * @param schemaRegistryUrl URL of schema registry
+     * @return {@link CachedSchemaRegistryClient}
+     */
+    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties configs,
             @NonNull final String schemaRegistryUrl) {
         final Map<String, Object> originals = new HashMap<>();
-        kafkaProperties.forEach((key, value) -> originals.put(key.toString(), value));
+        configs.forEach((key, value) -> originals.put(key.toString(), value));
         return new CachedSchemaRegistryClient(schemaRegistryUrl, 100, originals);
     }
 
+    /**
+     * Delete a topic if it exists and reset the delete the corresponding schema registry topics.
+     *
+     * @param topic the topic name
+     */
     public void deleteTopicAndResetSchemaRegistry(final String topic) {
         this.topicClient.deleteTopicIfExists(topic);
         this.resetSchemaRegistry(topic);
     }
 
+    /**
+     * Delete key and value schemas associated with a topic from the schema registry.
+     *
+     * @param topic the topic name
+     */
     public void resetSchemaRegistry(final String topic) {
-        log.info("Reset topic: {}", topic);
+        log.info("Resetting schema registry for topic '{}'", topic);
         try {
             final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
             final String keySubject = topic + "-key";

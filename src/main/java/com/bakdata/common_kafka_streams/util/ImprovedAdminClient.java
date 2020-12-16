@@ -28,6 +28,7 @@ import static com.bakdata.common_kafka_streams.util.SchemaTopicClient.createSche
 
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import java.io.Closeable;
 import java.time.Duration;
 import java.util.Properties;
 import lombok.Builder;
@@ -36,7 +37,7 @@ import lombok.NonNull;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
-public final class ImprovedAdminClient {
+public final class ImprovedAdminClient implements Closeable {
 
     @Getter
     private final @NonNull Properties properties;
@@ -69,7 +70,12 @@ public final class ImprovedAdminClient {
         return new ConsumerGroupClient(this.adminClient, this.timeout);
     }
 
-    public String getBrokers() {
+    public String getBootstrapServers() {
         return this.properties.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
+    }
+
+    @Override
+    public void close() {
+        this.adminClient.close();
     }
 }

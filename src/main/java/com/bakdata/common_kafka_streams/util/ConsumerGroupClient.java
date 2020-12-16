@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +46,6 @@ import org.apache.kafka.clients.admin.ConsumerGroupListing;
 @Slf4j
 public final class ConsumerGroupClient implements Closeable {
 
-    @Getter
     private final @NonNull AdminClient adminClient;
     private final @NonNull Duration timeout;
 
@@ -73,6 +71,11 @@ public final class ConsumerGroupClient implements Closeable {
         return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 
+    /**
+     * Delete a consumer group.
+     *
+     * @param groupName the consumer group name
+     */
     public void deleteConsumerGroup(final String groupName) {
         log.info("Deleting consumer group '{}'", groupName);
         try {
@@ -105,6 +108,11 @@ public final class ConsumerGroupClient implements Closeable {
                 .anyMatch(c -> c.groupId().equals(groupName));
     }
 
+    /**
+     * List consumer groups.
+     *
+     * @return consumer groups
+     */
     public Collection<ConsumerGroupListing> listGroups() {
         try {
             return this.adminClient
@@ -119,9 +127,14 @@ public final class ConsumerGroupClient implements Closeable {
         }
     }
 
-    public void deleteGroupIfExists(final String appId) {
-        if (this.exists(appId)) {
-            this.deleteConsumerGroup(appId);
+    /**
+     * Delete a consumer group only if it exists.
+     *
+     * @param groupName the consumer group name
+     */
+    public void deleteGroupIfExists(final String groupName) {
+        if (this.exists(groupName)) {
+            this.deleteConsumerGroup(groupName);
         }
     }
 }

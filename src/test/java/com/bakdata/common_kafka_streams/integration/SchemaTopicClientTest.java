@@ -51,18 +51,17 @@ class SchemaTopicClientTest {
     private static final String TOPIC = "topic";
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private EmbeddedKafkaCluster kafkaCluster = null;
-    private SchemaTopicClient schemaTopicClient = null;
+    private final EmbeddedKafkaCluster kafkaCluster =  provisionWith(useDefaults());
 
     @BeforeEach
     void setup() {
-        this.kafkaCluster = provisionWith(useDefaults());
         this.kafkaCluster.start();
+    }
 
+    private SchemaTopicClient createSchemaTopicClient() {
         final Properties kafkaProperties = new Properties();
         kafkaProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
-
-        this.schemaTopicClient = SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
+        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
                 Duration.ofSeconds(10L));
     }
 
@@ -82,7 +81,10 @@ class SchemaTopicClientTest {
                 .inTransaction(TOPIC, List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        this.schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+
+        try (final SchemaTopicClient schemaTopicClient = this.createSchemaTopicClient()) {
+            schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+        }
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.exists(TOPIC))
