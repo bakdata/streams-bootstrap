@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
-class StreamsCleanUpRunnerTest {
+class CleanUpRunnerTest {
 
     @Test
     void createTemporaryPropertiesFile() throws IOException {
         final WordCount wordCount = new WordCount();
         wordCount.setInputTopics(List.of("input"));
-        final File file = StreamsCleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
+        final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
                 wordCount.getKafkaProperties());
 
         assertThat(file.exists()).isTrue();
@@ -26,7 +26,7 @@ class StreamsCleanUpRunnerTest {
             properties.load(inStream);
         }
 
-        final Properties expected = StreamsCleanUpRunner.toStringBasedProperties(wordCount.getKafkaProperties());
+        final Properties expected = CleanUpRunner.toStringBasedProperties(wordCount.getKafkaProperties());
         assertThat(properties).containsAllEntriesOf(expected);
     }
 }

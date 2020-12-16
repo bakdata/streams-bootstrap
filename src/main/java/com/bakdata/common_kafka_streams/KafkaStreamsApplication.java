@@ -252,12 +252,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      */
     @Override
     protected void runCleanUp() {
-        final StreamsCleanUpRunner cleanUpRunner = StreamsCleanUpRunner.builder()
+        final TopicCleaner topicCleaner = this.createTopicCleaner();
+        final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
                 .topology(this.createTopology())
                 .appId(this.getUniqueAppId())
-                .kafkaProperties(this.getKafkaProperties())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
-                .brokers(this.getBrokers())
+                .topicCleaner(topicCleaner)
                 .streams(this.streams)
                 .build();
 
@@ -265,7 +264,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         this.close();
     }
 
-    protected void cleanUpRun(final StreamsCleanUpRunner cleanUpRunner) {
+    protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
         cleanUpRunner.run(this.deleteOutputTopic);
     }
 }

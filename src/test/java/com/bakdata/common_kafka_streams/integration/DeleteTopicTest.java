@@ -29,8 +29,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.common_kafka_streams.CleanUpRunner;
-import com.bakdata.common_kafka_streams.StreamsCleanUpRunner;
+import com.bakdata.common_kafka_streams.TopicCleaner;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.List;
 import java.util.Properties;
@@ -39,10 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,11 +48,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class DeleteTopicTest {
     private static final int TIMEOUT_SECONDS = 10;
     private static final String TOPIC = "topic";
-    private EmbeddedKafkaCluster kafkaCluster = null;
-    private CleanUpRunner cleanUpRunner = null;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-
+    private EmbeddedKafkaCluster kafkaCluster = null;
+    private TopicCleaner topicCleaner = null;
 
     @BeforeEach
     void setup() {
@@ -64,20 +59,9 @@ class DeleteTopicTest {
         this.kafkaCluster.start();
 
         final Properties kafkaProperties = new Properties();
-        kafkaProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "id");
-        kafkaProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
+        kafkaProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
 
-        final StreamsBuilder builder = new StreamsBuilder();
-        builder.stream("input").to("output");
-        final Topology topology = builder.build();
-        this.cleanUpRunner = StreamsCleanUpRunner.builder()
-                .topology(topology)
-                .appId("id")
-                .kafkaProperties(kafkaProperties)
-                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
-                .brokers(this.kafkaCluster.getBrokerList())
-                .streams(new KafkaStreams(topology, kafkaProperties))
-                .build();
+        this.topicCleaner = TopicCleaner.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
     }
 
     @AfterEach
@@ -96,7 +80,7 @@ class DeleteTopicTest {
                 .inTransaction(TOPIC, List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        this.cleanUpRunner.deleteTopic(TOPIC);
+        this.topicCleaner.deleteTopic(TOPIC);
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.exists(TOPIC))

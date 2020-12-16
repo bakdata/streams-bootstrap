@@ -1,6 +1,5 @@
 package com.bakdata.common_kafka_streams;
 
-import com.google.common.collect.ImmutableList;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Properties;
@@ -9,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.log4j.Level;
+import org.jooq.lambda.Seq;
 import picocli.CommandLine;
 
 
@@ -102,19 +102,25 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
      * This methods deletes all output topics.
      */
     protected void runCleanUp() {
-        final ProducerCleanUpRunner cleanUpRunner = ProducerCleanUpRunner.builder()
-                .kafkaProperties(this.getKafkaProperties())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
-                .brokers(this.getBrokers())
-                .build();
+        final TopicCleaner topicCleaner = this.createTopicCleaner();
 
-        this.cleanUpRun(cleanUpRunner);
+        this.cleanUpRun(topicCleaner);
     }
 
-    protected void cleanUpRun(final ProducerCleanUpRunner cleanUpRunner) {
-        cleanUpRunner.run(ImmutableList.<String>builder()
-                .add(this.getOutputTopic())
-                .addAll(this.extraOutputTopics.values())
-                .build());
+    protected void cleanUpRun(final TopicCleaner topicCleaner) {
+        final Iterable<String> outputTopics = this.getAllOutputTopics();
+
+        outputTopics.forEach(topicCleaner::deleteTopicAndResetSchemaRegistry);
+        try {
+            Thread.sleep(RESET_SLEEP_MS);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Error waiting for clean up", e);
+        }
+    }
+
+    private Iterable<String> getAllOutputTopics() {
+        return Seq.of(this.getOutputTopic())
+                .concat(this.extraOutputTopics.values());
     }
 }

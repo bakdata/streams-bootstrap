@@ -90,24 +90,20 @@ public abstract class KafkaApplication implements Runnable {
         return kafkaConfig;
     }
 
-    public String getOutputTopic() {
-        return this.outputTopic;
-    }
-
-    public Map<String, String> getExtraOutputTopics() {
-        return this.extraOutputTopics;
-    }
-
     /**
      * Get extra output topic for a specified role
      *
      * @param role role of output topic specified in CLI argument
      * @return topic name
      */
-    protected String getOutputTopic(final String role) {
+    public String getOutputTopic(final String role) {
         final String topic = this.extraOutputTopics.get(role);
         Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
         return topic;
+    }
+
+    public TopicCleaner createTopicCleaner() {
+        return TopicCleaner.create(this.getKafkaProperties(), this.schemaRegistryUrl);
     }
 
     protected abstract Properties createKafkaProperties();
