@@ -30,6 +30,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.common_kafka_streams.CleanUpRunner;
+import com.bakdata.common_kafka_streams.StreamsCleanUpRunner;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.List;
 import java.util.Properties;
@@ -69,7 +70,7 @@ class DeleteTopicTest {
         final StreamsBuilder builder = new StreamsBuilder();
         builder.stream("input").to("output");
         final Topology topology = builder.build();
-        this.cleanUpRunner = CleanUpRunner.builder()
+        this.cleanUpRunner = StreamsCleanUpRunner.builder()
                 .topology(topology)
                 .appId("id")
                 .kafkaProperties(kafkaProperties)

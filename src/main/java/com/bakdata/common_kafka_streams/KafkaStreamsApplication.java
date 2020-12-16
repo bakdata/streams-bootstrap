@@ -29,7 +29,6 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,10 +57,7 @@ import picocli.CommandLine;
  */
 @Data
 @Slf4j
-public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable {
-    public static final int RESET_SLEEP_MS = 5000;
-    private static final String ENV_PREFIX = Optional.ofNullable(
-            System.getenv("ENV_PREFIX")).orElse("APP_");
+public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     /**
      * This variable is usually set on application start. When the application is running in debug mode it is used to
      * reconfigure the child app package logger. On default it points to the package of this class allowing to execute
@@ -70,49 +66,20 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
     private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    protected String outputTopic = "";
     @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
     protected String errorTopic = "error_topic";
-    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
-    protected Map<String, String> extraOutputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
     protected Map<String, String> extraInputTopics = new HashMap<>();
-    @CommandLine.Option(names = "--brokers", required = true)
-    private String brokers = "";
-    @CommandLine.Option(names = "--schema-registry-url", required = true)
-    private String schemaRegistryUrl = "";
     @CommandLine.Option(names = "--productive", arity = "1")
     private boolean productive = true;
-    @CommandLine.Option(names = "--debug", arity = "0..1")
-    private boolean debug = false;
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
-    private boolean helpRequested = false;
-    @CommandLine.Option(names = "--clean-up", arity = "0..1",
-            description = "Clear the state store and the global Kafka offsets for the "
-                    + "consumer group. Be careful with running in production and with enabling this flag - it "
-                    + "might cause inconsistent processing with multiple replicas.")
-    private boolean cleanUp = false;
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
             description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic = false;
-    @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka Streams properties")
-    private Map<String, String> streamsConfig = new HashMap<>();
     private KafkaStreams streams;
-
-    private static String[] addEnvironmentVariablesArguments(final String[] args) {
-        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),
-                "Prefix '" + EnvironmentStreamsConfigParser.PREFIX + "' is reserved for Streams config");
-        final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
-                .parseVariables(System.getenv());
-        final ArrayList<String> allArgs = new ArrayList<>(environmentArguments);
-        allArgs.addAll(Arrays.asList(args));
-        return allArgs.toArray(String[]::new);
-    }
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
-     * {@link KafkaStreamsApplication}.</p>
+     * {@code KafkaStreamsApplication}.</p>
      *
      * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
@@ -176,41 +143,11 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         return builder.build();
     }
 
-    /**
-     * <p>This method specifies the configuration to run your streaming application with.</p>
-     * To add a custom configuration please override {@link #createKafkaProperties()}. Configuration properties
-     * specified via environment (starting with STREAMS_) or via cli option {@code --streams-config} are always applied
-     * with highest priority (the latter overrides the former).
-     *
-     * @return Returns Kafka Streams configuration {@link Properties}
-     */
-    public final Properties getKafkaProperties() {
-        final Properties kafkaConfig = this.createKafkaProperties();
-
-        EnvironmentStreamsConfigParser.parseVariables(System.getenv())
-                .forEach(kafkaConfig::setProperty);
-        this.streamsConfig.forEach(kafkaConfig::setProperty);
-
-        return kafkaConfig;
-    }
-
     public String getInputTopic() {
         if (this.getInputTopics().isEmpty() || this.getInputTopics().get(0).isBlank()) {
             throw new IllegalArgumentException("One input topic required");
         }
         return this.getInputTopics().get(0);
-    }
-
-    /**
-     * Get extra output topic for a specified role
-     *
-     * @param role role of output topic specified in CLI argument
-     * @return topic name
-     */
-    protected String getOutputTopic(final String role) {
-        final String topic = this.extraOutputTopics.get(role);
-        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
-        return topic;
     }
 
     /**
@@ -254,6 +191,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      *
      * @return Returns a default Kafka Streams configuration {@link Properties}
      */
+    @Override
     protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
 
@@ -312,13 +250,14 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
      * This methods resets the offset for all input topics and deletes internal topics, application state, and
      * optionally the output and error topic.
      */
+    @Override
     protected void runCleanUp() {
-        final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
+        final StreamsCleanUpRunner cleanUpRunner = StreamsCleanUpRunner.builder()
                 .topology(this.createTopology())
                 .appId(this.getUniqueAppId())
                 .kafkaProperties(this.getKafkaProperties())
-                .schemaRegistryUrl(this.schemaRegistryUrl)
-                .brokers(this.brokers)
+                .schemaRegistryUrl(this.getSchemaRegistryUrl())
+                .brokers(this.getBrokers())
                 .streams(this.streams)
                 .build();
 
@@ -326,7 +265,7 @@ public abstract class KafkaStreamsApplication implements Runnable, AutoCloseable
         this.close();
     }
 
-    protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
+    protected void cleanUpRun(final StreamsCleanUpRunner cleanUpRunner) {
         cleanUpRunner.run(this.deleteOutputTopic);
     }
 }
