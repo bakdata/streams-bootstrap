@@ -2,7 +2,7 @@ package com.bakdata.common_kafka_streams;
 
 import com.google.common.collect.ImmutableList;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Properties;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -78,8 +78,8 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
 
-        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
         // exactly once and order
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         kafkaConfig.setProperty(ProducerConfig.ACKS_CONFIG, "all");

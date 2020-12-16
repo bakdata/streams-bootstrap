@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
-class CleanUpRunnerTest {
+class StreamsCleanUpRunnerTest {
 
     @Test
     void createTemporaryPropertiesFile() throws IOException {
@@ -19,7 +19,7 @@ class CleanUpRunnerTest {
         final File file = StreamsCleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
                 wordCount.getKafkaProperties());
 
-        assertThat(file.exists());
+        assertThat(file.exists()).isTrue();
 
         final Properties properties = new Properties();
         try (final FileInputStream inStream = new FileInputStream(file)) {

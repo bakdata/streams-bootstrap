@@ -29,14 +29,15 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.streams.StreamsConfig;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,8 +49,9 @@ public abstract class CleanUpRunner {
 
     private static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
             @NonNull final String schemaRegistryUrl) {
-        final StreamsConfig streamsConfig = new StreamsConfig(kafkaProperties);
-        return new CachedSchemaRegistryClient(schemaRegistryUrl, 100, streamsConfig.originals());
+        final Map<String, Object> originals = new HashMap<>();
+        kafkaProperties.forEach((key, value) -> originals.put(key.toString(), value));
+        return new CachedSchemaRegistryClient(schemaRegistryUrl, 100, originals);
     }
 
     protected CleanUpRunner(final @NonNull Properties kafkaProperties, final @NonNull String schemaRegistryUrl,
