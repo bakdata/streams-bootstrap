@@ -103,7 +103,7 @@ class SchemaTopicClientTest {
                 .as("Topic is deleted")
                 .isFalse();
         assertThat(client.getAllSubjects())
-                .contains(TOPIC + "-value");
+                .doesNotContain(TOPIC + "-value");
     }
 
 }

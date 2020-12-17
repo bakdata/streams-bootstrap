@@ -77,7 +77,7 @@ public final class SchemaTopicClient implements Closeable {
     }
 
     /**
-     * Delete a topic if it exists and reset the delete the corresponding schema registry topics.
+     * Delete a topic if it exists and reset the corresponding schema registry subjects.
      *
      * @param topic the topic name
      */
