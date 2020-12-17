@@ -1,0 +1,56 @@
+nameOverride: bakdata-producer-app
+
+image: producerApp
+imageTag: latest
+imagePullPolicy: Always
+
+configurationEnvPrefix: "APP"
+
+# Cron schedule for this producer job. Default is at 12:00 every day.
+schedule: "0 12 * * *"
+
+suspend: false
+
+# tolerations:
+#   - key: "foo"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+#   - key: "bar"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 300Mi
+  limits:
+    memory: 2G
+    cpu: 500m
+
+streams:
+#  brokers: "test:9092"
+#  schemaRegistryUrl: "url:1234"
+  config:
+#    max.poll.records: 500
+#    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+#    max.request.size: "1000000"
+#  outputTopic: output
+#
+#commandLine:
+#  MY_CLI_PARAM: "foo-bar"
+#
+#debug: false
+#
+env:
+#  MY_ENV_VARIABLE: foo-bar
+#
+#secrets:
+#  MY_SECRET: fo-bar
+
+annotations:
+#  MY_ANNOTATION: "foo-bar"
+
+javaOptions:
+  maxRAMPercentage: 75
+  others: []
+#   - "-XX:MinRAMPercentage=50.0"

@@ -1,0 +1,4 @@
+apiVersion: v1
+name: producer-app-cleanup-job
+description: A helm chart for deploying a clean up job for a Kafka producer application.
+version: 0.1.0
