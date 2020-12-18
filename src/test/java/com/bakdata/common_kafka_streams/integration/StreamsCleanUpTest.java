@@ -74,7 +74,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-class CleanUpTest {
+class StreamsCleanUpTest {
     private static final int TIMEOUT_SECONDS = 10;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();

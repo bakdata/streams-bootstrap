@@ -95,6 +95,25 @@ public final class TopicClient implements Closeable {
     }
 
     /**
+     * Delete a Kafka topic.
+     *
+     * @param topicName the topic name
+     */
+    public void deleteTopic(final String topicName) {
+        log.info("Deleting topic '{}'", topicName);
+        try {
+            this.adminClient.deleteTopics(List.of(topicName))
+                    .all()
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
+        } catch (final ExecutionException | TimeoutException ex) {
+            throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
+        }
+    }
+
+    /**
      * Describes the current configuration of a Kafka topic.
      *
      * @param topicName the topic name
@@ -116,7 +135,10 @@ public final class TopicClient implements Closeable {
                     .replicationFactor((short) replicationFactor)
                     .partitions(partitions.size())
                     .build();
-        } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
+        } catch (final ExecutionException | TimeoutException e) {
             throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
         }
     }
@@ -167,19 +189,41 @@ public final class TopicClient implements Closeable {
                     .createTopics(List.of(newTopic.configs(config)))
                     .all()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to create topic " + topicName, ex);
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to create topic " + topicName, ex);
         }
     }
 
+    /**
+     * List Kafka topics.
+     *
+     * @return name of all existing Kafka topics
+     */
     public Collection<String> listTopics() {
         try {
             return this.adminClient
                     .listTopics()
                     .names()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to list topics", ex);
+        } catch (final ExecutionException | TimeoutException ex) {
+            throw new KafkaAdminException("Failed to list topics", ex);
+        }
+    }
+
+    /**
+     * Delete a Kafka topic only if it exists.
+     *
+     * @param topic the topic name
+     */
+    public void deleteTopicIfExists(final String topic) {
+        if (this.exists(topic)) {
+            this.deleteTopic(topic);
         }
     }
 }

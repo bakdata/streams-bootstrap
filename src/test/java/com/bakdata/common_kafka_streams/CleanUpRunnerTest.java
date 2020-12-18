@@ -6,10 +6,8 @@ import com.bakdata.common_kafka_streams.test_applications.WordCount;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Properties;
-import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 
 class CleanUpRunnerTest {
@@ -21,7 +19,7 @@ class CleanUpRunnerTest {
         final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
                 wordCount.getKafkaProperties());
 
-        assertThat(file.exists());
+        assertThat(file.exists()).isTrue();
 
         final Properties properties = new Properties();
         try (final FileInputStream inStream = new FileInputStream(file)) {

@@ -24,91 +24,61 @@
 
 package com.bakdata.common_kafka_streams;
 
-import static com.bakdata.common_kafka_streams.KafkaStreamsApplication.RESET_SLEEP_MS;
+import static com.bakdata.common_kafka_streams.KafkaApplication.RESET_SLEEP_MS;
 
-import com.bakdata.common_kafka_streams.util.TopicClient;
+import com.bakdata.common_kafka_streams.util.ConsumerGroupClient;
+import com.bakdata.common_kafka_streams.util.ImprovedAdminClient;
+import com.bakdata.common_kafka_streams.util.SchemaTopicClient;
 import com.bakdata.common_kafka_streams.util.TopologyInformation;
 import com.google.common.collect.ImmutableList;
-import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.Admin;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 
 @Slf4j
-public class CleanUpRunner {
+public final class CleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
     private final String appId;
-    private final Properties kafkaProperties;
-    private final SchemaRegistryClient client;
-    private final String brokers;
     private final KafkaStreams streams;
     private final TopologyInformation topologyInformation;
+    private final @NonNull ImprovedAdminClient adminClient;
 
     @Builder
-    public CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
-            final @NonNull Properties kafkaProperties, final @NonNull String schemaRegistryUrl,
-            final @NonNull String brokers, final @NonNull KafkaStreams streams) {
+    private CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
+            final @NonNull ImprovedAdminClient adminClient, final @NonNull KafkaStreams streams) {
         this.appId = appId;
-        this.kafkaProperties = kafkaProperties;
-        this.client = createSchemaRegistryClient(kafkaProperties, schemaRegistryUrl);
-        this.brokers = brokers;
+        this.adminClient = adminClient;
         this.streams = streams;
         this.topologyInformation = new TopologyInformation(topology, appId);
     }
 
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final String brokers, final String appId, final Properties config) {
+            final ImprovedAdminClient adminClient, final String appId) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
-        final File tempFile = createTemporaryPropertiesFile(appId, config);
+        final File tempFile = createTemporaryPropertiesFile(appId, adminClient.getProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
-                .add("--bootstrap-servers", brokers)
+                .add("--bootstrap-servers", adminClient.getBootstrapServers())
                 .add("--config-file", tempFile.toString());
-        try (final TopicClient topicClient = TopicClient.create(config, Duration.ofSeconds(10L))) {
-            final Collection<String> allTopics = topicClient.listTopics();
-            final Collection<String> existingInputTopics = inputTopics.stream()
-                    .filter(topicName -> {
-                        final boolean exists = allTopics.contains(topicName);
-                        if (!exists) {
-                            log.warn("Not resetting missing input topic {}", topicName);
-                        }
-                        return exists;
-                    })
-                    .collect(Collectors.toList());
-            if (!existingInputTopics.isEmpty()) {
-                argList.add("--input-topics", String.join(",", existingInputTopics));
-            }
-            final Collection<String> existingIntermediateTopics = intermediateTopics.stream()
-                    .filter(topicName -> {
-                        final boolean exists = allTopics.contains(topicName);
-                        if (!exists) {
-                            log.warn("Not resetting missing intermediate topic {}", topicName);
-                        }
-                        return exists;
-                    })
-                    .collect(Collectors.toList());
-            if (!existingIntermediateTopics.isEmpty()) {
-                argList.add("--intermediate-topics", String.join(",", existingIntermediateTopics));
-            }
+        final Collection<String> allTopics = adminClient.getTopicClient().listTopics();
+        final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
+        if (!existingInputTopics.isEmpty()) {
+            argList.add("--input-topics", String.join(",", existingInputTopics));
+        }
+        final Collection<String> existingIntermediateTopics = filterExistingTopics(intermediateTopics, allTopics);
+        if (!existingIntermediateTopics.isEmpty()) {
+            argList.add("--intermediate-topics", String.join(",", existingIntermediateTopics));
         }
         final String[] args = argList.build().toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
@@ -118,13 +88,20 @@ public class CleanUpRunner {
         }
     }
 
-    private static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Properties kafkaProperties,
-            @NonNull final String schemaRegistryUrl) {
-        final StreamsConfig streamsConfig = new StreamsConfig(kafkaProperties);
-        return new CachedSchemaRegistryClient(schemaRegistryUrl, 100, streamsConfig.originals());
+    private static Collection<String> filterExistingTopics(final Collection<String> topics,
+            final Collection<String> allTopics) {
+        return topics.stream()
+                .filter(topicName -> {
+                    final boolean exists = allTopics.contains(topicName);
+                    if (!exists) {
+                        log.warn("Not resetting missing topic {}", topicName);
+                    }
+                    return exists;
+                })
+                .collect(Collectors.toList());
     }
 
-    protected static File createTemporaryPropertiesFile(final String appId, final Properties config) {
+    static File createTemporaryPropertiesFile(final String appId, final Properties config) {
         // Writing properties requires Map<String, String>
         final Properties parsedProperties = toStringBasedProperties(config);
         try {
@@ -139,23 +116,16 @@ public class CleanUpRunner {
         }
     }
 
-    protected static Properties toStringBasedProperties(final Properties config) {
+    static Properties toStringBasedProperties(final Properties config) {
         final Properties parsedProperties = new Properties();
         config.forEach((key, value) -> parsedProperties.setProperty(key.toString(), value.toString()));
         return parsedProperties;
     }
 
-    private static boolean doesConsumerGroupExist(final Admin adminClient, final String groupId)
-            throws InterruptedException, ExecutionException {
-        final Collection<ConsumerGroupListing> consumerGroups = adminClient.listConsumerGroups().all().get();
-        return consumerGroups.stream()
-                .anyMatch(c -> c.groupId().equals(groupId));
-    }
-
     public void run(final boolean deleteOutputTopic) {
         final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
         final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
-        runResetter(inputTopics, intermediateTopics, this.brokers, this.appId, this.kafkaProperties);
+        runResetter(inputTopics, intermediateTopics, this.adminClient, this.appId);
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();
@@ -170,59 +140,16 @@ public class CleanUpRunner {
     }
 
     public void deleteTopics() {
+        final SchemaTopicClient schemaTopicClient = this.adminClient.getSchemaTopicClient();
         // the StreamsResetter is responsible for deleting internal topics
-        this.topologyInformation.getInternalTopics().forEach(this::resetSchemaRegistry);
+        this.topologyInformation.getInternalTopics().forEach(schemaTopicClient::resetSchemaRegistry);
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
-        externalTopics.forEach(this::deleteTopicAndResetSchemaRegistry);
-    }
-
-    public void deleteTopicAndResetSchemaRegistry(final String topic) {
-        this.deleteTopic(topic);
-        this.resetSchemaRegistry(topic);
-    }
-
-    public void deleteTopic(final String topic) {
-        log.info("Delete topic: {}", topic);
-        try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
-            adminClient.deleteTopics(List.of(topic));
-        }
-    }
-
-    public void resetSchemaRegistry(final String topic) {
-        log.info("Reset topic: {}", topic);
-        try {
-            final Collection<String> allSubjects = this.client.getAllSubjects();
-            final String keySubject = topic + "-key";
-            if (allSubjects.contains(keySubject)) {
-                this.client.deleteSubject(keySubject);
-                log.info("Cleaned key schema of topic {}", topic);
-            } else {
-                log.info("No key schema for topic {} available", topic);
-            }
-            final String valueSubject = topic + "-value";
-            if (allSubjects.contains(valueSubject)) {
-                this.client.deleteSubject(valueSubject);
-                log.info("Cleaned value schema of topic {}", topic);
-            } else {
-                log.info("No value schema for topic {} available", topic);
-            }
-        } catch (final IOException | RestClientException e) {
-            throw new RuntimeException("Could not reset schema registry for topic " + topic, e);
-        }
+        externalTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
     }
 
     private void deleteConsumerGroup() {
-        try (final AdminClient adminClient = AdminClient.create(this.kafkaProperties)) {
-            if (doesConsumerGroupExist(adminClient, this.appId)) {
-                adminClient.deleteConsumerGroups(List.of(this.appId)).all().get();
-                log.info("Deleted consumer group");
-            }
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Error waiting for clean up", e);
-        } catch (final ExecutionException e) {
-            throw new RuntimeException("Error deleting consumer group", e);
-        }
+        final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
+        consumerGroupClient.deleteGroupIfExists(this.appId);
     }
 
 }

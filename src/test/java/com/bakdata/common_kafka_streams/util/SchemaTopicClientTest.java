@@ -1,7 +1,7 @@
 /*
- * MIT LICENCE
+ * MIT License
  *
- * Copyright (c) 2019 bakdata GmbH
+ * Copyright (c) 2020 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,21 @@
  * SOFTWARE.
  */
 
-package com.bakdata.common_kafka_streams.integration;
+package com.bakdata.common_kafka_streams.util;
 
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.common_kafka_streams.CleanUpRunner;
+import com.bakdata.common.kafka.streams.TestRecord;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
+import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -38,45 +44,31 @@ import lombok.extern.slf4j.Slf4j;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
-class DeleteTopicTest {
+class SchemaTopicClientTest {
     private static final int TIMEOUT_SECONDS = 10;
     private static final String TOPIC = "topic";
-    private EmbeddedKafkaCluster kafkaCluster = null;
-    private CleanUpRunner cleanUpRunner = null;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-
+    private final EmbeddedKafkaCluster kafkaCluster =  provisionWith(useDefaults());
 
     @BeforeEach
     void setup() {
-        this.kafkaCluster = provisionWith(useDefaults());
         this.kafkaCluster.start();
+    }
 
+    private SchemaTopicClient createSchemaTopicClient() {
         final Properties kafkaProperties = new Properties();
-        kafkaProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "id");
-        kafkaProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
-
-        final StreamsBuilder builder = new StreamsBuilder();
-        builder.stream("input").to("output");
-        final Topology topology = builder.build();
-        this.cleanUpRunner = CleanUpRunner.builder()
-                .topology(topology)
-                .appId("id")
-                .kafkaProperties(kafkaProperties)
-                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
-                .brokers(this.kafkaCluster.getBrokerList())
-                .streams(new KafkaStreams(topology, kafkaProperties))
-                .build();
+        kafkaProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
+        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
+                Duration.ofSeconds(10L));
     }
 
     @AfterEach
@@ -85,22 +77,33 @@ class DeleteTopicTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException {
+    void shouldDeleteTopic() throws InterruptedException, IOException, RestClientException {
         this.kafkaCluster.createTopic(TopicConfig.forTopic(TOPIC).useDefaults());
         assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is created")
                 .isTrue();
 
-        final SendValuesTransactional<String> sendRequest = SendValuesTransactional
-                .inTransaction(TOPIC, List.of("blub", "bla", "blub"))
-                .useDefaults();
+        final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
+                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryMockExtension.getUrl())
+                .build();
         this.kafkaCluster.send(sendRequest);
-        this.cleanUpRunner.deleteTopic(TOPIC);
+
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+        assertThat(client.getAllSubjects())
+                .contains(TOPIC + "-value");
+
+        try (final SchemaTopicClient schemaTopicClient = this.createSchemaTopicClient()) {
+            schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+        }
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is deleted")
                 .isFalse();
+        assertThat(client.getAllSubjects())
+                .doesNotContain(TOPIC + "-value");
     }
 
 }

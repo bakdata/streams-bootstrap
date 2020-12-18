@@ -1,8 +1,27 @@
 apiVersion: v1
 entries:
+  producer-app:
+  - apiVersion: v1
+    created: 2020-12-17T12:58:46.7154503+01:00
+    description: A helm chart for deploying a Kafka producer application based on
+      the bakdata KafkaProducerApplication template.
+    digest: dc2e8430840427fba1badb53d40935075f98c815e7d24310240c3672bd6f364c
+    name: producer-app
+    urls:
+    - producer-app/producer-app-0.1.0.tgz
+    version: 0.1.0
+  producer-app-cleanup-job:
+  - apiVersion: v1
+    created: 2020-12-17T12:58:46.7164536+01:00
+    description: A helm chart for deploying a clean up job for a Kafka producer application.
+    digest: 2d178e9850136ee1a50e8352dae1c96a2448d87a6b8699e46417faf8090735a8
+    name: producer-app-cleanup-job
+    urls:
+    - producer-app-cleanup-job/producer-app-cleanup-job-0.1.0.tgz
+    version: 0.1.0
   rclone-copy:
   - apiVersion: v1
-    created: 2020-12-01T18:29:21.747876889+01:00
+    created: 2020-12-17T12:58:46.7184518+01:00
     description: A helm chart for rclone copy on Kubernetes.
     digest: 4b390dd380cb07864bc0eeadc89d4d765e5a22fed120089462de8ca6893d6fc8
     name: rclone-copy
@@ -11,7 +30,7 @@ entries:
     version: 1.0.0
   streams-app:
   - apiVersion: v1
-    created: 2020-12-01T18:29:21.751330416+01:00
+    created: 2020-12-17T12:58:46.7255534+01:00
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 34f07e756b46c05a13db1230793ed9c914b09aeff41ddc328a5d5770593c13ba
@@ -21,7 +40,7 @@ entries:
     version: 0.1.0
   streams-app-cleanup-job:
   - apiVersion: v1
-    created: 2020-12-01T18:29:21.752355501+01:00
+    created: 2020-12-17T12:58:46.7265549+01:00
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: f387156a47c239bb1e64bc82fbbf0079a3723e445690949a3b3168de2019805d
@@ -29,4 +48,4 @@ entries:
     urls:
     - streams-app-cleanup-job/streams-app-cleanup-job-0.1.0.tgz
     version: 0.1.0
-generated: 2020-12-01T18:29:21.747049654+01:00
+generated: 2020-12-17T12:58:46.7144507+01:00
