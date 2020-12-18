@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.5.4](https://github.com/bakdata/common-kafka-streams/tree/1.5.4) (2020-12-18)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.3...1.5.4)
+
+**Merged pull requests:**
+
+- Add producer application [\#89](https://github.com/bakdata/common-kafka-streams/pull/89) ([@philipp94831](https://github.com/philipp94831))
+- Add tolerations to deployment [\#87](https://github.com/bakdata/common-kafka-streams/pull/87) ([@yannick-roeder](https://github.com/yannick-roeder))
+
 ## [1.5.3](https://github.com/bakdata/common-kafka-streams/tree/1.5.3) (2020-11-24)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.2...1.5.3)
 
@@ -75,7 +83,7 @@
 
 **Implemented enhancements:**
 
-- Override log4j.properties when using provided [\#62](https://github.com/bakdata/common-kafka-streams/pull/62) ([@BJennWare](https://github.com/BJennWare))
+- Override log4j.properties when using provided [\#62](https://github.com/bakdata/common-kafka-streams/pull/62) ([@b-feldmann](https://github.com/b-feldmann))
 
 **Merged pull requests:**
 
