@@ -13,7 +13,7 @@ metadata:
     {{- end }}
 spec:
   ttlSecondsAfterFinished: 30
-  #replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   template:
     metadata:
     {{- if or .Values.awsRole .Values.annotations }}
