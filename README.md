@@ -4,11 +4,11 @@
 [![Maven](https://img.shields.io/maven-central/v/com.bakdata.common-kafka-streams/common-kafka-streams.svg)](https://search.maven.org/search?q=g:com.bakdata.common-kafka-streams%20AND%20a:common-kafka-streams&core=gav)
 
 
-# common-kafka-streams
+# streams-bootstrap
 
 ## Getting Started
 
-You can add common-kafka-streams via Maven Central.
+You can add streams-bootstrap via Maven Central.
 
 #### Gradle
 ```gradle
@@ -33,8 +33,8 @@ If you want to contribute to this project, you can simply clone the repository a
 All dependencies should be included in the Gradle files, there are no external prerequisites.
 
 ```bash
-> git clone git@github.com:bakdata/common-kafka-streams.git
-> cd common-kafka-streams && ./gradlew build
+> git clone git@github.com:bakdata/streams-bootstrap.git
+> cd streams-bootstrap && ./gradlew build
 ```
 
 Please note, that we have [code styles](https://github.com/bakdata/bakdata-code-styles) for Java.
@@ -49,4 +49,4 @@ Just open an issue beforehand and let us know what you want to do and why.
 
 ## License
 This project is licensed under the MIT license.
-Have a look at the [LICENSE](https://github.com/bakdata/common-kafka-streams/blob/master/LICENSE) for more details.
+Have a look at the [LICENSE](https://github.com/bakdata/streams-bootstrap/blob/master/LICENSE) for more details.

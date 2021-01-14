@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "com.bakdata.common.kafka.streams",
+  "namespace": "com.bakdata.kafka",
   "name": "TestRecord",
   "fields": [
     {

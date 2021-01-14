@@ -12,7 +12,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.bakdata.${rootProject.name}"
+    group = "com.bakdata.kafka"
 
     tasks.withType<Test> {
         maxParallelForks = 4

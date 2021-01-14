@@ -5,7 +5,7 @@ Collection of commonly used charts associated with bakdata kafka streaming appli
 ## Install
 
 ```
-helm repo add bakdata-common https://raw.githubusercontent.com/bakdata/common-kafka-streams/<branch_name>/charts/
+helm repo add bakdata-common https://raw.githubusercontent.com/bakdata/streams-bootstrap/<branch_name>/charts/
 helm install bakdata-common/<chart_to_install>
 ```
 
