@@ -1,7 +1,7 @@
-[![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.common-kafka-streams?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=5&branchName=master)
-[![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.common-kafka-streams%3Acommon-kafka-streams&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.bakdata.common-kafka-streams%3Acommon-kafka-streams)
-[![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.common-kafka-streams%3Acommon-kafka-streams&metric=coverage)](https://sonarcloud.io/dashboard?id=com.bakdata.common-kafka-streams%3Acommon-kafka-streams)
-[![Maven](https://img.shields.io/maven-central/v/com.bakdata.common-kafka-streams/common-kafka-streams.svg)](https://search.maven.org/search?q=g:com.bakdata.common-kafka-streams%20AND%20a:common-kafka-streams&core=gav)
+[![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.streams-bootstrap?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=5&branchName=master)
+[![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
+[![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=coverage)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
+[![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap&core=gav)
 
 
 # streams-bootstrap
@@ -12,20 +12,20 @@ You can add streams-bootstrap via Maven Central.
 
 #### Gradle
 ```gradle
-compile group: 'com.bakdata', name: 'common-kafka-streams', version: '1.1.1'
+compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '1.6.0'
 ```
 
 #### Maven
 ```xml
 <dependency>
-    <groupId>com.bakdata</groupId>
-    <artifactId>common-kafka-streams</artifactId>
-    <version>1.1.1</version>
+    <groupId>com.bakdata.kafka</groupId>
+    <artifactId>streams-bootstrap</artifactId>
+    <version>1.6.0</version>
 </dependency>
 ```
 
 
-For other build tools or versions, refer to the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.common-kafka-streams/common-kafka-streams/latest).
+For other build tools or versions, refer to the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.kafka/streams-bootstrap/latest).
 
 ## Development
 
