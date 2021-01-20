@@ -19,5 +19,5 @@ cd <your-chart-dir>
 rm *.tgz
 helm package .
 cd ..
-helm repo index . --merge <your-chart-dir>/Chart.yaml
+helm repo index .
 ```
