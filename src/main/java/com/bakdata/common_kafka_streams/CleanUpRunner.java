@@ -40,6 +40,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -52,6 +53,7 @@ public final class CleanUpRunner {
     private final String appId;
     private final KafkaStreams streams;
     private final TopologyInformation topologyInformation;
+    @Getter
     private final @NonNull ImprovedAdminClient adminClient;
 
     @Builder
