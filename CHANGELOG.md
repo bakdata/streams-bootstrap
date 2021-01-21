@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.5.5](https://github.com/bakdata/common-kafka-streams/tree/1.5.5) (2021-01-21)
+[Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.4...1.5.5)
+
+**Merged pull requests:**
+
+- Expose AdminClient from CleanUpRunner [\#92](https://github.com/bakdata/common-kafka-streams/pull/92) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to helm 3 [\#91](https://github.com/bakdata/common-kafka-streams/pull/91) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Reduce helm chart size [\#90](https://github.com/bakdata/common-kafka-streams/pull/90) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.5.4](https://github.com/bakdata/common-kafka-streams/tree/1.5.4) (2020-12-18)
 [Full Changelog](https://github.com/bakdata/common-kafka-streams/compare/1.5.3...1.5.4)
 
