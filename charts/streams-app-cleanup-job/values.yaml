@@ -1,7 +1,5 @@
 nameOverride: bakdata-streams-app-job
 
-replicaCount: 1
-
 image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
