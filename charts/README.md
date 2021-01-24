@@ -15,8 +15,6 @@ You can add new charts in a separate folder or update existing ones. To update t
 
 ```
 cd <your-chart-dir>
-# Make sure to remove the old package in order to not add it to the new package
-rm *.tgz
 helm package .
 cd ..
 helm repo index .
