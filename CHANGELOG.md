@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.0](https://github.com/bakdata/streams-bootstrap/tree/1.6.0) (2021-01-25)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.5...1.6.0)
+
+**Merged pull requests:**
+
+- Rename to streams\-bootstrap [\#93](https://github.com/bakdata/streams-bootstrap/pull/93) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.5.5](https://github.com/bakdata/streams-bootstrap/tree/1.5.5) (2021-01-21)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.4...1.5.5)
 
