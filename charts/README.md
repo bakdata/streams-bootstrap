@@ -5,7 +5,7 @@ Collection of commonly used charts associated with bakdata kafka streaming appli
 ## Install
 
 ```
-helm repo add bakdata-common https://raw.githubusercontent.com/bakdata/common-kafka-streams/<branch_name>/charts/
+helm repo add bakdata-common https://raw.githubusercontent.com/bakdata/streams-bootstrap/<branch_name>/charts/
 helm install bakdata-common/<chart_to_install>
 ```
 
@@ -15,8 +15,6 @@ You can add new charts in a separate folder or update existing ones. To update t
 
 ```
 cd <your-chart-dir>
-# Make sure to remove the old package in order to not add it to the new package
-rm *.tgz
 helm package .
 cd ..
 helm repo index .
