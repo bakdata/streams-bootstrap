@@ -38,6 +38,9 @@ spec:
       {{- range $key, $value := .Values.annotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
+      {{- if and .Values.autoscaling.consumergroup (not .Values.annotations.consumerGroup) }}
+        consumerGroup: {{ .Values.autoscaling.consumergroup | quote }}
+      {{- end }}
     {{- end }}
       labels:
         app: {{ template "streams-app.name" . }}
