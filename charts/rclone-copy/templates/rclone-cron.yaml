@@ -37,9 +37,6 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
-          {{- if .Values.priorityClassName }}
-          priorityClassName: {{ .Values.priorityClassName }}
-          {{- end }}
           containers:
           - name: rclone-container
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
