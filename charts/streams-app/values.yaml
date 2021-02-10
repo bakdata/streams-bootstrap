@@ -103,3 +103,6 @@ prometheus:
       limits:
         cpu: 300m
         memory: 2G
+
+# priorityClass
+#priorityClassName: ""

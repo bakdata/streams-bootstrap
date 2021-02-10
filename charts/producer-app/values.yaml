@@ -54,3 +54,6 @@ javaOptions:
   maxRAMPercentage: 75
   others: []
 #   - "-XX:MinRAMPercentage=50.0"
+
+# priorityClass
+#priorityClassName: ""

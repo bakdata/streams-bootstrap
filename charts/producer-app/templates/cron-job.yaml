@@ -40,6 +40,9 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
+          {{- if .Values.priorityClassName }}
+          priorityClassName: {{ .Values.priorityClassName }}
+          {{- end }}
           containers:
           - name: {{ template "producer-app.name" . }}
             image: "{{ .Values.image }}:{{ .Values.imageTag }}"

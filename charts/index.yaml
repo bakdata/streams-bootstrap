@@ -2,50 +2,50 @@ apiVersion: v1
 entries:
   producer-app:
   - apiVersion: v1
-    created: "2021-01-28T15:48:05.734063+01:00"
+    created: "2021-02-10T15:48:00.656862607+01:00"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
-    digest: c5e46f6de48377e467b695b861629b4c1cd51473821756c8e97376baaf224168
+    digest: 1df7cdfb4e5bbf15e68041c05b6e91f5fe014e5edc559e662f9926488eb9d1ab
     name: producer-app
     urls:
     - producer-app/producer-app-0.1.0.tgz
     version: 0.1.0
   producer-app-cleanup-job:
   - apiVersion: v1
-    created: "2021-01-28T15:48:05.734442+01:00"
+    created: "2021-02-10T15:48:00.657852435+01:00"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
-    digest: c6665e7b425f4bb5935ad15421d4f25be03293fd4e7f729f7fcfc65d4e23532d
+    digest: 2d07d90d04f99528dfb463bbd152373f227121adfa7870ec70819487245e1829
     name: producer-app-cleanup-job
     urls:
     - producer-app-cleanup-job/producer-app-cleanup-job-0.1.0.tgz
     version: 0.1.0
   rclone-copy:
   - apiVersion: v1
-    created: "2021-01-28T15:48:05.736336+01:00"
+    created: "2021-02-10T15:48:00.659008263+01:00"
     description: A helm chart for rclone copy on Kubernetes.
-    digest: 9181e663468c27a67f2897abb5ccad81aa306c500568d92b6bb8021b64e9e64a
+    digest: e98050c78f510eddee758697e9046b27aa9342efd0e6c16e5973e1cf350c33c2
     name: rclone-copy
     urls:
     - rclone-copy/rclone-copy-1.0.0.tgz
     version: 1.0.0
   streams-app:
   - apiVersion: v1
-    created: "2021-01-28T15:48:05.737229+01:00"
+    created: "2021-02-10T15:48:00.660575846+01:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 61fe3c1c354b209fa05df2e227f50648b1a7ea4b7f1aef8f67fe22a9548a2fbb
+    digest: e2386e83895c10173b7d4ad112ac879d5f04b264f20f552cc42290125b173f07
     name: streams-app
     urls:
     - streams-app/streams-app-0.1.0.tgz
     version: 0.1.0
   streams-app-cleanup-job:
   - apiVersion: v1
-    created: "2021-01-28T15:48:05.737835+01:00"
+    created: "2021-02-10T15:48:00.662237963+01:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 3a1aaa8b84d2064e9a492849b4ba88f077af654dfc8f7faf2acfff27c47731cf
+    digest: b80a31356f8c85c4ad9776a811f6e8d4d79c5b05be7bab611bf2235dc4b83c65
     name: streams-app-cleanup-job
     urls:
     - streams-app-cleanup-job/streams-app-cleanup-job-0.1.0.tgz
     version: 0.1.0
-generated: "2021-01-28T15:48:05.730915+01:00"
+generated: "2021-02-10T15:48:00.655478535+01:00"
