@@ -116,7 +116,8 @@ class RunStreamsAppTest {
         this.app.setOutputTopic(output);
         this.app.run();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
+        // once because of StateListener and once because of UncaughtExceptionHandler
+        assertThat(closeResourcesApplication.getCalled()).isEqualTo(2);
     }
 
     @Test
@@ -139,7 +140,8 @@ class RunStreamsAppTest {
                         .build();
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
+        // once because of StateListener and once because of UncaughtExceptionHandler
+        assertThat(closeResourcesApplication.getCalled()).isEqualTo(2);
     }
 
     private static class CloseResourcesApplication extends KafkaStreamsApplication {
