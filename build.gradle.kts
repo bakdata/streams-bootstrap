@@ -102,9 +102,9 @@ allprojects {
         testImplementation(group = "org.mockito", name = "mockito-core", version = "2.28.2")
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = "2.28.2")
 
-        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.2.2-SNAPSHOT")
+        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.3.0")
         testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
-        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.2.2-SNAPSHOT") {
+        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.3.0") {
             exclude(group = "junit")
         }
         testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaVersion) {
