@@ -4,8 +4,8 @@ description = "Collection of commonly used modules when writing a Kafka Streams 
 plugins {
     `java-library`
     id("net.researchgate.release") version "2.6.0"
-    id("com.bakdata.sonar") version "1.1.4"
-    id("com.bakdata.sonatype") version "1.1.4"
+    id("com.bakdata.sonar") version "1.1.6"
+    id("com.bakdata.sonatype") version "1.1.6"
     id("org.hildan.github.changelog") version "0.8.0"
     id("com.commercehub.gradle.plugin.avro") version "0.17.0"
     id("io.freefair.lombok") version "5.1.1"
@@ -102,12 +102,12 @@ allprojects {
         testImplementation(group = "org.mockito", name = "mockito-core", version = "2.28.2")
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = "2.28.2")
 
-        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.2.0")
+        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.3.0")
         testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
-        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.2.0") {
+        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = "2.3.0") {
             exclude(group = "junit")
         }
-        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "2.5.0") {
+        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaVersion) {
             exclude(group = "org.projectlombok")
         }
 

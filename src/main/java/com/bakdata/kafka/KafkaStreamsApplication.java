@@ -171,10 +171,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * @see KafkaStreams#setUncaughtExceptionHandler(UncaughtExceptionHandler)
      */
     protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return (t, e) -> {
-            log.debug("Closing resources because of uncaught exception");
-            this.closeResources();
-        };
+        return null;
     }
 
     /**
