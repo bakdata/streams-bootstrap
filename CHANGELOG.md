@@ -1,5 +1,19 @@
 # Change Log
 
+## [1.7.0](https://github.com/bakdata/streams-bootstrap/tree/1.7.0) (2021-02-18)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0)
+
+**Closed issues:**
+
+- Update to Kafka 2.6/Confluent 6.0 [\#96](https://github.com/bakdata/streams-bootstrap/issues/96)
+- Add support for tolerations in streams helm charts [\#86](https://github.com/bakdata/streams-bootstrap/issues/86)
+
+**Merged pull requests:**
+
+- Update Kafka to 2.7 [\#98](https://github.com/bakdata/streams-bootstrap/pull/98) ([@philipp94831](https://github.com/philipp94831))
+- Add priority class to helm charts [\#97](https://github.com/bakdata/streams-bootstrap/pull/97) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Add consumer group annotation from autoscaling [\#95](https://github.com/bakdata/streams-bootstrap/pull/95) ([@VictorKuenstler](https://github.com/VictorKuenstler))
+
 ## [1.6.0](https://github.com/bakdata/streams-bootstrap/tree/1.6.0) (2021-01-25)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.5...1.6.0)
 
