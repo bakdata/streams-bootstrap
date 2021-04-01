@@ -69,11 +69,32 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
 }
 ```
 
+The following configuration options are available (can be passed per arguments or environment variables):
 
+- `brokers`: List of Kafka brokers (`<brokers>`)
+
+- `schema-registry-url`: The URL of the schema registry (`<schemaRegistryUrl>`)
+
+- `input-topics`: List of input topics (`<inputTopics>[,<inputTopics>...]`)
+
+- `output-topic`: The output topic (`<outputTopic>`)
+
+- `error-topic`: A topic to write errors to (`<errorTopic>`, default: `error_topic`)
+
+- `streams-config`: Additional Kafka properties (`<String=String>[,<String=String>...]`)
+
+- `extra-input-topics`: Additional input topics `<String=String>[,<String=String>...]`
+
+- `extra-output-topics`: Additional output topics (`String=String>[,<String=String>...]`)
+ 
+- `clean-up`: Whether the state store and the Kafka offsets for the consumer group should be cleared
+
+- `delete-output`: Whether the output topic should be deleted during the cleanup
 
 ### Helm Charts
 
 For the configuration and deployment to Kubernetes, you can use the [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
+To configure your streams app, you can use the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/streams-app/values.yaml) as a starting point. 
 
 ## Development
 
