@@ -71,19 +71,19 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
 
 The following configuration options are available (can be passed per arguments or environment variables):
 
-- `brokers`: List of Kafka brokers (`<brokers>`)
+- `brokers`: List of Kafka brokers (comma-separated) (**required**)
 
-- `schema-registry-url`: The URL of the schema registry (`<schemaRegistryUrl>`)
+- `schema-registry-url`: The URL of the schema registry (**required**)
 
-- `input-topics`: List of input topics (`<inputTopics>[,<inputTopics>...]`)
+- `input-topics`: List of input topics (comma-separated)
 
-- `output-topic`: The output topic (`<outputTopic>`)
+- `output-topic`: The output topic
 
-- `error-topic`: A topic to write errors to (`<errorTopic>`, default: `error_topic`)
+- `error-topic`: A topic to write errors to (default: `error_topic`)
 
 - `streams-config`: Additional Kafka properties (`<String=String>[,<String=String>...]`)
 
-- `extra-input-topics`: Additional input topics `<String=String>[,<String=String>...]`
+- `extra-input-topics`: Additional input topics (`<String=String>[,<String=String>...]`)
 
 - `extra-output-topics`: Additional output topics (`String=String>[,<String=String>...]`)
  
