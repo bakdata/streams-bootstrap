@@ -6,26 +6,41 @@
 
 # streams-bootstrap
 
+`streams-bootstrap` provides base classes and utility functions for Kafka Streams applications.
+
+It provides a common way to
+- configure Kafka Streams applications
+- deploy streaming applications into a Kafka cluster on Kubernetes via Helm Charts
+- reprocess data
+
+Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) for an overview and a demo application.  
+The common configuration and deployments on Kubernetes are supported by the [Streams-Explorer](https://github.com/bakdata/streams-explorer), which enables to explore and monitor data pipelines in Apache Kafka.
+
 ## Getting Started
 
 You can add streams-bootstrap via Maven Central.
 
 #### Gradle
+
 ```gradle
-compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '1.6.0'
+compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '1.7.0'
 ```
 
 #### Maven
+
 ```xml
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
     <artifactId>streams-bootstrap</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
 </dependency>
 ```
 
-
 For other build tools or versions, refer to the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.kafka/streams-bootstrap/latest).
+
+### Helm Charts
+
+For the configuration and deployment to Kubernetes, you can use the `streams-bootrap` [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
 
 ## Development
 
@@ -48,5 +63,6 @@ We are also happy to accept your PRs.
 Just open an issue beforehand and let us know what you want to do and why.
 
 ## License
+
 This project is licensed under the MIT license.
 Have a look at the [LICENSE](https://github.com/bakdata/streams-bootstrap/blob/master/LICENSE) for more details.
