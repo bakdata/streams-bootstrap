@@ -14,7 +14,7 @@ It provides a common way to
 - reprocess data
 
 Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) and [demo](https://github.com/bakdata/common-kafka-streams-demo) for an overview and a demo application.  
-The common configuration and deployments on Kubernetes are supported by the [Streams-Explorer](https://github.com/bakdata/streams-explorer), which makes it possible to explore and monitor data pipelines in Apache Kafka.
+The common configuration and deployments on Kubernetes are supported by the [Streams Explorer](https://github.com/bakdata/streams-explorer), which makes it possible to explore and monitor data pipelines in Apache Kafka.
 
 ## Getting Started
 
