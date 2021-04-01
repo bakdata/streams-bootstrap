@@ -13,8 +13,8 @@ It provides a common way to
 - deploy streaming applications into a Kafka cluster on Kubernetes via Helm Charts
 - reprocess data
 
-Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) for an overview and a demo application.  
-The common configuration and deployments on Kubernetes are supported by the [Streams-Explorer](https://github.com/bakdata/streams-explorer), which enables to explore and monitor data pipelines in Apache Kafka.
+Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) and [demo](https://github.com/bakdata/common-kafka-streams-demo) for an overview and a demo application.  
+The common configuration and deployments on Kubernetes are supported by the [Streams-Explorer](https://github.com/bakdata/streams-explorer), which makes it possible to explore and monitor data pipelines in Apache Kafka.
 
 ## Getting Started
 
@@ -38,9 +38,42 @@ compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '1.7.0'
 
 For other build tools or versions, refer to the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.kafka/streams-bootstrap/latest).
 
+### Usage
+
+Create a subclass of `KafkaStreamsApplication` and implement the abstract methods `buildTopology()` and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`. 
+
+```java
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KStream;
+
+public class StreamsBootstrapApplication extends KafkaStreamsApplication {
+    public static void main(final String[] args) {
+        startApplication(new TFIDFApplication(), args);
+    }
+
+    @Override
+    public void buildTopology(final StreamsBuilder builder) {
+        final KStream<String, String> input =
+                builder.<String, String>stream(this.getInputTopics());
+        
+        // your topology
+
+        input.to(this.getOutputTopic());
+    }
+
+    @Override
+    public String getUniqueAppId() {
+        return "streams-bootstrap-app";
+    }
+
+}
+```
+
+
+
 ### Helm Charts
 
-For the configuration and deployment to Kubernetes, you can use the `streams-bootrap` [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
+For the configuration and deployment to Kubernetes, you can use the [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
 
 ## Development
 
