@@ -94,7 +94,7 @@ The following configuration options are available (can be passed per arguments o
 ### Helm Charts
 
 For the configuration and deployment to Kubernetes, you can use the [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
-To configure your streams app, you can use the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/streams-app/values.yaml) as a starting point. 
+To configure your streams-bootstrap app, you can use the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/streams-app/values.yaml) as a starting point. 
 
 ## Development
 
