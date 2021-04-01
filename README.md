@@ -48,7 +48,7 @@ import org.apache.kafka.streams.kstream.KStream;
 
 public class StreamsBootstrapApplication extends KafkaStreamsApplication {
     public static void main(final String[] args) {
-        startApplication(new TFIDFApplication(), args);
+        startApplication(new StreamsBootstrapApplication(), args);
     }
 
     @Override
