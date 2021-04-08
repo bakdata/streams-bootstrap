@@ -10,7 +10,7 @@
 
 It provides a common way to
 - configure Kafka Streams applications
-- deploy streaming applications into a Kafka cluster on Kubernetes via Helm Charts
+- deploy streaming application on Kubernetes via Helm charts
 - reprocess data
 
 Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) and [demo](https://github.com/bakdata/common-kafka-streams-demo) for an overview and a demo application.  
@@ -43,6 +43,7 @@ For other build tools or versions, refer to the [latest version in MvnRepository
 Create a subclass of `KafkaStreamsApplication` and implement the abstract methods `buildTopology()` and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`. 
 
 ```java
+import java.util.Properties;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
@@ -65,7 +66,14 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
     public String getUniqueAppId() {
         return "streams-bootstrap-app";
     }
+    
+    // Optionally you can override the default streams bootstrap Kafka properties 
+    @Override
+    protected Properties createKafkaProperties() {
+        final Properties kafkaProperties = super.createKafkaProperties();
 
+        return kafkaProperties;
+    }
 }
 ```
 
