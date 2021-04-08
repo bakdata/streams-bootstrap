@@ -10,7 +10,7 @@
 
 It provides a common way to
 - configure Kafka Streams applications
-- deploy streaming application on Kubernetes via Helm charts
+- deploy streaming applications on Kubernetes via Helm charts
 - reprocess data
 
 Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) and [demo](https://github.com/bakdata/common-kafka-streams-demo) for an overview and a demo application.  
