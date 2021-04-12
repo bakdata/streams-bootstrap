@@ -21,6 +21,7 @@ spec:
     {{- range .Values.streams.inputTopics }}
     - type: kafka
       metadata:
+        metricName: "{{ . }}-metric"
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
         topic: {{ . | quote }}
@@ -30,6 +31,7 @@ spec:
     {{- range .Values.autoscaling.topics }}
     - type: kafka
       metadata:
+        metricName: "{{ . }}-metric"
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
         topic: {{ . | quote }}
@@ -39,6 +41,7 @@ spec:
     {{- range $key, $value := .Values.streams.extraInputTopics }}
     - type: kafka
       metadata:
+        metricName: "{{ $value }}-metric"
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
         topic: {{ $value | quote }}
