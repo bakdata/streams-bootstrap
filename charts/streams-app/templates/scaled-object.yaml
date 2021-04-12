@@ -11,8 +11,12 @@ spec:
   cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
+  {{- if .Values.autoscaling.advanced }}
+  advanced:
+{{ toYaml .Values.autoscaling.advanced | indent 4 }}
+  {{- end }}
   triggers:
-    # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to 
+    # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to
     # minimize number of loops when we don't need to support helm 2 anymore
     {{- range .Values.streams.inputTopics }}
     - type: kafka

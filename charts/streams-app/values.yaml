@@ -64,6 +64,15 @@ autoscaling:
   # topics:
   #   - bar
   #   - baz
+  # advanced:
+  #   horizontalPodAutoscalerConfig: # Optional. Section to specify HPA related options
+  #     behavior: # Optional. Use to modify HPA's scaling behavior
+  #       scaleDown:
+  #         stabilizationWindowSeconds: 300
+  #         policies:
+  #           - type: Percent
+  #             value: 100
+  #             periodSeconds: 15
 
 # tolerations:
 #   - key: "foo"
