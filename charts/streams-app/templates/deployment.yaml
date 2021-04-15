@@ -19,6 +19,9 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
+  {{- if .Values.statefulSet }}
+  serviceName: {{ template "streams-app.name" . }}
+  {{- end }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
