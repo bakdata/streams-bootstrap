@@ -106,3 +106,22 @@ prometheus:
 
 # priorityClass
 #priorityClassName: ""
+
+# nodeAffinity:
+#   requiredDuringSchedulingIgnoredDuringExecution:
+#     nodeSelectorTerms:
+#     - matchExpressions:
+#       - key: foo
+#         operator: In
+#         values:
+#         - bar
+#         - baz
+#   preferredDuringSchedulingIgnoredDuringExecution:
+#   - weight: 1
+#     preference:
+#       matchExpressions:
+#       - key: foo
+#         operator: In
+#         values:
+#         - bar
+#         - baz
