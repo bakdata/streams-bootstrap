@@ -26,7 +26,7 @@ package com.bakdata.kafka.integration;
 
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.TestRecord;
@@ -69,6 +69,7 @@ import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -83,7 +84,7 @@ class StreamsCleanUpTest {
 
     @BeforeEach
     void setup() throws InterruptedException {
-        this.kafkaCluster = provisionWith(useDefaults());
+        this.kafkaCluster = provisionWith(defaultClusterConfig());
         this.kafkaCluster.start();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
     }
@@ -197,7 +198,8 @@ class StreamsCleanUpTest {
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
-            adminClient.deleteConsumerGroups(List.of(this.app.getUniqueAppId())).all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            adminClient.deleteConsumerGroups(List.of(this.app.getUniqueAppId())).all()
+                    .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group is deleted")
@@ -236,11 +238,38 @@ class StreamsCleanUpTest {
         softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.runCleanUpWithDeletion();
+        this.runCleanUp();
 
         softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
+        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
+
         softly.assertThat(this.kafkaCluster.exists(internalTopic)).isFalse();
         softly.assertThat(this.kafkaCluster.exists(backingTopic)).isFalse();
+    }
+
+
+    @Test
+    void shouldDeleteIntermediateTopics(final SoftAssertions softly) throws InterruptedException {
+        this.app = this.createComplexApplication();
+
+        final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
+
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+        final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.runApp();
+
+        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        this.runCleanUpWithDeletion();
+
         softly.assertThat(this.kafkaCluster.exists(manualTopic)).isFalse();
     }
 
@@ -336,7 +365,7 @@ class StreamsCleanUpTest {
     }
 
     @Test
-    void shouldDeleteSchemaOfIntermediateTopics(final SoftAssertions softly)
+    void shouldDeleteSchemaOfInternalTopics(final SoftAssertions softly)
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createComplexApplication();
 
@@ -362,11 +391,38 @@ class StreamsCleanUpTest {
         softly.assertThat(client.getAllSubjects())
                 .contains(inputSubject, internalSubject, backingSubject, manualSubject);
 
-        this.runCleanUpWithDeletion();
+        this.runCleanUp();
 
         softly.assertThat(client.getAllSubjects())
-                .doesNotContain(internalSubject, backingSubject, manualSubject)
-                .contains(inputSubject);
+                .doesNotContain(internalSubject, backingSubject)
+                .contains(inputSubject, manualSubject);
+    }
+
+
+    @Test
+    void shouldDeleteSchemaOfIntermediateTopics(final SoftAssertions softly)
+            throws InterruptedException, IOException, RestClientException {
+        this.app = this.createComplexApplication();
+
+        final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
+
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+        final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+        final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
+                .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
+                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                .build();
+
+        this.kafkaCluster.send(sendRequest);
+        this.runApp();
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        softly.assertThat(client.getAllSubjects())
+                .contains(manualSubject);
+        this.runCleanUpWithDeletion();
+        softly.assertThat(client.getAllSubjects())
+                .doesNotContain(manualSubject);
     }
 
     @Test
