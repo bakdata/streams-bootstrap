@@ -69,7 +69,6 @@ import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -418,18 +417,16 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        softly.assertThat(client.getAllSubjects())
-                .contains(manualSubject);
+        softly.assertThat(client.getAllSubjects()).contains(manualSubject);
         this.runCleanUpWithDeletion();
-        softly.assertThat(client.getAllSubjects())
-                .doesNotContain(manualSubject);
+        softly.assertThat(client.getAllSubjects()).doesNotContain(manualSubject);
     }
 
     @Test
     void shouldCallClose(final SoftAssertions softly) throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(this.app.getInputTopic()).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         // if we don't run the app, the coordinator will be unavailable
         this.runApp();
@@ -521,7 +518,7 @@ class StreamsCleanUpTest {
     }
 
     private KafkaStreamsApplication createComplexApplication() {
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
         return this.setupApp(new ComplexTopologyApplication(), "input", "output", "value_error");
     }
 
