@@ -128,6 +128,8 @@ public final class CleanUpRunner {
         final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
         final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
         runResetter(inputTopics, intermediateTopics, this.adminClient, this.appId);
+        // the StreamsResetter is responsible for deleting internal topics
+        this.topologyInformation.getInternalTopics().forEach(this.adminClient.getSchemaTopicClient()::resetSchemaRegistry);
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();
@@ -143,8 +145,6 @@ public final class CleanUpRunner {
 
     public void deleteTopics() {
         final SchemaTopicClient schemaTopicClient = this.adminClient.getSchemaTopicClient();
-        // the StreamsResetter is responsible for deleting internal topics
-        this.topologyInformation.getInternalTopics().forEach(schemaTopicClient::resetSchemaRegistry);
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
         externalTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
     }
