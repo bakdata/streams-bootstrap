@@ -40,6 +40,11 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
+          affinity:
+            {{- if .Values.nodeAffinity }}
+            nodeAffinity:
+{{ toYaml .Values.nodeAffinity | indent 14 }}
+            {{- end }}
           containers:
           - name: {{ template "producer-app.name" . }}
             image: "{{ .Values.image }}:{{ .Values.imageTag }}"

@@ -37,6 +37,11 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
+          affinity:
+            {{- if .Values.nodeAffinity }}
+            nodeAffinity:
+{{ toYaml .Values.nodeAffinity | indent 14 }}
+            {{- end }}
           containers:
           - name: rclone-container
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        

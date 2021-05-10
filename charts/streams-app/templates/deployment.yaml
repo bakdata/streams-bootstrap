@@ -57,6 +57,10 @@ spec:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
       affinity:
+        {{- if .Values.nodeAffinity }}
+        nodeAffinity:
+{{ toYaml .Values.nodeAffinity | indent 10 }}
+        {{- end }}
         podAntiAffinity:
         {{- if .Values.requirePodAntiAffinity }}
           requiredDuringSchedulingIgnoredDuringExecution:
