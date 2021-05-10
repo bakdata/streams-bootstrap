@@ -7,7 +7,7 @@ plugins {
     id("com.bakdata.sonar") version "1.1.6"
     id("com.bakdata.sonatype") version "1.1.6"
     id("org.hildan.github.changelog") version "0.8.0"
-    id("com.commercehub.gradle.plugin.avro") version "0.17.0"
+    id("com.github.davidmc24.gradle.plugin.avro") version "1.2.0"
     id("io.freefair.lombok") version "5.1.1"
 }
 
