@@ -46,6 +46,25 @@ imageRelease: 1.46
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
+# nodeAffinity:
+#   requiredDuringSchedulingIgnoredDuringExecution:
+#     nodeSelectorTerms:
+#     - matchExpressions:
+#       - key: foo
+#         operator: In
+#         values:
+#         - bar
+#         - baz
+#   preferredDuringSchedulingIgnoredDuringExecution:
+#   - weight: 1
+#     preference:
+#       matchExpressions:
+#       - key: foo
+#         operator: In
+#         values:
+#         - bar
+#         - baz
+
 resources:
   requests:
     cpu: 200m
