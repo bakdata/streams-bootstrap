@@ -66,7 +66,7 @@ env:
 #secrets:
 #  MY_SECRET: fo-bar
 
-annotations:
+annotations: {}
 #  MY_ANNOTATION: "foo-bar"
 
 javaOptions:
