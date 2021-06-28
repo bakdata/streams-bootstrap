@@ -29,7 +29,7 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.annotations }}
+    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumergroup) .Values.annotations }}
       annotations:
       {{- if .Values.awsRole }}
         iam.amazonaws.com/role: {{ .Values.awsRole }}
