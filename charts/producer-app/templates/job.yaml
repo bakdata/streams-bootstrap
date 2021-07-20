@@ -1,5 +1,5 @@
 {{- $root := . -}}
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: {{ template "producer-app.kind" . }}
 metadata:
   name: {{ template "producer-app.fullname" . }}
