@@ -6,7 +6,7 @@ imagePullPolicy: Always
 
 configurationEnvPrefix: "APP"
 
-# Cron schedule for this producer job. Default is at 12:00 every day.
+# Optional: Cron schedule for this producer job. Default is at 12:00 every day.
 schedule: "0 12 * * *"
 
 suspend: false

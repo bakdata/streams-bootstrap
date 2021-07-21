@@ -1,6 +1,6 @@
 {{- $root := . -}}
 apiVersion: batch/v1beta1
-kind: CronJob
+kind: {{ template "producer-app.kind" . }}
 metadata:
   name: {{ template "producer-app.fullname" . }}
   labels:
@@ -11,7 +11,9 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
-  schedule: "{{ .Values.schedule }}"
+  {{- if .Values.schedule }}
+  schedule: {{ quote .Values.schedule }}
+  {{- end }}
   suspend: {{ .Values.suspend }}
   successfulJobsHistoryLimit: 1
   concurrencyPolicy: Replace
