@@ -1,6 +1,11 @@
 {{- $root := . -}}
+{{- if .Values.schedule -}}
 apiVersion: batch/v1beta1
-kind: {{ template "producer-app.kind" . }}
+kind: CronJob
+{{- else -}}
+apiVersion: batch/v1
+kind: Job
+{{- end }}
 metadata:
   name: {{ template "producer-app.fullname" . }}
   labels:

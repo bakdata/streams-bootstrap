@@ -30,15 +30,3 @@ Create chart name and version as used by the chart label.
 {{- define "producer-app.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-
-
-{{/*
-Get kind of job
-*/}}
-{{- define "producer-app.kind" -}}
-{{- if .Values.schedule -}}
-{{- printf "CronJob" -}}
-{{- else -}}
-{{- printf "Job" -}}
-{{- end }}
-{{- end -}}
