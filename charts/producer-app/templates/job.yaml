@@ -16,8 +16,8 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
-  suspend: {{ .Values.suspend }}
   {{- if .Values.schedule }}
+  suspend: {{ .Values.suspend }}
   schedule: {{ quote .Values.schedule }}
   successfulJobsHistoryLimit: 1
   concurrencyPolicy: Replace
