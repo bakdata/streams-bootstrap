@@ -1,11 +1,11 @@
 {{- $root := . -}}
-{{- if .Values.schedule -}}
+  {{- if .Values.schedule -}}
 apiVersion: batch/v1beta1
 kind: CronJob
-{{- else -}}
+  {{- else -}}
 apiVersion: batch/v1
 kind: Job
-{{- end }}
+  {{- end }}
 metadata:
   name: {{ template "producer-app.fullname" . }}
   labels:
@@ -16,86 +16,16 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
+  suspend: {{ .Values.suspend }}
   {{- if .Values.schedule }}
   schedule: {{ quote .Values.schedule }}
-  {{- end }}
-  suspend: {{ .Values.suspend }}
   successfulJobsHistoryLimit: 1
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
       template:
-        metadata:
-        {{- if or .Values.awsRole .Values.annotations }}
-          annotations:
-          {{- if .Values.awsRole }}
-            iam.amazonaws.com/role: {{ .Values.awsRole }}
-          {{- end }}
-          {{- range $key, $value := .Values.annotations }}
-            {{ $key | quote }}: {{ $value | quote }}
-          {{- end }}
-        {{- end }}
-          labels:
-            app: {{ template "producer-app.name" . }}
-            release: {{ .Release.Name }}
-            {{- range $key, $value := .Values.labels }}
-            {{ $key }}: {{ $value }}
-            {{- end }}
-        spec:
-          restartPolicy: OnFailure
-          {{- if .Values.tolerations }}
-          tolerations:
-{{ toYaml .Values.tolerations | indent 12 }}
-          {{- end }}
-          affinity:
-            {{- if .Values.nodeAffinity }}
-            nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 14 }}
-            {{- end }}
-          containers:
-          - name: {{ template "producer-app.name" . }}
-            image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-            imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-            resources:
-{{ toYaml .Values.resources | indent 14 }}
-            env:
-              - name: ENV_PREFIX
-                value: {{ .Values.configurationEnvPrefix }}_
-            {{- range $key, $value := .Values.streams.config }}
-              - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
-                value: {{ $value | quote }}
-            {{- end }}
-              - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
-                value: {{ .Values.streams.brokers | quote }}
-              - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-                value: {{ .Values.streams.schemaRegistryUrl | quote }}
-            {{- if hasKey .Values "debug" }}
-              - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-                value: {{ .Values.debug | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "outputTopic" }}
-              - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-                value: {{ .Values.streams.outputTopic | quote }}
-            {{- end }}
-            {{- if and (hasKey .Values.streams "extraOutputTopics") (.Values.streams.extraOutputTopics) }}
-              - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
-                value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
-            {{- end }}
-            {{- range $key, $value := .Values.secrets }}
-              - name: "{{ $key }}"
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ template "producer-app.fullname" $ }}
-                    key: "{{ $key }}"
-            {{- end }}
-            {{- range $key, $value := .Values.commandLine }}
-              - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-                value: {{ $value | quote }}
-            {{- end }}
-            {{- range $key, $value := .Values.env }}
-              - name: {{ $key | quote }}
-                value: {{ $value | quote }}
-            {{- end }}
-              - name: JAVA_TOOL_OPTIONS
-                value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
-                  {{ .Values.javaOptions.others | join " " }}'
+{{ include "producer-app.podTemplate" . | indent 8 }}
+  {{ else }}
+  template:
+{{ include "producer-app.podTemplate" . | indent 4 }}
+  {{- end -}}
