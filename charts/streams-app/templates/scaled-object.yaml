@@ -11,7 +11,9 @@ spec:
   cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
+  {{- if .Values.autoscaling.idleReplicas }}
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
+  {{- end }}
   triggers:
     # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to 
     # minimize number of loops when we don't need to support helm 2 anymore
