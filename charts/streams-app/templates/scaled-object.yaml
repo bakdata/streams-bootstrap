@@ -11,7 +11,7 @@ spec:
   cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
-  {{- if .Values.autoscaling.idleReplicas }}
+  {{- if hasKey .Values.autoscaling "idleReplicas" }}
   # Only available from KEDA 2.4 onwards
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
   {{- end }}
