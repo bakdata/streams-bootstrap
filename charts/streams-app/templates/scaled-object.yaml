@@ -12,6 +12,7 @@ spec:
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
   {{- if .Values.autoscaling.idleReplicas }}
+  # Only available from KEDA 2.4 onwards
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
   {{- end }}
   triggers:
