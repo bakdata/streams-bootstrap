@@ -27,6 +27,7 @@ package com.bakdata.kafka.util;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.kafka.streams.Topology;
@@ -34,13 +35,18 @@ import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyDescription.Processor;
 import org.apache.kafka.streams.TopologyDescription.Sink;
 import org.apache.kafka.streams.TopologyDescription.Source;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.jooq.lambda.Seq;
 
 public class TopologyInformation {
     private static final String CHANGELOG_SUFFIX = "-changelog";
     private static final String REPARTITION_SUFFIX = "-repartition";
     /**
-     * See {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey}
+     * See {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey(KTable, Function,
+     * ValueJoiner, Named, Materialized, boolean)}
      */
     private static final Collection<String> PSEUDO_TOPIC_SUFFIXES = Set.of("-pk", "-fk", "-vh");
     private final String streamsId;
