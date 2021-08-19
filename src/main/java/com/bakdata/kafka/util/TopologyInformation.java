@@ -26,6 +26,7 @@ package com.bakdata.kafka.util;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.kafka.streams.Topology;
@@ -33,10 +34,15 @@ import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyDescription.Processor;
 import org.apache.kafka.streams.TopologyDescription.Sink;
 import org.apache.kafka.streams.TopologyDescription.Source;
+import org.jooq.lambda.Seq;
 
 public class TopologyInformation {
     private static final String CHANGELOG_SUFFIX = "-changelog";
     private static final String REPARTITION_SUFFIX = "-repartition";
+    /**
+     * See {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey}
+     */
+    private static final Collection<String> PSEUDO_TOPIC_SUFFIXES = Set.of("-pk", "-fk", "-vh");
     private final String streamsId;
     private final Collection<Node> nodes;
 
@@ -72,6 +78,13 @@ public class TopologyInformation {
                 .filter(node -> node instanceof Processor)
                 .map(node -> ((Processor) node))
                 .flatMap(processor -> processor.stores().stream());
+    }
+
+    private static Stream<String> createPseudoTopics(final String topic) {
+        if (topic.contains("FK-JOIN-SUBSCRIPTION-REGISTRATION")) {
+            return PSEUDO_TOPIC_SUFFIXES.stream().map(suffix -> String.format("%s%s", topic, suffix));
+        }
+        return Stream.empty();
     }
 
     public List<String> getInternalTopics() {
@@ -127,6 +140,7 @@ public class TopologyInformation {
     private Stream<String> getInternalSinks() {
         return getAllSinks(this.nodes)
                 .filter(this::isInternalTopic)
+                .flatMap(topic -> Seq.of(topic).concat(createPseudoTopics(topic)))
                 .map(topic -> String.format("%s-%s", this.streamsId, topic));
     }
 

@@ -30,6 +30,7 @@ import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import java.util.List;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,6 +99,25 @@ class TopologyInformationTest {
                 .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId())
                         || topic.startsWith("KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
+    }
+
+    @Test
+    void shouldReturnAllPseudoInternalTopics() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        final KTable<String, Object> t1 = streamsBuilder.table("t1");
+        final KTable<Integer, Object> t2 = streamsBuilder.table("t2");
+        t1
+                .leftJoin(t2, ignored -> 1, (o1, o2) -> o1)
+                .toStream()
+                .to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getInternalTopics())
+                .contains(
+                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic",
+                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-fk",
+                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-pk",
+                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-vh"
+                );
     }
 
 }
