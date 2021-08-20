@@ -84,6 +84,7 @@ allprojects {
 
         implementation(group = "info.picocli", name = "picocli", version = "4.0.4")
         api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
+        api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
         val confluentVersion: String by project
         implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
@@ -97,8 +98,9 @@ allprojects {
         testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
         testImplementation(group = "org.assertj", name = "assertj-core", version = "3.13.2")
-        testImplementation(group = "org.mockito", name = "mockito-core", version = "2.28.2")
-        testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = "2.28.2")
+        val mockitoVersion = "2.28.2"
+        testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
+        testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
         testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "2.3.0")
         testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
