@@ -1,5 +1,29 @@
 # Change Log
 
+## [1.7.1](https://github.com/bakdata/streams-bootstrap/tree/1.7.1) (2021-08-20)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.7.0...1.7.1)
+
+**Closed issues:**
+
+- Clean schemas of pseudo topics created when performing a foreign key join [\#112](https://github.com/bakdata/streams-bootstrap/issues/112)
+- Extend the Readme [\#99](https://github.com/bakdata/streams-bootstrap/issues/99)
+
+**Fixed bugs:**
+
+- Add serviceName for StatefulSet [\#102](https://github.com/bakdata/streams-bootstrap/pull/102) ([@disrupted](https://github.com/disrupted))
+
+**Merged pull requests:**
+
+- Clean schemas of pseudo topics created when performing a foreign key join [\#113](https://github.com/bakdata/streams-bootstrap/pull/113) ([@philipp94831](https://github.com/philipp94831))
+- Support KEDA idleReplicaCount [\#109](https://github.com/bakdata/streams-bootstrap/pull/109) ([@philipp94831](https://github.com/philipp94831))
+- producer chart: job/cronjob switch [\#110](https://github.com/bakdata/streams-bootstrap/pull/110) ([@mkcode92](https://github.com/mkcode92))
+- Make producer\-app's CronJob schedule optional [\#108](https://github.com/bakdata/streams-bootstrap/pull/108) ([@torbsto](https://github.com/torbsto))
+- Fix consumer group annotation [\#107](https://github.com/bakdata/streams-bootstrap/pull/107) ([@philipp94831](https://github.com/philipp94831))
+- Fix nil warnings about empty yaml lists in value files [\#106](https://github.com/bakdata/streams-bootstrap/pull/106) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Add node affinity to helm chart [\#103](https://github.com/bakdata/streams-bootstrap/pull/103) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Reset schema of internal topics when they are deleted  [\#104](https://github.com/bakdata/streams-bootstrap/pull/104) ([@torbsto](https://github.com/torbsto))
+- Extend the readme [\#100](https://github.com/bakdata/streams-bootstrap/pull/100) ([@VictorKuenstler](https://github.com/VictorKuenstler))
+
 ## [1.7.0](https://github.com/bakdata/streams-bootstrap/tree/1.7.0) (2021-02-18)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0)
 
