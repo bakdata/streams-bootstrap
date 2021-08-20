@@ -82,17 +82,15 @@ allprojects {
         val kafkaVersion: String by project
         implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafkaVersion)
 
-        api(group = "info.picocli", name = "picocli", version = "4.0.4")
+        implementation(group = "info.picocli", name = "picocli", version = "4.0.4")
         api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
         val confluentVersion: String by project
         implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
-        implementation(group = "log4j", name = "log4j", version = "1.2.17")
+        api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
+        implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.1")
         implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.7.25")
-        implementation(group = "com.google.guava", name = "guava", version = "29.0-jre")
-        val avroVersion: String by project
-        api(group = "org.apache.avro", name = "avro", version = avroVersion)
-        api(group = "org.jooq", name = "jool", version = "0.9.14")
-        api(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
+        implementation(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
+        implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
         val junitVersion = "5.4.0"
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
