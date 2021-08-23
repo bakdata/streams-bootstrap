@@ -18,15 +18,6 @@ metadata:
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
     {{- end }}
-{{- if or .Values.autoscaling.consumergroup .Values.annotations }}
-  annotations:
-  {{- range $key, $value := .Values.annotations }}
-    {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
-  {{- if and .Values.autoscaling.consumergroup (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.autoscaling.consumergroup | quote }}
-  {{- end }}
-{{- end }}
 spec:
   {{- if .Values.statefulSet }}
   serviceName: {{ template "streams-app.name" . }}
