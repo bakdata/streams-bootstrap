@@ -21,6 +21,7 @@ metadata:
 spec:
   {{- if .Values.statefulSet }}
   serviceName: {{ template "streams-app.name" . }}
+  podManagementPolicy: Parallel
   {{- end }}
   replicas: {{ .Values.replicaCount }}
   selector:
