@@ -10,6 +10,7 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
+  suspend: {{ .Values.suspend }}
   schedule: "{{ .Values.schedule }}"
   successfulJobsHistoryLimit: 1 
   concurrencyPolicy: Replace

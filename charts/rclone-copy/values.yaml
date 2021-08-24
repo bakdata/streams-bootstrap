@@ -28,6 +28,8 @@ includePattern: "*"
 # Cron schedule for this connect job. Default is at 12:00 every day.
 schedule: "0 12 * * *"
 
+suspend: false
+
 # Content of the rclone.conf file.
 rcloneConf: ""
 
