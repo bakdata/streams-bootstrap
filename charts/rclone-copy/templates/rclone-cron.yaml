@@ -53,6 +53,9 @@ spec:
               - copy
               - -v
               - --include-from
+            {{-  range .Values.arguments }}
+              - {{ . }}
+            {{- end }}
               - /root/include-pattern.conf
               - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
               - "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
