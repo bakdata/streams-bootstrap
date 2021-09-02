@@ -4,6 +4,7 @@ description = "Collection of commonly used modules when writing a Kafka Streams 
 plugins {
     `java-library`
     id("net.researchgate.release") version "2.8.1"
+    id("org.sonarqube") version "3.3"
     id("com.bakdata.sonar") version "1.1.6"
     id("com.bakdata.sonatype") version "1.1.6"
     id("org.hildan.github.changelog") version "1.7.0"
