@@ -25,7 +25,7 @@
 package com.bakdata.kafka.integration;
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaProducerApplication;
@@ -56,7 +56,7 @@ class RunProducerAppTest {
     private static final int TIMEOUT_SECONDS = 10;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(useDefaults());
+    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
     private KafkaProducerApplication app = null;
 
     @BeforeEach
@@ -72,7 +72,7 @@ class RunProducerAppTest {
     @Test
     void shouldRunApp() throws InterruptedException, IOException, RestClientException {
         final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(output).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         this.app = new KafkaProducerApplication() {
             @Override
             protected void runApplication() {

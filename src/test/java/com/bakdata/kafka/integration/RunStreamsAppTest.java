@@ -25,7 +25,7 @@
 package com.bakdata.kafka.integration;
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
@@ -62,7 +62,7 @@ class RunStreamsAppTest {
 
     @BeforeEach
     void setup() {
-        this.kafkaCluster = provisionWith(useDefaults());
+        this.kafkaCluster = provisionWith(defaultClusterConfig());
         this.kafkaCluster.start();
     }
 
@@ -81,8 +81,8 @@ class RunStreamsAppTest {
     void shouldRunApp() throws InterruptedException {
         final String input = "input";
         final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(input).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(output).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         this.app = new Mirror();
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
@@ -107,7 +107,7 @@ class RunStreamsAppTest {
     void shouldCallCloseResourcesOnMissingInputTopic() throws InterruptedException {
         final String input = "input";
         final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(output).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         final CloseResourcesApplication closeResourcesApplication = new CloseResourcesApplication();
         this.app = closeResourcesApplication;
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
@@ -123,8 +123,8 @@ class RunStreamsAppTest {
     void shouldCallCloseResourcesOnMapError() throws InterruptedException {
         final String input = "input";
         final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(input).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(output).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         final CloseResourcesApplication closeResourcesApplication = new CloseResourcesApplication();
         this.app = closeResourcesApplication;
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
