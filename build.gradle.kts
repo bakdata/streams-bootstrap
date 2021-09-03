@@ -90,7 +90,7 @@ allprojects {
         api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
         val log4jVersion = "2.14.1"
         implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-        implementation(group = "org.apache.logging.log4j", name = "log4j-to-slf4j", version = log4jVersion)
+        implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
         implementation(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
         implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
