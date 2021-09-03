@@ -4,6 +4,6 @@ kind: ConfigMap
 metadata:
   name: {{ template "streams-app.name" . }}-log4j-configmap
 data:
-  log4j.properties: |
+  log4j2.xml: |
 {{ .Values.log4jConfig | indent 4 }}
 {{ end }}

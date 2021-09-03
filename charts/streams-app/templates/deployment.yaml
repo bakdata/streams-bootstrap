@@ -175,8 +175,8 @@ spec:
         {{- if .Values.log4jConfig }}
           volumeMounts:
             - name: {{ template "streams-app.name" . }}-log4j-config-volume
-              mountPath: app/resources/log4j.properties
-              subPath: log4j.properties
+              mountPath: app/resources/log4j2.xml
+              subPath: log4j2.xml
         {{- end }}
         {{- if .Values.prometheus.jmx.enabled }}
           ports:
@@ -216,7 +216,7 @@ spec:
           configMap:
             name: {{ template "streams-app.name" . }}-log4j-configmap
             items:
-              - key: log4j.properties
-                path: log4j.properties
+              - key: log4j2.xml
+                path: log4j2.xml
         {{- end }}
       {{- end }}
