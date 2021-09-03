@@ -45,11 +45,11 @@ class TopicClientTest {
     private final EmbeddedKafkaCluster kafkaCluster = createKafkaCluster();
 
     private static EmbeddedKafkaCluster createKafkaCluster() {
-        final EmbeddedKafkaConfig kafkaConfig = EmbeddedKafkaConfig.create()
+        final EmbeddedKafkaConfig kafkaConfig = EmbeddedKafkaConfig.brokers()
                 .withNumberOfBrokers(2)
                 .build();
-        final EmbeddedKafkaClusterConfig clusterConfig = EmbeddedKafkaClusterConfig.create()
-                .provisionWith(kafkaConfig)
+        final EmbeddedKafkaClusterConfig clusterConfig = EmbeddedKafkaClusterConfig.newClusterConfig()
+                .configure(kafkaConfig)
                 .build();
         return provisionWith(clusterConfig);
     }
@@ -74,7 +74,7 @@ class TopicClientTest {
 
     @Test
     void shouldFindTopic() {
-        this.kafkaCluster.createTopic(TopicConfig.forTopic("exists").useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName("exists").useDefaults());
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("exists")).isTrue();
         }
@@ -82,8 +82,8 @@ class TopicClientTest {
 
     @Test
     void shouldListTopics() {
-        this.kafkaCluster.createTopic(TopicConfig.forTopic("foo").useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.forTopic("bar").useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName("foo").useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName("bar").useDefaults());
         try (final TopicClient client = this.createClient()) {
             assertThat(client.listTopics())
                     .hasSize(2)
@@ -93,7 +93,7 @@ class TopicClientTest {
 
     @Test
     void shouldDeleteTopic() {
-        this.kafkaCluster.createTopic(TopicConfig.forTopic("foo").useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName("foo").useDefaults());
         try (final TopicClient client = this.createClient()) {
             assertThat(client.listTopics())
                     .hasSize(1)

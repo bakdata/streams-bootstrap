@@ -26,7 +26,7 @@ package com.bakdata.kafka.util;
 
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.useDefaults;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.TestRecord;
@@ -57,7 +57,7 @@ class SchemaTopicClientTest {
     private static final String TOPIC = "topic";
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private final EmbeddedKafkaCluster kafkaCluster =  provisionWith(useDefaults());
+    private final EmbeddedKafkaCluster kafkaCluster =  provisionWith(defaultClusterConfig());
 
     @BeforeEach
     void setup() {
@@ -78,7 +78,7 @@ class SchemaTopicClientTest {
 
     @Test
     void shouldDeleteTopic() throws InterruptedException, IOException, RestClientException {
-        this.kafkaCluster.createTopic(TopicConfig.forTopic(TOPIC).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
         assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is created")
                 .isTrue();

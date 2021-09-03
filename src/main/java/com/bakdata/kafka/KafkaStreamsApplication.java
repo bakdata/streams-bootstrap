@@ -44,7 +44,8 @@ import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
 
@@ -96,8 +97,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public void run() {
         log.info("Starting application");
         if (this.debug) {
-            org.apache.log4j.Logger.getLogger("com.bakdata").setLevel(Level.DEBUG);
-            org.apache.log4j.Logger.getLogger(appPackageName).setLevel(Level.DEBUG);
+            Configurator.setLevel("com.bakdata", Level.DEBUG);
+            Configurator.setLevel(appPackageName, Level.DEBUG);
         }
         log.debug(this.toString());
 

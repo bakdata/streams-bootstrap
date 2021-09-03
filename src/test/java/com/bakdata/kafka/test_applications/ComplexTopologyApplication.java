@@ -27,6 +27,7 @@ package com.bakdata.kafka.test_applications;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.time.Duration;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
@@ -47,9 +48,11 @@ public class ComplexTopologyApplication extends KafkaStreamsApplication {
     public void buildTopology(final StreamsBuilder builder) {
         final KStream<String, TestRecord> input = builder.stream(this.getInputTopics());
 
-        final KTable<Windowed<String>, TestRecord> reduce = input.through(THROUGH_TOPIC)
+        input.to(THROUGH_TOPIC);
+        final KStream<String, TestRecord> through = builder.stream(THROUGH_TOPIC);
+        final KTable<Windowed<String>, TestRecord> reduce = through
                 .groupByKey()
-                .windowedBy(TimeWindows.of(5))
+                .windowedBy(TimeWindows.of(Duration.ofMillis(5L)))
                 .reduce((a, b) -> a);
 
         reduce.toStream()
