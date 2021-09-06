@@ -8,7 +8,7 @@ plugins {
     id("com.bakdata.sonatype") version "1.1.7"
     id("org.hildan.github.changelog") version "1.7.0"
     id("com.github.davidmc24.gradle.plugin.avro") version "1.2.1"
-    id("io.freefair.lombok") version "6.1.0"
+    id("io.freefair.lombok") version "5.3.3.3"
 }
 
 allprojects {
@@ -111,6 +111,7 @@ allprojects {
         }
         testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "2.7.0") {
             exclude(group = "org.projectlombok")
+            exclude(group = "org.slf4j", module = "slf4j-log4j12")
         }
 
         testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.1")
