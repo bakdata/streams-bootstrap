@@ -45,6 +45,7 @@ spec:
         - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          command: ["exit", "1"]
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           env:
