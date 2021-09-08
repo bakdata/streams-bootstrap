@@ -17,7 +17,7 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
-  restartPolicy: OnFailure
+  restartPolicy: {{ .Values.restartPolicy }}
   {{- if .Values.tolerations }}
   tolerations:
 {{ toYaml .Values.tolerations | indent 4 }}

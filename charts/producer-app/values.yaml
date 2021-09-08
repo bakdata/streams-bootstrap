@@ -4,6 +4,8 @@ image: producerApp
 imageTag: latest
 imagePullPolicy: Always
 
+restartPolicy: OnFailure
+
 configurationEnvPrefix: "APP"
 
 # Optional: Cron schedule for this producer job. Default is at 12:00 every day.
