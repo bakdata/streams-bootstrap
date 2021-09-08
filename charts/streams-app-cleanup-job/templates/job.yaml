@@ -31,7 +31,7 @@ spec:
         {{ $key }}: {{ $value }}
         {{- end }}
     spec:
-      restartPolicy: Never
+      restartPolicy: {{ .Values.restartPolicy }}
       {{- if .Values.tolerations }}
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
