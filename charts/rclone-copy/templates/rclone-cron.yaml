@@ -70,7 +70,7 @@ spec:
             resources:
 {{ toYaml .Values.resources | indent 14 }}
           
-          restartPolicy: OnFailure
+          restartPolicy: {{ .Values.restartPolicy }}
           volumes:
             - name: rclone-config
               configMap:

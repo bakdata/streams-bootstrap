@@ -45,6 +45,8 @@ awsRole: ""
 # You probably don't need to change this.
 imageRelease: 1.53.1
 
+restartPolicy: OnFailure
+
 # tolerations:
 #   - key: "foo"
 #     operator: "Exists"
