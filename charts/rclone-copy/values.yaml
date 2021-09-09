@@ -21,6 +21,11 @@ sync:
     # This is the path to the target directory.
     path: my-s3-bucket
 
+# Additional arguments to pass to rclone. 
+# The expected value is an array with comma seperated flag and value passed as a string. 
+# Example: ["--transfers", '"1"']
+arguments: []
+
 # Pattern of files to copy. Standard UNIX file glob patterns are used. Default: "*"
 # See templates/include-pattern-config.yaml for more details on usage in ConfigMap.
 includePattern: "*"
