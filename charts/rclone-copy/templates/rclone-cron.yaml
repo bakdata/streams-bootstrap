@@ -43,12 +43,23 @@ spec:
             nodeAffinity:
 {{ toYaml .Values.nodeAffinity | indent 14 }}
             {{- end }}
-          containers:
-          - name: rclone-container
+          initContainers:
+          - name: volume-permissions
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}
+            command: ['sh', '-c', 'chmod +r -R']
             securityContext:
               runAsUser: 0
               privileged: true
+            volumeMounts:
+              - name: rclone-config
+                # This is the default path where the rclone implementation assumes the config is located
+                mountPath: /root/.config/rclone
+              - name: rclone-include-pattern-config
+                mountPath: /root
+          containers:
+          - name: rclone-container
+            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
+            
             command:
               - rclone
             args:
