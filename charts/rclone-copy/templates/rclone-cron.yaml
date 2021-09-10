@@ -55,7 +55,7 @@ spec:
             {{-  range .Values.arguments }}
               - {{ . }}
             {{- end }}
-              - --config="/home/rclone/rclone.conf"
+              - --config=/home/rclone/rclone.conf
               - --include-from
               - /home/include-pattern.conf
               - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
