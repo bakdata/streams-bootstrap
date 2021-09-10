@@ -54,8 +54,8 @@ spec:
               - name: rclone-config
 #                # This is the default path where the rclone implementation assumes the config is located
                 mountPath: /root/.config/rclone
-#              - name: rclone-include-pattern-config
-#                mountPath: /root
+              - name: rclone-include-pattern-config
+                mountPath: /root
           containers:
           - name: rclone-container
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
