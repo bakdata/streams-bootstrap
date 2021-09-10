@@ -61,20 +61,20 @@ spec:
               - "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
             
             volumeMounts:
-              - name: rclone-config
+              - name: config
                 # This is the default path where the rclone implementation assumes the config is located
-                mountPath: /root/.config/rclone
-              - name: rclone-include-pattern-config
-                mountPath: /root
+                mountPath: "/root/.config/rclone/rclone.conf"
+                subPath: "rclone.conf"
+              - name: config
+                mountPath: "/root/include-pattern.conf"
+                subPath: "include-pattern.conf"
             
             resources:
 {{ toYaml .Values.resources | indent 14 }}
           
           restartPolicy: {{ .Values.restartPolicy }}
           volumes:
-            - name: rclone-config
+            - name: config
               configMap:
                 name: rclone-config-{{ .Release.Name }}
-            - name: rclone-include-pattern-config
-              configMap:
-                name: rclone-include-pattern-config-{{ .Release.Name }}
+
