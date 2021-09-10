@@ -55,6 +55,7 @@ spec:
             {{-  range .Values.arguments }}
               - {{ . }}
             {{- end }}
+              - --config="/home/rclone.conf"
               - --include-from
               - /home/include-pattern.conf
               - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
@@ -63,7 +64,7 @@ spec:
             volumeMounts:
               - name: rclone-config
                 # This is the default path where the rclone implementation assumes the config is located
-                mountPath: /root/.config/rclone
+                mountPath: /home
               - name: rclone-include-pattern-config
                 mountPath: /home
             
