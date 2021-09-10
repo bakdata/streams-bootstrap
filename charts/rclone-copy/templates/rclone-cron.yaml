@@ -50,10 +50,10 @@ spec:
             securityContext:
               runAsUser: 0
               privileged: true
-#            volumeMounts:
-#              - name: rclone-config
+            volumeMounts:
+              - name: rclone-config
 #                # This is the default path where the rclone implementation assumes the config is located
-#                mountPath: /root/.config/rclone
+                mountPath: /root/.config/rclone
 #              - name: rclone-include-pattern-config
 #                mountPath: /root
           containers:
