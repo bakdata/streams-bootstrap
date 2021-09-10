@@ -5,3 +5,5 @@ metadata:
 data:
   rclone.conf: |
 {{ .Values.rcloneConf | indent 4 }}
+  include-pattern.conf: |
+{{ .Values.includePattern | indent 4 }}
