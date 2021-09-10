@@ -46,7 +46,7 @@ spec:
           initContainers:
           - name: volume-permissions
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}
-            command: ['sh', '-c', 'chmod -R +r']
+            command: ['sh', '-c', 'chmod -R +r /root']
             securityContext:
               runAsUser: 0
               privileged: true
