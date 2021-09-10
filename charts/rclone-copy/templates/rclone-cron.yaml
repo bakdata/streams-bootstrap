@@ -43,19 +43,6 @@ spec:
             nodeAffinity:
 {{ toYaml .Values.nodeAffinity | indent 14 }}
             {{- end }}
-          initContainers:
-          - name: volume-permissions
-            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}
-            command: ['sh', '-c', 'chown root:root /root -R']
-            securityContext:
-              runAsUser: 0
-              privileged: true
-            volumeMounts:
-              - name: rclone-config
-                # This is the default path where the rclone implementation assumes the config is located
-                mountPath: /root/.config/rclone
-              - name: rclone-include-pattern-config
-                mountPath: /root
           containers:
           - name: rclone-container
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
@@ -69,7 +56,7 @@ spec:
               - {{ . }}
             {{- end }}
               - --include-from
-              - /root/include-pattern.conf
+              - /home/include-pattern.conf
               - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
               - "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
             
@@ -78,7 +65,7 @@ spec:
                 # This is the default path where the rclone implementation assumes the config is located
                 mountPath: /root/.config/rclone
               - name: rclone-include-pattern-config
-                mountPath: /root
+                mountPath: /home
             
             resources:
 {{ toYaml .Values.resources | indent 14 }}
