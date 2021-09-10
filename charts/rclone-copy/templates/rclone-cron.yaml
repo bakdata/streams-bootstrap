@@ -45,8 +45,10 @@ spec:
             {{- end }}
           containers:
           - name: rclone-container
-            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
-            
+            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}
+            securityContext:
+              runAsUser: 0
+              privileged: true
             command:
               - rclone
             args:
@@ -55,17 +57,17 @@ spec:
             {{-  range .Values.arguments }}
               - {{ . }}
             {{- end }}
-              - --config=/home/rclone/rclone.conf
               - --include-from
-              - /home/include-pattern.conf
+              - /root/include-pattern.conf
               - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
               - "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
             
             volumeMounts:
               - name: rclone-config
-                mountPath: /home/rclone
+                # This is the default path where the rclone implementation assumes the config is located
+                mountPath: /root/.config/rclone
               - name: rclone-include-pattern-config
-                mountPath: /home
+                mountPath: /root
             
             resources:
 {{ toYaml .Values.resources | indent 14 }}
