@@ -45,7 +45,7 @@ spec:
             {{- end }}
           initContainers:
           - name: volume-permissions
-            image: openbridge/ob_bulkstash:{{ .Values.imageTag }}
+            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}
             command: ['sh', '-c', 'chown root:root /root -R']
             securityContext:
               runAsUser: 0
