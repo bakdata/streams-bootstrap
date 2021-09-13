@@ -48,23 +48,18 @@ spec:
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
             
             command:
-              - rclone
+              - /bin/bash
             args:
-              - copy
-              - -v
-            {{-  range .Values.arguments }}
-              - {{ . }}
-            {{- end }}
-              - --include-from
-              - /root/include-pattern.conf
-              - "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}"
-              - "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
+              - -c
+              - >-
+                cp /root/.config/rclone/rclone_ro.conf /root/.config/rclone/rclone.conf &&
+                rclone copy -v {{- range .Values.arguments }}{{ . }}{{- end }} --include-from /root/include-pattern.conf "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}" "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
             
             volumeMounts:
               - name: config
                 # This is the default path where the rclone implementation assumes the config is located
-                mountPath: "/root/.config/rclone/rclone.conf"
-                subPath: "rclone.conf"
+                mountPath: "/root/.config/rclone/rclone_ro.conf"
+                subPath: "rclone_ro.conf"
               - name: config
                 mountPath: "/root/include-pattern.conf"
                 subPath: "include-pattern.conf"

@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: rclone-config-{{ .Release.Name }}
 data:
-  rclone.conf: |
+  rclone_ro.conf: |
 {{ .Values.rcloneConf | indent 4 }}
   include-pattern.conf: |
 {{ .Values.includePattern | indent 4 }}
