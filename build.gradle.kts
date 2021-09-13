@@ -21,6 +21,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://packages.confluent.io/maven/")
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
@@ -103,14 +104,11 @@ allprojects {
         testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
-        val fluentKafkaVersion = "2.3.1"
+        val fluentKafkaVersion = "2.3.2-SNAPSHOT"
         testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = fluentKafkaVersion)
         testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
-        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = fluentKafkaVersion) {
-            exclude(group = "junit")
-        }
-        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "2.7.0") {
-            exclude(group = "org.projectlombok")
+        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = fluentKafkaVersion)
+        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaVersion) {
             exclude(group = "org.slf4j", module = "slf4j-log4j12")
         }
 
