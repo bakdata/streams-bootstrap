@@ -47,11 +47,11 @@ spec:
           - name: rclone-container
             image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
             
-            # workaround for rclone.conf read only (see https://github.com/rclone/rclone/issues/3655)
             command:
               - /bin/bash
             args:
               - -c
+              # copy as workaround for rclone.conf read only (see https://github.com/rclone/rclone/issues/3655)
               - >-
                 cp /root/.config/rclone/rclone_ro.conf /root/.config/rclone/rclone.conf &&
                 rclone copy -v {{ .Values.arguments | join " " }} --include-from /root/include-pattern.conf "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}" "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"

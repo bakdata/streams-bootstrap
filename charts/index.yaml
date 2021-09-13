@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   producer-app:
   - apiVersion: v1
-    created: "2021-09-13T11:42:25.38663451+02:00"
+    created: "2021-09-13T13:18:52.110645775+02:00"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: ff9e09fde7ef3f1c4dadd860ea0471f8f5f6a9eb8a9c05d77e23de73499c8f69
@@ -12,7 +12,7 @@ entries:
     version: 0.1.0
   producer-app-cleanup-job:
   - apiVersion: v1
-    created: "2021-09-13T11:42:25.387013573+02:00"
+    created: "2021-09-13T13:18:52.110928184+02:00"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 0b8799ab44553038a2ea4961c498904ad728cdc798a966de96ca5c6fbc007e5f
     name: producer-app-cleanup-job
@@ -21,16 +21,16 @@ entries:
     version: 0.1.0
   rclone-copy:
   - apiVersion: v1
-    created: "2021-09-13T11:42:25.387450403+02:00"
+    created: "2021-09-13T13:18:52.111275719+02:00"
     description: A helm chart for rclone copy on Kubernetes.
-    digest: e0d57dd51a07fc2d305e2996e6e72a31ee4ea0cab9f0d36f64e570007b4bedf1
+    digest: 4ee7b5c2f9c90af1f17632124375dc7b10a42987119f40d0664b8f26fab55e1e
     name: rclone-copy
     urls:
     - rclone-copy/rclone-copy-1.0.0.tgz
     version: 1.0.0
   streams-app:
   - apiVersion: v1
-    created: "2021-09-13T11:42:25.388050504+02:00"
+    created: "2021-09-13T13:18:52.111815014+02:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: b081998a872364f0cbd18086b14bc04179672ec1d709cf21194389f65ff9a4d6
@@ -40,7 +40,7 @@ entries:
     version: 0.1.0
   streams-app-cleanup-job:
   - apiVersion: v1
-    created: "2021-09-13T11:42:25.388436519+02:00"
+    created: "2021-09-13T13:18:52.112189828+02:00"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 5c03a64faff43ec3cc6f93b0032532819a3f4898b78e1adc069fabac4ce6fc30
@@ -48,4 +48,4 @@ entries:
     urls:
     - streams-app-cleanup-job/streams-app-cleanup-job-0.1.0.tgz
     version: 0.1.0
-generated: "2021-09-13T11:42:25.386002418+02:00"
+generated: "2021-09-13T13:18:52.11023193+02:00"
