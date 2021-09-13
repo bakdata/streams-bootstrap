@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 
 class TopicClientTest {
 
-    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(20L);
+    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
     private final EmbeddedKafkaCluster kafkaCluster = createKafkaCluster();
 
     private static EmbeddedKafkaCluster createKafkaCluster() {
@@ -105,7 +105,7 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldCreateTopic() {
+    void shouldCreateTopic() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
@@ -113,6 +113,7 @@ class TopicClientTest {
                     .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
+            Thread.sleep(CLIENT_TIMEOUT.toMillis());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
