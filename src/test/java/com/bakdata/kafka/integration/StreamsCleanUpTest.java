@@ -65,6 +65,7 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,6 +81,8 @@ class StreamsCleanUpTest {
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private EmbeddedKafkaCluster kafkaCluster;
     private KafkaStreamsApplication app = null;
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @BeforeEach
     void setup() throws InterruptedException {
@@ -101,7 +104,7 @@ class StreamsCleanUpTest {
     }
 
     @Test
-    void shouldDeleteTopic(final SoftAssertions softly) throws InterruptedException {
+    void shouldDeleteTopic() throws InterruptedException {
         this.app = this.createWordCountApplication();
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
@@ -115,22 +118,22 @@ class StreamsCleanUpTest {
                         new KeyValue<>("blub", 2L)
                 );
 
-        this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
+        this.runAndAssertContent(expectedValues, "WordCount contains all elements after first run");
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
 
-        softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
+        this.softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
                 .as("Output topic is deleted")
                 .isFalse();
 
-        softly.assertThat(this.kafkaCluster.exists(this.app.getErrorTopic()))
+        this.softly.assertThat(this.kafkaCluster.exists(this.app.getErrorTopic()))
                 .as("Error topic is deleted")
                 .isFalse();
     }
 
     @Test
-    void shouldDeleteConsumerGroup(final SoftAssertions softly) throws InterruptedException {
+    void shouldDeleteConsumerGroup() throws InterruptedException {
         this.app = this.createWordCountApplication();
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
@@ -144,10 +147,10 @@ class StreamsCleanUpTest {
                         new KeyValue<>("blub", 2L)
                 );
 
-        this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
+        this.runAndAssertContent(expectedValues, "WordCount contains all elements after first run");
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
-            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group exists")
                     .contains(this.app.getUniqueAppId());
@@ -159,7 +162,7 @@ class StreamsCleanUpTest {
         this.runCleanUpWithDeletion();
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
-            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group is deleted")
                     .doesNotContain(this.app.getUniqueAppId());
@@ -169,7 +172,7 @@ class StreamsCleanUpTest {
     }
 
     @Test
-    void shouldNotThrowAnErrorIfConsumerGroupDoesNotExist(final SoftAssertions softly) throws InterruptedException {
+    void shouldNotThrowAnErrorIfConsumerGroupDoesNotExist() throws InterruptedException {
         this.app = this.createWordCountApplication();
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
@@ -183,10 +186,10 @@ class StreamsCleanUpTest {
                         new KeyValue<>("blub", 2L)
                 );
 
-        this.runAndAssertContent(softly, expectedValues, "WordCount contains all elements after first run");
+        this.runAndAssertContent(expectedValues, "WordCount contains all elements after first run");
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
-            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group exists")
                     .contains(this.app.getUniqueAppId());
@@ -199,18 +202,18 @@ class StreamsCleanUpTest {
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
             adminClient.deleteConsumerGroups(List.of(this.app.getUniqueAppId())).all()
                     .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group is deleted")
                     .doesNotContain(this.app.getUniqueAppId());
         } catch (final TimeoutException | ExecutionException e) {
             throw new RuntimeException("Error deleting consumer group", e);
         }
-        softly.assertThatCode(this::runCleanUpWithDeletion).doesNotThrowAnyException();
+        this.softly.assertThatCode(this::runCleanUpWithDeletion).doesNotThrowAnyException();
     }
 
     @Test
-    void shouldDeleteInternalTopics(final SoftAssertions softly) throws InterruptedException {
+    void shouldDeleteInternalTopics() throws InterruptedException {
         this.app = this.createComplexApplication();
 
         final String inputTopic = this.app.getInputTopic();
@@ -231,24 +234,24 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
 
-        softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
-        softly.assertThat(this.kafkaCluster.exists(internalTopic)).isTrue();
-        softly.assertThat(this.kafkaCluster.exists(backingTopic)).isTrue();
-        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(internalTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(backingTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUp();
 
-        softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
-        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
-        softly.assertThat(this.kafkaCluster.exists(internalTopic)).isFalse();
-        softly.assertThat(this.kafkaCluster.exists(backingTopic)).isFalse();
+        this.softly.assertThat(this.kafkaCluster.exists(internalTopic)).isFalse();
+        this.softly.assertThat(this.kafkaCluster.exists(backingTopic)).isFalse();
     }
 
 
     @Test
-    void shouldDeleteIntermediateTopics(final SoftAssertions softly) throws InterruptedException {
+    void shouldDeleteIntermediateTopics() throws InterruptedException {
         this.app = this.createComplexApplication();
 
         final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
@@ -264,16 +267,16 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
 
-        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
+        this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
 
-        softly.assertThat(this.kafkaCluster.exists(manualTopic)).isFalse();
+        this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isFalse();
     }
 
     @Test
-    void shouldDeleteState(final SoftAssertions softly) throws InterruptedException {
+    void shouldDeleteState() throws InterruptedException {
         this.app = this.createWordCountApplication();
         final SendValuesTransactional<String> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
@@ -287,35 +290,35 @@ class StreamsCleanUpTest {
                 new KeyValue<>("blub", 2L)
         );
 
-        this.runAndAssertContent(softly, expectedValues, "All entries are once in the input topic after the 1st run");
+        this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run");
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUp();
 
         final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                 .flatMap(entry -> Stream.of(entry, entry))
                 .collect(Collectors.toList());
-        this.runAndAssertContent(softly, entriesTwice, "All entries are twice in the input topic after the 2nd run");
+        this.runAndAssertContent(entriesTwice, "All entries are twice in the input topic after the 2nd run");
     }
 
     @Test
-    void shouldReprocessAlreadySeenRecords(final SoftAssertions softly) throws InterruptedException {
+    void shouldReprocessAlreadySeenRecords() throws InterruptedException {
         this.app = this.createWordCountApplication();
         final SendValuesTransactional<String> sendRequest =
                 SendValuesTransactional.inTransaction(this.app.getInputTopic(),
                         Arrays.asList("a", "b", "c")).useDefaults();
         this.kafkaCluster.send(sendRequest);
 
-        this.runAndAssertSize(softly, 3);
-        this.runAndAssertSize(softly, 3);
+        this.runAndAssertSize(3);
+        this.runAndAssertSize(3);
 
         // Wait until all stream application are completely stopped before triggering cleanup
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUp();
-        this.runAndAssertSize(softly, 6);
+        this.runAndAssertSize(6);
     }
 
     @Test
-    void shouldDeleteValueSchema(final SoftAssertions softly)
+    void shouldDeleteValueSchema()
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createMirrorValueApplication();
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
@@ -329,16 +332,16 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        softly.assertThat(client.getAllSubjects())
+        this.softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-value", this.app.getInputTopic() + "-value");
         this.runCleanUpWithDeletion();
-        softly.assertThat(client.getAllSubjects())
+        this.softly.assertThat(client.getAllSubjects())
                 .doesNotContain(this.app.getOutputTopic() + "-value")
                 .contains(this.app.getInputTopic() + "-value");
     }
 
     @Test
-    void shouldDeleteKeySchema(final SoftAssertions softly)
+    void shouldDeleteKeySchema()
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createMirrorKeyApplication();
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
@@ -355,16 +358,16 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        softly.assertThat(client.getAllSubjects())
+        this.softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-key", this.app.getInputTopic() + "-key");
         this.runCleanUpWithDeletion();
-        softly.assertThat(client.getAllSubjects())
+        this.softly.assertThat(client.getAllSubjects())
                 .doesNotContain(this.app.getOutputTopic() + "-key")
                 .contains(this.app.getInputTopic() + "-key");
     }
 
     @Test
-    void shouldDeleteSchemaOfInternalTopics(final SoftAssertions softly)
+    void shouldDeleteSchemaOfInternalTopics()
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createComplexApplication();
 
@@ -387,19 +390,19 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        softly.assertThat(client.getAllSubjects())
+        this.softly.assertThat(client.getAllSubjects())
                 .contains(inputSubject, internalSubject, backingSubject, manualSubject);
 
         this.runCleanUp();
 
-        softly.assertThat(client.getAllSubjects())
+        this.softly.assertThat(client.getAllSubjects())
                 .doesNotContain(internalSubject, backingSubject)
                 .contains(inputSubject, manualSubject);
     }
 
 
     @Test
-    void shouldDeleteSchemaOfIntermediateTopics(final SoftAssertions softly)
+    void shouldDeleteSchemaOfIntermediateTopics()
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createComplexApplication();
 
@@ -417,13 +420,13 @@ class StreamsCleanUpTest {
         this.kafkaCluster.send(sendRequest);
         this.runApp();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        softly.assertThat(client.getAllSubjects()).contains(manualSubject);
+        this.softly.assertThat(client.getAllSubjects()).contains(manualSubject);
         this.runCleanUpWithDeletion();
-        softly.assertThat(client.getAllSubjects()).doesNotContain(manualSubject);
+        this.softly.assertThat(client.getAllSubjects()).doesNotContain(manualSubject);
     }
 
     @Test
-    void shouldCallClose(final SoftAssertions softly) throws InterruptedException {
+    void shouldCallClose() throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
         this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
@@ -433,11 +436,11 @@ class StreamsCleanUpTest {
         closeApplication.setClosed(false);
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.runCleanUpWithDeletion();
-        softly.assertThat(closeApplication.isClosed()).isTrue();
+        this.softly.assertThat(closeApplication.isClosed()).isTrue();
     }
 
     @Test
-    void shouldNotThrowExceptionOnMissingInputTopic(final SoftAssertions softly) throws InterruptedException {
+    void shouldNotThrowExceptionOnMissingInputTopic() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
         // if we don't run the app, the coordinator will be unavailable
         this.runApp();
@@ -446,12 +449,12 @@ class StreamsCleanUpTest {
     }
 
     @Test
-    void shouldThrowExceptionOnResetterError(final SoftAssertions softly) throws InterruptedException {
+    void shouldThrowExceptionOnResetterError() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
         this.app.run();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         //should throw exception because consumer group is still active
-        softly.assertThatThrownBy(this::runCleanUpWithDeletion)
+        this.softly.assertThatThrownBy(this::runCleanUpWithDeletion)
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Error running streams resetter. Exit code 1");
         this.app.close();
@@ -475,22 +478,22 @@ class StreamsCleanUpTest {
         this.app.setDeleteOutputTopic(false);
     }
 
-    private void runAndAssertContent(final SoftAssertions softly, final Iterable<KeyValue<String, Long>> expectedValues,
+    private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
             final String description)
             throws InterruptedException {
         this.runApp();
 
         final List<KeyValue<String, Long>> output = this.readOutputTopic(this.app.getOutputTopic());
-        softly.assertThat(output)
+        this.softly.assertThat(output)
                 .as(description)
                 .containsExactlyInAnyOrderElementsOf(expectedValues);
     }
 
-    private void runAndAssertSize(final SoftAssertions softly, final int expectedMessageCount)
+    private void runAndAssertSize(final int expectedMessageCount)
             throws InterruptedException {
         this.runApp();
         final List<KeyValue<String, Long>> records = this.readOutputTopic(this.app.getOutputTopic());
-        softly.assertThat(records).hasSize(expectedMessageCount);
+        this.softly.assertThat(records).hasSize(expectedMessageCount);
     }
 
     private void runApp() throws InterruptedException {

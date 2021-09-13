@@ -57,7 +57,6 @@ class RunProducerAppTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
-    private KafkaProducerApplication app = null;
 
     @BeforeEach
     void setup() {
@@ -73,7 +72,7 @@ class RunProducerAppTest {
     void shouldRunApp() throws InterruptedException, IOException, RestClientException {
         final String output = "output";
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        this.app = new KafkaProducerApplication() {
+        final KafkaProducerApplication app = new KafkaProducerApplication() {
             @Override
             protected void runApplication() {
                 try (final KafkaProducer<String, TestRecord> producer = this.createProducer()) {
@@ -89,10 +88,10 @@ class RunProducerAppTest {
                 return kafkaProperties;
             }
         };
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
-        this.app.setOutputTopic(output);
-        this.app.run();
+        app.setBrokers(this.kafkaCluster.getBrokerList());
+        app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        app.setOutputTopic(output);
+        app.run();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -108,13 +107,13 @@ class RunProducerAppTest {
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
 
         assertThat(client.getAllSubjects())
-                .contains(this.app.getOutputTopic() + "-value");
-        this.app.setCleanUp(true);
-        this.app.run();
+                .contains(app.getOutputTopic() + "-value");
+        app.setCleanUp(true);
+        app.run();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(client.getAllSubjects())
-                .doesNotContain(this.app.getOutputTopic() + "-value");
-        assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
+                .doesNotContain(app.getOutputTopic() + "-value");
+        assertThat(this.kafkaCluster.exists(app.getOutputTopic()))
                 .as("Output topic is deleted")
                 .isFalse();
     }
