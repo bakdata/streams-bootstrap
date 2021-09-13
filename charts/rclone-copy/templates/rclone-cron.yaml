@@ -60,7 +60,7 @@ spec:
               - name: config
                 # This is the default path where the rclone implementation assumes the config is located
                 mountPath: "/root/.config/rclone/rclone_ro.conf"
-                subPath: "rclone_ro.conf"
+                subPath: "rclone.conf"
               - name: config
                 mountPath: "/root/include-pattern.conf"
                 subPath: "include-pattern.conf"
