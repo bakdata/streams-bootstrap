@@ -35,7 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
@@ -44,6 +47,7 @@ import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
@@ -57,12 +61,15 @@ import picocli.CommandLine;
  * your custom options. Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your
  * class from your main.
  */
-@Data
+@ToString(callSuper = true)
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     /**
      * This variable is usually set on application start. When the application is running in debug mode it is used to
-     * reconfigure the child app package logger. On default it points to the package of this class allowing to execute
+     * reconfigure the child app package logger. On default, it points to the package of this class allowing to execute
      * the run method independently.
      */
     private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
@@ -105,7 +112,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         try {
             final var kafkaProperties = this.getKafkaProperties();
             this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
-            Optional.ofNullable(this.getUncaughtExceptionHandler())
+            this.getUncaughtExceptionHandler()
                     .ifPresent(this.streams::setUncaughtExceptionHandler);
             Optional.ofNullable(this.getStateListener())
                     .ifPresent(this.streams::setStateListener);
@@ -169,10 +176,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * returned.
      *
      * @return {@code null} by default.
-     * @see KafkaStreams#setUncaughtExceptionHandler(UncaughtExceptionHandler)
+     * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
-    protected UncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return null;
+    protected Optional<StreamsUncaughtExceptionHandler> getUncaughtExceptionHandler() {
+        return Optional.empty();
     }
 
     /**
@@ -246,7 +253,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * This methods resets the offset for all input topics and deletes internal topics, application state, and
+     * This method resets the offset for all input topics and deletes internal topics, application state, and
      * optionally the output and error topic.
      */
     @Override
