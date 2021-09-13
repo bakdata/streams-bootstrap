@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 
 class TopicClientTest {
 
-    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
+    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(20L);
     private final EmbeddedKafkaCluster kafkaCluster = createKafkaCluster();
 
     private static EmbeddedKafkaCluster createKafkaCluster() {
