@@ -54,7 +54,7 @@ spec:
               - -c
               - >-
                 cp /root/.config/rclone/rclone_ro.conf /root/.config/rclone/rclone.conf &&
-                rclone copy -v {{- range .Values.arguments }}{{ . }}{{- end }} --include-from /root/include-pattern.conf "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}" "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
+                rclone copy -v {{ .Values.arguments | join " " }} --include-from /root/include-pattern.conf "{{ .Values.sync.source.name }}:{{ .Values.sync.source.path }}" "{{ .Values.sync.dest.name }}:{{ .Values.sync.dest.path }}"
             
             volumeMounts:
               - name: config
