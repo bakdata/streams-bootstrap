@@ -172,10 +172,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create an {@link UncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if {@code null} is
-     * returned.
+     * Create an {@link UncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if {@code
+     * Optional.empty()} is returned.
      *
-     * @return {@code null} by default.
+     * @return {@code Optional.empty()} by default.
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
     protected Optional<StreamsUncaughtExceptionHandler> getUncaughtExceptionHandler() {
@@ -253,8 +253,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * This method resets the offset for all input topics and deletes internal topics, application state, and
-     * optionally the output and error topic.
+     * This method resets the offset for all input topics and deletes internal topics, application state, and optionally
+     * the output and error topic.
      */
     @Override
     protected void runCleanUp() {
