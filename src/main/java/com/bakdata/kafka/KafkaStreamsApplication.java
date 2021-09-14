@@ -28,7 +28,6 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -172,7 +171,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create an {@link UncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if {@code
+     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if {@code
      * Optional.empty()} is returned.
      *
      * @return {@code Optional.empty()} by default.
