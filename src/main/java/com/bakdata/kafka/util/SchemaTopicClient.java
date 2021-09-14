@@ -69,7 +69,7 @@ public final class SchemaTopicClient implements Closeable {
      * @param schemaRegistryUrl URL of schema registry
      * @return {@link CachedSchemaRegistryClient}
      */
-    public static CachedSchemaRegistryClient createSchemaRegistryClient(final Map<Object, Object> configs,
+    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<Object, Object> configs,
             @NonNull final String schemaRegistryUrl) {
         final Map<String, Object> originals = new HashMap<>();
         configs.forEach((key, value) -> originals.put(key.toString(), value));
