@@ -1,7 +1,24 @@
 # Change Log
 
+## [1.9.0](https://github.com/bakdata/streams-bootstrap/tree/1.9.0) (2021-09-14)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.8.0...1.9.0)
+
+**Closed issues:**
+
+- Restart failed clean up jobs rather than creating new pods [\#94](https://github.com/bakdata/streams-bootstrap/issues/94)
+- Fix vulnerable dependencies [\#114](https://github.com/bakdata/streams-bootstrap/issues/114)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 2.8 [\#124](https://github.com/bakdata/streams-bootstrap/pull/124) ([@philipp94831](https://github.com/philipp94831))
+- Add workaround for rclone config permissions [\#123](https://github.com/bakdata/streams-bootstrap/pull/123) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Fix rclone volume permissions [\#122](https://github.com/bakdata/streams-bootstrap/pull/122) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Restart failed cleanup jobs instead of creating new pods [\#120](https://github.com/bakdata/streams-bootstrap/pull/120) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Update openbridge/ob\_bulkstash version and allow arguments [\#121](https://github.com/bakdata/streams-bootstrap/pull/121) ([@aqchen](https://github.com/aqchen))
+- Downgrad Gradle to 6.7.1 [\#119](https://github.com/bakdata/streams-bootstrap/pull/119) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.8.0](https://github.com/bakdata/streams-bootstrap/tree/1.8.0) (2021-09-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.7.1...1.8.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.7.1...1.8.0)
 
 **Merged pull requests:**
 
@@ -10,7 +27,7 @@
 - Auto\-scale stateful sets [\#116](https://github.com/bakdata/streams-bootstrap/pull/116) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.7.1](https://github.com/bakdata/streams-bootstrap/tree/1.7.1) (2021-08-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.7.0...1.7.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.7.0...1.7.1)
 
 **Closed issues:**
 
@@ -34,7 +51,7 @@
 - Extend the readme [\#100](https://github.com/bakdata/streams-bootstrap/pull/100) ([@VictorKuenstler](https://github.com/VictorKuenstler))
 
 ## [1.7.0](https://github.com/bakdata/streams-bootstrap/tree/1.7.0) (2021-02-18)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0)
 
 **Closed issues:**
 
@@ -48,14 +65,14 @@
 - Add consumer group annotation from autoscaling [\#95](https://github.com/bakdata/streams-bootstrap/pull/95) ([@VictorKuenstler](https://github.com/VictorKuenstler))
 
 ## [1.6.0](https://github.com/bakdata/streams-bootstrap/tree/1.6.0) (2021-01-25)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.5...1.6.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.5...1.6.0)
 
 **Merged pull requests:**
 
 - Rename to streams\-bootstrap [\#93](https://github.com/bakdata/streams-bootstrap/pull/93) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.5.5](https://github.com/bakdata/streams-bootstrap/tree/1.5.5) (2021-01-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.4...1.5.5)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.4...1.5.5)
 
 **Merged pull requests:**
 
@@ -64,7 +81,7 @@
 - Reduce helm chart size [\#90](https://github.com/bakdata/streams-bootstrap/pull/90) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.5.4](https://github.com/bakdata/streams-bootstrap/tree/1.5.4) (2020-12-18)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.3...1.5.4)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.3...1.5.4)
 
 **Merged pull requests:**
 
@@ -72,14 +89,14 @@
 - Add tolerations to deployment [\#87](https://github.com/bakdata/streams-bootstrap/pull/87) ([@yannick-roeder](https://github.com/yannick-roeder))
 
 ## [1.5.3](https://github.com/bakdata/streams-bootstrap/tree/1.5.3) (2020-11-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.2...1.5.3)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.2...1.5.3)
 
 **Merged pull requests:**
 
 - Do not delete consumer group if it does not exist [\#85](https://github.com/bakdata/streams-bootstrap/pull/85) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.5.2](https://github.com/bakdata/streams-bootstrap/tree/1.5.2) (2020-11-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.1...1.5.2)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.1...1.5.2)
 
 **Merged pull requests:**
 
@@ -88,7 +105,7 @@
 - Add scaled object for autoscaling with keda [\#82](https://github.com/bakdata/streams-bootstrap/pull/82) ([@yannick-roeder](https://github.com/yannick-roeder))
 
 ## [1.5.1](https://github.com/bakdata/streams-bootstrap/tree/1.5.1) (2020-11-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.0...1.5.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.5.0...1.5.1)
 
 **Fixed bugs:**
 
@@ -100,7 +117,7 @@
 - Remove container suffix from container name [\#73](https://github.com/bakdata/streams-bootstrap/pull/73) ([@yannick-roeder](https://github.com/yannick-roeder))
 
 ## [1.5.0](https://github.com/bakdata/streams-bootstrap/tree/1.5.0) (2020-09-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.6...1.5.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.6...1.5.0)
 
 **Merged pull requests:**
 
@@ -108,14 +125,14 @@
 - Update Kafka to 2.5.1 and Confluent to 5.5.1 [\#79](https://github.com/bakdata/streams-bootstrap/pull/79) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.6](https://github.com/bakdata/streams-bootstrap/tree/1.4.6) (2020-08-26)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.5...1.4.6)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.5...1.4.6)
 
 **Merged pull requests:**
 
 - Close resources after streams client [\#78](https://github.com/bakdata/streams-bootstrap/pull/78) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.5](https://github.com/bakdata/streams-bootstrap/tree/1.4.5) (2020-08-06)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.4...1.4.5)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.4...1.4.5)
 
 **Closed issues:**
 
@@ -132,7 +149,7 @@
 - Make JAVA\_TOOL\_OPTIONS configurable [\#68](https://github.com/bakdata/streams-bootstrap/pull/68) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.4](https://github.com/bakdata/streams-bootstrap/tree/1.4.4) (2020-04-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.3...1.4.4)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.3...1.4.4)
 
 **Merged pull requests:**
 
@@ -142,7 +159,7 @@
 - Merge streams chart for statefulset and deployment [\#65](https://github.com/bakdata/streams-bootstrap/pull/65) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.3](https://github.com/bakdata/streams-bootstrap/tree/1.4.3) (2020-04-02)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.2...1.4.3)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.2...1.4.3)
 
 **Implemented enhancements:**
 
@@ -153,7 +170,7 @@
 - Revert PicoCli api usage to exit application properly [\#63](https://github.com/bakdata/streams-bootstrap/pull/63) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.2](https://github.com/bakdata/streams-bootstrap/tree/1.4.2) (2020-03-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.1...1.4.2)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.1...1.4.2)
 
 **Merged pull requests:**
 
@@ -161,7 +178,7 @@
 - Add helm chart to deploy streams app as statefulset with static group membership [\#60](https://github.com/bakdata/streams-bootstrap/pull/60) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.1](https://github.com/bakdata/streams-bootstrap/tree/1.4.1) (2020-03-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.0...1.4.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.4.0...1.4.1)
 
 **Merged pull requests:**
 
@@ -170,7 +187,7 @@
 - Do not exit application [\#57](https://github.com/bakdata/streams-bootstrap/pull/57) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.4.0](https://github.com/bakdata/streams-bootstrap/tree/1.4.0) (2020-03-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.4...1.4.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.3.4...1.4.0)
 
 **Merged pull requests:**
 
@@ -178,28 +195,28 @@
 - Move error handlers to com.bakdata.kafka:error\-handling [\#55](https://github.com/bakdata/streams-bootstrap/pull/55) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.3.4](https://github.com/bakdata/streams-bootstrap/tree/1.3.4) (2020-03-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.3...1.3.4)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.3.3...1.3.4)
 
 **Merged pull requests:**
 
 - Parse streams config from separate environment variables [\#54](https://github.com/bakdata/streams-bootstrap/pull/54) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.3.3](https://github.com/bakdata/streams-bootstrap/tree/1.3.3) (2020-02-27)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.2...1.3.3)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.3.2...1.3.3)
 
 **Merged pull requests:**
 
 - Exit application with proper code [\#53](https://github.com/bakdata/streams-bootstrap/pull/53) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.3.2](https://github.com/bakdata/streams-bootstrap/tree/1.3.2) (2020-02-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.1...1.3.2)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.3.1...1.3.2)
 
 **Merged pull requests:**
 
 - Check for errors when running streams resetter [\#52](https://github.com/bakdata/streams-bootstrap/pull/52) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.3.1](https://github.com/bakdata/streams-bootstrap/tree/1.3.1) (2020-01-30)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.0...1.3.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.3.0...1.3.1)
 
 **Merged pull requests:**
 
@@ -207,14 +224,14 @@
 - Fix parsing of environment parameters with ENV\_PREFIX in name [\#50](https://github.com/bakdata/streams-bootstrap/pull/50) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.3.0](https://github.com/bakdata/streams-bootstrap/tree/1.3.0) (2020-01-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.2.1...1.3.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.2.1...1.3.0)
 
 **Merged pull requests:**
 
 - Update Kafka to 2.4.0 [\#49](https://github.com/bakdata/streams-bootstrap/pull/49) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.2.1](https://github.com/bakdata/streams-bootstrap/tree/1.2.1) (2020-01-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.2.0...1.2.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.2.0...1.2.1)
 
 **Merged pull requests:**
 
@@ -222,7 +239,7 @@
 - Support schema registry authentication [\#47](https://github.com/bakdata/streams-bootstrap/pull/47) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.2.0](https://github.com/bakdata/streams-bootstrap/tree/1.2.0) (2020-01-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.13...1.2.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.13...1.2.0)
 
 **Implemented enhancements:**
 
@@ -238,7 +255,7 @@
 - Reset internal topics [\#40](https://github.com/bakdata/streams-bootstrap/pull/40) ([@torbsto](https://github.com/torbsto))
 
 ## [1.1.13](https://github.com/bakdata/streams-bootstrap/tree/1.1.13) (2019-11-15)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.12...1.1.13)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.12...1.1.13)
 
 **Merged pull requests:**
 
@@ -248,14 +265,14 @@
 - Add flat value transformers for error handling [\#36](https://github.com/bakdata/streams-bootstrap/pull/36) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.1.12](https://github.com/bakdata/streams-bootstrap/tree/1.1.12) (2019-11-07)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.11...1.1.12)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.11...1.1.12)
 
 **Merged pull requests:**
 
 - Fix schema registry clean up [\#35](https://github.com/bakdata/streams-bootstrap/pull/35) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.1.11](https://github.com/bakdata/streams-bootstrap/tree/1.1.11) (2019-11-05)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.10...1.1.11)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.10...1.1.11)
 
 **Merged pull requests:**
 
@@ -263,7 +280,7 @@
 - Add common error handlers [\#33](https://github.com/bakdata/streams-bootstrap/pull/33) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.1.10](https://github.com/bakdata/streams-bootstrap/tree/1.1.10) (2019-10-31)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.9...1.1.10)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.9...1.1.10)
 
 **Merged pull requests:**
 
@@ -271,42 +288,42 @@
 - Add a helm chart for running Streams App as a job [\#31](https://github.com/bakdata/streams-bootstrap/pull/31) ([@SvenLehmann](https://github.com/SvenLehmann))
 
 ## [1.1.9](https://github.com/bakdata/streams-bootstrap/tree/1.1.9) (2019-10-25)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.8...1.1.9)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.8...1.1.9)
 
 **Merged pull requests:**
 
 - Delete error topic if requested [\#30](https://github.com/bakdata/streams-bootstrap/pull/30) ([@SvenLehmann](https://github.com/SvenLehmann))
 
 ## [1.1.8](https://github.com/bakdata/streams-bootstrap/tree/1.1.8) (2019-10-17)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.7...1.1.8)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.7...1.1.8)
 
 **Merged pull requests:**
 
 - Expose delete topic method to subclasses [\#29](https://github.com/bakdata/streams-bootstrap/pull/29) ([@philipp94831](https://github.com/philipp94831))
 
 ## [1.1.7](https://github.com/bakdata/streams-bootstrap/tree/1.1.7) (2019-10-16)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.6...1.1.7)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.6...1.1.7)
 
 **Merged pull requests:**
 
 - Change reprocessing to clean up [\#26](https://github.com/bakdata/streams-bootstrap/pull/26) ([@torbsto](https://github.com/torbsto))
 
 ## [1.1.6](https://github.com/bakdata/streams-bootstrap/tree/1.1.6) (2019-10-11)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.5...1.1.6)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.5...1.1.6)
 
 **Merged pull requests:**
 
 - Add utility method for single input topic [\#28](https://github.com/bakdata/streams-bootstrap/pull/28) ([@torbsto](https://github.com/torbsto))
 
 ## [1.1.5](https://github.com/bakdata/streams-bootstrap/tree/1.1.5) (2019-10-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.4...1.1.5)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.4...1.1.5)
 
 **Merged pull requests:**
 
 - Allow multiple input topics and add an error topic [\#27](https://github.com/bakdata/streams-bootstrap/pull/27) ([@torbsto](https://github.com/torbsto))
 
 ## [1.1.4](https://github.com/bakdata/streams-bootstrap/tree/1.1.4) (2019-09-11)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.3...1.1.4)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.3...1.1.4)
 
 **Closed issues:**
 
@@ -320,7 +337,7 @@
 - Add JMX prometheus [\#21](https://github.com/bakdata/streams-bootstrap/pull/21) ([@lawben](https://github.com/lawben))
 
 ## [1.1.3](https://github.com/bakdata/streams-bootstrap/tree/1.1.3) (2019-08-01)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.2...1.1.3)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.2...1.1.3)
 
 **Implemented enhancements:**
 
@@ -339,7 +356,7 @@
 - Log initial configuration on debug [\#11](https://github.com/bakdata/streams-bootstrap/pull/11) ([@fapaul](https://github.com/fapaul))
 
 ## [1.1.2](https://github.com/bakdata/streams-bootstrap/tree/1.1.2) (2019-06-27)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.1...1.1.2)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.1...1.1.2)
 
 **Merged pull requests:**
 
@@ -347,7 +364,7 @@
 - Update readme with latest release version number [\#9](https://github.com/bakdata/streams-bootstrap/pull/9) ([@fapaul](https://github.com/fapaul))
 
 ## [1.1.1](https://github.com/bakdata/streams-bootstrap/tree/1.1.1) (2019-05-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.0...1.1.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.1.0...1.1.1)
 
 **Merged pull requests:**
 
@@ -356,7 +373,7 @@
 - Comply default stream application name schema with kube dns [\#6](https://github.com/bakdata/streams-bootstrap/pull/6) ([@fapaul](https://github.com/fapaul))
 
 ## [1.1.0](https://github.com/bakdata/streams-bootstrap/tree/1.1.0) (2019-05-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.0.1...1.1.0)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.0.1...1.1.0)
 
 **Merged pull requests:**
 
@@ -365,11 +382,10 @@
 - Bakdata Kafka Streams Helm Repository [\#3](https://github.com/bakdata/streams-bootstrap/pull/3) ([@fapaul](https://github.com/fapaul))
 
 ## [1.0.1](https://github.com/bakdata/streams-bootstrap/tree/1.0.1) (2019-03-27)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.0.0...1.0.1)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.0.0...1.0.1)
 
 
 ## [1.0.0](https://github.com/bakdata/streams-bootstrap/tree/1.0.0) (2019-03-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/955cedcd10010c29446361ecfc063a13eb75fe73...1.0.0)
 
 **Closed issues:**
 
