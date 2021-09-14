@@ -35,7 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import picocli.CommandLine;
 
 /**
@@ -45,7 +48,10 @@ import picocli.CommandLine;
  * EnvironmentArgumentsParser}. To implement your Kafka application inherit from this class and add your custom
  * options.
  */
-@Data
+@ToString
+@Getter
+@Setter
+@RequiredArgsConstructor
 public abstract class KafkaApplication implements Runnable {
     public static final int RESET_SLEEP_MS = 5000;
     private static final String ENV_PREFIX = Optional.ofNullable(

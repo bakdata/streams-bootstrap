@@ -105,7 +105,7 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldCreateTopic() {
+    void shouldCreateTopic() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
@@ -113,6 +113,7 @@ class TopicClientTest {
                     .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
+            Thread.sleep(CLIENT_TIMEOUT.toMillis());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {

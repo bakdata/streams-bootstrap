@@ -29,7 +29,10 @@ import com.bakdata.kafka.util.SchemaTopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Properties;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -47,7 +50,10 @@ import picocli.CommandLine;
  * options. Call {@link #startApplication(KafkaProducerApplication, String[])} with a fresh instance of your class from
  * your main.
  */
-@Data
+@ToString(callSuper = true)
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Slf4j
 public abstract class KafkaProducerApplication extends KafkaApplication {
     /**

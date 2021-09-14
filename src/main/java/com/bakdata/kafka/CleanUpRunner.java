@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
@@ -103,7 +104,7 @@ public final class CleanUpRunner {
                 .collect(Collectors.toList());
     }
 
-    static File createTemporaryPropertiesFile(final String appId, final Properties config) {
+    static File createTemporaryPropertiesFile(final String appId, final Map<Object, Object> config) {
         // Writing properties requires Map<String, String>
         final Properties parsedProperties = toStringBasedProperties(config);
         try {
@@ -118,7 +119,7 @@ public final class CleanUpRunner {
         }
     }
 
-    static Properties toStringBasedProperties(final Properties config) {
+    static Properties toStringBasedProperties(final Map<Object, Object> config) {
         final Properties parsedProperties = new Properties();
         config.forEach((key, value) -> parsedProperties.setProperty(key.toString(), value.toString()));
         return parsedProperties;
