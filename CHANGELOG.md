@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.9.3](https://github.com/bakdata/streams-bootstrap/tree/1.9.3) (2021-12-20)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.9.2...1.9.3)
+
+**Merged pull requests:**
+
+- Update log4j to 2.17.0 [\#128](https://github.com/bakdata/streams-bootstrap/pull/128) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.9.2](https://github.com/bakdata/streams-bootstrap/tree/1.9.2) (2021-12-16)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.9.1...1.9.2)
 
