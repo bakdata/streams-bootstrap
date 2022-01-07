@@ -88,7 +88,7 @@ allprojects {
         val confluentVersion: String by project
         implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-        val log4jVersion = "2.17.0"
+        val log4jVersion = "2.17.1"
         implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
         implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
         implementation(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
