@@ -533,7 +533,10 @@ class StreamsCleanUpTest {
         application.setErrorTopic(errorTopicName);
         application.setBrokers(this.kafkaCluster.getBrokerList());
         application.setProductive(false);
-        application.setStreamsConfig(Map.of(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0"));
+        application.setStreamsConfig(Map.of(
+                StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         return application;
     }
 }
