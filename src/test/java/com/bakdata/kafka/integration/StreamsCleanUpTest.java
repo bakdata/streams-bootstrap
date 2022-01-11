@@ -535,7 +535,7 @@ class StreamsCleanUpTest {
         application.setProductive(false);
         application.setStreamsConfig(Map.of(
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "5000"
         ));
         return application;
     }
