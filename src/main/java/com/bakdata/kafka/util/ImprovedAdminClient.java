@@ -45,7 +45,6 @@ public final class ImprovedAdminClient implements Closeable {
     private final @NonNull AdminClient adminClient;
     @Getter
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
-    private final @NonNull Duration timeout;
 
     @Builder
     private ImprovedAdminClient(@NonNull final Properties properties,
@@ -55,7 +54,6 @@ public final class ImprovedAdminClient implements Closeable {
         this.properties = properties;
         this.adminClient = AdminClient.create(properties);
         this.schemaRegistryClient = createSchemaRegistryClient(properties, schemaRegistryUrl);
-        this.timeout = timeout;
     }
 
     public SchemaTopicClient getSchemaTopicClient() {
@@ -63,11 +61,11 @@ public final class ImprovedAdminClient implements Closeable {
     }
 
     public TopicClient getTopicClient() {
-        return new TopicClient(this.adminClient, this.timeout);
+        return new TopicClient(this.adminClient);
     }
 
     public ConsumerGroupClient getConsumerGroupClient() {
-        return new ConsumerGroupClient(this.adminClient, this.timeout);
+        return new ConsumerGroupClient(this.adminClient);
     }
 
     public String getBootstrapServers() {

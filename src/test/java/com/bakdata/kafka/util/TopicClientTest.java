@@ -127,7 +127,7 @@ class TopicClientTest {
     private TopicClient createClient() {
         final String brokerList = this.kafkaCluster.getBrokerList();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
-        return TopicClient.create(config, CLIENT_TIMEOUT);
+        return TopicClient.create(config);
     }
 
 }
