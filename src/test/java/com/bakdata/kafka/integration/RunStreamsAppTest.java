@@ -50,6 +50,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -77,6 +78,7 @@ class RunStreamsAppTest {
         this.kafkaCluster.stop();
     }
 
+    @Disabled
     @Test
     void shouldRunApp() throws InterruptedException {
         final String input = "input";
@@ -103,6 +105,7 @@ class RunStreamsAppTest {
                 .hasSize(1);
     }
 
+    @Disabled
     @Test
     void shouldCallCloseResourcesOnMissingInputTopic() throws InterruptedException {
         final String input = "input";
@@ -119,6 +122,7 @@ class RunStreamsAppTest {
         assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
     }
 
+    @Disabled
     @Test
     void shouldCallCloseResourcesOnMapError() throws InterruptedException {
         final String input = "input";
