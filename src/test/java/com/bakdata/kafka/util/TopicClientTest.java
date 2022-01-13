@@ -63,7 +63,6 @@ class TopicClientTest {
     @AfterEach
     void teardown() throws InterruptedException {
         this.kafkaCluster.stop();
-        Thread.sleep(Duration.ofSeconds(10).toMillis());
     }
 
     @Test

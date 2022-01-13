@@ -39,9 +39,7 @@ import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +75,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class StreamsCleanUpTest {
-    private static final int TIMEOUT_SECONDS = 30;
+    private static final int TIMEOUT_SECONDS = 10;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private EmbeddedKafkaCluster kafkaCluster;
@@ -102,7 +100,6 @@ class StreamsCleanUpTest {
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.kafkaCluster.stop();
-        Thread.sleep(Duration.ofSeconds(TIMEOUT_SECONDS).toMillis());
     }
 
     @Test
@@ -347,9 +344,6 @@ class StreamsCleanUpTest {
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createMirrorKeyApplication();
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        this.app.setStreamsConfig(Map.of(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName()
-        ));
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<TestRecord, String> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>(testRecord, "val")))

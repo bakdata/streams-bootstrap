@@ -32,6 +32,7 @@ import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.Mirror;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -88,6 +89,9 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         this.app.run();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
@@ -114,6 +118,9 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         this.app.run();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
@@ -131,6 +138,9 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         this.app.run();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
