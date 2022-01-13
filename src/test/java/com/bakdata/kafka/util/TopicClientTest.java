@@ -61,7 +61,7 @@ class TopicClientTest {
     }
 
     @AfterEach
-    void teardown() throws InterruptedException {
+    void teardown() {
         this.kafkaCluster.stop();
     }
 

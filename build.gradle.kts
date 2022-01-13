@@ -15,7 +15,7 @@ allprojects {
     group = "com.bakdata.kafka"
 
     tasks.withType<Test> {
-        maxParallelForks = 1
+        maxParallelForks = 4
     }
 
     repositories {
