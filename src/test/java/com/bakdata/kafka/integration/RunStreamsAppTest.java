@@ -105,7 +105,6 @@ class RunStreamsAppTest {
                 .hasSize(1);
     }
 
-    @Disabled
     @Test
     void shouldCallCloseResourcesOnMissingInputTopic() throws InterruptedException {
         final String input = "input";
@@ -122,7 +121,6 @@ class RunStreamsAppTest {
         assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
     }
 
-    @Disabled
     @Test
     void shouldCallCloseResourcesOnMapError() throws InterruptedException {
         final String input = "input";
