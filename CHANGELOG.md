@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.0.0](https://github.com/bakdata/streams-bootstrap/tree/2.0.0) (2022-01-13)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.9.3...2.0.0)
+
+**Closed issues:**
+
+- Upgrade Kafka Streams to 3.0 [\#126](https://github.com/bakdata/streams-bootstrap/issues/126)
+
+**Merged pull requests:**
+
+- Update to Kafka 3.0.0 [\#129](https://github.com/bakdata/streams-bootstrap/pull/129) ([@philipp94831](https://github.com/philipp94831))
+
 ## [1.9.3](https://github.com/bakdata/streams-bootstrap/tree/1.9.3) (2021-12-20)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.9.2...1.9.3)
 
