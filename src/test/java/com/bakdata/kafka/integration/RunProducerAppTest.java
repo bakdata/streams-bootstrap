@@ -49,7 +49,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -69,7 +68,6 @@ class RunProducerAppTest {
         this.kafkaCluster.stop();
     }
 
-    @Disabled
     @Test
     void shouldRunApp() throws InterruptedException, IOException, RestClientException {
         final String output = "output";
