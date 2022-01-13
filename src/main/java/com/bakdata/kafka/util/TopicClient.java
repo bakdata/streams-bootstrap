@@ -25,11 +25,14 @@
 package com.bakdata.kafka.util;
 
 import java.io.Closeable;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,25 +51,28 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 public final class TopicClient implements Closeable {
 
     private final @NonNull AdminClient adminClient;
+    private final @NonNull Duration timeout;
 
     /**
      * Creates a new {@code TopicClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Map)}
+     * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code TopicClient}
      */
-    public static TopicClient create(final Map<String, Object> configs) {
-        return new TopicClient(AdminClient.create(configs));
+    public static TopicClient create(final Map<String, Object> configs, final Duration timeout) {
+        return new TopicClient(AdminClient.create(configs), timeout);
     }
 
     /**
      * Creates a new {@code TopicClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code TopicClient}
      */
-    public static TopicClient create(final Properties configs) {
-        return new TopicClient(AdminClient.create(configs));
+    public static TopicClient create(final Properties configs, final Duration timeout) {
+        return new TopicClient(AdminClient.create(configs), timeout);
     }
 
     /**
@@ -98,11 +104,11 @@ public final class TopicClient implements Closeable {
         try {
             this.adminClient.deleteTopics(List.of(topicName))
                     .all()
-                    .get();
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
-        } catch (final ExecutionException ex) {
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
         }
     }
@@ -118,7 +124,7 @@ public final class TopicClient implements Closeable {
             final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
                     this.adminClient.describeTopics(List.of(topicName)).values();
             final TopicDescription description =
-                    kafkaTopicMap.get(topicName).get();
+                    kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
             final List<TopicPartitionInfo> partitions = description.partitions();
             final int replicationFactor = partitions.stream()
                     .findFirst()
@@ -132,7 +138,7 @@ public final class TopicClient implements Closeable {
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
-        } catch (final ExecutionException e) {
+        } catch (final ExecutionException | TimeoutException e) {
             throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
         }
     }
@@ -152,7 +158,7 @@ public final class TopicClient implements Closeable {
         try {
             final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
                     this.adminClient.describeTopics(List.of(topicName)).values();
-            kafkaTopicMap.get(topicName).get();
+            kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
             return true;
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
@@ -162,6 +168,8 @@ public final class TopicClient implements Closeable {
             }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
+            throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
+        } catch (final TimeoutException e) {
             throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
         }
     }
@@ -180,11 +188,11 @@ public final class TopicClient implements Closeable {
             this.adminClient
                     .createTopics(List.of(newTopic.configs(config)))
                     .all()
-                    .get();
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to create topic " + topicName, ex);
-        } catch (final ExecutionException ex) {
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to create topic " + topicName, ex);
         }
     }
@@ -199,11 +207,11 @@ public final class TopicClient implements Closeable {
             return this.adminClient
                     .listTopics()
                     .names()
-                    .get();
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to list topics", ex);
-        } catch (final ExecutionException ex) {
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to list topics", ex);
         }
     }

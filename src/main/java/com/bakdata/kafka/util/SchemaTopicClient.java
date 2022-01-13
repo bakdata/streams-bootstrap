@@ -29,6 +29,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.Closeable;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,12 +50,14 @@ public final class SchemaTopicClient implements Closeable {
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
      * @param schemaRegistryUrl URL of schema registry
+     * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code SchemaTopicClient}
      */
-    public static SchemaTopicClient create(final Properties configs, final String schemaRegistryUrl) {
+    public static SchemaTopicClient create(final Properties configs, final String schemaRegistryUrl,
+            final Duration timeout) {
         final SchemaRegistryClient schemaRegistryClient =
                 createSchemaRegistryClient(configs, schemaRegistryUrl);
-        final TopicClient topicClient = TopicClient.create(configs);
+        final TopicClient topicClient = TopicClient.create(configs, timeout);
         return new SchemaTopicClient(topicClient, schemaRegistryClient);
     }
 

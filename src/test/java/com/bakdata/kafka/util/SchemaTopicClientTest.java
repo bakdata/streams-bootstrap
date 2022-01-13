@@ -36,6 +36,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -66,8 +67,8 @@ class SchemaTopicClientTest {
     private SchemaTopicClient createSchemaTopicClient() {
         final Properties kafkaProperties = new Properties();
         kafkaProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
-        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl()
-        );
+        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
+                Duration.ofSeconds(10L));
     }
 
     @AfterEach

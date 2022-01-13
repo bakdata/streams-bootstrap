@@ -25,11 +25,14 @@
 package com.bakdata.kafka.util;
 
 import java.io.Closeable;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,25 +47,28 @@ import org.apache.kafka.clients.admin.ConsumerGroupListing;
 public final class ConsumerGroupClient implements Closeable {
 
     private final @NonNull AdminClient adminClient;
+    private final @NonNull Duration timeout;
 
     /**
      * Creates a new {@code ConsumerGroupClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Map)}
+     * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code ConsumerGroupClient}
      */
-    public static ConsumerGroupClient create(final Map<String, Object> configs) {
-        return new ConsumerGroupClient(AdminClient.create(configs));
+    public static ConsumerGroupClient create(final Map<String, Object> configs, final Duration timeout) {
+        return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 
     /**
      * Creates a new {@code ConsumerGroupClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code ConsumerGroupClient}
      */
-    public static ConsumerGroupClient create(final Properties configs) {
-        return new ConsumerGroupClient(AdminClient.create(configs));
+    public static ConsumerGroupClient create(final Properties configs, final Duration timeout) {
+        return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 
     /**
@@ -75,12 +81,12 @@ public final class ConsumerGroupClient implements Closeable {
         try {
             this.adminClient.deleteConsumerGroups(List.of(groupName))
                     .all()
-                    .get();
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
             log.info("Deleted consumer group'{}'", groupName);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
-        } catch (final ExecutionException ex) {
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
         }
     }
@@ -112,11 +118,11 @@ public final class ConsumerGroupClient implements Closeable {
             return this.adminClient
                     .listConsumerGroups()
                     .all()
-                    .get();
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to list consumer groups", ex);
-        } catch (final ExecutionException ex) {
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to list consumer groups", ex);
         }
     }
