@@ -41,6 +41,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +70,6 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -102,6 +102,7 @@ class StreamsCleanUpTest {
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         this.kafkaCluster.stop();
+        Thread.sleep(Duration.ofSeconds(TIMEOUT_SECONDS).toMillis());
     }
 
     @Test
@@ -341,7 +342,6 @@ class StreamsCleanUpTest {
                 .contains(this.app.getInputTopic() + "-value");
     }
 
-    @Disabled
     @Test
     void shouldDeleteKeySchema()
             throws InterruptedException, IOException, RestClientException {
@@ -450,7 +450,6 @@ class StreamsCleanUpTest {
         this.runCleanUpWithDeletion();
     }
 
-    @Disabled
     @Test
     void shouldThrowExceptionOnResetterError() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
