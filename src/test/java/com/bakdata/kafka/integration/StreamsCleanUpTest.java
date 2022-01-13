@@ -77,7 +77,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class StreamsCleanUpTest {
-    private static final int TIMEOUT_SECONDS = 20;
+    private static final int TIMEOUT_SECONDS = 30;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private EmbeddedKafkaCluster kafkaCluster;

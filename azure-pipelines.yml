@@ -17,7 +17,7 @@ resources:
   repositories:
     - repository: templates
       type: github
-      ref: 'feature/junit'
+      ref: 'tmp/upload-snapshot'
       name: bakdata/bakdata-project-templates
       endpoint: bot
 
