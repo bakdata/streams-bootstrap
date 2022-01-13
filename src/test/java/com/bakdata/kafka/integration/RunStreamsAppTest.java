@@ -177,7 +177,6 @@ class RunStreamsAppTest {
             final Properties kafkaProperties = super.createKafkaProperties();
             kafkaProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
             kafkaProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-            kafkaProperties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000");
             return kafkaProperties;
         }
     }
