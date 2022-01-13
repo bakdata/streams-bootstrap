@@ -15,7 +15,7 @@ allprojects {
     group = "com.bakdata.kafka"
 
     tasks.withType<Test> {
-        maxParallelForks = 4
+        maxParallelForks = 1 // Embedded Kafka does not reliably work in parallel since Kafka 3.0
     }
 
     repositories {
@@ -88,7 +88,7 @@ allprojects {
         val confluentVersion: String by project
         implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-        val log4jVersion = "2.17.0"
+        val log4jVersion = "2.17.1"
         implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
         implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
         implementation(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
@@ -103,7 +103,7 @@ allprojects {
         testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
-        val fluentKafkaVersion = "2.4.0"
+        val fluentKafkaVersion = "2.5.0"
         testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = fluentKafkaVersion)
         testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
         testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "schema-registry-mock-junit5", version = fluentKafkaVersion)

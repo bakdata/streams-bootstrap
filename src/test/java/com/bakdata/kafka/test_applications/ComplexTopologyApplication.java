@@ -52,7 +52,7 @@ public class ComplexTopologyApplication extends KafkaStreamsApplication {
         final KStream<String, TestRecord> through = builder.stream(THROUGH_TOPIC);
         final KTable<Windowed<String>, TestRecord> reduce = through
                 .groupByKey()
-                .windowedBy(TimeWindows.of(Duration.ofMillis(5L)))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(5L)))
                 .reduce((a, b) -> a);
 
         reduce.toStream()

@@ -36,6 +36,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
@@ -91,6 +92,9 @@ class RunProducerAppTest {
         app.setBrokers(this.kafkaCluster.getBrokerList());
         app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         app.setOutputTopic(output);
+        app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         app.run();
         Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)

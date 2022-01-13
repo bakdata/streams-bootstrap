@@ -39,7 +39,6 @@ import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -345,9 +344,6 @@ class StreamsCleanUpTest {
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createMirrorKeyApplication();
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        this.app.setStreamsConfig(Map.of(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName()
-        ));
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<TestRecord, String> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>(testRecord, "val")))
@@ -533,7 +529,10 @@ class StreamsCleanUpTest {
         application.setErrorTopic(errorTopicName);
         application.setBrokers(this.kafkaCluster.getBrokerList());
         application.setProductive(false);
-        application.setStreamsConfig(Map.of(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0"));
+        application.setStreamsConfig(Map.of(
+                StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         return application;
     }
 }
