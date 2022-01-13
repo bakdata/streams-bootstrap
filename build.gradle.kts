@@ -15,7 +15,7 @@ allprojects {
     group = "com.bakdata.kafka"
 
     tasks.withType<Test> {
-        maxParallelForks = 4
+        maxParallelForks = 1 // Embedded Kafka does not reliably work in parallel since Kafka 3.0
     }
 
     repositories {
