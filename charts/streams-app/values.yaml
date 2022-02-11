@@ -126,3 +126,18 @@ prometheus:
 #         values:
 #         - bar
 #         - baz
+
+persistence:
+  enabled: false
+
+  ## The size of the PersistentVolume to allocate to each streams pod in the StatefulSet.
+  size: 1Gi
+
+  ## Kafka Streams data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: ""
