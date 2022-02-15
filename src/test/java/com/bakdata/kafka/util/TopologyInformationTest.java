@@ -143,14 +143,15 @@ class TopologyInformationTest {
         final KStream<String, Object> through = streamsBuilder.stream(Pattern.compile(".*-topic"));
         through.to("output");
         final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
-        assertThat(topologyInformation.getIntermediateTopics(List.of("through-topic")))
+        assertThat(topologyInformation.getIntermediateTopics(
+                List.of("foo", "foo-topic", "foo-topic-bar", "through-topic")))
                 .hasSize(1)
                 .containsExactly("through-topic");
         assertThat(topologyInformation.getIntermediateTopics(List.of())).isEmpty();
-        assertThat(
-                topologyInformation.getExternalSourceTopics(List.of("foo", "foo-topic", "foo-topic-bar", "bar-topic")))
-                .hasSize(3)
-                .containsExactly("input", "foo-topic", "bar-topic");
+        assertThat(topologyInformation.getExternalSourceTopics(
+                List.of("foo", "foo-topic", "foo-topic-bar", "through-topic")))
+                .hasSize(2)
+                .containsExactly("input", "foo-topic");
     }
 
 }
