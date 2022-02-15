@@ -321,10 +321,10 @@ class StreamsCleanUpTest {
     @Test
     void shouldReprocessAlreadySeenRecordsWithPattern() throws InterruptedException {
         this.app = this.createWordCountPatternApplication();
-        final SendValuesTransactional<String> sendRequest =
-                SendValuesTransactional.inTransaction("input_topic",
-                        Arrays.asList("a", "b", "c")).useDefaults();
-        this.kafkaCluster.send(sendRequest);
+        this.kafkaCluster.send(SendValuesTransactional.inTransaction("input_topic",
+                Arrays.asList("a", "b")).useDefaults());
+        this.kafkaCluster.send(SendValuesTransactional.inTransaction("another_topic",
+                List.of("c")).useDefaults());
 
         this.runAndAssertSize(3);
         this.runAndAssertSize(3);
