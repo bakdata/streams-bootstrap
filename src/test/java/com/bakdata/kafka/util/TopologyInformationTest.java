@@ -132,6 +132,25 @@ class TopologyInformationTest {
                 topologyInformation.getExternalSourceTopics(List.of("foo", "foo-topic", "foo-topic-bar", "bar-topic")))
                 .hasSize(2)
                 .containsExactly("foo-topic", "bar-topic");
+        assertThat(topologyInformation.getExternalSourceTopics(List.of())).isEmpty();
+    }
+
+    @Test
+    void shouldResolveIntermediatePatternTopics() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        final KStream<String, Object> stream = streamsBuilder.stream("input");
+        stream.to("through-topic");
+        final KStream<String, Object> through = streamsBuilder.stream(Pattern.compile(".*-topic"));
+        through.to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getIntermediateTopics(List.of("through-topic")))
+                .hasSize(1)
+                .containsExactly("through-topic");
+        assertThat(topologyInformation.getIntermediateTopics(List.of())).isEmpty();
+        assertThat(
+                topologyInformation.getExternalSourceTopics(List.of("foo", "foo-topic", "foo-topic-bar", "bar-topic")))
+                .hasSize(3)
+                .containsExactly("input", "foo-topic", "bar-topic");
     }
 
 }
