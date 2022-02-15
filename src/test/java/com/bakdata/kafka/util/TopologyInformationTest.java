@@ -59,7 +59,7 @@ class TopologyInformationTest {
 
     @Test
     void shouldReturnAllExternalSourceTopics() {
-        assertThat(this.topologyInformation.getExternalSourceTopics())
+        assertThat(this.topologyInformation.getExternalSourceTopics(List.of()))
                 .hasSize(2)
                 .containsAll(this.app.getInputTopics())
                 .doesNotContain(ComplexTopologyApplication.THROUGH_TOPIC);
@@ -67,7 +67,7 @@ class TopologyInformationTest {
 
     @Test
     void shouldReturnAllIntermediateTopics() {
-        assertThat(this.topologyInformation.getIntermediateTopics())
+        assertThat(this.topologyInformation.getIntermediateTopics(List.of()))
                 .hasSize(1)
                 .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC)
                 .doesNotContainAnyElementsOf(this.app.getInputTopics());
@@ -84,7 +84,7 @@ class TopologyInformationTest {
                 .toStream()
                 .to("output");
         final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
-        assertThat(topologyInformation.getIntermediateTopics())
+        assertThat(topologyInformation.getIntermediateTopics(List.of()))
                 .isEmpty();
     }
 
@@ -123,13 +123,15 @@ class TopologyInformationTest {
     }
 
     @Test
-    void shouldIgnorePatternTopics() {
+    void shouldResolvePatternTopics() {
         final StreamsBuilder streamsBuilder = new StreamsBuilder();
-        final KStream<String, Object> stream = streamsBuilder.stream(Pattern.compile(".*"));
+        final KStream<String, Object> stream = streamsBuilder.stream(Pattern.compile(".*-topic"));
         stream.to("output");
         final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
-        assertThat(topologyInformation.getExternalSourceTopics())
-                .isEmpty();
+        assertThat(
+                topologyInformation.getExternalSourceTopics(List.of("foo", "foo-topic", "foo-topic-bar", "bar-topic")))
+                .hasSize(2)
+                .containsExactly("foo-topic", "bar-topic");
     }
 
 }
