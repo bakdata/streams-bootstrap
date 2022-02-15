@@ -65,7 +65,7 @@ public class ComplexTopologyApplication extends KafkaStreamsApplication {
 
     @Override
     public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
     }
 
     @Override

@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -523,7 +524,7 @@ class StreamsCleanUpTest {
     }
 
     private KafkaStreamsApplication createWordCountPatternApplication() {
-        return this.setupApp(new WordCountPattern(), ".*_topic", "word_output", "word_error");
+        return this.setupApp(new WordCountPattern(), Pattern.compile(".*_topic"), "word_output", "word_error");
     }
 
     private KafkaStreamsApplication createMirrorValueApplication() {
@@ -545,8 +546,21 @@ class StreamsCleanUpTest {
 
     private <T extends KafkaStreamsApplication> T setupApp(final T application, final String inputTopicName,
             final String outputTopicName, final String errorTopicName) {
-        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(application, outputTopicName, errorTopicName);
         application.setInputTopics(List.of(inputTopicName));
+        return application;
+    }
+
+    private <T extends KafkaStreamsApplication> T setupApp(final T application, final Pattern inputPattern,
+            final String outputTopicName, final String errorTopicName) {
+        this.setupApp(application, outputTopicName, errorTopicName);
+        application.setInputPattern(inputPattern);
+        return application;
+    }
+
+    private <T extends KafkaStreamsApplication> void setupApp(final T application, final String outputTopicName,
+            final String errorTopicName) {
+        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         application.setOutputTopic(outputTopicName);
         application.setErrorTopic(errorTopicName);
         application.setBrokers(this.kafkaCluster.getBrokerList());
@@ -555,6 +569,5 @@ class StreamsCleanUpTest {
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        return application;
     }
 }

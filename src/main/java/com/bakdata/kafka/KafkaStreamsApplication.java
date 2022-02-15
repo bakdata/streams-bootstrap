@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -74,6 +75,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
+    @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
+    protected Pattern inputPattern;
     @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
     protected String errorTopic = "error_topic";
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
@@ -151,6 +154,14 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         return builder.build();
     }
 
+    /**
+     * Get first input topic.
+     *
+     * @return topic name
+     * @since 2.1.0
+     * @deprecated Use {@link #getInputTopics()}
+     */
+    @Deprecated
     public String getInputTopic() {
         if (this.getInputTopics().isEmpty() || this.getInputTopics().get(0).isBlank()) {
             throw new IllegalArgumentException("One input topic required");

@@ -38,13 +38,13 @@ import org.apache.kafka.streams.kstream.KStream;
 public class MirrorValueWithAvro extends KafkaStreamsApplication {
     @Override
     public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, TestRecord> input = builder.stream(this.getInputTopic());
+        final KStream<String, TestRecord> input = builder.stream(this.getInputTopics());
         input.to(this.getOutputTopic());
     }
 
     @Override
     public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + this.getInputTopic() + "-" + this.getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
     }
 
     @Override
