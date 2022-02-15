@@ -29,7 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,6 +120,16 @@ class TopologyInformationTest {
                         "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-pk",
                         "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-vh"
                 );
+    }
+
+    @Test
+    void shouldIgnorePatternTopics() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        final KStream<String, Object> stream = streamsBuilder.stream(Pattern.compile(".*"));
+        stream.to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getExternalSourceTopics())
+                .isEmpty();
     }
 
 }

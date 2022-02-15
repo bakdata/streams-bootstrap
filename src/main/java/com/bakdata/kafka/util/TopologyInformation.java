@@ -25,6 +25,7 @@
 package com.bakdata.kafka.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -68,8 +69,14 @@ public class TopologyInformation {
         return nodes.stream()
                 .filter(node -> node instanceof Source)
                 .map(node -> (Source) node)
-                .map(Source::topicSet)
+                .map(TopologyInformation::getAllSources)
                 .flatMap(Collection::stream);
+    }
+
+    private static Collection<String> getAllSources(final Source source) {
+        final Set<String> topicSet = source.topicSet();
+        //TODO handle topic patterns
+        return topicSet == null ? Collections.emptyList() : topicSet;
     }
 
     private static Stream<String> getAllSinks(final Collection<Node> nodes) {
