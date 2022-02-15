@@ -116,7 +116,7 @@ public class TopologyInformation {
     public List<String> getExternalSourceTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
-                .map(t -> t.resolveTopics(allTopics))
+                .map(subscription -> subscription.resolveTopics(allTopics))
                 .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
                 .filter(t -> !sinks.contains(t))
@@ -126,7 +126,7 @@ public class TopologyInformation {
     public List<String> getIntermediateTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
-                .map(t -> t.resolveTopics(allTopics))
+                .map(subscription -> subscription.resolveTopics(allTopics))
                 .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
                 .filter(sinks::contains)

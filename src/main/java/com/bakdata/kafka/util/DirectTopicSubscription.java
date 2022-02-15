@@ -29,7 +29,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DirectTopicSubscription implements TopicSubscription {
+class DirectTopicSubscription implements TopicSubscription {
     private final @NonNull Collection<String> topics;
 
     @Override

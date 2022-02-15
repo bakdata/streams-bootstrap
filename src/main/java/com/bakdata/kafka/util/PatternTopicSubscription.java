@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.lambda.Seq;
 
 @RequiredArgsConstructor
-public class PatternTopicSubscription implements TopicSubscription {
+class PatternTopicSubscription implements TopicSubscription {
     private final @NonNull Pattern pattern;
 
     @Override
