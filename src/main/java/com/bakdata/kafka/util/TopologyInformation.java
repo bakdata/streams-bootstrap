@@ -64,12 +64,17 @@ public class TopologyInformation {
                 .collect(Collectors.toList());
     }
 
-    private static Stream<String> getAllSources(final Collection<Node> nodes) {
+    private static Stream<TopicSubscription> getAllSources(final Collection<Node> nodes) {
         return nodes.stream()
                 .filter(node -> node instanceof Source)
                 .map(node -> (Source) node)
-                .map(Source::topicSet)
-                .flatMap(Collection::stream);
+                .map(TopologyInformation::getAllSources);
+    }
+
+    private static TopicSubscription getAllSources(final Source source) {
+        final Set<String> topicSet = source.topicSet();
+        return topicSet == null ? new PatternTopicSubscription(source.topicPattern())
+                : new DirectTopicSubscription(topicSet);
     }
 
     private static Stream<String> getAllSinks(final Collection<Node> nodes) {
@@ -108,17 +113,21 @@ public class TopologyInformation {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getExternalSourceTopics() {
+    public List<String> getExternalSourceTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
+                .map(subscription -> subscription.resolveTopics(allTopics))
+                .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
                 .filter(t -> !sinks.contains(t))
                 .collect(Collectors.toList());
     }
 
-    public List<String> getIntermediateTopics() {
+    public List<String> getIntermediateTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
+                .map(subscription -> subscription.resolveTopics(allTopics))
+                .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
                 .filter(sinks::contains)
                 .collect(Collectors.toList());

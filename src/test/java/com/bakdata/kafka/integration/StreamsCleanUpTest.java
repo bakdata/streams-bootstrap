@@ -35,6 +35,7 @@ import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
 import com.bakdata.kafka.test_applications.MirrorValueWithAvro;
 import com.bakdata.kafka.test_applications.WordCount;
+import com.bakdata.kafka.test_applications.WordCountPattern;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -317,6 +318,23 @@ class StreamsCleanUpTest {
     }
 
     @Test
+    void shouldReprocessAlreadySeenRecordsWithPattern() throws InterruptedException {
+        this.app = this.createWordCountPatternApplication();
+        this.kafkaCluster.send(SendValuesTransactional.inTransaction("input_topic",
+                Arrays.asList("a", "b")).useDefaults());
+        this.kafkaCluster.send(SendValuesTransactional.inTransaction("another_topic",
+                List.of("c")).useDefaults());
+
+        this.runAndAssertSize(3);
+        this.runAndAssertSize(3);
+
+        // Wait until all stream application are completely stopped before triggering cleanup
+        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        this.runCleanUp();
+        this.runAndAssertSize(6);
+    }
+
+    @Test
     void shouldDeleteValueSchema()
             throws InterruptedException, IOException, RestClientException {
         this.app = this.createMirrorValueApplication();
@@ -502,6 +520,10 @@ class StreamsCleanUpTest {
 
     private KafkaStreamsApplication createWordCountApplication() {
         return this.setupApp(new WordCount(), "word_input", "word_output", "word_error");
+    }
+
+    private KafkaStreamsApplication createWordCountPatternApplication() {
+        return this.setupApp(new WordCountPattern(), ".*_topic", "word_output", "word_error");
     }
 
     private KafkaStreamsApplication createMirrorValueApplication() {

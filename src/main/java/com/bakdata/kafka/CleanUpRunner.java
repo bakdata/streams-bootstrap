@@ -67,14 +67,13 @@ public final class CleanUpRunner {
     }
 
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final ImprovedAdminClient adminClient, final String appId) {
+            final Collection<String> allTopics, final ImprovedAdminClient adminClient, final String appId) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final File tempFile = createTemporaryPropertiesFile(appId, adminClient.getProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
                 .add("--bootstrap-servers", adminClient.getBootstrapServers())
                 .add("--config-file", tempFile.toString());
-        final Collection<String> allTopics = adminClient.getTopicClient().listTopics();
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
             argList.add("--input-topics", String.join(",", existingInputTopics));
@@ -89,19 +88,6 @@ public final class CleanUpRunner {
         if (returnCode != EXIT_CODE_SUCCESS) {
             throw new RuntimeException("Error running streams resetter. Exit code " + returnCode);
         }
-    }
-
-    private static Collection<String> filterExistingTopics(final Collection<String> topics,
-            final Collection<String> allTopics) {
-        return topics.stream()
-                .filter(topicName -> {
-                    final boolean exists = allTopics.contains(topicName);
-                    if (!exists) {
-                        log.warn("Not resetting missing topic {}", topicName);
-                    }
-                    return exists;
-                })
-                .collect(Collectors.toList());
     }
 
     static File createTemporaryPropertiesFile(final String appId, final Map<Object, Object> config) {
@@ -125,12 +111,27 @@ public final class CleanUpRunner {
         return parsedProperties;
     }
 
+    private static Collection<String> filterExistingTopics(final Collection<String> topics,
+            final Collection<String> allTopics) {
+        return topics.stream()
+                .filter(topicName -> {
+                    final boolean exists = allTopics.contains(topicName);
+                    if (!exists) {
+                        log.warn("Not resetting missing topic {}", topicName);
+                    }
+                    return exists;
+                })
+                .collect(Collectors.toList());
+    }
+
     public void run(final boolean deleteOutputTopic) {
-        final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics();
-        final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics();
-        runResetter(inputTopics, intermediateTopics, this.adminClient, this.appId);
+        final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+        final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics(allTopics);
+        final List<String> intermediateTopics = this.topologyInformation.getIntermediateTopics(allTopics);
+        runResetter(inputTopics, intermediateTopics, allTopics, this.adminClient, this.appId);
         // the StreamsResetter is responsible for deleting internal topics
-        this.topologyInformation.getInternalTopics().forEach(this.adminClient.getSchemaTopicClient()::resetSchemaRegistry);
+        this.topologyInformation.getInternalTopics()
+                .forEach(this.adminClient.getSchemaTopicClient()::resetSchemaRegistry);
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();
