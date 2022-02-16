@@ -1,2 +1,2 @@
 imagePullSecrets:
-    - name: regcred
+  - name: regcred
