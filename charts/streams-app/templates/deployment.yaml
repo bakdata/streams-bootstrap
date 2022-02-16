@@ -98,7 +98,7 @@ spec:
       {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-{{- toYaml .Values.imagePullSecrets | nindent 10 }}
+{{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}
