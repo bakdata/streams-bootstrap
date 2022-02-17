@@ -24,14 +24,17 @@
 
 package com.bakdata.kafka;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
+import java.util.regex.Pattern;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("System exit stops Kafka Streams running in sub-thread")
 class CliTest {
 
+    @Disabled("System exit stops Kafka Streams running in sub-thread")
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
@@ -51,12 +54,14 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--brokers", "dummy",
-                "--schema-registry-url", "dummy",
+                "--brokers", "brokers",
+                "--schema-registry-url", "schema-registry",
                 "--input-topics", "input",
-                "--output-topic", "output"});
+                "--output-topic", "output",
+        });
     }
 
+    @Disabled("System exit stops Kafka Streams running in sub-thread")
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCode() {
@@ -76,9 +81,58 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "dummy",
-                "--schema-registry-url", "dummy",
+                "--brokers", "brokers",
+                "--schema-registry-url", "schema-registry",
                 "--input-topics", "input",
-                "--output-topic", "output"});
+                "--output-topic", "output",
+        });
+    }
+
+    @Test
+    void shouldParseArguments() {
+        final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void run() {
+                //do nothing
+            }
+        };
+        KafkaStreamsApplication.startApplication(app, new String[]{
+                "--brokers", "brokers",
+                "--schema-registry-url", "schema-registry",
+                "--input-topics", "input1,input2",
+                "--extra-input-topics", "role1=input3,role2=input4",
+                "--input-pattern", ".*",
+                "--extra-input-patterns", "role1=.+,role2=\\d+",
+                "--output-topic", "output1",
+                "--extra-output-topics", "role1=output2,role2=output3",
+        });
+        assertThat(app.getInputTopics()).containsExactly("input1", "input2");
+        assertThat(app.getExtraInputTopics())
+                .hasSize(2)
+                .containsEntry("role1", "input3")
+                .containsEntry("role2", "input4");
+        assertThat(app.getInputPattern())
+                .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
+        assertThat(app.getExtraInputPatterns())
+                .hasSize(2)
+                .hasEntrySatisfying("role1",
+                        pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
+                .hasEntrySatisfying("role2",
+                        pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
+        assertThat(app.getOutputTopic()).isEqualTo("output1");
+        assertThat(app.getExtraOutputTopics())
+                .hasSize(2)
+                .containsEntry("role1", "output2")
+                .containsEntry("role2", "output3");
     }
 }
