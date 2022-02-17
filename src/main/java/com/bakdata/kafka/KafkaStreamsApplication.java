@@ -77,8 +77,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
     protected Pattern inputPattern;
-    @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
-    protected String errorTopic = "error_topic";
+    @CommandLine.Option(names = "--error-topic", description = "Error topic")
+    protected String errorTopic;
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
     protected Map<String, String> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional input patterns")

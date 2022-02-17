@@ -58,11 +58,11 @@ public abstract class KafkaApplication implements Runnable {
             System.getenv("ENV_PREFIX")).orElse("APP_");
     public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    protected String outputTopic = "";
+    protected String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
     protected Map<String, String> extraOutputTopics = new HashMap<>();
     @CommandLine.Option(names = "--brokers", required = true)
-    protected String brokers = "";
+    protected String brokers;
     @CommandLine.Option(names = "--debug", arity = "0..1")
     protected boolean debug = false;
     @CommandLine.Option(names = "--clean-up", arity = "0..1",
@@ -71,7 +71,7 @@ public abstract class KafkaApplication implements Runnable {
                     + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp = false;
     @CommandLine.Option(names = "--schema-registry-url", required = true)
-    private String schemaRegistryUrl = "";
+    private String schemaRegistryUrl;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested = false;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
