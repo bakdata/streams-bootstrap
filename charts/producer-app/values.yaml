@@ -4,6 +4,8 @@ image: producerApp
 imageTag: latest
 imagePullPolicy: Always
 
+imagePullSecrets: []
+
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
