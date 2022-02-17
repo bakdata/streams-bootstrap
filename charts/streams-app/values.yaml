@@ -27,7 +27,14 @@ streams:
 #  inputTopics:
 #  - input
 #  - input2
+  extraInputTopics: {}
+#   role: input
+#  inputPattern: .*-input
+  extraInputPatterns: {}
+#   role: .*-input
 #  outputTopic: output
+  extraOutputTopics: {}
+#   role: output
 #  errorTopic: error
 #  productive: true
 #

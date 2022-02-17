@@ -76,6 +76,10 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
               value: {{ .Values.streams.inputTopics | join "," | quote }}
             {{- end }}
+            {{- if hasKey .Values.streams "inputPattern" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_INPUT_PATTERN"
+              value: {{ .Values.streams.inputPattern | join "," | quote }}
+            {{- end }}
             {{- if hasKey .Values.streams "outputTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
               value: {{ .Values.streams.outputTopic | quote }}
@@ -91,6 +95,10 @@ spec:
             {{- if and (hasKey .Values.streams "extraInputTopics") (.Values.streams.extraInputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_TOPICS"
               value: "{{- range $key, $value := .Values.streams.extraInputTopics }}{{ $key }}={{ $value }},{{- end }}"
+            {{- end }}
+            {{- if and (hasKey .Values.streams "extraInputPatterns") (.Values.streams.extraInputPatterns) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_PATTERNS"
+              value: "{{- range $key, $value := .Values.streams.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
