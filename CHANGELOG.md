@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.1.0](https://github.com/bakdata/streams-bootstrap/tree/2.1.0) (2022-02-21)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.0.0...2.1.0)
+
+**Merged pull requests:**
+
+- Add input pattern config [\#132](https://github.com/bakdata/streams-bootstrap/pull/132) ([@philipp94831](https://github.com/philipp94831))
+- Add imagePullSecrets to streams\-app helm chart [\#133](https://github.com/bakdata/streams-bootstrap/pull/133) ([@raminqaf](https://github.com/raminqaf))
+- Fix clean for pattern subscriptions [\#131](https://github.com/bakdata/streams-bootstrap/pull/131) ([@philipp94831](https://github.com/philipp94831))
+- Add option for streams state persistence [\#130](https://github.com/bakdata/streams-bootstrap/pull/130) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.0.0](https://github.com/bakdata/streams-bootstrap/tree/2.0.0) (2022-01-13)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/1.9.3...2.0.0)
 
