@@ -45,7 +45,7 @@ class WordCountTest {
 
     @Test
     void shouldAggregateSameWordStream() {
-        this.testTopology.input().add("bla")
+        this.testTopology.input("Input").add("bla")
                 .add("blub")
                 .add("bla");
 

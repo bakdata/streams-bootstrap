@@ -58,7 +58,7 @@ public abstract class KafkaApplication implements Runnable {
             System.getenv("ENV_PREFIX")).orElse("APP_");
     public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    protected String outputTopic = "";
+    protected String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
     protected Map<String, String> extraOutputTopics = new HashMap<>();
     @CommandLine.Option(names = "--brokers", required = true)

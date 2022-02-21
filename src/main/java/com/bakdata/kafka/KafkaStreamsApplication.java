@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -74,10 +75,14 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
-    @CommandLine.Option(names = "--error-topic", description = "Error topic (default: ${DEFAULT-VALUE}")
-    protected String errorTopic = "error_topic";
+    @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
+    protected Pattern inputPattern;
+    @CommandLine.Option(names = "--error-topic", description = "Error topic")
+    protected String errorTopic;
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
     protected Map<String, String> extraInputTopics = new HashMap<>();
+    @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional input patterns")
+    protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
     @CommandLine.Option(names = "--productive", arity = "1")
     private boolean productive = true;
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
@@ -151,6 +156,14 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         return builder.build();
     }
 
+    /**
+     * Get first input topic.
+     *
+     * @return topic name
+     * @since 2.1.0
+     * @deprecated Use {@link #getInputTopics()}
+     */
+    @Deprecated
     public String getInputTopic() {
         if (this.getInputTopics().isEmpty() || this.getInputTopics().get(0).isBlank()) {
             throw new IllegalArgumentException("One input topic required");
@@ -168,6 +181,18 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         final String topic = this.extraInputTopics.get(role);
         Preconditions.checkNotNull(topic, "No input topic for role '%s' available", role);
         return topic;
+    }
+
+    /**
+     * Get extra input pattern for a specified role
+     *
+     * @param role role of input pattern specified in CLI argument
+     * @return topic pattern
+     */
+    protected Pattern getInputPattern(final String role) {
+        final Pattern pattern = this.extraInputPatterns.get(role);
+        Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
+        return pattern;
     }
 
     /**
