@@ -95,7 +95,7 @@ The following configuration options are available (can be passed per arguments o
 
 - `extra-input-topics`: Additional input topics (`<String=String>[,<String=String>...]`)
 
-- `extra-input-pattern`: Additional input patterns (`<String=String>[,<String=String>...]`)
+- `extra-input-patterns`: Additional input patterns (`<String=String>[,<String=String>...]`)
 
 - `extra-output-topics`: Additional output topics (`String=String>[,<String=String>...]`)
  
