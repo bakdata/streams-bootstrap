@@ -6,6 +6,8 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
+imagePullSecrets: []
+
 configurationEnvPrefix: "APP"
 
 resources:
