@@ -85,13 +85,17 @@ The following configuration options are available (can be passed per arguments o
 
 - `input-topics`: List of input topics (comma-separated)
 
+- `input-pattern`: Pattern of input topics
+
 - `output-topic`: The output topic
 
-- `error-topic`: A topic to write errors to (default: `error_topic`)
+- `error-topic`: A topic to write errors to
 
 - `streams-config`: Additional Kafka properties (`<String=String>[,<String=String>...]`)
 
 - `extra-input-topics`: Additional input topics (`<String=String>[,<String=String>...]`)
+
+- `extra-input-pattern`: Additional input patterns (`<String=String>[,<String=String>...]`)
 
 - `extra-output-topics`: Additional output topics (`String=String>[,<String=String>...]`)
  
