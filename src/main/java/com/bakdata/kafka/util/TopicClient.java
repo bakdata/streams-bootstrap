@@ -111,6 +111,9 @@ public final class TopicClient implements Closeable {
         } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
         }
+        if (this.exists(topicName)) {
+            throw new IllegalStateException("Deletion of topic " + topicName + "failed");
+        }
     }
 
     /**
