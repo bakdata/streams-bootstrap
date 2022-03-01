@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.util;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collection;
@@ -112,7 +112,7 @@ public final class TopicClient implements Closeable {
         } catch (final ExecutionException | TimeoutException ex) {
             throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
         }
-        Preconditions.checkState(!this.exists(topicName), "Deletion of topic %s failed", topicName);
+        Verify.verify(!this.exists(topicName), "Deletion of topic %s failed", topicName);
     }
 
     /**
