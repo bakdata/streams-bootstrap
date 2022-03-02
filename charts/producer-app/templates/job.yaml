@@ -25,7 +25,9 @@ spec:
     spec:
       template:
 {{ include "producer-app.podTemplate" . | indent 8 }}
+      backoffLimit: {{ .Values.backoffLimit }}
   {{ else }}
   template:
 {{ include "producer-app.podTemplate" . | indent 4 }}
+  backoffLimit: {{ .Values.backoffLimit }}
   {{- end -}}
