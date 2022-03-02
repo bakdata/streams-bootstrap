@@ -19,7 +19,8 @@ spec:
   {{- if .Values.schedule }}
   suspend: {{ .Values.suspend }}
   schedule: {{ quote .Values.schedule }}
-  successfulJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: {{ .Values.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
   concurrencyPolicy: Replace
   jobTemplate:
     spec:

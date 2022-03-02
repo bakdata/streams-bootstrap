@@ -79,3 +79,7 @@ javaOptions:
   maxRAMPercentage: 75
   others: []
 #   - "-XX:MinRAMPercentage=50.0"
+
+successfulJobsHistoryLimit: 1
+failedJobsHistoryLimit: 1
+backoffLimit: 6
