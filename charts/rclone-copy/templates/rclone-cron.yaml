@@ -12,7 +12,8 @@ metadata:
 spec:
   suspend: {{ .Values.suspend }}
   schedule: "{{ .Values.schedule }}"
-  successfulJobsHistoryLimit: 1 
+  successfulJobsHistoryLimit: {{ .Values.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
@@ -73,4 +74,5 @@ spec:
             - name: config
               configMap:
                 name: rclone-config-{{ .Release.Name }}
+      backoffLimit: {{ .Values.backoffLimit }}
 
