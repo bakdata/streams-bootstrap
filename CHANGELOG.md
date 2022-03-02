@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) (2022-03-02)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1)
+
+**Closed issues:**
+
+- Clean up should check if topic deletion was successful [\#134](https://github.com/bakdata/streams-bootstrap/issues/134)
+
+**Merged pull requests:**
+
+- Add more configurations to jobs and cron jobs [\#136](https://github.com/bakdata/streams-bootstrap/pull/136) ([@philipp94831](https://github.com/philipp94831))
+- Verify deletion of topics [\#135](https://github.com/bakdata/streams-bootstrap/pull/135) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.1.0](https://github.com/bakdata/streams-bootstrap/tree/2.1.0) (2022-02-21)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.0.0...2.1.0)
 
