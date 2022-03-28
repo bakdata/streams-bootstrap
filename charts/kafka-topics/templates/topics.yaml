@@ -1,0 +1,19 @@
+{{- $root := . -}}
+{{- range .Values.topics }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: {{ .name }}
+  {{- if $root.Values.namespace }}
+  namespace: {{ $root.Values.namespace }}
+  {{- end }}
+  labels:
+    strimzi.io/cluster: {{ $root.Values.strimziCluster }}
+    {{- range $key, $value := $root.Values.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+    {{ include "kafka-topics.labels" $ | nindent 4 }}
+spec:
+  {{- toYaml .spec | nindent 2 }}
+---
+{{- end }}

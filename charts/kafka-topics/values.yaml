@@ -1,0 +1,25 @@
+# Default values for kafka-topics.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: kafka-topics
+# Optional define namespace for topics
+# namespace: example-namespace
+
+
+strimziCluster: example-cluster
+
+# Labels for  all topics
+labels: {}
+
+# define your topics here, you can find an example for specs here: https://github.com/strimzi/strimzi-kafka-operator/blob/0.28.0/examples/topic/kafka-topic.yaml
+topics:
+  # - name: example-topic
+  #   spec:
+  #     partitions: 1
+  #     replicas: 1
+  # - name: another-topic
+  #   spec:
+  #     config:
+  #       retention.ms: 7200000
+  #       segment.bytes: 1073741824
