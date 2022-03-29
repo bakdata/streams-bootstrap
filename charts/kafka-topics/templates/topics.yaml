@@ -21,5 +21,9 @@ spec:
   {{- if and (not .spec.replicas) ($root.Values.replicas) }}
   replicas: {{ $root.Values.replicas }}
   {{- end }}
+   {{- if and (not .spec.config) ($root.Values.config) }}
+  config: 
+    {{- toYaml $root.Values.config | nindent 4}}
+  {{- end }}
 ---
 {{- end }}
