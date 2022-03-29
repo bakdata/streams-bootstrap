@@ -12,14 +12,18 @@ strimziCluster: example-cluster
 # Labels for  all topics
 labels: {}
 
+# Default topic config for all topics defined in topics list. You can override the values in the respective topic specs
+# partitions: 1
+# replicas: 1
+
 # define your topics here, you can find an example for specs here: https://github.com/strimzi/strimzi-kafka-operator/blob/0.28.0/examples/topic/kafka-topic.yaml
 topics:
-  # - name: example-topic
-  #   spec:
-  #     partitions: 1
-  #     replicas: 1
-  # - name: another-topic
-  #   spec:
-  #     config:
-  #       retention.ms: 7200000
-  #       segment.bytes: 1073741824
+  - name: example-topic
+    spec:
+      partitions: 1
+      replicas: 1
+  - name: another-topic
+    spec:
+      config:
+        retention.ms: 7200000
+        segment.bytes: 1073741824

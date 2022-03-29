@@ -15,5 +15,11 @@ metadata:
     {{ include "kafka-topics.labels" $ | nindent 4 }}
 spec:
   {{- toYaml .spec | nindent 2 }}
+  {{- if and (not .spec.partitions) ($root.Values.partitions) }}
+  partitions: {{ $root.Values.partitions }}
+  {{- end }}
+  {{- if and (not .spec.replicas) ($root.Values.replicas) }}
+  replicas: {{ $root.Values.replicas }}
+  {{- end }}
 ---
 {{- end }}
