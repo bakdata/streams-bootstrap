@@ -1,0 +1,32 @@
+# Default values for kafka-topics.
+
+nameOverride: kafka-topics
+# Optional define namespace for topics
+# namespace: example-namespace
+
+
+strimziCluster: example-cluster
+
+# Labels for  all topics
+labels: {}
+
+# Default topic config for all topics defined in topics list. You can override the values in the respective topic specs
+# You must define the number of partitions and replicas here OR in the topic spec. Without defining the number of partitions and replicas, the strimzi topic operator will not create the topic in Kafka
+# partitions: 1
+# replicas: 1
+# the configs here are merge with the topic specific confis defined below. The topic specific config will override the configs here if there duplicate keys
+  # config:
+  #   retention.ms: 10000000
+
+# define your topics here, you can find an example for specs here: https://github.com/strimzi/strimzi-kafka-operator/blob/0.28.0/examples/topic/kafka-topic.yaml
+topics:
+  # - name: example-topic
+  #   spec:
+  #     partitions: 1
+  #     replicas: 1
+  # - name: another-topic
+  #   spec:
+  #     config:
+  #       retention.ms: 7200000
+  #       segment.bytes: 1073741824
+  # - name: third-topic

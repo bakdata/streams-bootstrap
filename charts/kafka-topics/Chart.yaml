@@ -1,0 +1,5 @@
+apiVersion: v2
+name: kafka-topics
+description: A Helm Chart to create Kafka Topics utilizing the Strimzi Topic Operator
+type: application
+version: 0.1.0
