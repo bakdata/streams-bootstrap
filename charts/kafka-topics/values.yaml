@@ -11,6 +11,7 @@ strimziCluster: example-cluster
 labels: {}
 
 # Default topic config for all topics defined in topics list. You can override the values in the respective topic specs
+# You must define the number of partitions and replicas here OR in the topic spec. Without defining the number of partitions and replicas, the strimzi topic operator will not create the topic in Kafka
 # partitions: 1
 # replicas: 1
 # the configs here are merge with the topic specific confis defined below. The topic specific config will override the configs here if there duplicate keys
