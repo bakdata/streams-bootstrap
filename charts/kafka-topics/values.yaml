@@ -11,8 +11,8 @@ strimziCluster: example-cluster
 labels: {}
 
 # Default topic config for all topics defined in topics list. You can override the values in the respective topic specs
-  # partitions: 1
-  # replicas: 1
+# partitions: 1
+# replicas: 1
 # the configs here are merge with the topic specific confis defined below. The topic specific config will override the configs here if there duplicate keys
   # config:
   #   retention.ms: 10000000
@@ -28,3 +28,4 @@ topics:
   #     config:
   #       retention.ms: 7200000
   #       segment.bytes: 1073741824
+  # - name: third-topic

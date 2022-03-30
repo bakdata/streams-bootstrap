@@ -14,18 +14,21 @@ metadata:
     {{- end }}
     {{ include "kafka-topics.labels" $ | nindent 4 }}
 spec:
-  {{- range $key, $val := .spec -}}
+  {{- range $key, $val := (.spec) -}}
   {{- if not (eq $key "config") }} # ignore config key because we merge it later
   {{ $key }}: {{ $val}}
   {{- end }}
   {{- end }}
-  {{- if and (not .spec.partitions) ($root.Values.partitions) }}
+  {{- if and (not (.spec).partitions) ($root.Values.partitions) }}
   partitions: {{ $root.Values.partitions }}
   {{- end }}
-  {{- if and (not .spec.replicas) ($root.Values.replicas) }}
+  {{- if and (not (.spec).replicas) ($root.Values.replicas) }}
   replicas: {{ $root.Values.replicas }}
   {{- end }}
-  config: 
-    {{- merge (.spec.config | default dict) ($root.Values.config | default dict) | toYaml | nindent 4}}
+  {{- $config := merge ((.spec).config | default dict) ($root.Values.config | default dict) }}
+  {{- if $config }}
+  config:
+    {{ $config | toYaml | nindent 4 }} 
+  {{- end}}
 ---
 {{- end }}
