@@ -27,3 +27,14 @@ Create chart name and version as used by the chart label.
 {{- define "rclone-copy.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Return the appropriate apiVersion for CronJob
+*/}}
+{{- define "rclone-copy.cronjob.apiVersion" -}}
+{{- if semverCompare "<1.21-0" .Capabilities.KubeVersion.Version -}}
+{{- print "batch/v1beta1" -}}
+{{- else -}}
+{{- print "batch/v1" -}}
+{{- end -}}
+{{- end -}}

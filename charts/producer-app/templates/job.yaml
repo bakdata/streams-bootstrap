@@ -1,6 +1,6 @@
 {{- $root := . -}}
   {{- if .Values.schedule -}}
-apiVersion: batch/v1
+apiVersion: {{ include "producer-app.cronjob.apiVersion" . }}
 kind: CronJob
   {{- else -}}
 apiVersion: batch/v1

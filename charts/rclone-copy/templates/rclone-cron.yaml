@@ -1,4 +1,4 @@
-apiVersion: batch/v1
+apiVersion: {{ include "rclone-copy.cronjob.apiVersion" . }}
 kind: CronJob
 metadata:
   name: {{ template "rclone-copy.fullname" . }}
