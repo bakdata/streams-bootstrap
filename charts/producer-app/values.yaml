@@ -83,3 +83,4 @@ javaOptions:
 successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
 backoffLimit: 6
+ttlSecondsAfterFinished: 100

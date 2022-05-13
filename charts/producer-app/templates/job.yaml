@@ -28,10 +28,12 @@ spec:
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
       template:
 {{ include "producer-app.podTemplate" . | indent 8 }}
       backoffLimit: {{ .Values.backoffLimit }}
   {{ else }}
+  ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
   template:
 {{ include "producer-app.podTemplate" . | indent 4 }}
   backoffLimit: {{ .Values.backoffLimit }}
