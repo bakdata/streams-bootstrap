@@ -32,7 +32,7 @@ spec:
 {{ include "producer-app.podTemplate" . | indent 8 }}
       backoffLimit: {{ .Values.backoffLimit }}
   {{ else }}
-  {{- if .Values.ttlSecondsAfterFinished }}
+  {{- if hasKey .Values "ttlSecondsAfterFinished" }}
   ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
   {{- end -}}
   template:
