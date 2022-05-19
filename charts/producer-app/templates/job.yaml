@@ -30,7 +30,7 @@ spec:
     spec:
       {{- if .Values.ttlSecondsAfterFinished }}
       ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
-      {{- end -}}
+      {{- end }}
       template:
 {{ include "producer-app.podTemplate" . | indent 8 }}
       backoffLimit: {{ .Values.backoffLimit }}
