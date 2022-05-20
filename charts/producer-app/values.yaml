@@ -10,8 +10,8 @@ restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
-# Optional: Cron schedule for this producer job. Default is at 12:00 every day.
-schedule: "0 12 * * *"
+# Optional: Cron schedule for this producer job
+# schedule: "0 12 * * *"
 
 suspend: false
 
@@ -83,3 +83,4 @@ javaOptions:
 successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
 backoffLimit: 6
+#ttlSecondsAfterFinished: 100
