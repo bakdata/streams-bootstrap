@@ -1,6 +1,12 @@
 # streams-app helm chart
 
+This chart can be used to deploy a Kafka Streams app developed using streams-bootstrap.
+
 ## Configuration
+
+You can specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart.
 
 ### Deployment
 
