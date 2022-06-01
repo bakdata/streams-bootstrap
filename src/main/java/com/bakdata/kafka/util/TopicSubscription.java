@@ -32,5 +32,11 @@ import java.util.Collection;
 @FunctionalInterface
 interface TopicSubscription {
 
+    /**
+     * Resolve the topics of the subscription
+     *
+     * @param allTopics list of all topics that exists in the Kafka cluster
+     * @return topics subscribed to
+     */
     Collection<String> resolveTopics(Collection<String> allTopics);
 }

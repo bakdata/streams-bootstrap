@@ -136,6 +136,7 @@ public class TopologyInformation {
     /**
      * Retrieve all source topics associated with this topology that are not auto-created by Kafka Streams
      *
+     * @param allTopics list of all topics that exists in the Kafka cluster
      * @return list of external source topics
      */
     public List<String> getExternalSourceTopics(final Collection<String> allTopics) {
@@ -152,6 +153,7 @@ public class TopologyInformation {
      * Retrieve all intermediate topics, i.e., topics that are both consumed and produced to/from, associated with this
      * topology that are not auto-created by Kafka Streams
      *
+     * @param allTopics list of all topics that exists in the Kafka cluster
      * @return list of intermediate topics
      */
     public List<String> getIntermediateTopics(final Collection<String> allTopics) {

@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,11 @@ public final class CleanUpRunner {
         final String[] args = argList.build().toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
         final int returnCode = resetter.run(args);
-        tempFile.delete();
+        try {
+            Files.delete(tempFile.toPath());
+        } catch (final IOException e) {
+            log.warn("Error deleting temporary property file", e);
+        }
         if (returnCode != EXIT_CODE_SUCCESS) {
             throw new CleanUpException("Error running streams resetter. Exit code " + returnCode);
         }
