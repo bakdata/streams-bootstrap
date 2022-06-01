@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,15 @@
 
 package com.bakdata.kafka;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Parse configuration properties of a Kafka Streams app from environment variables
+ */
 public final class EnvironmentStreamsConfigParser {
 
     static final String PREFIX = "STREAMS_";
@@ -39,6 +43,13 @@ public final class EnvironmentStreamsConfigParser {
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Parse a list of environment variables as a streams configuration. All variables starting with {@code STREAMS_}
+     * prefix are converted. {@code _} are replaced by {@code .}
+     *
+     * @param environment map of environment variables
+     * @return parsed streams configuration
+     */
     public static Map<String, String> parseVariables(final Map<String, String> environment) {
         return environment.entrySet().stream()
                 .filter(e -> e.getKey().startsWith(PREFIX))
@@ -49,7 +60,7 @@ public final class EnvironmentStreamsConfigParser {
         final String key = environmentEntry.getKey();
         final String withoutPrefix = PREFIX_PATTERN.matcher(key).replaceAll("");
         return UNDERSCORE.matcher(withoutPrefix).replaceAll(".")
-                .toLowerCase();
+                .toLowerCase(Locale.getDefault());
     }
 
 }

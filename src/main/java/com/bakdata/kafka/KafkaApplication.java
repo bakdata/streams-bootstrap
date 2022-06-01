@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,8 +44,8 @@ import picocli.CommandLine;
 /**
  * <p>The base class of the entry point of the Kafka application.</p>
  * This class provides common configuration options, e.g., {@link #brokers}, for Kafka applications. Hereby it
- * automatically populates the passed in command line arguments with matching environment arguments {@link
- * EnvironmentArgumentsParser}. To implement your Kafka application inherit from this class and add your custom
+ * automatically populates the passed in command line arguments with matching environment arguments
+ * {@link EnvironmentArgumentsParser}. To implement your Kafka application inherit from this class and add your custom
  * options.
  */
 @ToString
@@ -54,9 +54,9 @@ import picocli.CommandLine;
 @RequiredArgsConstructor
 public abstract class KafkaApplication implements Runnable {
     public static final int RESET_SLEEP_MS = 5000;
+    public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
-    public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
@@ -64,16 +64,16 @@ public abstract class KafkaApplication implements Runnable {
     @CommandLine.Option(names = "--brokers", required = true)
     protected String brokers = "";
     @CommandLine.Option(names = "--debug", arity = "0..1")
-    protected boolean debug = false;
+    protected boolean debug;
     @CommandLine.Option(names = "--clean-up", arity = "0..1",
             description = "Clear the state store and the global Kafka offsets for the "
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
-    protected boolean cleanUp = false;
+    protected boolean cleanUp;
     @CommandLine.Option(names = "--schema-registry-url", required = true)
     private String schemaRegistryUrl = "";
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
-    private boolean helpRequested = false;
+    private boolean helpRequested;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> streamsConfig = new HashMap<>();
@@ -118,6 +118,11 @@ public abstract class KafkaApplication implements Runnable {
         return topic;
     }
 
+    /**
+     * Create an admin client for the configured Kafka cluster
+     *
+     * @return admin client
+     */
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.builder()
                 .properties(this.createKafkaProperties())

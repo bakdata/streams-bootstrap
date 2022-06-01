@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package com.bakdata.kafka.util;
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.TestRecord;
@@ -98,7 +99,7 @@ class SchemaTopicClientTest {
             schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
         }
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is deleted")
                 .isFalse();

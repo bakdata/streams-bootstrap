@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,6 +48,9 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 
 
+/**
+ * Clean up the state and artifacts of your Kafka Streams app
+ */
 @Slf4j
 public final class CleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
@@ -66,6 +69,16 @@ public final class CleanUpRunner {
         this.topologyInformation = new TopologyInformation(topology, appId);
     }
 
+    /**
+     * Run the <a href="https://docs.confluent.io/platform/current/streams/developer-guide/app-reset-tool.html">Kafka
+     * Streams Reset Tool</a>
+     *
+     * @param inputTopics list of input topics of the streams app
+     * @param intermediateTopics list of intermediate topics of the streams app
+     * @param allTopics list of all topics that exists in the Kafka cluster
+     * @param adminClient admin client to use for resetting the streams app
+     * @param appId unique app id of the streams app
+     */
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
             final Collection<String> allTopics, final ImprovedAdminClient adminClient, final String appId) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
@@ -85,8 +98,9 @@ public final class CleanUpRunner {
         final String[] args = argList.build().toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
         final int returnCode = resetter.run(args);
+        tempFile.delete();
         if (returnCode != EXIT_CODE_SUCCESS) {
-            throw new RuntimeException("Error running streams resetter. Exit code " + returnCode);
+            throw new CleanUpException("Error running streams resetter. Exit code " + returnCode);
         }
     }
 
@@ -95,13 +109,12 @@ public final class CleanUpRunner {
         final Properties parsedProperties = toStringBasedProperties(config);
         try {
             final File tempFile = File.createTempFile(appId + "-reset", "temp");
-            tempFile.deleteOnExit();
             try (final FileOutputStream out = new FileOutputStream(tempFile)) {
                 parsedProperties.store(out, "");
             }
             return tempFile;
         } catch (final IOException e) {
-            throw new RuntimeException("Could not run StreamsResetter", e);
+            throw new CleanUpException("Could not run StreamsResetter", e);
         }
     }
 
@@ -124,6 +137,12 @@ public final class CleanUpRunner {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Clean up your Streams app by resetting the app, deleting local state and optionally deleting the output topics
+     * and consumer group
+     *
+     * @param deleteOutputTopic whether to delete output topics and consumer group
+     */
     public void run(final boolean deleteOutputTopic) {
         final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
         final List<String> inputTopics = this.topologyInformation.getExternalSourceTopics(allTopics);
@@ -141,10 +160,13 @@ public final class CleanUpRunner {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Error waiting for clean up", e);
+            throw new CleanUpException("Error waiting for clean up", e);
         }
     }
 
+    /**
+     * Delete output topics
+     */
     public void deleteTopics() {
         final SchemaTopicClient schemaTopicClient = this.adminClient.getSchemaTopicClient();
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();

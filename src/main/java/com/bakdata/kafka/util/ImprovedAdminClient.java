@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,9 @@ import lombok.NonNull;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
+/**
+ * Provide methods for common operations when performing administrative actions on a Kafka cluster
+ */
 public final class ImprovedAdminClient implements Closeable {
 
     @Getter
@@ -52,7 +55,7 @@ public final class ImprovedAdminClient implements Closeable {
             @NonNull final String schemaRegistryUrl, @NonNull final Duration timeout) {
         Preconditions.checkNotNull(properties.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),
                 "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
-        this.properties = properties;
+        this.properties = new Properties(properties);
         this.adminClient = AdminClient.create(properties);
         this.schemaRegistryClient = createSchemaRegistryClient(properties, schemaRegistryUrl);
         this.timeout = timeout;

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,9 @@ package com.bakdata.kafka.integration;
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static net.mguenther.kafka.junit.Wait.delay;
 
+import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.test_applications.CloseFlagApp;
@@ -39,6 +41,7 @@ import com.bakdata.kafka.test_applications.WordCountPattern;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import java.io.IOException;
 import java.util.Arrays;
@@ -89,7 +92,7 @@ class StreamsCleanUpTest {
     void setup() throws InterruptedException {
         this.kafkaCluster = provisionWith(defaultClusterConfig());
         this.kafkaCluster.start();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     @AfterEach
@@ -100,7 +103,7 @@ class StreamsCleanUpTest {
             this.app = null;
         }
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.kafkaCluster.stop();
     }
 
@@ -111,7 +114,7 @@ class StreamsCleanUpTest {
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         final List<KeyValue<String, Long>> expectedValues =
                 List.of(new KeyValue<>("blub", 1L),
@@ -121,7 +124,7 @@ class StreamsCleanUpTest {
 
         this.runAndAssertContent(expectedValues, "WordCount contains all elements after first run");
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
 
         this.softly.assertThat(this.kafkaCluster.exists(this.app.getOutputTopic()))
@@ -140,7 +143,7 @@ class StreamsCleanUpTest {
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         final List<KeyValue<String, Long>> expectedValues =
                 List.of(new KeyValue<>("blub", 1L),
@@ -159,7 +162,7 @@ class StreamsCleanUpTest {
             throw new RuntimeException("Error retrieving consumer groups", e);
         }
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
@@ -179,7 +182,7 @@ class StreamsCleanUpTest {
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         final List<KeyValue<String, Long>> expectedValues =
                 List.of(new KeyValue<>("blub", 1L),
@@ -198,7 +201,7 @@ class StreamsCleanUpTest {
             throw new RuntimeException("Error retrieving consumer groups", e);
         }
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
             adminClient.deleteConsumerGroups(List.of(this.app.getUniqueAppId())).all()
@@ -227,7 +230,8 @@ class StreamsCleanUpTest {
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                 .build();
@@ -240,7 +244,7 @@ class StreamsCleanUpTest {
         this.softly.assertThat(this.kafkaCluster.exists(backingTopic)).isTrue();
         this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUp();
 
         this.softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
@@ -260,7 +264,8 @@ class StreamsCleanUpTest {
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                 .build();
@@ -270,7 +275,7 @@ class StreamsCleanUpTest {
 
         this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
 
         this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isFalse();
@@ -283,7 +288,7 @@ class StreamsCleanUpTest {
                 .inTransaction(this.app.getInputTopic(), List.of("blub", "bla", "blub"))
                 .useDefaults();
         this.kafkaCluster.send(sendRequest);
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         final List<KeyValue<String, Long>> expectedValues = List.of(
                 new KeyValue<>("blub", 1L),
@@ -292,7 +297,7 @@ class StreamsCleanUpTest {
         );
 
         this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run");
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUp();
 
         final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
@@ -313,7 +318,7 @@ class StreamsCleanUpTest {
         this.runAndAssertSize(3);
 
         // Wait until all stream application are completely stopped before triggering cleanup
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUp();
         this.runAndAssertSize(6);
     }
@@ -330,7 +335,7 @@ class StreamsCleanUpTest {
         this.runAndAssertSize(3);
 
         // Wait until all stream application are completely stopped before triggering cleanup
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUp();
         this.runAndAssertSize(6);
     }
@@ -343,13 +348,14 @@ class StreamsCleanUpTest {
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(testRecord))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                 .build();
 
         this.kafkaCluster.send(sendRequest);
         this.runApp();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-value", this.app.getInputTopic() + "-value");
         this.runCleanUpWithDeletion();
@@ -366,13 +372,14 @@ class StreamsCleanUpTest {
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<TestRecord, String> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>(testRecord, "val")))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                 .build();
 
         this.kafkaCluster.send(sendRequest);
         this.runApp();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-key", this.app.getInputTopic() + "-key");
         this.runCleanUpWithDeletion();
@@ -397,14 +404,15 @@ class StreamsCleanUpTest {
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                 .build();
 
         this.kafkaCluster.send(sendRequest);
         this.runApp();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects())
                 .contains(inputSubject, internalSubject, backingSubject, manualSubject);
 
@@ -427,14 +435,15 @@ class StreamsCleanUpTest {
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
         final SendKeyValuesTransactional<String, TestRecord> sendRequest = SendKeyValuesTransactional
                 .inTransaction(this.app.getInputTopic(), Collections.singletonList(new KeyValue<>("key 1", testRecord)))
-                .with("schema.registry.url", this.schemaRegistryMockExtension.getUrl())
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                 .build();
 
         this.kafkaCluster.send(sendRequest);
         this.runApp();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects()).contains(manualSubject);
         this.runCleanUpWithDeletion();
         this.softly.assertThat(client.getAllSubjects()).doesNotContain(manualSubject);
@@ -445,11 +454,11 @@ class StreamsCleanUpTest {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
         this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         // if we don't run the app, the coordinator will be unavailable
         this.runApp();
         closeApplication.setClosed(false);
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
         this.softly.assertThat(closeApplication.isClosed()).isTrue();
     }
@@ -459,18 +468,18 @@ class StreamsCleanUpTest {
         this.app = this.createMirrorKeyApplication();
         // if we don't run the app, the coordinator will be unavailable
         this.runApp();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
-        this.runCleanUpWithDeletion();
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.softly.assertThatCode(this::runCleanUpWithDeletion).doesNotThrowAnyException();
     }
 
     @Test
     void shouldThrowExceptionOnResetterError() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
         this.app.run();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         //should throw exception because consumer group is still active
         this.softly.assertThatThrownBy(this::runCleanUpWithDeletion)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(CleanUpException.class)
                 .hasMessageContaining("Error running streams resetter. Exit code 1");
         this.app.close();
     }
@@ -514,7 +523,7 @@ class StreamsCleanUpTest {
     private void runApp() throws InterruptedException {
         this.app.run();
         // Wait until stream application has consumed all data
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
 
     }

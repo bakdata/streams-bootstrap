@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,6 +67,7 @@ import picocli.CommandLine;
 @RequiredArgsConstructor
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
+    private static final int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
     /**
      * This variable is usually set on application start. When the application is running in debug mode it is used to
      * reconfigure the child app package logger. On default, it points to the package of this class allowing to execute
@@ -87,7 +88,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private boolean productive = true;
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
             description = "Delete the output topic during the clean up.")
-    private boolean deleteOutputTopic = false;
+    private boolean deleteOutputTopic;
     private KafkaStreams streams;
 
     /**
@@ -142,6 +143,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         this.closeResources();
     }
 
+    /**
+     * Build the Kafka Streams topology to be run by the app
+     *
+     * @param builder builder to use for building the topology
+     */
     public abstract void buildTopology(StreamsBuilder builder);
 
     /**
@@ -150,6 +156,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      */
     public abstract String getUniqueAppId();
 
+    /**
+     * Create the topology of the Kafka Streams app
+     *
+     * @return topology of the Kafka Streams app
+     */
     public Topology createTopology() {
         final StreamsBuilder builder = new StreamsBuilder();
         this.buildTopology(builder);
@@ -160,10 +171,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * Get first input topic.
      *
      * @return topic name
-     * @since 2.1.0
      * @deprecated Use {@link #getInputTopics()}
      */
-    @Deprecated
+    @Deprecated(since = "2.1.0")
     public String getInputTopic() {
         if (this.getInputTopics().isEmpty() || this.getInputTopics().get(0).isBlank()) {
             throw new IllegalArgumentException("One input topic required");
@@ -196,8 +206,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if {@code
-     * Optional.empty()} is returned.
+     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if
+     * {@code Optional.empty()} is returned.
      *
      * @return {@code Optional.empty()} by default.
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
@@ -231,7 +241,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
         // resilience
         if (this.productive) {
-            kafkaConfig.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);
+            kafkaConfig.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, DEFAULT_PRODUCTIVE_REPLICATION_FACTOR);
         }
 
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");

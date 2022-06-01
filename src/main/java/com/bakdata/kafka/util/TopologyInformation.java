@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,17 +41,27 @@ import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.jooq.lambda.Seq;
 
+/**
+ * Representation of the nodes of a Kafka Streams topology
+ */
 public class TopologyInformation {
     private static final String CHANGELOG_SUFFIX = "-changelog";
     private static final String REPARTITION_SUFFIX = "-repartition";
     /**
-     * See {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey(KTable, Function,
-     * ValueJoiner, Named, Materialized, boolean)}
+     * See
+     * {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey(KTable, Function, ValueJoiner,
+     * Named, Materialized, boolean)}
      */
     private static final Collection<String> PSEUDO_TOPIC_SUFFIXES = Set.of("-pk", "-fk", "-vh");
     private final String streamsId;
     private final Collection<Node> nodes;
 
+    /**
+     * Create a new TopologyInformation of a topology and the unique app id
+     *
+     * @param topology topology to extract nodes from
+     * @param streamsId unique app id to represent auto-created topics
+     */
     public TopologyInformation(final Topology topology, final String streamsId) {
         this.nodes = getNodes(topology);
         this.streamsId = streamsId;
@@ -66,8 +76,8 @@ public class TopologyInformation {
 
     private static Stream<TopicSubscription> getAllSources(final Collection<Node> nodes) {
         return nodes.stream()
-                .filter(node -> node instanceof Source)
-                .map(node -> (Source) node)
+                .filter(Source.class::isInstance)
+                .map(Source.class::cast)
                 .map(TopologyInformation::getAllSources);
     }
 
@@ -79,15 +89,15 @@ public class TopologyInformation {
 
     private static Stream<String> getAllSinks(final Collection<Node> nodes) {
         return nodes.stream()
-                .filter(node -> node instanceof Sink)
-                .map(node -> ((Sink) node))
+                .filter(Sink.class::isInstance)
+                .map(Sink.class::cast)
                 .map(Sink::topic);
     }
 
     private static Stream<String> getAllStores(final Collection<Node> nodes) {
         return nodes.stream()
-                .filter(node -> node instanceof Processor)
-                .map(node -> ((Processor) node))
+                .filter(Processor.class::isInstance)
+                .map(Processor.class::cast)
                 .flatMap(processor -> processor.stores().stream());
     }
 
@@ -98,6 +108,11 @@ public class TopologyInformation {
         return Stream.empty();
     }
 
+    /**
+     * Retrieve all topics associated with this topology that are auto-created by Kafka Streams
+     *
+     * @return list of internal topics
+     */
     public List<String> getInternalTopics() {
         final Stream<String> internalSinks = this.getInternalSinks();
         final Stream<String> changelogTopics = this.getChangelogTopics();
@@ -107,12 +122,22 @@ public class TopologyInformation {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieve all sink topics associated with this topology that are not auto-created by Kafka Streams
+     *
+     * @return list of external sink topics
+     */
     public List<String> getExternalSinkTopics() {
         return getAllSinks(this.nodes)
                 .filter(this::isExternalTopic)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieve all source topics associated with this topology that are not auto-created by Kafka Streams
+     *
+     * @return list of external source topics
+     */
     public List<String> getExternalSourceTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)
@@ -123,6 +148,12 @@ public class TopologyInformation {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieve all intermediate topics, i.e., topics that are both consumed and produced to/from, associated with this
+     * topology that are not auto-created by Kafka Streams
+     *
+     * @return list of intermediate topics
+     */
     public List<String> getIntermediateTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
         return getAllSources(this.nodes)

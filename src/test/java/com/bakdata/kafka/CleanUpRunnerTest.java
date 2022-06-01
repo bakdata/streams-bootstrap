@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ class CleanUpRunnerTest {
         final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
                 wordCount.getKafkaProperties());
 
-        assertThat(file.exists()).isTrue();
+        assertThat(file).exists();
 
         final Properties properties = new Properties();
         try (final FileInputStream inStream = new FileInputStream(file)) {

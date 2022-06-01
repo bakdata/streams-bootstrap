@@ -22,15 +22,17 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.util;
-
-import java.util.Collection;
+package com.bakdata.kafka;
 
 /**
- * Interface to represent different types of subscribing to topics.
+ * Exception thrown if running streams clean up was unsuccessful
  */
-@FunctionalInterface
-interface TopicSubscription {
+public class CleanUpException extends RuntimeException {
+    public CleanUpException(final String message) {
+        super(message);
+    }
 
-    Collection<String> resolveTopics(Collection<String> allTopics);
+    public CleanUpException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }
