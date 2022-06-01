@@ -80,11 +80,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected Pattern inputPattern;
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     protected String errorTopic;
-    @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional input topics")
+    @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics")
     protected Map<String, String> extraInputTopics = new HashMap<>();
-    @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional input patterns")
+    @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
-    @CommandLine.Option(names = "--productive", arity = "1")
+    @CommandLine.Option(names = "--productive", arity = "1",
+            description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
+                    + "more suitable for production environments")
     private boolean productive = true;
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
             description = "Delete the output topic during the clean up.")

@@ -59,18 +59,18 @@ public abstract class KafkaApplication implements Runnable {
             System.getenv("ENV_PREFIX")).orElse("APP_");
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic;
-    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional output topics")
+    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
     protected Map<String, String> extraOutputTopics = new HashMap<>();
-    @CommandLine.Option(names = "--brokers", required = true)
+    @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
     protected String brokers = "";
-    @CommandLine.Option(names = "--debug", arity = "0..1")
+    @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
     protected boolean debug;
     @CommandLine.Option(names = "--clean-up", arity = "0..1",
             description = "Clear the state store and the global Kafka offsets for the "
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
-    @CommandLine.Option(names = "--schema-registry-url", required = true)
+    @CommandLine.Option(names = "--schema-registry-url", required = true, description = "URL of schema registry")
     private String schemaRegistryUrl = "";
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested;
