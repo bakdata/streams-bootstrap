@@ -3,18 +3,21 @@
 [![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=coverage)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
 [![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap&core=gav)
 
-
 # streams-bootstrap
 
 `streams-bootstrap` provides base classes and utility functions for Kafka Streams applications.
 
 It provides a common way to
+
 - configure Kafka Streams applications
 - deploy streaming applications on Kubernetes via Helm charts
 - reprocess data
 
-Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d) and [demo](https://github.com/bakdata/common-kafka-streams-demo) for an overview and a demo application.  
-The common configuration and deployments on Kubernetes are supported by the [Streams Explorer](https://github.com/bakdata/streams-explorer), which makes it possible to explore and monitor data pipelines in Apache Kafka.
+Visit our [blogpost](https://medium.com/bakdata/continuous-nlp-pipelines-with-python-java-and-apache-kafka-f6903e7e429d)
+and [demo](https://github.com/bakdata/common-kafka-streams-demo) for an overview and a demo application.  
+The common configuration and deployments on Kubernetes are supported by
+the [Streams Explorer](https://github.com/bakdata/streams-explorer), which makes it possible to explore and monitor data
+pipelines in Apache Kafka.
 
 ## Getting Started
 
@@ -29,6 +32,7 @@ compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '2.1.1'
 #### Maven
 
 ```xml
+
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
     <artifactId>streams-bootstrap</artifactId>
@@ -98,11 +102,14 @@ The following configuration options are available:
 
 - `--streams-config`: Kafka Streams configuration (`<String=String>[,<String=String>...]`)
 
-- `--extra-input-topics`: Additional named input topics (`<String=String>[,<String=String>...]`)
+- `--extra-input-topics`: Additional named input topics if you need to specify multiple topics with different message
+  types (`<String=String>[,<String=String>...]`)
 
-- `--extra-input-patterns`: Additional named input patterns (`<String=String>[,<String=String>...]`)
+- `--extra-input-patterns`: Additional named input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
 
-- `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
+- `--extra-output-topics`: Additional named output topics if you need to specify multiple topics with different message
+  types (`String=String>[,<String=String>...]`)
 
 - `--clean-up`: Whether the state of the Kafka Streams app, i.e., offsets and state stores and auto-created topics,
   should be cleared instead of running the app
@@ -164,12 +171,18 @@ The following configuration options are available:
 
 For the configuration and deployment to Kubernetes, you can use
 the [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
+
 To configure your streams app, you can use
 the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/streams-app/values.yaml) as a
 starting point.
+We also provide a chart
+to [clean](https://github.com/bakdata/streams-bootstrap/tree/master/charts/streams-app-cleanup-job) your streams app.
+
 To configure your producer app, you can use
 the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/producer-app/values.yaml) as a
 starting point.
+We also provide a chart
+to [clean](https://github.com/bakdata/streams-bootstrap/tree/master/charts/producer-app-cleanup-job) your producer app.
 
 ## Development
 
