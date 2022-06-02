@@ -17,7 +17,7 @@ streams:
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
 #    max.request.size: "1000000"
-#  inputTopics:
+  inputTopics: [ ]
 #  - input
 #  - input2
   extraInputTopics: {}
@@ -32,26 +32,26 @@ streams:
 #  productive: true
   deleteOutput: false
 
-#commandLine:
+commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
 #
-#debug: false
+debug: false
 #
-env:
+env: { }
 #  MY_ENV_VARIABLE: foo-bar
 #
-#secrets:
+secrets: { }
 #  MY_SECRET: fo-bar
 
-# tolerations:
-#   - key: "foo"
-#     operator: "Exists"
-#     effect: "NoSchedule"
-#   - key: "bar"
-#     operator: "Exists"
-#     effect: "NoSchedule"
+tolerations: [ ]
+  #   - key: "foo"
+  #     operator: "Exists"
+  #     effect: "NoSchedule"
+  #   - key: "bar"
+  #     operator: "Exists"
+  #     effect: "NoSchedule"
 
-# nodeAffinity:
+  nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:

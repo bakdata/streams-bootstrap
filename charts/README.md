@@ -1,6 +1,6 @@
 # Kafka Streams Bakdata Helm Repository
 
-Collection of commonly used charts associated with bakdata kafka streaming applications.
+Collection of commonly used charts associated with bakdata Kafka streaming applications.
 
 ## Install
 

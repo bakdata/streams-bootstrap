@@ -21,18 +21,18 @@ streams:
   extraOutputTopics: {}
 #   role: output
 
-#commandLine:
+commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
 #
-#debug: false
+debug: false
 #
-env:
+env: { }
 #  MY_ENV_VARIABLE: foo-bar
 #
-#secrets:
+secrets: { }
 #  MY_SECRET: fo-bar
 
-# tolerations:
+tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -40,7 +40,7 @@ env:
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-# nodeAffinity:
+nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:

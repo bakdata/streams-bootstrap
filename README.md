@@ -23,7 +23,7 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '1.7.0'
+compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '2.1.1'
 ```
 
 #### Maven
@@ -32,17 +32,22 @@ compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '1.7.0'
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
     <artifactId>streams-bootstrap</artifactId>
-    <version>1.7.0</version>
+    <version>2.1.1</version>
 </dependency>
 ```
 
-For other build tools or versions, refer to the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.kafka/streams-bootstrap/latest).
+For other build tools or versions, refer to
+the [latest version in MvnRepository](https://mvnrepository.com/artifact/com.bakdata.kafka/streams-bootstrap/latest).
 
 ### Usage
 
-Create a subclass of `KafkaStreamsApplication` and implement the abstract methods `buildTopology()` and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`. 
+#### Kafka Streams
+
+Create a subclass of `KafkaStreamsApplication` and implement the abstract methods `buildTopology()`
+and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`.
 
 ```java
+import com.bakdata.kafka.KafkaStreamsApplication;
 import java.util.Properties;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
@@ -56,7 +61,7 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
     public void buildTopology(final StreamsBuilder builder) {
         final KStream<String, String> input =
                 builder.<String, String>stream(this.getInputTopics());
-        
+
         // your topology
 
         input.to(this.getOutputTopic());
@@ -66,7 +71,7 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
     public String getUniqueAppId() {
         return "streams-bootstrap-app";
     }
-    
+
     // Optionally you can override the default streams bootstrap Kafka properties 
     @Override
     protected Properties createKafkaProperties() {
@@ -77,36 +82,94 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
 }
 ```
 
-The following configuration options are available (can be passed per arguments or environment variables):
+The following configuration options are available:
 
-- `brokers`: List of Kafka brokers (comma-separated) (**required**)
+- `--brokers`: List of Kafka brokers (comma-separated) (**required**)
 
-- `schema-registry-url`: The URL of the schema registry (**required**)
+- `--schema-registry-url`: The URL of the schema registry (**required**)
 
-- `input-topics`: List of input topics (comma-separated)
+- `--input-topics`: List of input topics (comma-separated)
 
-- `input-pattern`: Pattern of input topics
+- `--input-pattern`: Pattern of input topics
 
-- `output-topic`: The output topic
+- `--output-topic`: The output topic
 
-- `error-topic`: A topic to write errors to
+- `--error-topic`: A topic to write errors to
 
-- `streams-config`: Additional Kafka properties (`<String=String>[,<String=String>...]`)
+- `--streams-config`: Kafka Streams configuration (`<String=String>[,<String=String>...]`)
 
-- `extra-input-topics`: Additional input topics (`<String=String>[,<String=String>...]`)
+- `--extra-input-topics`: Additional named input topics (`<String=String>[,<String=String>...]`)
 
-- `extra-input-patterns`: Additional input patterns (`<String=String>[,<String=String>...]`)
+- `--extra-input-patterns`: Additional named input patterns (`<String=String>[,<String=String>...]`)
 
-- `extra-output-topics`: Additional output topics (`String=String>[,<String=String>...]`)
- 
-- `clean-up`: Whether the state store and the Kafka offsets for the consumer group should be cleared
+- `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
 
-- `delete-output`: Whether the output topic should be deleted during the cleanup
+- `--clean-up`: Whether the state of the Kafka Streams app, i.e., offsets and state stores and auto-created topics,
+  should be cleared instead of running the app
+
+- `--delete-output`: Whether the output topics with their associated schemas and the consumer group should be deleted
+  during the cleanup
+
+- `--debug`: Configure logging to debug
+
+#### Kafka producer
+
+Create a subclass of `KafkaProducerApplication`.
+
+```java
+import com.bakdata.kafka.KafkaProducerApplication;
+import java.util.Properties;
+import org.apache.kafka.clients.producer.KafkaProducer;
+
+public class StreamsBootstrapApplication extends KafkaProducerApplication {
+    public static void main(final String[] args) {
+        startApplication(new StreamsBootstrapApplication(), args);
+    }
+
+    @Override
+    protected void runApplication() {
+        try (final KafkaProducer<Object, Object> producer = this.createProducer()) {
+            // your producer
+        }
+    }
+
+    // Optionally you can override the default streams bootstrap Kafka properties 
+    @Override
+    protected Properties createKafkaProperties() {
+        final Properties kafkaProperties = super.createKafkaProperties();
+
+        return kafkaProperties;
+    }
+}
+```
+
+The following configuration options are available:
+
+- `--brokers`: List of Kafka brokers (comma-separated) (**required**)
+
+- `--schema-registry-url`: The URL of the schema registry (**required**)
+
+- `--output-topic`: The output topic
+
+- `--streams-config`: Kafka producer configuration (`<String=String>[,<String=String>...]`)
+
+- `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
+
+- `--clean-up`: Whether the output topics and associated schemas of the producer app should be deleted instead of
+  running the app
+
+- `--debug`: Configure logging to debug
 
 ### Helm Charts
 
-For the configuration and deployment to Kubernetes, you can use the [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
-To configure your streams-bootstrap app, you can use the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/streams-app/values.yaml) as a starting point. 
+For the configuration and deployment to Kubernetes, you can use
+the [Helm Charts](https://github.com/bakdata/streams-bootstrap/tree/master/charts).
+To configure your streams app, you can use
+the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/streams-app/values.yaml) as a
+starting point.
+To configure your producer app, you can use
+the [`values.yaml`](https://github.com/bakdata/streams-bootstrap/blob/master/charts/producer-app/values.yaml) as a
+starting point.
 
 ## Development
 
