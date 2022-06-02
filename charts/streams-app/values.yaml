@@ -28,14 +28,14 @@ streams:
   staticMembership: false
   config: {}
 #    max.poll.records: 500
-#    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
-#    max.request.size: "1000000"
+  #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+  #    max.request.size: "1000000"
   inputTopics: [ ]
-#  - input
-#  - input2
-  extraInputTopics: {}
-#   role: input
-#  inputPattern: .*-input
+  #  - input
+  #  - input2
+  extraInputTopics: { }
+  #   role: input
+  #  inputPattern: .*-input
   extraInputPatterns: { }
   #   role: .*-input
   #  outputTopic: output
