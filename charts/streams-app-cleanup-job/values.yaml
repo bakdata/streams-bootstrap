@@ -51,7 +51,7 @@ tolerations: [ ]
   #     operator: "Exists"
   #     effect: "NoSchedule"
 
-  nodeAffinity: { }
+nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:
