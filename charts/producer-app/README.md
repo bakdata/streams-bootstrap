@@ -54,6 +54,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `debug`                  | Configure logging to debug                                                                                                                                                                    | `false` |
 | `env`                    | Custom environment variables                                                                                                                                                                  | `{}`    |
 | `secrets`                | Custom secret environment variables. Prefix with `configurationEnvPrefix` in order to pass secrets to command line or prefix with `STREAMS_` to pass secrets to Kafka producer configuration. | `{}`    |
+| `awsRole`                | AWS Role that is annotated to the pod in order to authorize AWS resources using [kube2iam](https://github.com/jtblin/kube2iam).                                                               |         |
 
 ### JVM
 

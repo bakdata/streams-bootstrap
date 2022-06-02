@@ -4,21 +4,23 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
+#awsRole: my-aws-role
+
 streams:
-#  brokers: "test:9092"
-#  schemaRegistryUrl: "url:1234"
-  config: {}
-#    max.poll.records: 500
-#    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
-#    max.request.size: "1000000"
+  #  brokers: "test:9092"
+  #  schemaRegistryUrl: "url:1234"
+  config: { }
+  #    max.poll.records: 500
+  #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+  #    max.request.size: "1000000"
   inputTopics: [ ]
-#  - input
+  #  - input
 #  - input2
   extraInputTopics: {}
 #   role: input
@@ -34,14 +36,20 @@ streams:
 
 commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
-#
+
 debug: false
-#
+
 env: { }
 #  MY_ENV_VARIABLE: foo-bar
 #
 secrets: { }
 #  MY_SECRET: fo-bar
+
+annotations: { }
+#  MY_ANNOTATION: "foo-bar"
+
+labels: { }
+#  MY_LABEL: "foo-bar"
 
 tolerations: [ ]
 #   - key: "foo"

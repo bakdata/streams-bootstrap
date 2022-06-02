@@ -4,11 +4,13 @@ image: producerApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
+
+#awsRole: my-aws-role
 
 # Optional: Cron schedule for this producer job
 # schedule: "0 12 * * *"
@@ -60,15 +62,15 @@ streams:
 #  outputTopic: output
   extraOutputTopics: {}
 #   role: output
-#
+
 commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
-#
+
 debug: false
-#
+
 env: { }
 #  MY_ENV_VARIABLE: foo-bar
-#
+
 secrets: { }
 #  MY_SECRET: fo-bar
 

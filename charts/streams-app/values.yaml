@@ -6,9 +6,13 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 
 configurationEnvPrefix: "APP"
+
+#awsRole: my-aws-role
+
+#log4jConfig:
 
 resources:
   requests:
@@ -32,22 +36,22 @@ streams:
   extraInputTopics: {}
 #   role: input
 #  inputPattern: .*-input
-  extraInputPatterns: {}
-#   role: .*-input
-#  outputTopic: output
-  extraOutputTopics: {}
+  extraInputPatterns: { }
+  #   role: .*-input
+  #  outputTopic: output
+  extraOutputTopics: { }
 #   role: output
 #  errorTopic: error
 #  productive: true
-#
+
 commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
-#
-#debug: false
-#
+
+debug: false
+
 env: { }
 #  MY_ENV_VARIABLE: foo-bar
-#
+
 secrets: { }
 #  MY_SECRET: fo-bar
 
