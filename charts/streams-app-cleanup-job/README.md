@@ -1,6 +1,7 @@
 # streams-app cleanup helm chart
 
 This chart can be used to deploy a cleanup job for your Kafka Streams app developed using streams-bootstrap.
+Make sure to destroy the corresponding streams deployment before running the cleanup job.
 
 ## Configuration
 
@@ -10,6 +11,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 All relevant configurations of
 the [streams app](https://github.com/bakdata/streams-bootstrap/tree/master/charts/streams-app) are available as well.
+Therefore, you can just reuse your `values.yaml` file.
 
 Additionally, the following parameters can be configured:
 
