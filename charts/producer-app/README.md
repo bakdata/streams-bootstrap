@@ -39,22 +39,22 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 | Parameter                   | Description                                                                                                | Default |
 |-----------------------------|------------------------------------------------------------------------------------------------------------|---------|
-| `streams.brokers`           | Comma separated list of Kafka brokers to connect to.                                                       |         |
-| `streams.schemaRegistryUrl` | URL of schema registry to connect to.                                                                      |         |
+| `streams.brokers`           | Comma separated list of Kafka brokers to connect to. (required)                                            |         |
+| `streams.schemaRegistryUrl` | URL of schema registry to connect to. (required)                                                           |         |
 | `streams.config`            | Configurations for your [Kafka producer app](https://kafka.apache.org/documentation/#producerconfigs).     | `{}`    |
 | `streams.outputTopic`       | Output topic for your producer application.                                                                |         |
 | `streams.extraOutputTopics` | Map of additional named output topics if you need to specify multiple topics with different message types. | `{}`    |
 
 ### Other
 
-| Parameter                | Description                                                                                                                                                                                   | Default |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `configurationEnvPrefix` | Prefix for environment variables to use that should be parsed as command line arguments.                                                                                                      | `APP`   |
-| `commandLine`            | Map of command line arguments passed to the producer app.                                                                                                                                     | `{}`    |
-| `debug`                  | Configure logging to debug                                                                                                                                                                    | `false` |
-| `env`                    | Custom environment variables                                                                                                                                                                  | `{}`    |
-| `secrets`                | Custom secret environment variables. Prefix with `configurationEnvPrefix` in order to pass secrets to command line or prefix with `STREAMS_` to pass secrets to Kafka producer configuration. | `{}`    |
-| `awsRole`                | AWS Role that is annotated to the pod in order to authorize AWS resources using [kube2iam](https://github.com/jtblin/kube2iam).                                                               |         |
+| Parameter                | Description                                                                                                                                                                                                                                                                                                                       | Default |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `configurationEnvPrefix` | Prefix for environment variables to use that should be parsed as command line arguments.                                                                                                                                                                                                                                          | `APP`   |
+| `commandLine`            | Map of command line arguments passed to the producer app.                                                                                                                                                                                                                                                                         | `{}`    |
+| `debug`                  | Configure logging to debug                                                                                                                                                                                                                                                                                                        | `false` |
+| `env`                    | Custom environment variables                                                                                                                                                                                                                                                                                                      | `{}`    |
+| `secrets`                | Custom secret environment variables. Prefix with `configurationEnvPrefix` in order to pass secrets to command line or prefix with `STREAMS_` to pass secrets to Kafka Streams configuration. E.g., `APP_MY_PARAM` would be passed as `--my-param` and `STREAMS_MAX_POLL_TIMEOUT_MS` would be translated to `max.poll.timeout.ms`. | `{}`    |
+| `awsRole`                | AWS Role that is annotated to the pod in order to authorize AWS resources using [kube2iam](https://github.com/jtblin/kube2iam).                                                                                                                                                                                                   |         |
 
 ### JVM
 
