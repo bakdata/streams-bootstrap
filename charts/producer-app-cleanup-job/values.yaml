@@ -4,35 +4,43 @@ image: producerApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
+#awsRole: my-aws-role
+
 streams:
 #  brokers: "test:9092"
 #  schemaRegistryUrl: "url:1234"
-  config: {}
+  config: { }
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
 #    max.request.size: "1000000"
 #  outputTopic: output
-  extraOutputTopics: {}
+  extraOutputTopics: { }
 #   role: output
 
-#commandLine:
+commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
-#
-#debug: false
-#
-env:
+
+debug: false
+
+env: { }
 #  MY_ENV_VARIABLE: foo-bar
-#
-#secrets:
+
+secrets: { }
 #  MY_SECRET: fo-bar
 
-# tolerations:
+annotations: { }
+#  MY_ANNOTATION: "foo-bar"
+
+labels: { }
+#  MY_LABEL: "foo-bar"
+
+tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -40,7 +48,7 @@ env:
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-# nodeAffinity:
+nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:

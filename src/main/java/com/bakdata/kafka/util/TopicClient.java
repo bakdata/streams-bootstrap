@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,6 +76,26 @@ public final class TopicClient implements Closeable {
         return new TopicClient(AdminClient.create(configs), timeout);
     }
 
+    private static KafkaAdminException failedToDeleteTopic(final String topicName, final Throwable ex) {
+        return new KafkaAdminException("Failed to delete topic " + topicName, ex);
+    }
+
+    private static KafkaAdminException failedToRetrieveTopicDescription(final String topicName, final Throwable e) {
+        return new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
+    }
+
+    private static KafkaAdminException failedToCheckIfTopicExists(final String topicName, final Throwable e) {
+        return new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
+    }
+
+    private static KafkaAdminException failedToListTopics(final Throwable ex) {
+        return new KafkaAdminException("Failed to list topics", ex);
+    }
+
+    private static KafkaAdminException failedToCreateTopic(final String topicName, final Throwable ex) {
+        return new KafkaAdminException("Failed to create topic " + topicName, ex);
+    }
+
     /**
      * Creates a new Kafka topic with the specified number of partitions if it does not yet exist. If the topic exists,
      * its configuration is not updated.
@@ -108,9 +128,9 @@ public final class TopicClient implements Closeable {
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
+            throw failedToDeleteTopic(topicName, ex);
         } catch (final ExecutionException | TimeoutException ex) {
-            throw new KafkaAdminException("Failed to delete topic " + topicName, ex);
+            throw failedToDeleteTopic(topicName, ex);
         }
         Verify.verify(!this.exists(topicName), "Deletion of topic %s failed", topicName);
     }
@@ -139,9 +159,9 @@ public final class TopicClient implements Closeable {
                     .build();
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
+            throw failedToRetrieveTopicDescription(topicName, e);
         } catch (final ExecutionException | TimeoutException e) {
-            throw new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
+            throw failedToRetrieveTopicDescription(topicName, e);
         }
     }
 
@@ -166,13 +186,13 @@ public final class TopicClient implements Closeable {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
                 return false;
             } else {
-                throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
+                throw failedToCheckIfTopicExists(topicName, e);
             }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
+            throw failedToCheckIfTopicExists(topicName, e);
         } catch (final TimeoutException e) {
-            throw new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
+            throw failedToCheckIfTopicExists(topicName, e);
         }
     }
 
@@ -193,9 +213,9 @@ public final class TopicClient implements Closeable {
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to create topic " + topicName, ex);
+            throw failedToCreateTopic(topicName, ex);
         } catch (final ExecutionException | TimeoutException ex) {
-            throw new KafkaAdminException("Failed to create topic " + topicName, ex);
+            throw failedToCreateTopic(topicName, ex);
         }
     }
 
@@ -212,9 +232,9 @@ public final class TopicClient implements Closeable {
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to list topics", ex);
+            throw failedToListTopics(ex);
         } catch (final ExecutionException | TimeoutException ex) {
-            throw new KafkaAdminException("Failed to list topics", ex);
+            throw failedToListTopics(ex);
         }
     }
 

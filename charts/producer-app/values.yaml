@@ -4,18 +4,20 @@ image: producerApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
+
+#awsRole: my-aws-role
 
 # Optional: Cron schedule for this producer job
 # schedule: "0 12 * * *"
 
 suspend: false
 
-# tolerations:
+tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -23,7 +25,7 @@ suspend: false
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-# nodeAffinity:
+nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:
@@ -60,24 +62,27 @@ streams:
 #  outputTopic: output
   extraOutputTopics: {}
 #   role: output
-#
-#commandLine:
+
+commandLine: { }
 #  MY_CLI_PARAM: "foo-bar"
-#
-#debug: false
-#
-env:
+
+debug: false
+
+env: { }
 #  MY_ENV_VARIABLE: foo-bar
-#
-#secrets:
+
+secrets: { }
 #  MY_SECRET: fo-bar
 
-annotations: {}
+annotations: { }
 #  MY_ANNOTATION: "foo-bar"
+
+labels: { }
+#  MY_LABEL: "foo-bar"
 
 javaOptions:
   maxRAMPercentage: 75
-  others: []
+  others: [ ]
 #   - "-XX:MinRAMPercentage=50.0"
 
 successfulJobsHistoryLimit: 1

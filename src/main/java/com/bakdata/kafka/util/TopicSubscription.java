@@ -26,8 +26,17 @@ package com.bakdata.kafka.util;
 
 import java.util.Collection;
 
+/**
+ * Interface to represent different types of subscribing to topics.
+ */
 @FunctionalInterface
 interface TopicSubscription {
 
+    /**
+     * Resolve the topics of the subscription
+     *
+     * @param allTopics list of all topics that exists in the Kafka cluster
+     * @return topics subscribed to
+     */
     Collection<String> resolveTopics(Collection<String> allTopics);
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -149,7 +149,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Error waiting for clean up", e);
+            throw new CleanUpException("Error waiting for clean up", e);
         }
     }
 

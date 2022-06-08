@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package com.bakdata.kafka.integration;
 
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaProducerApplication;
@@ -96,7 +97,7 @@ class RunProducerAppTest {
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         app.run();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
@@ -114,7 +115,7 @@ class RunProducerAppTest {
                 .contains(app.getOutputTopic() + "-value");
         app.setCleanUp(true);
         app.run();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(TIMEOUT_SECONDS));
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(client.getAllSubjects())
                 .doesNotContain(app.getOutputTopic() + "-value");
         assertThat(this.kafkaCluster.exists(app.getOutputTopic()))

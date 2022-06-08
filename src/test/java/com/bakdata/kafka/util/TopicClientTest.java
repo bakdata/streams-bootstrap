@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,12 @@ package com.bakdata.kafka.util;
 
 import static java.util.Collections.emptyMap;
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
+import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig;
 import net.mguenther.kafka.junit.EmbeddedKafkaConfig;
@@ -57,7 +59,7 @@ class TopicClientTest {
     @BeforeEach
     void setup() throws InterruptedException {
         this.kafkaCluster.start();
-        Thread.sleep(Duration.ofSeconds(20).toMillis());
+        delay(20, TimeUnit.SECONDS);
     }
 
     @AfterEach
@@ -113,7 +115,7 @@ class TopicClientTest {
                     .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            Thread.sleep(CLIENT_TIMEOUT.toMillis());
+            delay((int) CLIENT_TIMEOUT.toSeconds(), TimeUnit.SECONDS);
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
