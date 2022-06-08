@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.1.2](https://github.com/bakdata/streams-bootstrap/tree/2.1.2) (2022-06-08)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.1.1...2.1.2)
+
+**Merged pull requests:**
+
+- Update documentation [\#144](https://github.com/bakdata/streams-bootstrap/pull/144) ([@philipp94831](https://github.com/philipp94831))
+- Remove default schedule for producer jobs [\#143](https://github.com/bakdata/streams-bootstrap/pull/143) ([@philipp94831](https://github.com/philipp94831))
+- Fix key\-value pairs indentation inside pod.yaml file [\#141](https://github.com/bakdata/streams-bootstrap/pull/141) ([@irux](https://github.com/irux))
+- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@jakob-ed](https://github.com/jakob-ed))
+
 ## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) (2022-03-02)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1)
 
