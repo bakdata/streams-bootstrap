@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.2.0](https://github.com/bakdata/streams-bootstrap/tree/2.2.0) (2022-06-23)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.1.2...2.2.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.1 and Confluent 7.1 [\#145](https://github.com/bakdata/streams-bootstrap/pull/145) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.1.2](https://github.com/bakdata/streams-bootstrap/tree/2.1.2) (2022-06-08)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.1.1...2.1.2)
 
