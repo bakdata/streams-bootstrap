@@ -144,7 +144,7 @@ public final class TopicClient implements Closeable {
     public TopicSettings describe(final String topicName) {
         try {
             final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
-                    this.adminClient.describeTopics(List.of(topicName)).values();
+                    this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
             final TopicDescription description =
                     kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
             final List<TopicPartitionInfo> partitions = description.partitions();
@@ -179,7 +179,7 @@ public final class TopicClient implements Closeable {
     public boolean exists(final String topicName) {
         try {
             final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
-                    this.adminClient.describeTopics(List.of(topicName)).values();
+                    this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
             kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
             return true;
         } catch (final ExecutionException e) {
