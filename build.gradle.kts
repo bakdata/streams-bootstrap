@@ -103,8 +103,12 @@ allprojects {
         testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
-        val fluentKafkaVersion = "2.5.6-SNAPSHOT"
-        testImplementation(group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = fluentKafkaVersion)
+        val fluentKafkaVersion = "2.6.0"
+        testImplementation(
+            group = "com.bakdata.fluent-kafka-streams-tests",
+            name = "fluent-kafka-streams-tests-junit5",
+            version = fluentKafkaVersion
+        )
         testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
         testImplementation(
             group = "com.bakdata.fluent-kafka-streams-tests",
