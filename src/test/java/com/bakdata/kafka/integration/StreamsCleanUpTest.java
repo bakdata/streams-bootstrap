@@ -475,6 +475,7 @@ class StreamsCleanUpTest {
     @Test
     void shouldThrowExceptionOnResetterError() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
+        this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
         this.app.run();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         //should throw exception because consumer group is still active
