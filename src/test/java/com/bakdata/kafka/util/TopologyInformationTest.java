@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Repartitioned;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -89,6 +90,20 @@ class TopologyInformationTest {
     }
 
     @Test
+    void foo() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        streamsBuilder.stream("input")
+                .repartition(Repartitioned.as("rep"))
+                .to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getIntermediateTopics(List.of()))
+                .isEmpty();
+        assertThat(topologyInformation.getInternalTopics())
+                .hasSize(1)
+                .containsExactly("id-rep-repartition");
+    }
+
+    @Test
     void shouldNotReturnInputTopics() {
         assertThat(this.topologyInformation.getExternalSinkTopics())
                 .doesNotContainAnyElementsOf(this.app.getInputTopics());
@@ -97,7 +112,7 @@ class TopologyInformationTest {
     @Test
     void shouldReturnAllInternalTopics() {
         assertThat(this.topologyInformation.getInternalTopics())
-                .hasSize(5)
+                .hasSize(3)
                 .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId())
                         || topic.startsWith("KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
