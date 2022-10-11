@@ -106,6 +106,21 @@ class TopologyInformationTest {
     }
 
     @Test
+    void shouldNotReturnFakeRepartitionTopics() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        final String throughTopic = "rep-repartition";
+        streamsBuilder.stream("input")
+                .to(throughTopic);
+        streamsBuilder.stream(throughTopic)
+                .to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getIntermediateTopics(List.of()))
+                .hasSize(1)
+                .containsExactly("rep-repartition");
+        assertThat(topologyInformation.getInternalTopics()).isEmpty();
+    }
+
+    @Test
     void shouldNotReturnInputTopics() {
         assertThat(this.topologyInformation.getExternalSinkTopics())
                 .doesNotContainAnyElementsOf(this.app.getInputTopics());

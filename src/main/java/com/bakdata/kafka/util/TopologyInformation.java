@@ -208,6 +208,8 @@ public class TopologyInformation {
 
     private Stream<String> getRepartitionTopics() {
         return getAllProcessors(this.nodes)
+                // internal repartitioning creates one processor that ends with "-repartition-filter",
+                // one sink node, and one source node
                 .filter(processor -> processor.name().endsWith(REPARTITION_SUFFIX + FILTER_SUFFIX))
                 .map(TopologyInformation::getRepartitionName);
     }
