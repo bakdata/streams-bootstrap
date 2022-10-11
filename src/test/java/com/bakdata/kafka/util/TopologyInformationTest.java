@@ -75,7 +75,7 @@ class TopologyInformationTest {
     }
 
     @Test
-    void shouldNotReturnRepartitionTopicAsIntermediateTopic() {
+    void shouldReturnImplicitRepartitionTopics() {
         final StreamsBuilder streamsBuilder = new StreamsBuilder();
         streamsBuilder.stream("input")
                 // select key to force repartition
@@ -87,10 +87,12 @@ class TopologyInformationTest {
         final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
         assertThat(topologyInformation.getIntermediateTopics(List.of()))
                 .isEmpty();
+        assertThat(topologyInformation.getInternalTopics())
+                .contains("id-counts-repartition");
     }
 
     @Test
-    void foo() {
+    void shouldReturnRepartitionTopics() {
         final StreamsBuilder streamsBuilder = new StreamsBuilder();
         streamsBuilder.stream("input")
                 .repartition(Repartitioned.as("rep"))

@@ -119,6 +119,19 @@ public class TopologyInformation {
     }
 
     /**
+     * Retrieve all topics associated with this topology that are auto-created by Kafka Streams
+     *
+     * @return list of internal topics
+     */
+    public List<String> getInternalTopics() {
+        final Stream<String> internalSinks = this.getInternalSinks();
+        final Stream<String> changelogTopics = this.getChangelogTopics();
+
+        return Stream.concat(internalSinks, changelogTopics)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Retrieve all sink topics associated with this topology that are not auto-created by Kafka Streams
      *
      * @return list of external sink topics
@@ -191,19 +204,6 @@ public class TopologyInformation {
     private Stream<String> getChangelogTopics() {
         return getAllStores(this.nodes)
                 .map(store -> String.format("%s-%s%s", this.streamsId, store, CHANGELOG_SUFFIX));
-    }
-
-    /**
-     * Retrieve all topics associated with this topology that are auto-created by Kafka Streams
-     *
-     * @return list of internal topics
-     */
-    public List<String> getInternalTopics() {
-        final Stream<String> internalSinks = this.getInternalSinks();
-        final Stream<String> changelogTopics = this.getChangelogTopics();
-
-        return Stream.concat(internalSinks, changelogTopics)
-                .collect(Collectors.toList());
     }
 
     private Stream<String> getRepartitionTopics() {
