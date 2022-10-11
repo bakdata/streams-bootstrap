@@ -189,7 +189,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * @param role role of input topic specified in CLI argument
      * @return topic name
      */
-    protected String getInputTopic(final String role) {
+    public String getInputTopic(final String role) {
         final String topic = this.extraInputTopics.get(role);
         Preconditions.checkNotNull(topic, "No input topic for role '%s' available", role);
         return topic;
@@ -201,7 +201,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * @param role role of input pattern specified in CLI argument
      * @return topic pattern
      */
-    protected Pattern getInputPattern(final String role) {
+    public Pattern getInputPattern(final String role) {
         final Pattern pattern = this.extraInputPatterns.get(role);
         Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
         return pattern;
