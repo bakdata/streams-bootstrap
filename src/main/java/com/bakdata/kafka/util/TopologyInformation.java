@@ -47,6 +47,7 @@ import org.jooq.lambda.Seq;
 public class TopologyInformation {
     private static final String CHANGELOG_SUFFIX = "-changelog";
     private static final String REPARTITION_SUFFIX = "-repartition";
+    private static final String FILTER_SUFFIX = "-filter";
     /**
      * See
      * {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey(KTable, Function, ValueJoiner,
@@ -95,10 +96,14 @@ public class TopologyInformation {
     }
 
     private static Stream<String> getAllStores(final Collection<Node> nodes) {
+        return getAllProcessors(nodes)
+                .flatMap(processor -> processor.stores().stream());
+    }
+
+    private static Stream<Processor> getAllProcessors(final Collection<Node> nodes) {
         return nodes.stream()
                 .filter(Processor.class::isInstance)
-                .map(Processor.class::cast)
-                .flatMap(processor -> processor.stores().stream());
+                .map(Processor.class::cast);
     }
 
     private static Stream<String> createPseudoTopics(final String topic) {
@@ -106,6 +111,11 @@ public class TopologyInformation {
             return PSEUDO_TOPIC_SUFFIXES.stream().map(suffix -> String.format("%s%s", topic, suffix));
         }
         return Stream.empty();
+    }
+
+    private static String getRepartitionName(final Node processor) {
+        final String name = processor.name();
+        return name.substring(0, name.indexOf(FILTER_SUFFIX));
     }
 
     /**
@@ -116,9 +126,8 @@ public class TopologyInformation {
     public List<String> getInternalTopics() {
         final Stream<String> internalSinks = this.getInternalSinks();
         final Stream<String> changelogTopics = this.getChangelogTopics();
-        final Stream<String> repartitionTopics = this.getRepartitionTopics();
 
-        return Stream.concat(Stream.concat(internalSinks, changelogTopics), repartitionTopics)
+        return Stream.concat(internalSinks, changelogTopics)
                 .collect(Collectors.toList());
     }
 
@@ -198,7 +207,10 @@ public class TopologyInformation {
     }
 
     private Stream<String> getRepartitionTopics() {
-        return getAllStores(this.nodes)
-                .map(store -> String.format("%s%s", store, REPARTITION_SUFFIX));
+        return getAllProcessors(this.nodes)
+                // internal repartitioning creates one processor that ends with "-repartition-filter",
+                // one sink node, and one source node
+                .filter(processor -> processor.name().endsWith(REPARTITION_SUFFIX + FILTER_SUFFIX))
+                .map(TopologyInformation::getRepartitionName);
     }
 }
