@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.3.1](https://github.com/bakdata/streams-bootstrap/tree/2.3.1) (2022-10-12)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.3.0...2.3.1)
+
+**Merged pull requests:**
+
+- Fix discovery of repartition topics [\#148](https://github.com/bakdata/streams-bootstrap/pull/148) ([@philipp94831](https://github.com/philipp94831))
+- Make input topic accessors public [\#147](https://github.com/bakdata/streams-bootstrap/pull/147) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.3.0](https://github.com/bakdata/streams-bootstrap/tree/2.3.0) (2022-07-13)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.2.0...2.3.0)
 
