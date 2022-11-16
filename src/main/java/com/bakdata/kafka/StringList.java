@@ -44,6 +44,10 @@ public interface StringList extends List<String> {
         return new StringListImpl(List.of(elements));
     }
 
+    /**
+     * Implementation of {@link StringList} that wraps a {@code List<String>} and delegates all calls to the wrapped
+     * list.
+     */
     @RequiredArgsConstructor
     final class StringListImpl implements StringList {
 
