@@ -80,8 +80,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected Pattern inputPattern;
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     protected String errorTopic;
-    @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics")
-    protected Map<String, String> extraInputTopics = new HashMap<>();
+    @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics",
+            converter = {StringConverter.class, ListConverter.class})
+    // PicoCLI does not allow generics for map values
+    protected Map<String, StringList> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
     @CommandLine.Option(names = "--productive", arity = "1",
@@ -188,11 +190,25 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      *
      * @param role role of input topic specified in CLI argument
      * @return topic name
+     * @deprecated Use {@link #getInputTopics(String)}
      */
+    @Deprecated(since = "2.4.0")
     public String getInputTopic(final String role) {
-        final String topic = this.extraInputTopics.get(role);
+        final List<String> topic = this.extraInputTopics.get(role);
         Preconditions.checkNotNull(topic, "No input topic for role '%s' available", role);
-        return topic;
+        return topic.get(0);
+    }
+
+    /**
+     * Get extra input topics for a specified role
+     *
+     * @param role role of input topic specified in CLI argument
+     * @return topic names
+     */
+    public List<String> getInputTopics(final String role) {
+        final List<String> topics = this.extraInputTopics.get(role);
+        Preconditions.checkNotNull(topics, "No input topics for role '%s' available", role);
+        return topics;
     }
 
     /**

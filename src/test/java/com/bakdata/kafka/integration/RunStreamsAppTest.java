@@ -30,6 +30,8 @@ import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.StringList;
+import com.bakdata.kafka.test_applications.ExtraInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import java.util.List;
@@ -106,6 +108,39 @@ class RunStreamsAppTest {
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .build()))
                 .hasSize(1);
+    }
+
+    @Test
+    void shouldUseMultipleExtraInputTopics() throws InterruptedException {
+        final String input1 = "input1";
+        final String input2 = "input2";
+        final String output = "output";
+        this.kafkaCluster.createTopic(TopicConfig.withName(input1).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(input2).useDefaults());
+        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
+        this.app = new ExtraInputTopics();
+        this.app.setBrokers(this.kafkaCluster.getBrokerList());
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.app.setExtraInputTopics(Map.of("role", new StringList(List.of(input1, input2))));
+        this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
+        this.app.run();
+        this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input1, List.of(new KeyValue<>("foo", "bar")))
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .build());
+        this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input2, List.of(new KeyValue<>("foo", "baz")))
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .build());
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .build()))
+                .hasSize(2);
     }
 
     @Test

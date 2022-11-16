@@ -157,7 +157,7 @@ spec:
           {{- end }}
           {{- if and (hasKey .Values.streams "extraInputTopics") (.Values.streams.extraInputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.streams.extraInputTopics }}{{ $key }}={{ $value }},{{- end }}"
+              value: '{{- range $key, $value := .Values.streams.extraInputTopics }}{{ $key }}={{ $value | join ";" }},{{- end }}'
           {{- end }}
           {{- if and (hasKey .Values.streams "extraInputPatterns") (.Values.streams.extraInputPatterns) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_PATTERNS"
