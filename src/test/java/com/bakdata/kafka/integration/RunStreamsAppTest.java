@@ -30,7 +30,6 @@ import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.StringList;
 import com.bakdata.kafka.test_applications.ExtraInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
@@ -121,7 +120,7 @@ class RunStreamsAppTest {
         this.app = new ExtraInputTopics();
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
-        this.app.setExtraInputTopics(Map.of("role", StringList.of(input1, input2)));
+        this.app.setExtraInputTopics(Map.of("role", List.of(input1, input2)));
         this.app.setOutputTopic(output);
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

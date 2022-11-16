@@ -51,6 +51,7 @@ import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
+import picocli.CommandLine.UseDefaultConverter;
 
 
 /**
@@ -81,9 +82,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     protected String errorTopic;
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics",
-            converter = {StringConverter.class, StringListConverter.class})
-    // PicoCLI does not allow generics for map values
-    protected Map<String, StringList> extraInputTopics = new HashMap<>();
+            converter = {UseDefaultConverter.class, StringListConverter.class})
+    protected Map<String, List<String>> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
     @CommandLine.Option(names = "--productive", arity = "1",

@@ -24,18 +24,18 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.StringList.StringListImpl;
 import com.google.common.base.Splitter;
+import java.util.List;
 import picocli.CommandLine.ITypeConverter;
 
 /**
  * Converter for lists inside collection type parsed by PicoCLI. List members need to be separated by {@code ;}
  */
-public class StringListConverter implements ITypeConverter<StringList> {
+public class StringListConverter implements ITypeConverter<List<String>> {
     private static final Splitter TOPIC_SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
 
     @Override
-    public StringList convert(final String value) {
-        return new StringListImpl(TOPIC_SPLITTER.splitToList(value));
+    public List<String> convert(final String value) {
+        return TOPIC_SPLITTER.splitToList(value);
     }
 }
