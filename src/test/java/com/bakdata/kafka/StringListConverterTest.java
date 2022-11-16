@@ -24,24 +24,43 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.StringList.StringListImpl;
-import com.google.common.base.Splitter;
-import java.util.List;
-import picocli.CommandLine.ITypeConverter;
-import picocli.CommandLine.TypeConversionException;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Converter for lists inside collection type parsed by PicoCLI. List members need to be separated by {@code ;}
- */
-public class ListConverter implements ITypeConverter<StringList> {
-    private static final Splitter TOPIC_SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
+import org.junit.jupiter.api.Test;
 
-    @Override
-    public StringList convert(final String value) {
-        try {
-            return new StringListImpl(TOPIC_SPLITTER.splitToList(value));
-        } catch (final RuntimeException ex) {
-            throw new TypeConversionException(String.format("'%s' is not a %s", value, List.class.getSimpleName()));
-        }
+class StringListConverterTest {
+
+    @Test
+    void shouldConvertSingleElement() {
+        assertThat(new StringListConverter().convert("foo"))
+                .hasSize(1)
+                .containsExactly("foo");
     }
+
+    @Test
+    void shouldConvertEmpty() {
+        assertThat(new StringListConverter().convert("")).isEmpty();
+    }
+
+    @Test
+    void shouldSplit() {
+        assertThat(new StringListConverter().convert("foo;bar"))
+                .hasSize(2)
+                .containsExactly("foo", "bar");
+    }
+
+    @Test
+    void shouldTrim() {
+        assertThat(new StringListConverter().convert("foo ; bar"))
+                .hasSize(2)
+                .containsExactly("foo", "bar");
+    }
+
+    @Test
+    void shouldIgnoreEmpty() {
+        assertThat(new StringListConverter().convert("foo;;bar;"))
+                .hasSize(2)
+                .containsExactly("foo", "bar");
+    }
+
 }

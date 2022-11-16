@@ -81,7 +81,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     protected String errorTopic;
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics",
-            converter = {StringConverter.class, ListConverter.class})
+            converter = {StringConverter.class, StringListConverter.class})
     // PicoCLI does not allow generics for map values
     protected Map<String, StringList> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
