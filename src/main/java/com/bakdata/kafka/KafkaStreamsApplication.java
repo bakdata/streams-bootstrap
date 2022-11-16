@@ -202,7 +202,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     /**
      * Get extra input topics for a specified role
      *
-     * @param role role of input topic specified in CLI argument
+     * @param role role of input topics specified in CLI argument
      * @return topic names
      */
     public List<String> getInputTopics(final String role) {
