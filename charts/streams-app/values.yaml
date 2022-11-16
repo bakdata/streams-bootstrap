@@ -33,7 +33,7 @@ streams:
   inputTopics: [ ]
 #  - input
 #  - input2
-  extraInputTopics:
+  extraInputTopics: {}
 #   role:
 #     - input
 #     - input2
