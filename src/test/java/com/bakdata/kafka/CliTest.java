@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
-import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.junit.jupiter.api.Disabled;
@@ -120,8 +119,8 @@ class CliTest {
         assertThat(app.getInputTopics()).containsExactly("input1", "input2");
         assertThat(app.getExtraInputTopics())
                 .hasSize(2)
-                .containsEntry("role1", new StringList(List.of("input3")))
-                .containsEntry("role2", new StringList(List.of("input4", "input5")));
+                .containsEntry("role1", StringList.of("input3"))
+                .containsEntry("role2", StringList.of("input4", "input5"));
         assertThat(app.getInputPattern())
                 .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
         assertThat(app.getExtraInputPatterns())

@@ -121,7 +121,7 @@ class RunStreamsAppTest {
         this.app = new ExtraInputTopics();
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
-        this.app.setExtraInputTopics(Map.of("role", new StringList(List.of(input1, input2))));
+        this.app.setExtraInputTopics(Map.of("role", StringList.of(input1, input2)));
         this.app.setOutputTopic(output);
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

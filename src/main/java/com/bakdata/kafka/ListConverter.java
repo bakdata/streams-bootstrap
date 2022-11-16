@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.StringList.StringListImpl;
 import com.google.common.base.Splitter;
 import java.util.List;
 import picocli.CommandLine.ITypeConverter;
@@ -38,7 +39,7 @@ public class ListConverter implements ITypeConverter<StringList> {
     @Override
     public StringList convert(final String value) {
         try {
-            return new StringList(TOPIC_SPLITTER.splitToList(value));
+            return new StringListImpl(TOPIC_SPLITTER.splitToList(value));
         } catch (final RuntimeException ex) {
             throw new TypeConversionException(String.format("'%s' is not a %s", value, List.class.getSimpleName()));
         }

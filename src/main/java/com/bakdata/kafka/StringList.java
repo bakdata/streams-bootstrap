@@ -32,19 +32,32 @@ import lombok.experimental.Delegate;
 /**
  * This class represents a {@code List<String>} and is only used in order to parse PicoCLI parameters.
  */
-@RequiredArgsConstructor
-public class StringList implements List<String> {
-
-    @Delegate
-    private final @NonNull List<String> list;
-
-    @Override
-    public boolean equals(final Object o) {
-        return this.list.equals(o);
+public interface StringList extends List<String> {
+    /**
+     * Returns an unmodifiable string list containing an arbitrary number of elements.
+     *
+     * @param elements the elements to be contained in the list
+     * @return a {@code StringList} containing the specified elements
+     * @see List#of(Object[])
+     */
+    static StringList of(final String... elements) {
+        return new StringListImpl(List.of(elements));
     }
 
-    @Override
-    public int hashCode() {
-        return this.list.hashCode();
+    @RequiredArgsConstructor
+    final class StringListImpl implements StringList {
+
+        @Delegate
+        private final @NonNull List<String> list;
+
+        @Override
+        public boolean equals(final Object o) {
+            return this.list.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.list.hashCode();
+        }
     }
 }
