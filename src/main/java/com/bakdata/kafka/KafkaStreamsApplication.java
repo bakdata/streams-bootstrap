@@ -196,6 +196,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public String getInputTopic(final String role) {
         final List<String> topic = this.extraInputTopics.get(role);
         Preconditions.checkNotNull(topic, "No input topic for role '%s' available", role);
+        Preconditions.checkArgument(!topic.isEmpty(), "No input topic for role '%s' available", role);
         return topic.get(0);
     }
 

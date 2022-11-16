@@ -122,6 +122,8 @@ class CliTest {
                 .hasSize(2)
                 .containsEntry("role1", List.of("input3"))
                 .containsEntry("role2", List.of("input4", "input5"));
+        assertThat(app.getInputTopic("role2")).isEqualTo("input4");
+        assertThat(app.getInputTopics("role2")).isEqualTo(List.of("input4", "input5"));
         assertThat(app.getInputPattern())
                 .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
         assertThat(app.getExtraInputPatterns())
