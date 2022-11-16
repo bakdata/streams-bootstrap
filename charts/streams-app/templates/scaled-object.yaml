@@ -47,12 +47,14 @@ spec:
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- range $key, $value := .Values.streams.extraInputTopics }}
+    {{- range $topic := $value }}
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumergroup }}
-        topic: {{ $value | quote }}
+        topic: {{ $topic | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
     {{- end }}
 {{ end }}
