@@ -76,7 +76,7 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_DELETE_OUTPUT"
               value: {{ .Values.streams.deleteOutput | quote }}
             {{- end }}
-            {{- if hasKey .Values.streams "inputTopics" }}
+            { { - if and (hasKey .Values.streams "inputTopics") (.Values.streams.inputTopics) } }
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
               value: {{ .Values.streams.inputTopics | join "," | quote }}
             {{- end }}
