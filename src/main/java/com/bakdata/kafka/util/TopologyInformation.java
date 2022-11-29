@@ -46,7 +46,7 @@ import org.jooq.lambda.Seq;
  */
 public class TopologyInformation {
     private static final String SUBSCRIPTION_REGISTRATION_SUFFIX = "-subscription-registration-topic";
-    private static final String SUBSCRIPTION_RESPONSE_SUFFIX = "subscription-response-topic";
+    private static final String SUBSCRIPTION_RESPONSE_SUFFIX = "-subscription-response-topic";
     private static final String CHANGELOG_SUFFIX = "-changelog";
     private static final String REPARTITION_SUFFIX = "-repartition";
     private static final String FILTER_SUFFIX = "-filter";
