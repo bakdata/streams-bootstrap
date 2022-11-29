@@ -35,6 +35,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Repartitioned;
+import org.apache.kafka.streams.kstream.TableJoined;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -136,7 +137,7 @@ class TopologyInformationTest {
     }
 
     @Test
-    void shouldReturnAllPseudoInternalTopics() {
+    void shouldReturnAllPseudoInternalTopicsForForeignKeyJoin() {
         final StreamsBuilder streamsBuilder = new StreamsBuilder();
         final KTable<String, Object> t1 = streamsBuilder.table("t1");
         final KTable<Integer, Object> t2 = streamsBuilder.table("t2");
@@ -150,7 +151,28 @@ class TopologyInformationTest {
                         "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic",
                         "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-fk",
                         "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-pk",
-                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-vh"
+                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-REGISTRATION-0000000006-topic-vh",
+                        "id-KTABLE-FK-JOIN-SUBSCRIPTION-RESPONSE-0000000014-topic"
+                );
+    }
+
+    @Test
+    void shouldReturnAllPseudoInternalTopicsForNamedForeignKeyJoin() {
+        final StreamsBuilder streamsBuilder = new StreamsBuilder();
+        final KTable<String, Object> t1 = streamsBuilder.table("t1");
+        final KTable<Integer, Object> t2 = streamsBuilder.table("t2");
+        t1
+                .leftJoin(t2, ignored -> 1, (o1, o2) -> o1, TableJoined.as("join"))
+                .toStream()
+                .to("output");
+        final TopologyInformation topologyInformation = new TopologyInformation(streamsBuilder.build(), "id");
+        assertThat(topologyInformation.getInternalTopics())
+                .contains(
+                        "id-join-subscription-registration-topic",
+                        "id-join-subscription-registration-topic-fk",
+                        "id-join-subscription-registration-topic-pk",
+                        "id-join-subscription-registration-topic-vh",
+                        "id-join-subscription-response-topic"
                 );
     }
 
