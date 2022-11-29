@@ -137,7 +137,7 @@ class TopologyInformationTest {
     }
 
     @Test
-    void shouldReturnAllPseudoInternalTopicsForForeignKeyName() {
+    void shouldReturnAllPseudoInternalTopicsForForeignKeyJoin() {
         final StreamsBuilder streamsBuilder = new StreamsBuilder();
         final KTable<String, Object> t1 = streamsBuilder.table("t1");
         final KTable<Integer, Object> t2 = streamsBuilder.table("t2");
