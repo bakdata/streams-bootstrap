@@ -45,6 +45,8 @@ import org.jooq.lambda.Seq;
  * Representation of the nodes of a Kafka Streams topology
  */
 public class TopologyInformation {
+    private static final String SUBSCRIPTION_REGISTRATION_SUFFIX = "-subscription-registration-topic";
+    private static final String SUBSCRIPTION_RESPONSE_SUFFIX = "subscription-response-topic";
     private static final String CHANGELOG_SUFFIX = "-changelog";
     private static final String REPARTITION_SUFFIX = "-repartition";
     private static final String FILTER_SUFFIX = "-filter";
@@ -107,7 +109,7 @@ public class TopologyInformation {
     }
 
     private static Stream<String> createPseudoTopics(final String topic) {
-        if (topic.contains("FK-JOIN-SUBSCRIPTION-REGISTRATION")) {
+        if (isSubscriptionRegistrationTopic(topic)) {
             return PSEUDO_TOPIC_SUFFIXES.stream().map(suffix -> String.format("%s%s", topic, suffix));
         }
         return Stream.empty();
@@ -175,6 +177,14 @@ public class TopologyInformation {
                 .collect(Collectors.toList());
     }
 
+    private static boolean isSubscriptionResponseTopic(final String topic) {
+        return topic.endsWith(SUBSCRIPTION_RESPONSE_SUFFIX) || topic.contains("FK-JOIN-SUBSCRIPTION-RESPONSE");
+    }
+
+    private static boolean isSubscriptionRegistrationTopic(final String topic) {
+        return topic.endsWith(SUBSCRIPTION_REGISTRATION_SUFFIX) || topic.contains("FK-JOIN-SUBSCRIPTION-REGISTRATION");
+    }
+
     private boolean isInternalTopic(final String topic) {
         if (topic.startsWith("KSTREAM-") || topic.startsWith("KTABLE-")) {
             return true;
@@ -187,7 +197,10 @@ public class TopologyInformation {
             final List<String> repartitionTopics = this.getRepartitionTopics().collect(Collectors.toList());
             return repartitionTopics.contains(topic);
         }
-        return false;
+        if (isSubscriptionRegistrationTopic(topic)) {
+            return true;
+        }
+        return isSubscriptionResponseTopic(topic);
     }
 
     private boolean isExternalTopic(final String topic) {
