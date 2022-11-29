@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.4.1](https://github.com/bakdata/streams-bootstrap/tree/2.4.1) (2022-11-29)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.4.0...2.4.1)
+
+**Fixed bugs:**
+
+- Chart should not set inputTopics to empty string if none are specified [\#149](https://github.com/bakdata/streams-bootstrap/issues/149)
+
+**Merged pull requests:**
+
+- Clean schema registry subjects of named foreign key joins [\#153](https://github.com/bakdata/streams-bootstrap/pull/153) ([@philipp94831](https://github.com/philipp94831))
+- Do not configure empty input topics [\#152](https://github.com/bakdata/streams-bootstrap/pull/152) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.4.0](https://github.com/bakdata/streams-bootstrap/tree/2.4.0) (2022-11-16)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.3.1...2.4.0)
 
