@@ -31,6 +31,9 @@ spec:
         {{ $key }}: {{ $value }}
         {{- end }}
     spec:
+      {{- if .Values.serviceAccount }}
+      serviceAccount: {{ .Values.serviceAccount }}
+      {{- end }}
       restartPolicy: {{ .Values.restartPolicy }}
       {{- if .Values.tolerations }}
       tolerations:

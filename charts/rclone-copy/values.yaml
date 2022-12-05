@@ -47,7 +47,9 @@ imageRelease: 1.53.1
 
 restartPolicy: OnFailure
 
-# tolerations:
+# serviceAccount: foo
+
+tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -55,7 +57,7 @@ restartPolicy: OnFailure
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-# nodeAffinity:
+nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:
