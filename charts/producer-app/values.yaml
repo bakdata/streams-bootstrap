@@ -17,7 +17,7 @@ configurationEnvPrefix: "APP"
 
 suspend: false
 
-# serviceAccount: foo
+# serviceAccountName: foo
 
 tolerations: [ ]
 #   - key: "foo"

@@ -81,7 +81,7 @@ autoscaling:
   #   - bar
   #   - baz
 
-# serviceAccount: foo
+# serviceAccountName: foo
 
 tolerations: [ ]
 #   - key: "foo"

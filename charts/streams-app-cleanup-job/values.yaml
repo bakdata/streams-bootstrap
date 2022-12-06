@@ -53,7 +53,7 @@ annotations: { }
 labels: { }
 #  MY_LABEL: "foo-bar"
 
-# serviceAccount: foo
+# serviceAccountName: foo
 
 tolerations: [ ]
 #   - key: "foo"
