@@ -81,6 +81,8 @@ autoscaling:
   #   - bar
   #   - baz
 
+# serviceAccountName: foo
+
 tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"

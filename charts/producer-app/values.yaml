@@ -17,6 +17,8 @@ configurationEnvPrefix: "APP"
 
 suspend: false
 
+# serviceAccountName: foo
+
 tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"

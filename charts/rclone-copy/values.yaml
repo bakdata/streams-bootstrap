@@ -1,3 +1,5 @@
+nameOverride: bakdata-rclone-copy
+
 # This is the cofiguration for the specific rclone-cronjob that you want to run.
 # `sync` contains the config for the source and destination of the rclone copy job.
 # It can be interpreted as:
@@ -47,7 +49,9 @@ imageRelease: 1.53.1
 
 restartPolicy: OnFailure
 
-# tolerations:
+# serviceAccountName: foo
+
+tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -55,7 +59,7 @@ restartPolicy: OnFailure
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-# nodeAffinity:
+nodeAffinity: { }
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:

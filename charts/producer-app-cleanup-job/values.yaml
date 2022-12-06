@@ -40,6 +40,8 @@ annotations: { }
 labels: { }
 #  MY_LABEL: "foo-bar"
 
+# serviceAccountName: foo
+
 tolerations: [ ]
 #   - key: "foo"
 #     operator: "Exists"

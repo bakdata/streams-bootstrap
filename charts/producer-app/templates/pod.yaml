@@ -18,6 +18,9 @@ metadata:
     {{- end }}
 spec:
   restartPolicy: {{ .Values.restartPolicy }}
+  {{- if .Values.serviceAccountName }}
+  serviceAccountName: {{ .Values.serviceAccountName }}
+  {{- end }}
   {{- if .Values.tolerations }}
   tolerations:
 {{ toYaml .Values.tolerations | indent 4 }}

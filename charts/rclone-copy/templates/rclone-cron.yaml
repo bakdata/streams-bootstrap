@@ -39,6 +39,9 @@ spec:
             {{ $key }}: {{ $value }}
             {{- end }}
         spec:
+          {{- if .Values.serviceAccountName }}
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          {{- end }}
           {{- if .Values.tolerations }}
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
