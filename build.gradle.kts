@@ -115,7 +115,7 @@ allprojects {
             name = "schema-registry-mock-junit5",
             version = fluentKafkaVersion
         )
-        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaVersion) {
+        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.2.2") {
             exclude(group = "org.slf4j", module = "slf4j-log4j12")
         }
 
