@@ -1,0 +1,19 @@
+name: Release Helm Charts
+
+on:
+  push:
+    tags:
+      - "**"
+
+jobs:
+  call-workflow-passing-data:
+    name: Release & Publish Helm chart
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@v1.13.2
+    with:
+      charts-path: "./charts"
+      subdirs: "['producer-app','producer-app-cleanup-job','rclone-copy','streams-app','streams-app-cleanup-job']"
+      gh-pages-branch: gh-pages
+    secrets:
+      github-username: ${{ secrets.GH_USERNAME }}
+      github-email: ${{ secrets.GH_EMAIL }}
+      github-token: ${{ secrets.GH_TOKEN }}
