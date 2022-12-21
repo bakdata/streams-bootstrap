@@ -7,6 +7,13 @@ jobs:
   helm-lint:
     runs-on: ubuntu-22.04
     steps:
+      - name: Test 
+        run: |
+          pwd
+          ls -al 
+          tree .
+        shell: bash
+
       - name: Lint Helm chart
         uses: bakdata/ci-templates/actions/helm-lint@v1.13.2
         with:
