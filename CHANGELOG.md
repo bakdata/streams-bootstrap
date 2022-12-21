@@ -1,5 +1,20 @@
 # Change Log
 
+## [2.4.2](https://github.com/bakdata/streams-bootstrap/tree/2.4.2) (2022-12-21)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.4.1...2.4.2)
+
+**Closed issues:**
+
+- Release helm charts to GitHub Pages [\#140](https://github.com/bakdata/streams-bootstrap/issues/140)
+- Add optional ServiceAccount to Pod specs [\#154](https://github.com/bakdata/streams-bootstrap/issues/154)
+
+**Merged pull requests:**
+
+- Lint and release helm charts [\#158](https://github.com/bakdata/streams-bootstrap/pull/158) ([@MichaelKora](https://github.com/MichaelKora))
+- Remove tgz files and index.yaml [\#159](https://github.com/bakdata/streams-bootstrap/pull/159) ([@MichaelKora](https://github.com/MichaelKora))
+- Add ServiceAccountName option to Helm charts [\#156](https://github.com/bakdata/streams-bootstrap/pull/156) ([@yannick-roeder](https://github.com/yannick-roeder))
+- Configure access token for changelog generation [\#155](https://github.com/bakdata/streams-bootstrap/pull/155) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.4.1](https://github.com/bakdata/streams-bootstrap/tree/2.4.1) (2022-11-29)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.4.0...2.4.1)
 
