@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,9 +35,9 @@ class PropertiesTest {
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final TestApplication app = new TestApplication();
-        KafkaStreamsApplication.startApplication(app,
-                new String[]{"--brokers", "dummy",
-                        "--schema-registry-url", "dummy",
+        KafkaStreamsApplication.startApplications(app,
+                new String[]{"--brokers", "fake",
+                        "--schema-registry-url", "fake",
                         "--output-topic", "output",
                         "--input-topics", "input",
                         "--error-topic", "error-topic",

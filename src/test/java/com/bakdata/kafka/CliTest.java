@@ -39,7 +39,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
-        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaStreamsApplication.startApplications(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -66,7 +66,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCode() {
-        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaStreamsApplication.startApplications(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -107,7 +107,7 @@ class CliTest {
                 //do nothing
             }
         };
-        KafkaStreamsApplication.startApplication(app, new String[]{
+        KafkaStreamsApplication.startApplications(app, new String[]{
                 "--brokers", "brokers",
                 "--schema-registry-url", "schema-registry",
                 "--input-topics", "input1,input2",

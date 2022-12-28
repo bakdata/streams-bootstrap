@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,9 +40,6 @@ import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
 public class WordCount extends KafkaStreamsApplication {
-    public static void main(final String[] args) {
-        startApplication(new WordCount(), args);
-    }
 
     @Override
     public void buildTopology(final StreamsBuilder builder) {
