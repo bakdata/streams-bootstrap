@@ -49,6 +49,7 @@ import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -123,7 +124,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         }
         if (isError(this.streams.state())) {
             // let PicoCLI exit with an error code
-            throw new RuntimeException("Kafka Streams has transitioned to error");
+            throw new StreamsException("Kafka Streams has transitioned to error");
         }
     }
 
