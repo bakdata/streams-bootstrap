@@ -75,17 +75,19 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldFindTopic() {
+    void shouldFindTopic() throws InterruptedException {
         this.kafkaCluster.createTopic(TopicConfig.withName("exists").useDefaults());
+        delay((int) CLIENT_TIMEOUT.toSeconds());
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("exists")).isTrue();
         }
     }
 
     @Test
-    void shouldListTopics() {
+    void shouldListTopics() throws InterruptedException {
         this.kafkaCluster.createTopic(TopicConfig.withName("foo").useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.withName("bar").useDefaults());
+        delay((int) CLIENT_TIMEOUT.toSeconds());
         try (final TopicClient client = this.createClient()) {
             assertThat(client.listTopics())
                     .hasSize(2)
@@ -94,8 +96,9 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldDeleteTopic() {
+    void shouldDeleteTopic() throws InterruptedException {
         this.kafkaCluster.createTopic(TopicConfig.withName("foo").useDefaults());
+        delay((int) CLIENT_TIMEOUT.toSeconds());
         try (final TopicClient client = this.createClient()) {
             assertThat(client.listTopics())
                     .hasSize(1)
