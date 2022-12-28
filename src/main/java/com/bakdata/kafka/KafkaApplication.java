@@ -53,12 +53,36 @@ import picocli.CommandLine;
 @Setter
 @RequiredArgsConstructor
 public abstract class KafkaApplication implements Runnable {
+    public static final int RESET_SLEEP_MS = 5000;
+    public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
+    private static final String ENV_PREFIX = Optional.ofNullable(
+            System.getenv("ENV_PREFIX")).orElse("APP_");
     /**
      * This variable is usually set on application start. When the application is running in debug mode it is used to
      * reconfigure the child app package logger. By default, it points to the package of this class allowing to execute
      * the run method independently.
      */
     protected static String appPackageName = KafkaApplication.class.getPackageName();
+    @CommandLine.Option(names = "--output-topic", description = "Output topic")
+    protected String outputTopic;
+    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
+    protected Map<String, String> extraOutputTopics = new HashMap<>();
+    @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
+    protected String brokers = "";
+    @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
+    protected boolean debug;
+    @CommandLine.Option(names = "--clean-up", arity = "0..1",
+            description = "Clear the state store and the global Kafka offsets for the "
+                    + "consumer group. Be careful with running in production and with enabling this flag - it "
+                    + "might cause inconsistent processing with multiple replicas.")
+    protected boolean cleanUp;
+    @CommandLine.Option(names = "--schema-registry-url", required = true, description = "URL of schema registry")
+    private String schemaRegistryUrl = "";
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
+    private boolean helpRequested;
+    //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
+    @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka properties")
+    private Map<String, String> streamsConfig = new HashMap<>();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
@@ -88,31 +112,6 @@ public abstract class KafkaApplication implements Runnable {
         final CommandLine commandLine = new CommandLine(app);
         return commandLine.execute(populatedArgs);
     }
-
-    public static final int RESET_SLEEP_MS = 5000;
-    public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
-    private static final String ENV_PREFIX = Optional.ofNullable(
-            System.getenv("ENV_PREFIX")).orElse("APP_");
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    protected String outputTopic;
-    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
-    protected Map<String, String> extraOutputTopics = new HashMap<>();
-    @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
-    protected String brokers = "";
-    @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
-    protected boolean debug;
-    @CommandLine.Option(names = "--clean-up", arity = "0..1",
-            description = "Clear the state store and the global Kafka offsets for the "
-                    + "consumer group. Be careful with running in production and with enabling this flag - it "
-                    + "might cause inconsistent processing with multiple replicas.")
-    protected boolean cleanUp;
-    @CommandLine.Option(names = "--schema-registry-url", required = true, description = "URL of schema registry")
-    private String schemaRegistryUrl = "";
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
-    private boolean helpRequested;
-    //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
-    @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka properties")
-    private Map<String, String> streamsConfig = new HashMap<>();
 
     static String[] addEnvironmentVariablesArguments(final String[] args) {
         Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),
