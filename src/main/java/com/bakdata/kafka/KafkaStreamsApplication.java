@@ -28,6 +28,7 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,8 +106,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
         appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        // deprecated command call is the only one that properly exits the application in both clean up and streams
-        CommandLine.run(app, System.out, populatedArgs);
+        final int exitCode = new CommandLine(app).setOut(new PrintWriter(System.out)).execute(populatedArgs);
+        System.exit(exitCode);
     }
 
     @Override
