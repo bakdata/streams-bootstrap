@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
+import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -43,6 +44,10 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
 class CliTest {
+
+    private static void runApp(final KafkaStreamsApplication app, final String... args) {
+        new Thread(() -> KafkaApplication.startApplication(app, args)).start();
+    }
 
     @Test
     @ExpectSystemExitWithStatus(0)
@@ -63,8 +68,8 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--brokers", "brokers",
-                "--schema-registry-url", "schema-registry",
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -89,8 +94,8 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "brokers",
-                "--schema-registry-url", "schema-registry",
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -115,8 +120,8 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "brokers",
-                "--schema-registry-url", "schema-registry",
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "--clean-up",
@@ -142,7 +147,7 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--schema-registry-url", "schema-registry",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -152,7 +157,6 @@ class CliTest {
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
-        final String output = "output";
         try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
                 final KafkaStreamsApplication app = new KafkaStreamsApplication() {
                     @Override
@@ -170,18 +174,82 @@ class CliTest {
                 }) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
-            kafkaCluster.createTopic(TopicConfig.withName(output).build());
 
-            new Thread(() ->
-                    KafkaApplication.startApplication(app, new String[]{
-                            "--brokers", kafkaCluster.getBrokerList(),
-                            "--schema-registry-url", "http://localhost:8081",
-                            "--input-topics", input,
-                            "--output-topic", output,
-                    })).start();
+            runApp(app,
+                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--schema-registry-url", "http://localhost:8081",
+                    "--input-topics", input
+            );
             kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
             delay(10, TimeUnit.SECONDS);
         }
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(0)
+    void shouldExitWithSuccessCodeOnShutdown() throws InterruptedException {
+        final String input = "input";
+        final String output = "output";
+        try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+                final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+                    @Override
+                    public void buildTopology(final StreamsBuilder builder) {
+                        builder.stream(this.getInputTopics(), Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
+                                .to(this.getOutputTopic());
+                    }
+
+                    @Override
+                    public String getUniqueAppId() {
+                        return "app";
+                    }
+                }) {
+            kafkaCluster.start();
+            kafkaCluster.createTopic(TopicConfig.withName(input).build());
+            kafkaCluster.createTopic(TopicConfig.withName(output).build());
+
+            runApp(app,
+                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--schema-registry-url", "http://localhost:8081",
+                    "--input-topics", input,
+                    "--output-topic", output
+            );
+            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
+            delay(10, TimeUnit.SECONDS);
+            final List<KeyValue<String, String>> keyValues = kafkaCluster.read(ReadKeyValues.from(output));
+            assertThat(keyValues)
+                    .hasSize(1)
+                    .anySatisfy(kv -> {
+                        assertThat(kv.getKey()).isEqualTo("foo");
+                        assertThat(kv.getValue()).isEqualTo("bar");
+                    });
+        }
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithSuccessCodeOnCleanupError() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected void runCleanUp() {
+                // do nothing
+            }
+        }, new String[]{
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
+                "--input-topics", "input",
+                "--output-topic", "output",
+                "--clean-up",
+        });
     }
 
     @Test
@@ -199,7 +267,7 @@ class CliTest {
 
             @Override
             public void run() {
-                //do nothing
+                // do nothing
             }
         };
         KafkaApplication.startApplicationWithoutExit(app, new String[]{

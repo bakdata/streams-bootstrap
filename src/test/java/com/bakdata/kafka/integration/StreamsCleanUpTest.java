@@ -237,7 +237,7 @@ class StreamsCleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.runApp();
+        this.runAppAndClose();
 
         this.softly.assertThat(this.kafkaCluster.exists(inputTopic)).isTrue();
         this.softly.assertThat(this.kafkaCluster.exists(internalTopic)).isTrue();
@@ -271,7 +271,7 @@ class StreamsCleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.runApp();
+        this.runAppAndClose();
 
         this.softly.assertThat(this.kafkaCluster.exists(manualTopic)).isTrue();
 
@@ -354,7 +354,7 @@ class StreamsCleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.runApp();
+        this.runAppAndClose();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-value", this.app.getInputTopic() + "-value");
@@ -378,7 +378,7 @@ class StreamsCleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.runApp();
+        this.runAppAndClose();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects())
                 .contains(this.app.getOutputTopic() + "-key", this.app.getInputTopic() + "-key");
@@ -411,7 +411,7 @@ class StreamsCleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.runApp();
+        this.runAppAndClose();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects())
                 .contains(inputSubject, internalSubject, backingSubject, manualSubject);
@@ -442,7 +442,7 @@ class StreamsCleanUpTest {
                 .build();
 
         this.kafkaCluster.send(sendRequest);
-        this.runApp();
+        this.runAppAndClose();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThat(client.getAllSubjects()).contains(manualSubject);
         this.runCleanUpWithDeletion();
@@ -456,7 +456,7 @@ class StreamsCleanUpTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         // if we don't run the app, the coordinator will be unavailable
-        this.runApp();
+        this.runAppAndClose();
         closeApplication.setClosed(false);
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
@@ -467,7 +467,7 @@ class StreamsCleanUpTest {
     void shouldNotThrowExceptionOnMissingInputTopic() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
         // if we don't run the app, the coordinator will be unavailable
-        this.runApp();
+        this.runAppAndClose();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.softly.assertThatCode(this::runCleanUpWithDeletion).doesNotThrowAnyException();
     }
@@ -476,9 +476,7 @@ class StreamsCleanUpTest {
     void shouldThrowExceptionOnResetterError() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
         this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
-        // run in Thread because the application blocks indefinitely
-        new Thread(this.app).start();
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.runApp();
         //should throw exception because consumer group is still active
         this.softly.assertThatThrownBy(this::runCleanUpWithDeletion)
                 .isInstanceOf(CleanUpException.class)
@@ -507,7 +505,7 @@ class StreamsCleanUpTest {
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
             final String description)
             throws InterruptedException {
-        this.runApp();
+        this.runAppAndClose();
 
         final List<KeyValue<String, Long>> output = this.readOutputTopic(this.app.getOutputTopic());
         this.softly.assertThat(output)
@@ -517,7 +515,7 @@ class StreamsCleanUpTest {
 
     private void runAndAssertSize(final int expectedMessageCount)
             throws InterruptedException {
-        this.runApp();
+        this.runAppAndClose();
         final List<KeyValue<String, Long>> records = this.readOutputTopic(this.app.getOutputTopic());
         this.softly.assertThat(records).hasSize(expectedMessageCount);
     }
@@ -527,8 +525,11 @@ class StreamsCleanUpTest {
         new Thread(this.app).start();
         // Wait until stream application has consumed all data
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        this.app.close();
+    }
 
+    private void runAppAndClose() throws InterruptedException {
+        this.runApp();
+        this.app.close();
     }
 
     private KafkaStreamsApplication createWordCountApplication() {

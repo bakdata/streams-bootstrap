@@ -122,6 +122,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             throw e;
         }
         if (isError(this.streams.state())) {
+            // let PicoCLI exit with an error code
             throw new RuntimeException("Kafka Streams has transitioned to error");
         }
     }
