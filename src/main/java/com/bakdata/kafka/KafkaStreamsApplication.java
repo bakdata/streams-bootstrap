@@ -30,7 +30,6 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,8 +61,8 @@ import picocli.CommandLine.UseDefaultConverter;
  * This class provides common configuration options e.g. {@link #brokers}, {@link #productive} for streaming
  * application. Hereby it automatically populates the passed in command line arguments with matching environment
  * arguments {@link EnvironmentArgumentsParser}. To implement your streaming application inherit from this class and add
- * your custom options. Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your
- * class from your main.
+ * your custom options. Call {@link #startApplication(KafkaApplication, String[])} with a fresh instance of your class
+ * from your main.
  */
 @ToString(callSuper = true)
 @Getter
@@ -72,12 +71,6 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     private static final int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
-    /**
-     * This variable is usually set on application start. When the application is running in debug mode it is used to
-     * reconfigure the child app package logger. On default, it points to the package of this class allowing to execute
-     * the run method independently.
-     */
-    private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -98,24 +91,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private boolean deleteOutputTopic;
     private KafkaStreams streams;
 
-    /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
-     * {@code KafkaStreamsApplication}.</p>
-     *
-     * @param app An instance of the custom application class.
-     * @param args Arguments passed in by the custom application class.
-     */
-    protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
-        final int exitCode = startApplications(app, args);
-        System.exit(exitCode);
-    }
-
-    protected static int startApplications(final KafkaStreamsApplication app, final String[] args) {
-        appPackageName = app.getClass().getPackageName();
-        final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = new CommandLine(app)
-                .setOut(new PrintWriter(System.out));
-        return commandLine.execute(populatedArgs);
+    private static boolean isError(final State newState) {
+        return newState == State.ERROR;
     }
 
     @Override
@@ -290,7 +267,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         await().forever().until(this::hasStreamsShutdown);
-        if (this.streams.state() == State.ERROR) {
+        if (isError(this.streams.state())) {
             throw new RuntimeException("Kafka Streams has transitioned to error");
         }
     }
@@ -311,8 +288,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      */
     protected StateListener getStateListener() {
         return (newState, oldState) -> {
-            if (newState == State.ERROR) {
-                log.debug("Closing resources because of state transition from {} to {}", oldState, State.ERROR);
+            if (isError(newState)) {
+                log.debug("Closing resources because of state transition from {} to {}", oldState, newState);
                 this.closeResources();
             }
         };

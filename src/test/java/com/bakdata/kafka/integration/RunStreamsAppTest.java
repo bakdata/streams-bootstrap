@@ -94,7 +94,8 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -125,7 +126,8 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
         this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input1, List.of(new KeyValue<>("foo", "bar")))
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -176,7 +178,8 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

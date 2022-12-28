@@ -35,7 +35,7 @@ class PropertiesTest {
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final TestApplication app = new TestApplication();
-        KafkaStreamsApplication.startApplications(app,
+        KafkaApplication.startApplicationWithoutExit(app,
                 new String[]{"--brokers", "fake",
                         "--schema-registry-url", "fake",
                         "--output-topic", "output",

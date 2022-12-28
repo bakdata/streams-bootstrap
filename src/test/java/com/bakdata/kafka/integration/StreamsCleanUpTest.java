@@ -476,7 +476,8 @@ class StreamsCleanUpTest {
     void shouldThrowExceptionOnResetterError() throws InterruptedException {
         this.app = this.createMirrorKeyApplication();
         this.kafkaCluster.createTopic(TopicConfig.withName(this.app.getInputTopic()).useDefaults());
-        this.app.run();
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         //should throw exception because consumer group is still active
         this.softly.assertThatThrownBy(this::runCleanUpWithDeletion)
@@ -522,7 +523,8 @@ class StreamsCleanUpTest {
     }
 
     private void runApp() throws InterruptedException {
-        this.app.run();
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
         // Wait until stream application has consumed all data
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();

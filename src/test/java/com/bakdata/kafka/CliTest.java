@@ -24,12 +24,22 @@
 
 package com.bakdata.kafka;
 
+import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
+import net.mguenther.kafka.junit.KeyValue;
+import net.mguenther.kafka.junit.SendKeyValues;
+import net.mguenther.kafka.junit.TopicConfig;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
 class CliTest {
@@ -37,7 +47,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
-        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -62,8 +72,8 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorCode() {
-        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
+    void shouldExitWithErrorCodeOnRunError() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -87,6 +97,94 @@ class CliTest {
     }
 
     @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithErrorCodeOnCleanupError() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected void runCleanUp() {
+                throw new RuntimeException();
+            }
+        }, new String[]{
+                "--brokers", "brokers",
+                "--schema-registry-url", "schema-registry",
+                "--input-topics", "input",
+                "--output-topic", "output",
+                "--clean-up",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(2)
+    void shouldExitWithErrorCodeOnMissingBrokerParameter() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void run() {
+                // do nothing
+            }
+        }, new String[]{
+                "--schema-registry-url", "schema-registry",
+                "--input-topics", "input",
+                "--output-topic", "output",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithErrorInTopology() throws InterruptedException {
+        final String input = "input";
+        final String output = "output";
+        try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+                final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+                    @Override
+                    public void buildTopology(final StreamsBuilder builder) {
+                        builder.stream(this.getInputTopics(), Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
+                                .peek((k, v) -> {
+                                    throw new RuntimeException();
+                                });
+                    }
+
+                    @Override
+                    public String getUniqueAppId() {
+                        return "app";
+                    }
+                }) {
+            kafkaCluster.start();
+            kafkaCluster.createTopic(TopicConfig.withName(input).build());
+            kafkaCluster.createTopic(TopicConfig.withName(output).build());
+
+            new Thread(() ->
+                    KafkaApplication.startApplication(app, new String[]{
+                            "--brokers", kafkaCluster.getBrokerList(),
+                            "--schema-registry-url", "http://localhost:8081",
+                            "--input-topics", input,
+                            "--output-topic", output,
+                    })).start();
+            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
+            delay(10, TimeUnit.SECONDS);
+        }
+    }
+
+    @Test
     void shouldParseArguments() {
         final KafkaStreamsApplication app = new KafkaStreamsApplication() {
             @Override
@@ -104,7 +202,7 @@ class CliTest {
                 //do nothing
             }
         };
-        KafkaStreamsApplication.startApplications(app, new String[]{
+        KafkaApplication.startApplicationWithoutExit(app, new String[]{
                 "--brokers", "brokers",
                 "--schema-registry-url", "schema-registry",
                 "--input-topics", "input1,input2",
