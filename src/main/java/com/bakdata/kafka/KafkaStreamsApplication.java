@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static org.awaitility.Awaitility.await;
+
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -287,6 +289,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected void runStreamsApplication() {
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        await().forever().until(this::hasStreamsShutdown);
     }
 
     /**
@@ -333,5 +336,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
         cleanUpRunner.run(this.deleteOutputTopic);
+    }
+
+    private boolean hasStreamsShutdown() {
+        return this.streams.state().hasCompletedShutdown();
     }
 }
