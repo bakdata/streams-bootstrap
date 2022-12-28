@@ -105,7 +105,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         log.debug(this.toString());
 
         try {
-            final var kafkaProperties = this.getKafkaProperties();
+            final Properties kafkaProperties = this.getKafkaProperties();
             this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
             this.getUncaughtExceptionHandler()
                     .ifPresent(this.streams::setUncaughtExceptionHandler);
@@ -120,6 +120,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         } catch (final Throwable e) {
             this.closeResources();
             throw e;
+        }
+        if (isError(this.streams.state())) {
+            throw new RuntimeException("Kafka Streams has transitioned to error");
         }
     }
 
@@ -267,9 +270,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         await().forever().until(this::hasStreamsShutdown);
-        if (isError(this.streams.state())) {
-            throw new RuntimeException("Kafka Streams has transitioned to error");
-        }
     }
 
     /**

@@ -158,7 +158,8 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
     }
