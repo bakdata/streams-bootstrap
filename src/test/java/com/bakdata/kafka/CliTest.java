@@ -30,16 +30,14 @@ import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class CliTest {
 
-    @Disabled("System exit stops Kafka Streams running in sub-thread")
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
-        KafkaStreamsApplication.startApplications(new KafkaStreamsApplication() {
+        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -62,11 +60,10 @@ class CliTest {
         });
     }
 
-    @Disabled("System exit stops Kafka Streams running in sub-thread")
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCode() {
-        KafkaStreamsApplication.startApplications(new KafkaStreamsApplication() {
+        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();

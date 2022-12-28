@@ -40,6 +40,9 @@ import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
 public class WordCountPattern extends KafkaStreamsApplication {
+    public static void main(final String[] args) {
+        startApplication(new WordCountPattern(), args);
+    }
 
     @Override
     public void buildTopology(final StreamsBuilder builder) {

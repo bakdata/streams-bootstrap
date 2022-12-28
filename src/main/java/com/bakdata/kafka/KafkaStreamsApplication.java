@@ -52,7 +52,6 @@ import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
-import picocli.CommandLine.RunLast;
 import picocli.CommandLine.UseDefaultConverter;
 
 
@@ -109,12 +108,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         System.exit(exitCode);
     }
 
-    static int startApplications(final KafkaStreamsApplication app, final String[] args) {
+    protected static int startApplications(final KafkaStreamsApplication app, final String[] args) {
         appPackageName = app.getClass().getPackageName();
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final CommandLine commandLine = new CommandLine(app)
-                .setOut(new PrintWriter(System.out))
-                .setExecutionStrategy(new RunLast());
+                .setOut(new PrintWriter(System.out));
         return commandLine.execute(populatedArgs);
     }
 
