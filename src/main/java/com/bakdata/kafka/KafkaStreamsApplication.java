@@ -290,6 +290,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         await().forever().until(this::hasStreamsShutdown);
+        if (this.streams.state() == State.ERROR) {
+            throw new RuntimeException("Kafka Streams has transitioned to error");
+        }
     }
 
     /**
