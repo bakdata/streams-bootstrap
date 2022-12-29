@@ -94,11 +94,12 @@ allprojects {
         implementation(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
         implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
-        val junitVersion = "5.7.2"
+        val junitVersion = "5.9.1"
         testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
         testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
+        testImplementation(group = "org.junit-pioneer", name = "junit-pioneer", version = "1.9.1")
         testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
-        testImplementation(group = "org.assertj", name = "assertj-core", version = "3.20.2")
+        testImplementation(group = "org.assertj", name = "assertj-core", version = "3.23.1")
         val mockitoVersion = "3.12.4"
         testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
