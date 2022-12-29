@@ -24,22 +24,35 @@
 
 package com.bakdata.kafka;
 
+import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
+import net.mguenther.kafka.junit.KeyValue;
+import net.mguenther.kafka.junit.ReadKeyValues;
+import net.mguenther.kafka.junit.SendKeyValues;
+import net.mguenther.kafka.junit.TopicConfig;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.junit.jupiter.api.Disabled;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
 class CliTest {
 
-    @Disabled("System exit stops Kafka Streams running in sub-thread")
+    private static void runApp(final KafkaStreamsApplication app, final String... args) {
+        new Thread(() -> KafkaApplication.startApplication(app, args)).start();
+    }
+
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
-        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -55,18 +68,17 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--brokers", "brokers",
-                "--schema-registry-url", "schema-registry",
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
     }
 
-    @Disabled("System exit stops Kafka Streams running in sub-thread")
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorCode() {
-        KafkaStreamsApplication.startApplication(new KafkaStreamsApplication() {
+    void shouldExitWithErrorCodeOnRunError() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public void buildTopology(final StreamsBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -82,10 +94,161 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "brokers",
-                "--schema-registry-url", "schema-registry",
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithErrorCodeOnCleanupError() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected void runCleanUp() {
+                throw new RuntimeException();
+            }
+        }, new String[]{
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
+                "--input-topics", "input",
+                "--output-topic", "output",
+                "--clean-up",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(2)
+    void shouldExitWithErrorCodeOnMissingBrokerParameter() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void run() {
+                // do nothing
+            }
+        }, new String[]{
+                "--schema-registry-url", "http://localhost:8081",
+                "--input-topics", "input",
+                "--output-topic", "output",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithErrorInTopology() throws InterruptedException {
+        final String input = "input";
+        try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+                final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+                    @Override
+                    public void buildTopology(final StreamsBuilder builder) {
+                        builder.stream(this.getInputTopics(), Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
+                                .peek((k, v) -> {
+                                    throw new RuntimeException();
+                                });
+                    }
+
+                    @Override
+                    public String getUniqueAppId() {
+                        return "app";
+                    }
+                }) {
+            kafkaCluster.start();
+            kafkaCluster.createTopic(TopicConfig.withName(input).build());
+
+            runApp(app,
+                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--schema-registry-url", "http://localhost:8081",
+                    "--input-topics", input
+            );
+            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
+            delay(10, TimeUnit.SECONDS);
+        }
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(0)
+    void shouldExitWithSuccessCodeOnShutdown() throws InterruptedException {
+        final String input = "input";
+        final String output = "output";
+        try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+                final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+                    @Override
+                    public void buildTopology(final StreamsBuilder builder) {
+                        builder.stream(this.getInputTopics(), Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
+                                .to(this.getOutputTopic());
+                    }
+
+                    @Override
+                    public String getUniqueAppId() {
+                        return "app";
+                    }
+                }) {
+            kafkaCluster.start();
+            kafkaCluster.createTopic(TopicConfig.withName(input).build());
+            kafkaCluster.createTopic(TopicConfig.withName(output).build());
+
+            runApp(app,
+                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--schema-registry-url", "http://localhost:8081",
+                    "--input-topics", input,
+                    "--output-topic", output
+            );
+            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
+            delay(10, TimeUnit.SECONDS);
+            final List<KeyValue<String, String>> keyValues = kafkaCluster.read(ReadKeyValues.from(output));
+            assertThat(keyValues)
+                    .hasSize(1)
+                    .anySatisfy(kv -> {
+                        assertThat(kv.getKey()).isEqualTo("foo");
+                        assertThat(kv.getValue()).isEqualTo("bar");
+                    });
+        }
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithSuccessCodeOnCleanupError() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected void runCleanUp() {
+                // do nothing
+            }
+        }, new String[]{
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
+                "--input-topics", "input",
+                "--output-topic", "output",
+                "--clean-up",
         });
     }
 
@@ -104,10 +267,10 @@ class CliTest {
 
             @Override
             public void run() {
-                //do nothing
+                // do nothing
             }
         };
-        KafkaStreamsApplication.startApplication(app, new String[]{
+        KafkaApplication.startApplicationWithoutExit(app, new String[]{
                 "--brokers", "brokers",
                 "--schema-registry-url", "schema-registry",
                 "--input-topics", "input1,input2",
@@ -122,6 +285,7 @@ class CliTest {
                 .hasSize(2)
                 .containsEntry("role1", List.of("input3"))
                 .containsEntry("role2", List.of("input4", "input5"));
+        assertThat(app.getInputTopics("role1")).isEqualTo(List.of("input3"));
         assertThat(app.getInputTopic("role2")).isEqualTo("input4");
         assertThat(app.getInputTopics("role2")).isEqualTo(List.of("input4", "input5"));
         assertThat(app.getInputPattern())
@@ -132,6 +296,8 @@ class CliTest {
                         pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
                 .hasEntrySatisfying("role2",
                         pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
+        assertThat(app.getInputPattern("role1").pattern()).isEqualTo(Pattern.compile(".+").pattern());
+        assertThat(app.getInputPattern("role2").pattern()).isEqualTo(Pattern.compile("\\d+").pattern());
         assertThat(app.getOutputTopic()).isEqualTo("output1");
         assertThat(app.getExtraOutputTopics())
                 .hasSize(2)

@@ -32,10 +32,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -48,8 +49,6 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 import picocli.CommandLine.UseDefaultConverter;
 
@@ -59,8 +58,8 @@ import picocli.CommandLine.UseDefaultConverter;
  * This class provides common configuration options e.g. {@link #brokers}, {@link #productive} for streaming
  * application. Hereby it automatically populates the passed in command line arguments with matching environment
  * arguments {@link EnvironmentArgumentsParser}. To implement your streaming application inherit from this class and add
- * your custom options. Call {@link #startApplication(KafkaStreamsApplication, String[])} with a fresh instance of your
- * class from your main.
+ * your custom options. Call {@link #startApplication(KafkaApplication, String[])} with a fresh instance of your class
+ * from your main.
  */
 @ToString(callSuper = true)
 @Getter
@@ -69,12 +68,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     private static final int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
-    /**
-     * This variable is usually set on application start. When the application is running in debug mode it is used to
-     * reconfigure the child app package logger. On default, it points to the package of this class allowing to execute
-     * the run method independently.
-     */
-    private static String appPackageName = KafkaStreamsApplication.class.getPackageName();
+    private final CountDownLatch streamsShutdown = new CountDownLatch(1);
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -94,37 +88,28 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic;
     private KafkaStreams streams;
+    private Throwable lastException;
 
-    /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
-     * {@code KafkaStreamsApplication}.</p>
-     *
-     * @param app An instance of the custom application class.
-     * @param args Arguments passed in by the custom application class.
-     */
-    protected static void startApplication(final KafkaStreamsApplication app, final String[] args) {
-        appPackageName = app.getClass().getPackageName();
-        final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        // deprecated command call is the only one that properly exits the application in both clean up and streams
-        CommandLine.run(app, System.out, populatedArgs);
+    private static boolean isError(final State newState) {
+        return newState == State.ERROR;
     }
 
+    /**
+     * Run the application. If Kafka Streams is run, this method blocks until Kafka Streams has completed shutdown,
+     * either because it caught an error or the application has received a shutdown event.
+     */
     @Override
     public void run() {
-        log.info("Starting application");
-        if (this.debug) {
-            Configurator.setLevel("com.bakdata", Level.DEBUG);
-            Configurator.setLevel(appPackageName, Level.DEBUG);
-        }
-        log.debug(this.toString());
+        super.run();
 
         try {
-            final var kafkaProperties = this.getKafkaProperties();
+            final Properties kafkaProperties = this.getKafkaProperties();
             this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
-            this.getUncaughtExceptionHandler()
-                    .ifPresent(this.streams::setUncaughtExceptionHandler);
-            Optional.ofNullable(this.getStateListener())
-                    .ifPresent(this.streams::setStateListener);
+            final StreamsUncaughtExceptionHandler uncaughtExceptionHandler = this.getUncaughtExceptionHandler();
+            this.streams.setUncaughtExceptionHandler(
+                    new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
+            final StateListener stateListener = this.getStateListener();
+            this.streams.setStateListener(new ClosingResourcesStateListener(stateListener));
 
             if (this.cleanUp) {
                 this.runCleanUp();
@@ -134,6 +119,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         } catch (final Throwable e) {
             this.closeResources();
             throw e;
+        }
+        if (isError(this.streams.state())) {
+            // let PicoCLI exit with an error code
+            if (this.lastException instanceof RuntimeException) {
+                throw (RuntimeException) this.lastException;
+            }
+            throw new StreamsApplicationException("Kafka Streams has transitioned to error", this.lastException);
         }
     }
 
@@ -225,14 +217,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if
-     * {@code Optional.empty()} is returned.
+     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
      *
-     * @return {@code Optional.empty()} by default.
+     * @return {@code StreamsUncaughtExceptionHandler}.
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
-    protected Optional<StreamsUncaughtExceptionHandler> getUncaughtExceptionHandler() {
-        return Optional.empty();
+    protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return new DefaultStreamsUncaughtExceptionHandler();
     }
 
     /**
@@ -277,7 +268,19 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         return kafkaConfig;
     }
 
+    /**
+     * Run the Streams application. This method blocks until Kafka Streams has completed shutdown, either because it
+     * caught an error or the application has received a shutdown event.
+     */
     protected void runStreamsApplication() {
+        this.startStreams();
+        this.awaitStreamsShutdown();
+    }
+
+    /**
+     * Start Kafka Streams and register a ShutdownHook for closing Kafka Streams.
+     */
+    protected void startStreams() {
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
@@ -291,18 +294,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create a {@link StateListener} to use for Kafka Streams. Will not be configured if {@code null} is returned.
+     * Create a {@link StateListener} to use for Kafka Streams.
      *
-     * @return {@link StateListener} that calls {@link #closeResources()} on transition to {@link State#ERROR}.
+     * @return {@code StateListener}.
      * @see KafkaStreams#setStateListener(StateListener)
      */
     protected StateListener getStateListener() {
-        return (newState, oldState) -> {
-            if (newState == State.ERROR) {
-                log.debug("Closing resources because of state transition from {} to {}", oldState, State.ERROR);
-                this.closeResources();
-            }
-        };
+        return new NoOpStateListener();
     }
 
     /**
@@ -326,5 +324,50 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
         cleanUpRunner.run(this.deleteOutputTopic);
+    }
+
+    /**
+     * Wait for Kafka Streams to shut down. Shutdown is detected by a {@link StateListener}.
+     *
+     * @see State#hasCompletedShutdown()
+     */
+    protected void awaitStreamsShutdown() {
+        try {
+            this.streamsShutdown.await();
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new StreamsApplicationException("Error awaiting Streams shutdown", e);
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
+
+        private @NonNull StreamsUncaughtExceptionHandler wrapped;
+
+        @Override
+        public StreamThreadExceptionResponse handle(final Throwable exception) {
+            final StreamThreadExceptionResponse response = this.wrapped.handle(exception);
+            KafkaStreamsApplication.this.lastException = exception;
+            return response;
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class ClosingResourcesStateListener implements StateListener {
+
+        private @NonNull StateListener wrapped;
+
+        @Override
+        public void onChange(final State newState, final State oldState) {
+            this.wrapped.onChange(newState, oldState);
+            if (isError(newState)) {
+                log.debug("Closing resources because of state transition from {} to {}", oldState, newState);
+                KafkaStreamsApplication.this.closeResources();
+            }
+            if (newState.hasCompletedShutdown()) {
+                KafkaStreamsApplication.this.streamsShutdown.countDown();
+            }
+        }
     }
 }

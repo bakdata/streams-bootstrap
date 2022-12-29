@@ -36,18 +36,15 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.jooq.lambda.Seq;
-import picocli.CommandLine;
 
 
 /**
  * <p>The base class of the entry point of a producer application.</p>
  * This class provides common configuration options, e.g., {@link #brokers}, for producer applications. Hereby it
- * automatically populates the passed in command line arguments with matching environment arguments {@link
- * EnvironmentArgumentsParser}. To implement your producer application inherit from this class and add your custom
- * options. Call {@link #startApplication(KafkaProducerApplication, String[])} with a fresh instance of your class from
+ * automatically populates the passed in command line arguments with matching environment arguments
+ * {@link EnvironmentArgumentsParser}. To implement your producer application inherit from this class and add your
+ * custom options. Call {@link #startApplication(KafkaApplication, String[])} with a fresh instance of your class from
  * your main.
  */
 @ToString(callSuper = true)
@@ -56,35 +53,11 @@ import picocli.CommandLine;
 @RequiredArgsConstructor
 @Slf4j
 public abstract class KafkaProducerApplication extends KafkaApplication {
-    /**
-     * This variable is usually set on application start. When the application is running in debug mode it is used to
-     * reconfigure the child app package logger. On default it points to the package of this class allowing to execute
-     * the run method independently.
-     */
-    private static String appPackageName = KafkaProducerApplication.class.getPackageName();
-
-    /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
-     * {@code KafkaProducerApplication}.</p>
-     *
-     * @param app An instance of the custom application class.
-     * @param args Arguments passed in by the custom application class.
-     */
-    protected static void startApplication(final KafkaProducerApplication app, final String[] args) {
-        appPackageName = app.getClass().getPackageName();
-        final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final int exitCode = new CommandLine(app).execute(populatedArgs);
-        System.exit(exitCode);
-    }
 
     @Override
     public void run() {
-        log.info("Starting application");
-        if (this.debug) {
-            Configurator.setLevel("com.bakdata", Level.DEBUG);
-            Configurator.setLevel(appPackageName, Level.DEBUG);
-        }
-        log.debug(this.toString());
+        super.run();
+
         if (this.cleanUp) {
             this.runCleanUp();
         } else {

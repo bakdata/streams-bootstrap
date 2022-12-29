@@ -39,6 +39,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
 /**
@@ -52,11 +55,18 @@ import picocli.CommandLine;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@Slf4j
 public abstract class KafkaApplication implements Runnable {
     public static final int RESET_SLEEP_MS = 5000;
     public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private static final String ENV_PREFIX = Optional.ofNullable(
             System.getenv("ENV_PREFIX")).orElse("APP_");
+    /**
+     * This variable is usually set on application start. When the application is running in debug mode it is used to
+     * reconfigure the child app package logger. By default, it points to the package of this class allowing to execute
+     * the run method independently.
+     */
+    protected static String appPackageName = KafkaApplication.class.getPackageName();
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     protected String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
@@ -77,6 +87,45 @@ public abstract class KafkaApplication implements Runnable {
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> streamsConfig = new HashMap<>();
+
+    /**
+     * <p>This methods needs to be called in the executable custom application class inheriting from
+     * {@code KafkaApplication}.</p>
+     * <p>This method calls System exit</p>
+     *
+     * @param app An instance of the custom application class.
+     * @param args Arguments passed in by the custom application class.
+     * @see #startApplicationWithoutExit(KafkaApplication, String[])
+     */
+    protected static void startApplication(final KafkaApplication app, final String[] args) {
+        final int exitCode = startApplicationWithoutExit(app, args);
+        System.exit(exitCode);
+    }
+
+    @Override
+    public void run() {
+        log.info("Starting application");
+        if (this.debug) {
+            Configurator.setLevel("com.bakdata", Level.DEBUG);
+            Configurator.setLevel(appPackageName, Level.DEBUG);
+        }
+        log.debug(this.toString());
+    }
+
+    /**
+     * <p>This methods needs to be called in the executable custom application class inheriting from
+     * {@code KafkaApplication}.</p>
+     *
+     * @param app An instance of the custom application class.
+     * @param args Arguments passed in by the custom application class.
+     * @return Exit code of application
+     */
+    protected static int startApplicationWithoutExit(final KafkaApplication app, final String[] args) {
+        appPackageName = app.getClass().getPackageName();
+        final String[] populatedArgs = addEnvironmentVariablesArguments(args);
+        final CommandLine commandLine = new CommandLine(app);
+        return commandLine.execute(populatedArgs);
+    }
 
     static String[] addEnvironmentVariablesArguments(final String[] args) {
         Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),

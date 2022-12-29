@@ -28,6 +28,9 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.ExtraInputTopics;
@@ -38,6 +41,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
@@ -48,20 +52,35 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.KafkaStreams.State;
+import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
 import org.apache.kafka.streams.kstream.KStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class RunStreamsAppTest {
     private static final int TIMEOUT_SECONDS = 10;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private EmbeddedKafkaCluster kafkaCluster;
     private KafkaStreamsApplication app = null;
+    @Mock
+    private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
+    @Mock
+    private StateListener stateListener;
 
     @BeforeEach
     void setup() {
@@ -94,7 +113,7 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -125,7 +144,7 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        this.runApp();
         this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input1, List.of(new KeyValue<>("foo", "bar")))
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -156,9 +175,12 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
+        this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
+        verify(this.uncaughtExceptionHandler).handle(any());
+        verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
     }
 
     @Test
@@ -176,7 +198,8 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        this.app.run();
+        when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
+        this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -184,12 +207,20 @@ class RunStreamsAppTest {
                         .build();
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
+        verify(this.uncaughtExceptionHandler).handle(any());
+        verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
     }
 
-    private static class CloseResourcesApplication extends KafkaStreamsApplication {
-        @Getter
-        private int called = 0;
+    private void runApp() {
+        // run in Thread because the application blocks indefinitely
+        new Thread(this.app).start();
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private class CloseResourcesApplication extends KafkaStreamsApplication {
+        private int resourcesClosed = 0;
 
         @Override
         public void buildTopology(final StreamsBuilder builder) {
@@ -204,7 +235,17 @@ class RunStreamsAppTest {
 
         @Override
         protected void closeResources() {
-            this.called++;
+            this.resourcesClosed++;
+        }
+
+        @Override
+        protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
+            return RunStreamsAppTest.this.uncaughtExceptionHandler;
+        }
+
+        @Override
+        protected StateListener getStateListener() {
+            return RunStreamsAppTest.this.stateListener;
         }
 
         @Override
