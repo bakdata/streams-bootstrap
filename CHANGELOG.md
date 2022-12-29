@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.6.0](https://github.com/bakdata/streams-bootstrap/tree/2.6.0) (2022-12-29)
+[Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.5.0...2.6.0)
+
+**Closed issues:**
+
+- Missing CLI arguments in clean job don't crash the app [\#105](https://github.com/bakdata/streams-bootstrap/issues/105)
+
+**Merged pull requests:**
+
+- Use new CommandLine API [\#161](https://github.com/bakdata/streams-bootstrap/pull/161) ([@philipp94831](https://github.com/philipp94831))
+- Use the latest version of the workflow [\#160](https://github.com/bakdata/streams-bootstrap/pull/160) ([@MichaelKora](https://github.com/MichaelKora))
+
 ## [2.5.0](https://github.com/bakdata/streams-bootstrap/tree/2.5.0) (2022-12-22)
 [Full Changelog](https://github.com/bakdata/streams-bootstrap/compare/2.4.2...2.5.0)
 
