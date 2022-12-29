@@ -36,8 +36,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.jooq.lambda.Seq;
 
 
@@ -58,12 +56,8 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     @Override
     public void run() {
-        log.info("Starting application");
-        if (this.debug) {
-            Configurator.setLevel("com.bakdata", Level.DEBUG);
-            Configurator.setLevel(appPackageName, Level.DEBUG);
-        }
-        log.debug(this.toString());
+        super.run();
+
         if (this.cleanUp) {
             this.runCleanUp();
         } else {

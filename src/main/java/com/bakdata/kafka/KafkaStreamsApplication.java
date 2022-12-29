@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -51,8 +52,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
 import picocli.CommandLine;
 import picocli.CommandLine.UseDefaultConverter;
 
@@ -72,6 +72,8 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     private static final int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
+    private static final StreamsUncaughtExceptionHandler DEFAULT_STREAMS_UNCAUGHT_EXCEPTION_HANDLER =
+            e -> StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -83,6 +85,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected Map<String, List<String>> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
+    private Throwable lastException;
     @CommandLine.Option(names = "--productive", arity = "1",
             description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
                     + "more suitable for production environments")
@@ -98,18 +101,14 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     @Override
     public void run() {
-        log.info("Starting application");
-        if (this.debug) {
-            Configurator.setLevel("com.bakdata", Level.DEBUG);
-            Configurator.setLevel(appPackageName, Level.DEBUG);
-        }
-        log.debug(this.toString());
+        super.run();
 
         try {
             final Properties kafkaProperties = this.getKafkaProperties();
             this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
-            this.getUncaughtExceptionHandler()
-                    .ifPresent(this.streams::setUncaughtExceptionHandler);
+            final StreamsUncaughtExceptionHandler uncaughtExceptionHandler = this.getUncaughtExceptionHandler();
+            this.streams.setUncaughtExceptionHandler(
+                    new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
             Optional.ofNullable(this.getStateListener())
                     .ifPresent(this.streams::setStateListener);
 
@@ -124,7 +123,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         }
         if (isError(this.streams.state())) {
             // let PicoCLI exit with an error code
-            throw new StreamsException("Kafka Streams has transitioned to error");
+            if (this.lastException instanceof RuntimeException) {
+                throw (RuntimeException) this.lastException;
+            }
+            throw new StreamsException("Kafka Streams has transitioned to error", this.lastException);
         }
     }
 
@@ -216,14 +218,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams. Will not be configured if
-     * {@code Optional.empty()} is returned.
+     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
      *
-     * @return {@code Optional.empty()} by default.
+     * @return {@code StreamsUncaughtExceptionHandler}.
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
-    protected Optional<StreamsUncaughtExceptionHandler> getUncaughtExceptionHandler() {
-        return Optional.empty();
+    protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return DEFAULT_STREAMS_UNCAUGHT_EXCEPTION_HANDLER;
     }
 
     /**
@@ -322,5 +323,17 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     private boolean hasStreamsShutdown() {
         return this.streams.state().hasCompletedShutdown();
+    }
+
+    @RequiredArgsConstructor
+    private class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
+
+        private @NonNull StreamsUncaughtExceptionHandler wrapped;
+
+        @Override
+        public StreamThreadExceptionResponse handle(final Throwable exception) {
+            KafkaStreamsApplication.this.lastException = exception;
+            return this.wrapped.handle(exception);
+        }
     }
 }

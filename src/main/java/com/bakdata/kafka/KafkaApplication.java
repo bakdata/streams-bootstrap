@@ -39,6 +39,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
 /**
@@ -52,6 +55,7 @@ import picocli.CommandLine;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@Slf4j
 public abstract class KafkaApplication implements Runnable {
     public static final int RESET_SLEEP_MS = 5000;
     public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
@@ -96,6 +100,16 @@ public abstract class KafkaApplication implements Runnable {
     protected static void startApplication(final KafkaApplication app, final String[] args) {
         final int exitCode = startApplicationWithoutExit(app, args);
         System.exit(exitCode);
+    }
+
+    @Override
+    public void run() {
+        log.info("Starting application");
+        if (this.debug) {
+            Configurator.setLevel("com.bakdata", Level.DEBUG);
+            Configurator.setLevel(appPackageName, Level.DEBUG);
+        }
+        log.debug(this.toString());
     }
 
     /**
