@@ -93,7 +93,6 @@ allprojects {
         implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
         implementation(group = "com.google.guava", name = "guava", version = "30.1.1-jre")
         implementation(group = "org.jooq", name = "jool", version = "0.9.14")
-        implementation(group = "org.awaitility", name = "awaitility", version = "4.2.0")
 
         val junitVersion = "5.7.2"
         testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)

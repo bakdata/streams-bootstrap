@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static org.awaitility.Awaitility.await;
-
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -35,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.NonNull;
@@ -49,7 +48,6 @@ import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.UseDefaultConverter;
@@ -81,7 +79,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected Map<String, List<String>> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
-    private Throwable lastException;
     @CommandLine.Option(names = "--productive", arity = "1",
             description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
                     + "more suitable for production environments")
@@ -90,6 +87,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic;
     private KafkaStreams streams;
+    private Throwable lastException;
+    private CountDownLatch streamsShutdown = new CountDownLatch(1);
 
     private static boolean isError(final State newState) {
         return newState == State.ERROR;
@@ -126,7 +125,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             if (this.lastException instanceof RuntimeException) {
                 throw (RuntimeException) this.lastException;
             }
-            throw new StreamsException("Kafka Streams has transitioned to error", this.lastException);
+            throw new StreamsApplicationException("Kafka Streams has transitioned to error", this.lastException);
         }
     }
 
@@ -274,9 +273,16 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * caught an error or the application has received a shutdown event.
      */
     protected void runStreamsApplication() {
+        this.startStreams();
+        this.awaitStreamsShutdown();
+    }
+
+    /**
+     * Start Kafka Streams and register a ShutdownHook for closing Kafka Streams.
+     */
+    protected void startStreams() {
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
-        await().forever().until(this::hasStreamsShutdown);
     }
 
     /**
@@ -320,8 +326,18 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         cleanUpRunner.run(this.deleteOutputTopic);
     }
 
-    private boolean hasStreamsShutdown() {
-        return this.streams.state().hasCompletedShutdown();
+    /**
+     * Wait for Kafka Streams to shut down. Shutdown is detected by a {@link StateListener}.
+     *
+     * @see State#hasCompletedShutdown()
+     */
+    protected void awaitStreamsShutdown() {
+        try {
+            this.streamsShutdown.await();
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new StreamsApplicationException("Error awaiting Streams shutdown", e);
+        }
     }
 
     @RequiredArgsConstructor
@@ -348,6 +364,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             if (isError(newState)) {
                 log.debug("Closing resources because of state transition from {} to {}", oldState, newState);
                 KafkaStreamsApplication.this.closeResources();
+            }
+            if (newState.hasCompletedShutdown()) {
+                KafkaStreamsApplication.this.streamsShutdown.countDown();
             }
         }
     }
