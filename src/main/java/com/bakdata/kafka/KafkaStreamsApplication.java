@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -52,7 +51,6 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
-import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
 import picocli.CommandLine;
 import picocli.CommandLine.UseDefaultConverter;
 
@@ -72,8 +70,6 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     private static final int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
-    private static final StreamsUncaughtExceptionHandler DEFAULT_STREAMS_UNCAUGHT_EXCEPTION_HANDLER =
-            e -> StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -109,8 +105,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             final StreamsUncaughtExceptionHandler uncaughtExceptionHandler = this.getUncaughtExceptionHandler();
             this.streams.setUncaughtExceptionHandler(
                     new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
-            Optional.ofNullable(this.getStateListener())
-                    .ifPresent(this.streams::setStateListener);
+            final StateListener stateListener = this.getStateListener();
+            this.streams.setStateListener(new ClosingResourcesStateListener(stateListener));
 
             if (this.cleanUp) {
                 this.runCleanUp();
@@ -218,13 +214,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create an {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
+     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
      *
      * @return {@code StreamsUncaughtExceptionHandler}.
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
     protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return DEFAULT_STREAMS_UNCAUGHT_EXCEPTION_HANDLER;
+        return new DefaultStreamsUncaughtExceptionHandler();
     }
 
     /**
@@ -284,18 +280,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     /**
-     * Create a {@link StateListener} to use for Kafka Streams. Will not be configured if {@code null} is returned.
+     * Create a {@link StateListener} to use for Kafka Streams.
      *
-     * @return {@link StateListener} that calls {@link #closeResources()} on transition to {@link State#ERROR}.
+     * @return {@code StateListener}.
      * @see KafkaStreams#setStateListener(StateListener)
      */
     protected StateListener getStateListener() {
-        return (newState, oldState) -> {
-            if (isError(newState)) {
-                log.debug("Closing resources because of state transition from {} to {}", oldState, newState);
-                this.closeResources();
-            }
-        };
+        return new NoOpStateListener();
     }
 
     /**
@@ -334,6 +325,21 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         public StreamThreadExceptionResponse handle(final Throwable exception) {
             KafkaStreamsApplication.this.lastException = exception;
             return this.wrapped.handle(exception);
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class ClosingResourcesStateListener implements StateListener {
+
+        private @NonNull StateListener wrapped;
+
+        @Override
+        public void onChange(final State newState, final State oldState) {
+            if (isError(newState)) {
+                log.debug("Closing resources because of state transition from {} to {}", oldState, newState);
+                KafkaStreamsApplication.this.closeResources();
+            }
+            this.wrapped.onChange(newState, oldState);
         }
     }
 }

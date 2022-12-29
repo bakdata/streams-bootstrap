@@ -48,8 +48,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.KafkaStreams.State;
+import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
 import org.apache.kafka.streams.kstream.KStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -158,7 +162,9 @@ class RunStreamsAppTest {
         ));
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getErrorTransitions()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getUncaughtExceptions()).isEqualTo(1);
     }
 
     @Test
@@ -184,7 +190,9 @@ class RunStreamsAppTest {
                         .build();
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        assertThat(closeResourcesApplication.getCalled()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getErrorTransitions()).isEqualTo(1);
+        assertThat(closeResourcesApplication.getUncaughtExceptions()).isEqualTo(1);
     }
 
     private void runApp() {
@@ -192,9 +200,12 @@ class RunStreamsAppTest {
         new Thread(this.app).start();
     }
 
+    @Getter
     private static class CloseResourcesApplication extends KafkaStreamsApplication {
-        @Getter
-        private int called = 0;
+        private int resourcesClosed = 0;
+        private int errorTransitions = 0;
+        private int uncaughtExceptions = 0;
+
 
         @Override
         public void buildTopology(final StreamsBuilder builder) {
@@ -209,7 +220,24 @@ class RunStreamsAppTest {
 
         @Override
         protected void closeResources() {
-            this.called++;
+            this.resourcesClosed++;
+        }
+
+        @Override
+        protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
+            return exception -> {
+                CloseResourcesApplication.this.uncaughtExceptions++;
+                return StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
+            };
+        }
+
+        @Override
+        protected StateListener getStateListener() {
+            return (newState, oldState) -> {
+                if (newState == State.ERROR) {
+                    CloseResourcesApplication.this.errorTransitions++;
+                }
+            };
         }
 
         @Override
