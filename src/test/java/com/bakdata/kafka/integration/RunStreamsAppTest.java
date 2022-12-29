@@ -28,6 +28,9 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.ExtraInputTopics;
@@ -38,6 +41,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
@@ -58,14 +62,25 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class RunStreamsAppTest {
     private static final int TIMEOUT_SECONDS = 10;
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private EmbeddedKafkaCluster kafkaCluster;
     private KafkaStreamsApplication app = null;
+    @Mock
+    private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
+    @Mock
+    private StateListener stateListener;
 
     @BeforeEach
     void setup() {
@@ -160,11 +175,12 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
+        when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
-        assertThat(closeResourcesApplication.getErrorTransitions()).isEqualTo(1);
-        assertThat(closeResourcesApplication.getUncaughtExceptions()).isEqualTo(1);
+        verify(this.uncaughtExceptionHandler).handle(any());
+        verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
     }
 
     @Test
@@ -182,6 +198,7 @@ class RunStreamsAppTest {
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
+        when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
@@ -191,8 +208,8 @@ class RunStreamsAppTest {
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
-        assertThat(closeResourcesApplication.getErrorTransitions()).isEqualTo(1);
-        assertThat(closeResourcesApplication.getUncaughtExceptions()).isEqualTo(1);
+        verify(this.uncaughtExceptionHandler).handle(any());
+        verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
     }
 
     private void runApp() {
@@ -201,11 +218,9 @@ class RunStreamsAppTest {
     }
 
     @Getter
-    private static class CloseResourcesApplication extends KafkaStreamsApplication {
+    @RequiredArgsConstructor
+    private class CloseResourcesApplication extends KafkaStreamsApplication {
         private int resourcesClosed = 0;
-        private int errorTransitions = 0;
-        private int uncaughtExceptions = 0;
-
 
         @Override
         public void buildTopology(final StreamsBuilder builder) {
@@ -225,19 +240,12 @@ class RunStreamsAppTest {
 
         @Override
         protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
-            return exception -> {
-                CloseResourcesApplication.this.uncaughtExceptions++;
-                return StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
-            };
+            return RunStreamsAppTest.this.uncaughtExceptionHandler;
         }
 
         @Override
         protected StateListener getStateListener() {
-            return (newState, oldState) -> {
-                if (newState == State.ERROR) {
-                    CloseResourcesApplication.this.errorTransitions++;
-                }
-            };
+            return RunStreamsAppTest.this.stateListener;
         }
 
         @Override
