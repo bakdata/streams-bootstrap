@@ -88,7 +88,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private boolean deleteOutputTopic;
     private KafkaStreams streams;
     private Throwable lastException;
-    private CountDownLatch streamsShutdown = new CountDownLatch(1);
+    private final CountDownLatch streamsShutdown = new CountDownLatch(1);
 
     private static boolean isError(final State newState) {
         return newState == State.ERROR;
