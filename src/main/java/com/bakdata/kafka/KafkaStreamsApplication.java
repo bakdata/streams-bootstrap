@@ -68,6 +68,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
     private static final int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
+    private final CountDownLatch streamsShutdown = new CountDownLatch(1);
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     protected List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -88,7 +89,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private boolean deleteOutputTopic;
     private KafkaStreams streams;
     private Throwable lastException;
-    private final CountDownLatch streamsShutdown = new CountDownLatch(1);
 
     private static boolean isError(final State newState) {
         return newState == State.ERROR;
