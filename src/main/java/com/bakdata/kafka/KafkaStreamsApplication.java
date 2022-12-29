@@ -95,6 +95,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         return newState == State.ERROR;
     }
 
+    /**
+     * Run the application. If Kafka Streams is run, this method blocks until Kafka Streams has completed shutdown,
+     * either because it caught an error or the application has received a shutdown event.
+     */
     @Override
     public void run() {
         super.run();
@@ -265,6 +269,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         return kafkaConfig;
     }
 
+    /**
+     * Run the Streams application. This method blocks until Kafka Streams has completed shutdown, either because it
+     * caught an error or the application has received a shutdown event.
+     */
     protected void runStreamsApplication() {
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
@@ -323,8 +331,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
         @Override
         public StreamThreadExceptionResponse handle(final Throwable exception) {
+            final StreamThreadExceptionResponse response = this.wrapped.handle(exception);
             KafkaStreamsApplication.this.lastException = exception;
-            return this.wrapped.handle(exception);
+            return response;
         }
     }
 
@@ -335,11 +344,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
         @Override
         public void onChange(final State newState, final State oldState) {
+            this.wrapped.onChange(newState, oldState);
             if (isError(newState)) {
                 log.debug("Closing resources because of state transition from {} to {}", oldState, newState);
                 KafkaStreamsApplication.this.closeResources();
             }
-            this.wrapped.onChange(newState, oldState);
         }
     }
 }
