@@ -93,7 +93,7 @@ class RunProducerAppTest {
         app.setBrokers(this.kafkaCluster.getBrokerList());
         app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         app.setOutputTopic(output);
-        app.setStreamsConfig(Map.of(
+        app.setConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         app.run();

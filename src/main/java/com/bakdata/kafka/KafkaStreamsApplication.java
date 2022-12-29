@@ -41,8 +41,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KafkaStreams.CloseOptions;
 import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -87,6 +89,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
             description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic;
+    @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
+            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
+    private boolean volatileGroupInstanceId;
     private KafkaStreams streams;
     private Throwable lastException;
 
@@ -103,8 +108,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         super.run();
 
         try {
-            final Properties kafkaProperties = this.getKafkaProperties();
-            this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
+            final StreamsConfig streamsConfig = this.getStreamsConfig();
+            this.streams = new KafkaStreams(this.createTopology(), streamsConfig);
             final StreamsUncaughtExceptionHandler uncaughtExceptionHandler = this.getUncaughtExceptionHandler();
             this.streams.setUncaughtExceptionHandler(
                     new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
@@ -133,7 +138,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public void close() {
         log.info("Stopping application");
         if (this.streams != null) {
-            this.streams.close();
+            final boolean staticMembershipDisabled = this.isStaticMembershipDisabled();
+            final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
+            final CloseOptions options = new CloseOptions().leaveGroup(leaveGroup);
+            this.streams.close(options);
         }
         // close resources after streams because messages currently processed might depend on resources
         this.closeResources();
@@ -214,6 +222,16 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         final Pattern pattern = this.extraInputPatterns.get(role);
         Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
         return pattern;
+    }
+
+    /**
+     * {@link StreamsConfig} created from {@link #getKafkaProperties()}.
+     *
+     * @return {@code StreamsConfig} of this Kafka Streams application.
+     * @see #getKafkaProperties();
+     */
+    protected StreamsConfig getStreamsConfig() {
+        return new StreamsConfig(this.getKafkaProperties());
     }
 
     /**
@@ -338,6 +356,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             Thread.currentThread().interrupt();
             throw new StreamsApplicationException("Error awaiting Streams shutdown", e);
         }
+    }
+
+    private boolean isStaticMembershipDisabled() {
+        final StreamsConfig streamsConfig = this.getStreamsConfig();
+        return streamsConfig.getString(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
     @RequiredArgsConstructor

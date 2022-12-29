@@ -86,7 +86,7 @@ public abstract class KafkaApplication implements Runnable {
     private boolean helpRequested;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
     @CommandLine.Option(names = "--streams-config", split = ",", description = "Additional Kafka properties")
-    private Map<String, String> streamsConfig = new HashMap<>();
+    private Map<String, String> config = new HashMap<>();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
@@ -150,7 +150,7 @@ public abstract class KafkaApplication implements Runnable {
 
         EnvironmentStreamsConfigParser.parseVariables(System.getenv())
                 .forEach(kafkaConfig::setProperty);
-        this.streamsConfig.forEach(kafkaConfig::setProperty);
+        this.config.forEach(kafkaConfig::setProperty);
 
         return kafkaConfig;
     }
@@ -174,7 +174,7 @@ public abstract class KafkaApplication implements Runnable {
      */
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.builder()
-                .properties(this.createKafkaProperties())
+                .properties(this.getKafkaProperties())
                 .schemaRegistryUrl(this.getSchemaRegistryUrl())
                 .timeout(ADMIN_TIMEOUT)
                 .build();
