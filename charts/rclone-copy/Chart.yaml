@@ -2,3 +2,7 @@ apiVersion: v1
 name: rclone-copy
 description: A helm chart for rclone copy on Kubernetes.
 version: 1.0.0
+maintainers:
+  - name: bakdata
+    email: opensource@bakdata.com
+    url: bakdata.com
