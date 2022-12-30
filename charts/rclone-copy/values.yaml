@@ -23,8 +23,8 @@ sync:
     # This is the path to the target directory.
     path: my-s3-bucket
 
-# Additional arguments to pass to rclone. 
-# The expected value is an array with comma seperated flag and value passed as a string. 
+# Additional arguments to pass to rclone.
+# The expected value is an array with comma seperated flag and value passed as a string.
 # Example: ["--transfers", '"1"']
 arguments: []
 

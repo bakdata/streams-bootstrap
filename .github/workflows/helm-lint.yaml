@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Lint Helm chart
-        uses: bakdata/ci-templates/actions/helm-lint@v1.13.2
+        uses: bakdata/ci-templates/actions/helm-lint@feature/disable-version-increment
         with:
           lint-config-path: ".github/lint-config.yaml"
           ref: ${{ github.ref_name }}
