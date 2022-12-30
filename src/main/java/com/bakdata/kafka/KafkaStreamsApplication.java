@@ -359,8 +359,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     private boolean isStaticMembershipDisabled() {
-        final StreamsConfig streamsConfig = this.getStreamsConfig();
-        return streamsConfig.getString(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
+        final Properties kafkaProperties = this.getKafkaProperties();
+        return kafkaProperties.getProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
     @RequiredArgsConstructor
