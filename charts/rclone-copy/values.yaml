@@ -51,7 +51,7 @@ restartPolicy: OnFailure
 
 # serviceAccountName: foo
 
-tolerations: [ ]
+tolerations: []
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -59,7 +59,7 @@ tolerations: [ ]
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-nodeAffinity: { }
+nodeAffinity: {}
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:

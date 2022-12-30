@@ -4,22 +4,22 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: [ ]
+imagePullSecrets: []
 
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
-#awsRole: my-aws-role
+# awsRole: my-aws-role
 
 streams:
 #  brokers: "test:9092"
 #  schemaRegistryUrl: "url:1234"
-  config: { }
+  config: {}
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
 #    max.request.size: "1000000"
-  inputTopics: [ ]
+  inputTopics: []
 #  - input
 #  - input2
   extraInputTopics: {}
@@ -36,26 +36,26 @@ streams:
 #  productive: true
   deleteOutput: false
 
-commandLine: { }
+commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
 
 debug: false
 
-env: { }
+env: {}
 #  MY_ENV_VARIABLE: foo-bar
 #
-secrets: { }
+secrets: {}
 #  MY_SECRET: fo-bar
 
-annotations: { }
+annotations: {}
 #  MY_ANNOTATION: "foo-bar"
 
-labels: { }
+labels: {}
 #  MY_LABEL: "foo-bar"
 
 # serviceAccountName: foo
 
-tolerations: [ ]
+tolerations: []
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -63,7 +63,7 @@ tolerations: [ ]
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-nodeAffinity: { }
+nodeAffinity: {}
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:
