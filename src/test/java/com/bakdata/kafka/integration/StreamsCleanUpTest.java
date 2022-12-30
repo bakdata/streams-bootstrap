@@ -30,9 +30,9 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultCluste
 import static net.mguenther.kafka.junit.Wait.delay;
 
 import com.bakdata.kafka.CleanUpException;
+import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.test_applications.CloseFlagApp;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
 import com.bakdata.kafka.test_applications.MirrorValueWithAvro;

@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.ExtraInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
@@ -210,6 +211,66 @@ class RunStreamsAppTest {
         assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
         verify(this.uncaughtExceptionHandler).handle(any());
         verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
+    }
+
+    @Test
+    void shouldLeaveGroup() throws InterruptedException {
+        final String input = "input";
+        final String output = "output";
+        final CloseFlagApp closeApplication = new CloseFlagApp();
+        this.app = closeApplication;
+        this.app.setBrokers(this.kafkaCluster.getBrokerList());
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.app.setInputTopics(List.of(input));
+        this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
+        this.runApp();
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.app.close();
+        assertThat(closeApplication.getLeaveGroup()).isTrue();
+    }
+
+    @Test
+    void shouldNotLeaveGroup() throws InterruptedException {
+        final String input = "input";
+        final String output = "output";
+        final CloseFlagApp closeApplication = new CloseFlagApp();
+        this.app = closeApplication;
+        this.app.setBrokers(this.kafkaCluster.getBrokerList());
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.app.setInputTopics(List.of(input));
+        this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000",
+                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
+        ));
+        this.runApp();
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.app.close();
+        assertThat(closeApplication.getLeaveGroup()).isFalse();
+    }
+
+    @Test
+    void shouldLeaveGroupWithVolatileGroupId() throws InterruptedException {
+        final String input = "input";
+        final String output = "output";
+        final CloseFlagApp closeApplication = new CloseFlagApp();
+        this.app = closeApplication;
+        this.app.setBrokers(this.kafkaCluster.getBrokerList());
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.app.setInputTopics(List.of(input));
+        this.app.setOutputTopic(output);
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000",
+                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
+        ));
+        this.app.setVolatileGroupInstanceId(true);
+        this.runApp();
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.app.close();
+        assertThat(closeApplication.getLeaveGroup()).isTrue();
     }
 
     private void runApp() {

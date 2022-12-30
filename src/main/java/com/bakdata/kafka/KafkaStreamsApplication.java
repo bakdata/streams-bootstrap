@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -140,9 +141,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         if (this.streams != null) {
             final boolean staticMembershipDisabled = this.isStaticMembershipDisabled();
             final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
-            final CloseOptions options = new CloseOptions().leaveGroup(leaveGroup);
-            log.debug("Closing Kafka Streams with leaveGroup={}", leaveGroup);
-            this.streams.close(options);
+            this.closeStreams(leaveGroup);
         }
         // close resources after streams because messages currently processed might depend on resources
         this.closeResources();
@@ -347,6 +346,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             Thread.currentThread().interrupt();
             throw new StreamsApplicationException("Error awaiting Streams shutdown", e);
         }
+    }
+
+    @VisibleForTesting
+    void closeStreams(final boolean leaveGroup) {
+        final CloseOptions options = new CloseOptions().leaveGroup(leaveGroup);
+        log.debug("Closing Kafka Streams with leaveGroup={}", leaveGroup);
+        this.streams.close(options);
     }
 
     private boolean isStaticMembershipDisabled() {

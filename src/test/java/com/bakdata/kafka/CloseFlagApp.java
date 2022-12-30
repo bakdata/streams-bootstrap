@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2022 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,8 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.TestRecord;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,11 +31,12 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
+@Getter
+@Setter
 public class CloseFlagApp extends KafkaStreamsApplication {
 
-    @Getter
-    @Setter
     private boolean closed = false;
+    private Boolean leaveGroup;
 
     @Override
     public void close() {
@@ -54,5 +53,11 @@ public class CloseFlagApp extends KafkaStreamsApplication {
     @Override
     public String getUniqueAppId() {
         return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
+    }
+
+    @Override
+    void closeStreams(final boolean leaveGroup) {
+        this.leaveGroup = leaveGroup;
+        super.closeStreams(leaveGroup);
     }
 }
