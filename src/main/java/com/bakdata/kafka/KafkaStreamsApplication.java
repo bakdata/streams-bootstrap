@@ -141,6 +141,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             final boolean staticMembershipDisabled = this.isStaticMembershipDisabled();
             final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
             final CloseOptions options = new CloseOptions().leaveGroup(leaveGroup);
+            log.debug("Closing Kafka Streams with leaveGroup={}", leaveGroup);
             this.streams.close(options);
         }
         // close resources after streams because messages currently processed might depend on resources
