@@ -6,7 +6,7 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: [ ]
+imagePullSecrets: []
 
 configurationEnvPrefix: "APP"
 
@@ -30,7 +30,7 @@ streams:
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
 #    max.request.size: "1000000"
-  inputTopics: [ ]
+  inputTopics: []
 #  - input
 #  - input2
   extraInputTopics: {}
@@ -38,23 +38,23 @@ streams:
 #     - input
 #     - input2
 #  inputPattern: .*-input
-  extraInputPatterns: { }
+  extraInputPatterns: {}
 #   role: .*-input
 #  outputTopic: output
-  extraOutputTopics: { }
+  extraOutputTopics: {}
 #   role: output
 #  errorTopic: error
 #  productive: true
 
-commandLine: { }
+commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
 
 debug: false
 
-env: { }
+env: {}
 #  MY_ENV_VARIABLE: foo-bar
 
-secrets: { }
+secrets: {}
 #  MY_SECRET: fo-bar
 
 ## Monitoring
@@ -77,7 +77,7 @@ autoscaling:
   # idleReplicas: 0
   ## all topics from streams.inputTopics and streams.extraInputTopics are automatically taken, so
   ## only use the 'topics' option for adding more topics, e.g., internal topics
-  topics: [ ]
+  topics: []
   #   - bar
   #   - baz
 
