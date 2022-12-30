@@ -106,7 +106,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     }
 
     /**
-     * This methods deletes all output topics.
+     * This method deletes all output topics.
      */
     protected void runCleanUp() {
         try (final ImprovedAdminClient improvedAdminClient = this.createAdminClient()) {

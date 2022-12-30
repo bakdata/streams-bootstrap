@@ -38,6 +38,7 @@ import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
 import com.bakdata.kafka.test_applications.MirrorValueWithAvro;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.test_applications.WordCountPattern;
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -48,6 +49,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -76,6 +78,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
@@ -461,6 +464,15 @@ class StreamsCleanUpTest {
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
         this.softly.assertThat(closeApplication.isClosed()).isTrue();
+    }
+
+    @Test
+    @SetEnvironmentVariable(key = "STREAMS_FOO_BAR", value = "baz")
+    void shouldConfigureAdminClient() {
+        final CloseFlagApp closeApplication = this.createCloseApplication();
+        final ImprovedAdminClient adminClient = closeApplication.createAdminClient();
+        final Properties properties = adminClient.getProperties();
+        this.softly.assertThat(properties.getProperty("foo.bar")).isEqualTo("baz");
     }
 
     @Test
