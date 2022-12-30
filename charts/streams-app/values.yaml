@@ -91,7 +91,7 @@ tolerations: []
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-annotations: { }
+annotations: {}
 #  MY_ANNOTATION: "foo-bar"
 
 labels: {}
