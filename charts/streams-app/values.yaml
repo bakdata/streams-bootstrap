@@ -6,13 +6,13 @@ image: streamsApp
 imageTag: latest
 imagePullPolicy: Always
 
-imagePullSecrets: [ ]
+imagePullSecrets: []
 
 configurationEnvPrefix: "APP"
 
-#awsRole: my-aws-role
+# awsRole: my-aws-role
 
-#log4jConfig:
+# log4jConfig:
 
 resources:
   requests:
@@ -30,7 +30,7 @@ streams:
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
 #    max.request.size: "1000000"
-  inputTopics: [ ]
+  inputTopics: []
 #  - input
 #  - input2
   extraInputTopics: {}
@@ -38,23 +38,23 @@ streams:
 #     - input
 #     - input2
 #  inputPattern: .*-input
-  extraInputPatterns: { }
+  extraInputPatterns: {}
 #   role: .*-input
 #  outputTopic: output
-  extraOutputTopics: { }
+  extraOutputTopics: {}
 #   role: output
 #  errorTopic: error
 #  productive: true
 
-commandLine: { }
+commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
 
 debug: false
 
-env: { }
+env: {}
 #  MY_ENV_VARIABLE: foo-bar
 
-secrets: { }
+secrets: {}
 #  MY_SECRET: fo-bar
 
 ## Monitoring
@@ -77,13 +77,13 @@ autoscaling:
   # idleReplicas: 0
   ## all topics from streams.inputTopics and streams.extraInputTopics are automatically taken, so
   ## only use the 'topics' option for adding more topics, e.g., internal topics
-  topics: [ ]
+  topics: []
   #   - bar
   #   - baz
 
 # serviceAccountName: foo
 
-tolerations: [ ]
+tolerations: []
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -91,17 +91,17 @@ tolerations: [ ]
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-annotations: { }
+annotations: {}
 #  MY_ANNOTATION: "foo-bar"
 
-labels: { }
+labels: {}
 #  MY_LABEL: "foo-bar"
 
 statefulSet: false
 
 javaOptions:
   maxRAMPercentage: 75
-  others: [ ]
+  others: []
 #   - "-XX:MinRAMPercentage=50.0"
 
 ## Prometheus Exporter Configuration
@@ -126,11 +126,11 @@ prometheus:
         memory: 2G
 
 # priorityClass
-#priorityClassName: ""
+# priorityClassName: ""
 
 requirePodAntiAffinity: false
 
-nodeAffinity: { }
+nodeAffinity: {}
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:
