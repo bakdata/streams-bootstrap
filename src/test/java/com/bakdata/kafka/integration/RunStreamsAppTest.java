@@ -37,6 +37,7 @@ import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.ExtraInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -106,14 +107,9 @@ class RunStreamsAppTest {
         final String output = "output";
         this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        this.app = new Mirror();
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(new Mirror());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
         this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
                 SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
@@ -137,14 +133,9 @@ class RunStreamsAppTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(input1).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.withName(input2).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        this.app = new ExtraInputTopics();
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(new ExtraInputTopics());
         this.app.setExtraInputTopics(Map.of("role", List.of(input1, input2)));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
         this.runApp();
         this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input1, List.of(new KeyValue<>("foo", "bar")))
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -168,14 +159,9 @@ class RunStreamsAppTest {
         final String output = "output";
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         final CloseResourcesApplication closeResourcesApplication = new CloseResourcesApplication();
-        this.app = closeResourcesApplication;
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(closeResourcesApplication);
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -191,14 +177,9 @@ class RunStreamsAppTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         final CloseResourcesApplication closeResourcesApplication = new CloseResourcesApplication();
-        this.app = closeResourcesApplication;
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(closeResourcesApplication);
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
@@ -218,14 +199,9 @@ class RunStreamsAppTest {
         final String input = "input";
         final String output = "output";
         final CloseFlagApp closeApplication = new CloseFlagApp();
-        this.app = closeApplication;
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(closeApplication);
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
@@ -237,15 +213,13 @@ class RunStreamsAppTest {
         final String input = "input";
         final String output = "output";
         final CloseFlagApp closeApplication = new CloseFlagApp();
-        this.app = closeApplication;
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(closeApplication);
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000",
-                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
-        ));
+        this.app.setStreamsConfig(ImmutableMap.<String, String>builder()
+                .putAll(this.app.getStreamsConfig())
+                .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
+                .build());
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
@@ -257,20 +231,27 @@ class RunStreamsAppTest {
         final String input = "input";
         final String output = "output";
         final CloseFlagApp closeApplication = new CloseFlagApp();
-        this.app = closeApplication;
-        this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.setupApp(closeApplication);
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000",
-                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
-        ));
+        this.app.setStreamsConfig(ImmutableMap.<String, String>builder()
+                .putAll(this.app.getStreamsConfig())
+                .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
+                .build());
         this.app.setVolatileGroupInstanceId(true);
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
         assertThat(closeApplication.getLeaveGroup()).isTrue();
+    }
+
+    private void setupApp(final KafkaStreamsApplication application) {
+        this.app = application;
+        this.app.setBrokers(this.kafkaCluster.getBrokerList());
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
     }
 
     private void runApp() {
