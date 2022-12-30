@@ -196,12 +196,7 @@ class RunStreamsAppTest {
 
     @Test
     void shouldLeaveGroup() throws InterruptedException {
-        final String input = "input";
-        final String output = "output";
-        final CloseFlagApp closeApplication = new CloseFlagApp();
-        this.setupApp(closeApplication);
-        this.app.setInputTopics(List.of(input));
-        this.app.setOutputTopic(output);
+        final CloseFlagApp closeApplication = this.createCloseFlagApp();
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
@@ -210,12 +205,7 @@ class RunStreamsAppTest {
 
     @Test
     void shouldNotLeaveGroup() throws InterruptedException {
-        final String input = "input";
-        final String output = "output";
-        final CloseFlagApp closeApplication = new CloseFlagApp();
-        this.setupApp(closeApplication);
-        this.app.setInputTopics(List.of(input));
-        this.app.setOutputTopic(output);
+        final CloseFlagApp closeApplication = this.createCloseFlagApp();
         this.app.setStreamsConfig(ImmutableMap.<String, String>builder()
                 .putAll(this.app.getStreamsConfig())
                 .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
@@ -228,12 +218,7 @@ class RunStreamsAppTest {
 
     @Test
     void shouldLeaveGroupWithVolatileGroupId() throws InterruptedException {
-        final String input = "input";
-        final String output = "output";
-        final CloseFlagApp closeApplication = new CloseFlagApp();
-        this.setupApp(closeApplication);
-        this.app.setInputTopics(List.of(input));
-        this.app.setOutputTopic(output);
+        final CloseFlagApp closeApplication = this.createCloseFlagApp();
         this.app.setStreamsConfig(ImmutableMap.<String, String>builder()
                 .putAll(this.app.getStreamsConfig())
                 .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
@@ -243,6 +228,14 @@ class RunStreamsAppTest {
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
         assertThat(closeApplication.getLeaveGroup()).isTrue();
+    }
+
+    private CloseFlagApp createCloseFlagApp() {
+        final CloseFlagApp closeApplication = new CloseFlagApp();
+        this.setupApp(closeApplication);
+        this.app.setInputTopics(List.of("input"));
+        this.app.setOutputTopic("output");
+        return closeApplication;
     }
 
     private void setupApp(final KafkaStreamsApplication application) {
