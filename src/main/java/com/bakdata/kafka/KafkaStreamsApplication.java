@@ -108,8 +108,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         super.run();
 
         try {
-            final StreamsConfig streamsConfig = this.getStreamsConfig();
-            this.streams = new KafkaStreams(this.createTopology(), streamsConfig);
+            final Properties kafkaProperties = this.getKafkaProperties();
+            this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
             final StreamsUncaughtExceptionHandler uncaughtExceptionHandler = this.getUncaughtExceptionHandler();
             this.streams.setUncaughtExceptionHandler(
                     new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
@@ -222,16 +222,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         final Pattern pattern = this.extraInputPatterns.get(role);
         Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
         return pattern;
-    }
-
-    /**
-     * {@link StreamsConfig} created from {@link #getKafkaProperties()}.
-     *
-     * @return {@code StreamsConfig} of this Kafka Streams application.
-     * @see #getKafkaProperties();
-     */
-    protected StreamsConfig getStreamsConfig() {
-        return new StreamsConfig(this.getKafkaProperties());
     }
 
     /**

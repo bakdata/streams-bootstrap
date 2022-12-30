@@ -110,7 +110,7 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setConfig(Map.of(
+        this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         this.runApp();
@@ -141,7 +141,7 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setExtraInputTopics(Map.of("role", List.of(input1, input2)));
         this.app.setOutputTopic(output);
-        this.app.setConfig(Map.of(
+        this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         this.runApp();
@@ -172,7 +172,7 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setConfig(Map.of(
+        this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
@@ -195,7 +195,7 @@ class RunStreamsAppTest {
         this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setInputTopics(List.of(input));
         this.app.setOutputTopic(output);
-        this.app.setConfig(Map.of(
+        this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
