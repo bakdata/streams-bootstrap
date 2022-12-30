@@ -83,7 +83,7 @@ autoscaling:
 
 # serviceAccountName: foo
 
-tolerations: [ ]
+tolerations: []
 #   - key: "foo"
 #     operator: "Exists"
 #     effect: "NoSchedule"
@@ -94,14 +94,14 @@ tolerations: [ ]
 annotations: { }
 #  MY_ANNOTATION: "foo-bar"
 
-labels: { }
+labels: {}
 #  MY_LABEL: "foo-bar"
 
 statefulSet: false
 
 javaOptions:
   maxRAMPercentage: 75
-  others: [ ]
+  others: []
 #   - "-XX:MinRAMPercentage=50.0"
 
 ## Prometheus Exporter Configuration
@@ -126,11 +126,11 @@ prometheus:
         memory: 2G
 
 # priorityClass
-#priorityClassName: ""
+# priorityClassName: ""
 
 requirePodAntiAffinity: false
 
-nodeAffinity: { }
+nodeAffinity: {}
 #   requiredDuringSchedulingIgnoredDuringExecution:
 #     nodeSelectorTerms:
 #     - matchExpressions:
