@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -120,7 +120,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             if (this.cleanUp) {
                 this.runCleanUp();
             } else {
-                this.runStreamsApplication();
+                this.runAndAwaitStreamsApplications();
             }
         } catch (final Throwable e) {
             this.closeResources();
@@ -280,15 +280,15 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * Run the Streams application. This method blocks until Kafka Streams has completed shutdown, either because it
      * caught an error or the application has received a shutdown event.
      */
-    protected void runStreamsApplication() {
-        this.startStreams();
+    protected void runAndAwaitStreamsApplications() {
+        this.runStreamsApplication();
         this.awaitStreamsShutdown();
     }
 
     /**
      * Start Kafka Streams and register a ShutdownHook for closing Kafka Streams.
      */
-    protected void startStreams() {
+    protected void runStreamsApplication() {
         this.streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
