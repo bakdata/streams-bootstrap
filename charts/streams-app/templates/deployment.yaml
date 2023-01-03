@@ -126,6 +126,10 @@ spec:
             - name: KAFKA_JMX_PORT
               value: "{{ .Values.jmx.port }}"
           {{- end }}
+          {{- if and (.Values.streams.optimizeLeaveGroupBehavior) (not .Values.statefulSet) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
+              value: "true"
+          {{- end }}
             - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
               value: {{ .Values.streams.brokers | quote }}
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"

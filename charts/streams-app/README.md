@@ -42,20 +42,21 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### Streams
 
-| Parameter                    | Description                                                                                                                                                                      | Default |
-|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `streams.brokers`            | Comma separated list of Kafka brokers to connect to. (required)                                                                                                                  |         |
-| `streams.schemaRegistryUrl`  | URL of schema registry to connect to. (required)                                                                                                                                 |         |
-| `streams.staticMembership`   | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
-| `streams.config`             | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |
-| `streams.inputTopics`        | List of input topics for your streams application.                                                                                                                               | `[]`    |
-| `streams.extraInputTopics`   | Map of additional named input topics if you need to specify multiple topics with different message types.                                                                        | `{}`    |
-| `streams.inputPattern`       | Input pattern of topics for your streams application.                                                                                                                            |         |
-| `streams.extraInputPatterns` | Map of additional named input patterns if you need to specify multiple topics with different message types.                                                                      | `{}`    |
-| `streams.outputTopic`        | Output topic for your streams application.                                                                                                                                       |         |
-| `streams.extraOutputTopics`  | Map of additional named output topics if you need to specify multiple topics with different message types.                                                                       | `{}`    |
-| `streams.errorTopic`         | Error topic for your streams application.                                                                                                                                        |         |
-| `streams.productive`         | Whether to use Kafka configuration values that are more suitable for production environments.                                                                                    | `true`  |
+| Parameter                            | Description                                                                                                                                                                      | Default |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `streams.brokers`                    | Comma separated list of Kafka brokers to connect to. (required)                                                                                                                  |         |
+| `streams.schemaRegistryUrl`          | URL of schema registry to connect to. (required)                                                                                                                                 |         |
+| `streams.staticMembership`           | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
+| `streams.optimizeLeaveGroupBehavior` | Enabling this optimizes the leave group behavior when a pod is terminated. Depends on the deployment kind, i.e., `statefulSet`. Requires the app to use streams-bootstrap 2.7+.  | `true`  |
+| `streams.config`                     | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |
+| `streams.inputTopics`                | List of input topics for your streams application.                                                                                                                               | `[]`    |
+| `streams.extraInputTopics`           | Map of additional named input topics if you need to specify multiple topics with different message types.                                                                        | `{}`    |
+| `streams.inputPattern`               | Input pattern of topics for your streams application.                                                                                                                            |         |
+| `streams.extraInputPatterns`         | Map of additional named input patterns if you need to specify multiple topics with different message types.                                                                      | `{}`    |
+| `streams.outputTopic`                | Output topic for your streams application.                                                                                                                                       |         |
+| `streams.extraOutputTopics`          | Map of additional named output topics if you need to specify multiple topics with different message types.                                                                       | `{}`    |
+| `streams.errorTopic`                 | Error topic for your streams application.                                                                                                                                        |         |
+| `streams.productive`                 | Whether to use Kafka configuration values that are more suitable for production environments.                                                                                    | `true`  |
 
 ### Other
 

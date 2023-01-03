@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -41,8 +42,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KafkaStreams.CloseOptions;
 import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -87,6 +90,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
             description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic;
+    @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
+            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
+    private boolean volatileGroupInstanceId;
     private KafkaStreams streams;
     private Throwable lastException;
 
@@ -133,7 +139,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public void close() {
         log.info("Stopping application");
         if (this.streams != null) {
-            this.streams.close();
+            final boolean staticMembershipDisabled = this.isStaticMembershipDisabled();
+            final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
+            this.closeStreams(leaveGroup);
         }
         // close resources after streams because messages currently processed might depend on resources
         this.closeResources();
@@ -338,6 +346,18 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             Thread.currentThread().interrupt();
             throw new StreamsApplicationException("Error awaiting Streams shutdown", e);
         }
+    }
+
+    @VisibleForTesting
+    void closeStreams(final boolean leaveGroup) {
+        final CloseOptions options = new CloseOptions().leaveGroup(leaveGroup);
+        log.debug("Closing Kafka Streams with leaveGroup={}", leaveGroup);
+        this.streams.close(options);
+    }
+
+    private boolean isStaticMembershipDisabled() {
+        final Properties kafkaProperties = this.getKafkaProperties();
+        return kafkaProperties.getProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
     @RequiredArgsConstructor
