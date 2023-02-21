@@ -35,15 +35,15 @@ streams:
   # - input
   # - input2
   extraInputTopics: {}
-  # role:
-  #   - input
-  #   - input2
+  #   role:
+  #     - input
+  #     - input2
   # inputPattern: .*-input
   extraInputPatterns: {}
-  # role: .*-input
+  #   role: .*-input
   # outputTopic: output
   extraOutputTopics: {}
-  # role: output
+  #   role: output
   # errorTopic: error
   # productive: true
 
