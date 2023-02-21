@@ -28,9 +28,9 @@ streams:
   staticMembership: false
   optimizeLeaveGroupBehavior: true
   config: {}
-  # max.poll.records: 500
-  # Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
-  # max.request.size: "1000000"
+  #   max.poll.records: 500
+  #   Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+  #   max.request.size: "1000000"
   inputTopics: []
   # - input
   # - input2
