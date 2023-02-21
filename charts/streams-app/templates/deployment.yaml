@@ -11,13 +11,13 @@ kind: Deployment
 {{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
-{{- if or .Values.autoscaling.consumergroup .Values.annotations }}
+{{- if or .Values.autoscaling.consumerGroup .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
-  {{- if and .Values.autoscaling.consumergroup (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.autoscaling.consumergroup | quote }}
+  {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
   {{- end }}
 {{- end }}
   labels:
@@ -39,7 +39,7 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumergroup) .Values.annotations }}
+    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumerGroup) .Values.annotations }}
       annotations:
       {{- if .Values.awsRole }}
         iam.amazonaws.com/role: {{ .Values.awsRole }}
@@ -51,8 +51,8 @@ spec:
       {{- range $key, $value := .Values.annotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
-      {{- if and .Values.autoscaling.consumergroup (not .Values.annotations.consumerGroup) }}
-        consumerGroup: {{ .Values.autoscaling.consumergroup | quote }}
+      {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
+        consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
       {{- end }}
     {{- end }}
       labels:

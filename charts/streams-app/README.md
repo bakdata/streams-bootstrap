@@ -93,7 +93,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | Parameter                       | Description                                                                                              | Default    |
 |---------------------------------|----------------------------------------------------------------------------------------------------------|------------|
 | `autoscaling.enabled`           | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).          | `false`    |
-| `autoscaling.consumergroup`     | Name of the consumer group used for checking the offset on the topic and processing the related lag.     |            |
+| `autoscaling.consumerGroup`     | Name of the consumer group used for checking the offset on the topic and processing the related lag.     |            |
 | `autoscaling.lagThreshold`      | Average target value to trigger scaling actions.                                                         |            |
 | `autoscaling.pollingInterval`   | https://keda.sh/docs/2.7/concepts/scaling-deployments/#pollinginterval                                   | `30`       |
 | `autoscaling.cooldownPeriod`    | https://keda.sh/docs/2.7/concepts/scaling-deployments/#cooldownperiod                                    | `300`      |
