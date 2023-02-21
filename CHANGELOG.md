@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.9.0](https://github.com/bakdata/streams-bootstrap/tree/2.9.0) (2023-02-21)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.8.0...2.9.0)
+
+**Merged pull requests:**
+
+- Fix casing of consumerGroup value [\#173](https://github.com/bakdata/streams-bootstrap/pull/173) ([@disrupted](https://github.com/disrupted))
+
 ## [2.8.0](https://github.com/bakdata/streams-bootstrap/tree/2.8.0) (2023-01-24)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.7.0...2.8.0)
 
