@@ -23,29 +23,29 @@ resources:
     memory: 2G
 
 streams:
-#  brokers: "test:9092"
-#  schemaRegistryUrl: "url:1234"
+  # brokers: "test:9092"
+  # schemaRegistryUrl: "url:1234"
   staticMembership: false
   optimizeLeaveGroupBehavior: true
   config: {}
-#    max.poll.records: 500
-#    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
-#    max.request.size: "1000000"
+  #   max.poll.records: 500
+  #   Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+  #   max.request.size: "1000000"
   inputTopics: []
-#  - input
-#  - input2
+  # - input
+  # - input2
   extraInputTopics: {}
-#   role:
-#     - input
-#     - input2
-#  inputPattern: .*-input
+  #   role:
+  #     - input
+  #     - input2
+  # inputPattern: .*-input
   extraInputPatterns: {}
-#   role: .*-input
-#  outputTopic: output
+  #   role: .*-input
+  # outputTopic: output
   extraOutputTopics: {}
-#   role: output
-#  errorTopic: error
-#  productive: true
+  #   role: output
+  # errorTopic: error
+  # productive: true
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
@@ -68,7 +68,7 @@ jmx:
 
 autoscaling:
   enabled: false
-  # consumergroup: foo
+  # consumerGroup: foo
   # lagThreshold: "1000"
   pollingInterval: 30
   cooldownPeriod: 300
