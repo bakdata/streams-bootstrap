@@ -17,7 +17,9 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
+  {{- if not .Values.deployment }}
   restartPolicy: {{ .Values.restartPolicy }}
+  {{- end }}
   {{- if .Values.serviceAccountName }}
   serviceAccountName: {{ .Values.serviceAccountName }}
   {{- end }}
