@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.10.0](https://github.com/bakdata/streams-bootstrap/tree/2.10.0) (2023-03-15)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.9.0...2.10.0)
+
+**Merged pull requests:**
+
+- Producer App can be deployed as k8s Deployment [\#175](https://github.com/bakdata/streams-bootstrap/pull/175) ([@mkcode92](https://github.com/mkcode92))
+- Remove duplicate of changelog config [\#174](https://github.com/bakdata/streams-bootstrap/pull/174) ([@yannick-roeder](https://github.com/yannick-roeder))
+
 ## [2.9.0](https://github.com/bakdata/streams-bootstrap/tree/2.9.0) (2023-02-21)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.8.0...2.9.0)
 
