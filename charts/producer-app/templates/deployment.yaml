@@ -1,0 +1,32 @@
+{{- if .Values.deployment }}
+{{- $root := . -}}
+{{- if .Capabilities.APIVersions.Has "apps/v1" }}
+apiVersion: apps/v1
+{{- else }}
+apiVersion: apps/v1beta1
+{{- end }}
+kind: Deployment
+metadata:
+  name: {{ template "producer-app.fullname" . }}
+{{- if .Values.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.annotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+  labels:
+    app: {{ template "producer-app.name" . }}
+    chart: {{ template "producer-app.chart" . }}
+    release: {{ .Release.Name }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "producer-app.name" . }}
+      release: {{ .Release.Name }}
+  template:
+{{ include "producer-app.podTemplate" . | indent 4 }}
+{{- end }}

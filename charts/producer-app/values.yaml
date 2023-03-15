@@ -6,6 +6,11 @@ imagePullPolicy: Always
 
 imagePullSecrets: []
 
+# if true, deploy as kubernetes deployment instead of CronJob/Job
+deployment: false
+# Optional, applied for deployment:
+# replicaCount: 1
+
 restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
