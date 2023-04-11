@@ -82,6 +82,11 @@ autoscaling:
   #   - bar
   #   - baz
   additionalTriggers:  []
+#    - type: metrics-api
+#      metadata:
+#        targetValue: "2"
+#        url: "http://custom-metrics-api"
+#        valueLocation: "some.json.path"
 
 # serviceAccountName: foo
 
