@@ -81,7 +81,7 @@ autoscaling:
   topics: []
   #   - bar
   #   - baz
-  additionalTriggers:  []
+  additionalTriggers: []
 #    - type: metrics-api
 #      metadata:
 #        targetValue: "2"
