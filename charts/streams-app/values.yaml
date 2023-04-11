@@ -81,6 +81,7 @@ autoscaling:
   topics: []
   #   - bar
   #   - baz
+  additionalTriggers:  []
 
 # serviceAccountName: foo
 
