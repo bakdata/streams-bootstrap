@@ -91,4 +91,12 @@ spec:
         protocol: {{ .protocol | quote }}
         {{- end }}
     {{- end }}
+    {{- if .Values.livenessProbe }}
+    livenessProbe:
+    {{- .Values.livenessProbe | toYaml | nindent 6 }}
+    {{- end }}
+    {{- if .Values.readinessProbe }}
+    readinessProbe:
+    {{- .Values.readinessProbe | toYaml | nindent 6 }}
+    {{- end }}
 {{- end -}}

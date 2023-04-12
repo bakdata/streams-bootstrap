@@ -103,3 +103,11 @@ ports: []
 #    name: http
 #  # Optional: If not set, kubernetes will use 'TCP'
 #    protocol: "TCP"
+
+
+# Arbitrary Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
+livenessProbe: {}
+
+
+# Arbitrary Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
+readinessProbe: {}

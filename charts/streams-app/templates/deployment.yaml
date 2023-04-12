@@ -218,6 +218,14 @@ spec:
               name: jmx
             {{- end }}
         {{- end }}
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+          {{- .Values.livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+          {{- .Values.readinessProbe | toYaml | nindent 12 }}
+          {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter
           image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"

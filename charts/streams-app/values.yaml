@@ -66,6 +66,13 @@ ports: []
 #     name: http
 #     # Optional: If not set, kubernetes will use 'TCP'
 #     protocol: "TCP"
+
+# Arbitrary Probe v1 definition: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
+livenessProbe: {}
+
+# Arbitrary Probe v1 definition: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
+readinessProbe: {}
+
 ## Monitoring
 ## Kafka Connect JMX Settings
 ## ref: https://kafka.apache.org/documentation/#connect_monitoring
