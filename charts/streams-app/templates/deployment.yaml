@@ -204,10 +204,19 @@ spec:
               mountPath: /tmp/kafka-streams
             {{- end }}
         {{- end }}
-        {{- if .Values.prometheus.jmx.enabled }}
+        {{- if or (.Values.prometheus.jmx.enabled) (.Values.ports) }}
           ports:
+            {{- range .Values.ports }}
+            - containerPort: {{ .containerPort }}
+              name: {{ .name | quote }}
+              {{- if .protocol }}
+              protocol: {{ .protocol | quote }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.prometheus.jmx.enabled }}
             - containerPort: {{ .Values.jmx.port }}
               name: jmx
+            {{- end }}
         {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter

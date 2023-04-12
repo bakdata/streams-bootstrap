@@ -58,6 +58,14 @@ env: {}
 secrets: {}
 #  MY_SECRET: fo-bar
 
+# Additional ports
+ports: []
+#     # Number of the port to expose
+#   - containerPort: 8080
+#     # Optional: Services can reference port by name
+#     name: http
+#     # Optional: If not set, kubernetes will use 'TCP'
+#     protocol: "TCP"
 ## Monitoring
 ## Kafka Connect JMX Settings
 ## ref: https://kafka.apache.org/documentation/#connect_monitoring
