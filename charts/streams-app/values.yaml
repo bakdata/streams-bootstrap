@@ -66,6 +66,13 @@ ports: []
 #     name: http
 #     # Optional: If not set, kubernetes will use 'TCP'
 #     protocol: "TCP"
+#    # The port that will be exposed by the service.
+#     servicePort: 80
+
+service:
+  enabled: false
+  labels: {}
+  type: "ClusterIP"
 
 # Arbitrary Probe v1 definition: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
 livenessProbe: {}

@@ -96,6 +96,7 @@ successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
 backoffLimit: 6
 # ttlSecondsAfterFinished: 100
+
 # Producer's container ports
 ports: []
 #  - containerPort: 8080
@@ -103,7 +104,13 @@ ports: []
 #    name: http
 #  # Optional: If not set, kubernetes will use 'TCP'
 #    protocol: "TCP"
+#  # The port that will be exposed by the service.
+#    servicePort: 80
 
+service:
+  enabled: false
+  labels: {}
+  type: "ClusterIP"
 
 # Arbitrary Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
 livenessProbe: {}

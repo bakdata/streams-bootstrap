@@ -29,6 +29,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `ports.containerPort`        | Number of the port to expose.                                                                                                                                                                                                                                              |                                            |
 | `ports.name`                 | Services can reference port by name (optional).                                                                                                                                                                                                                            |                                            |
 | `ports.schema`               | Protocol for port. Must be UDP, TCP, or SCTP (optional).                                                                                                                                                                                                                   |                                            |
+| `ports.servicePort`          | Number of the port of the service (optional). See [service definition](#service)                                                                                                                                                                                           |                                            |
 | `livenessProbe`              | Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core                                                                                                                                                       | `{}`                                       |
 | `readinessProbe`             | Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core                                                                                                                                                       | `{}`                                       |
 
@@ -68,3 +69,11 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 |--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `javaOptions.maxRAMPercentage` | https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#:~:text=is%20set%20ergonomically.-,%2DXX%3AMaxRAMPercentage,-%3Dpercent | `true`  |
 | `javaOptions.others`           | List of Java VM options passed to the producer app.                                                                                          | `[]`    |
+
+### Service
+
+| Parameter         | Description                                                                                    | Default     |
+|-------------------|------------------------------------------------------------------------------------------------|-------------|
+| `service.enabled` | Whether to create a service. This requires the definition of at least one `ports.servicePort`. | `false`     |
+| `service.labels`  | Additional service labels.                                                                     | `{}`        | 
+| `service.type`    | Service type.                                                                                  | `ClusterIP` |
