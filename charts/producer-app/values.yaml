@@ -96,3 +96,10 @@ successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
 backoffLimit: 6
 # ttlSecondsAfterFinished: 100
+# Producer's container ports
+ports: []
+#  - containerPort: 8080
+#  # Service can reference port by name
+#    name: http
+#  # Optional: If not set, kubernetes will use 'TCP'
+#    protocol: "TCP"

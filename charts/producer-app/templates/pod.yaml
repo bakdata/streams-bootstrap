@@ -83,4 +83,12 @@ spec:
       - name: JAVA_TOOL_OPTIONS
         value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
+    {{- range .Values.ports }}
+    ports:
+      - containerPort: {{ .containerPort }}
+        name: {{ .name | quote }}
+        {{- if .protocol }}
+        protocol: {{ .protocol | quote }}
+        {{- end }}
+    {{- end }}
 {{- end -}}
