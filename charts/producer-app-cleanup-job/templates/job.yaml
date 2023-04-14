@@ -86,6 +86,13 @@ spec:
                   name: {{ template "producer-app-cleanup-job.fullname" $ }}
                   key: "{{ $key }}"
             {{- end }}
+            {{- range $key, $value := .Values.secretRefs }}
+              - name: "{{ $key }}"
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ $value.name }}
+                    key: "{{ $value.key }}"
+            {{- end }}
             {{- range $key, $value := .Values.commandLine }}
             - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
               value: {{ $value | quote }}
