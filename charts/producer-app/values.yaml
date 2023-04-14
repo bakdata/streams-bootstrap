@@ -80,6 +80,10 @@ env: {}
 
 secrets: {}
 #  MY_SECRET: fo-bar
+secretRefs: {}
+#  MY_SECRET:
+#    name: secretName
+#    key: secretKey
 
 annotations: {}
 #  MY_ANNOTATION: "foo-bar"
