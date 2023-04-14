@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.11.0](https://github.com/bakdata/streams-bootstrap/tree/2.11.0) (2023-04-14)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.10.0...2.11.0)
+
+**Merged pull requests:**
+
+- Reference existing secrets from helm charts [\#179](https://github.com/bakdata/streams-bootstrap/pull/179) ([@philipp94831](https://github.com/philipp94831))
+- Support deployment of bootstrap application with an HTTP server [\#178](https://github.com/bakdata/streams-bootstrap/pull/178) ([@torbsto](https://github.com/torbsto))
+- Support additional triggers for KEDA autoscaling [\#177](https://github.com/bakdata/streams-bootstrap/pull/177) ([@torbsto](https://github.com/torbsto))
+
 ## [2.10.0](https://github.com/bakdata/streams-bootstrap/tree/2.10.0) (2023-03-15)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.9.0...2.10.0)
 
