@@ -1,5 +1,7 @@
 nameOverride: bakdata-producer-app
 
+replicaCount: 1
+
 image: producerApp
 imageTag: latest
 imagePullPolicy: Always
