@@ -14,9 +14,6 @@ spec:
   selector:
     app: {{ template "producer-app.name" . }}
     release: {{ .Release.Name }}
-    {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
-    {{- end }}
   ports:
   {{- range .Values.ports }}
     {{- if .servicePort }}

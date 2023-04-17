@@ -1,7 +1,5 @@
 nameOverride: bakdata-producer-app
 
-replicaCount: 1
-
 image: producerApp
 imageTag: latest
 imagePullPolicy: Always
@@ -11,7 +9,7 @@ imagePullSecrets: []
 # if true, deploy as kubernetes deployment instead of CronJob/Job
 deployment: false
 # Optional, applied for deployment:
-# replicaCount: 1
+replicaCount: 1
 
 restartPolicy: OnFailure
 
