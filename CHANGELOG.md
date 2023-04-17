@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.11.1](https://github.com/bakdata/streams-bootstrap/tree/2.11.1) (2023-04-17)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.0...2.11.1)
+
+**Fixed bugs:**
+
+- Fix service selector to match pod labels [\#180](https://github.com/bakdata/streams-bootstrap/pull/180) ([@raminqaf](https://github.com/raminqaf))
+
 ## [2.11.0](https://github.com/bakdata/streams-bootstrap/tree/2.11.0) (2023-04-14)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.10.0...2.11.0)
 
