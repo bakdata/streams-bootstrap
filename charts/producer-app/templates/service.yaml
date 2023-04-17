@@ -13,7 +13,7 @@ metadata:
 spec:
   selector:
     app: {{ template "producer-app.name" . }}
-    chart: {{ template "producer-app.chart" . }}
+    release: {{ .Release.Name }}
   ports:
   {{- range .Values.ports }}
     {{- if .servicePort }}
