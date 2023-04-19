@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) (2023-04-19)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2)
+
+**Merged pull requests:**
+
+- Make brokers and schema registry url optional chart configs [\#181](https://github.com/bakdata/streams-bootstrap/pull/181) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.11.1](https://github.com/bakdata/streams-bootstrap/tree/2.11.1) (2023-04-17)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.0...2.11.1)
 
