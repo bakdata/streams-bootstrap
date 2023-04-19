@@ -130,10 +130,14 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
               value: "true"
           {{- end }}
+          {{- if hasKey .Values.streams "brokers" }}
             - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
               value: {{ .Values.streams.brokers | quote }}
+          {{- end }}
+          {{- if hasKey .Values.streams "schemaRegistryUrl" }}
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
               value: {{ .Values.streams.schemaRegistryUrl | quote }}
+          {{- end }}
           {{- if hasKey .Values.streams "productive" }}
             - name: "{{ .Values.configurationEnvPrefix }}_PRODUCTIVE"
               value: {{ .Values.streams.productive | quote }}

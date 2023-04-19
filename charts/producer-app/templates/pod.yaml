@@ -49,10 +49,14 @@ spec:
       - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
         value: {{ $value | quote }}
         {{- end }}
+        {{- if hasKey .Values.streams "brokers" }}
       - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
         value: {{ .Values.streams.brokers | quote }}
+        {{- end }}
+        {{- if hasKey .Values.streams "schemaRegistryUrl" }}
       - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
         value: {{ .Values.streams.schemaRegistryUrl | quote }}
+        {{- end }}
         {{- if hasKey .Values "debug" }}
       - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
         value: {{ .Values.debug | quote }}
