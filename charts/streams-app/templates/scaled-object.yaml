@@ -26,6 +26,9 @@ spec:
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
   {{- end }}
   triggers:
+    {{- if not (or .Values.streams.inputTopics .Values.autoscaling.topics .Values.streams.extraInputTopics .Values.autoscaling.additionalTriggers) }}
+    {{- fail "To use autoscaling, you must define one of .Values.streams.inputTopics, .Values.autoscaling.topics, .Values.streams.extraInputTopics or .Values.autoscaling.additionalTriggers" }}
+    {{- end}}
     # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to
     # minimize number of loops when we don't need to support helm 2 anymore
     {{- range .Values.streams.inputTopics }}
