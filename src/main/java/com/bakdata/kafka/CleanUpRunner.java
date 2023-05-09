@@ -64,17 +64,6 @@ public final class CleanUpRunner {
     private final @NonNull Collection<Consumer<String>> topicCleanUpHooks = new ArrayList<>();
 
 
-    /**
-     * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
-     *
-     * @param cleanUpAction Action to run when a topic requires clean up. Topic is passed as parameter
-     * @return this for chaining
-     */
-    public CleanUpRunner registerTopicCleanUpHook(final Consumer<String> cleanUpAction) {
-        this.topicCleanUpHooks.add(cleanUpAction);
-        return this;
-    }
-
     @Builder
     private CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
             final @NonNull ImprovedAdminClient adminClient, final @NonNull KafkaStreams streams) {
@@ -154,6 +143,17 @@ public final class CleanUpRunner {
                     return exists;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
+     *
+     * @param cleanUpAction Action to run when a topic requires clean up. Topic is passed as parameter
+     * @return this for chaining
+     */
+    public CleanUpRunner registerTopicCleanUpHook(final Consumer<String> cleanUpAction) {
+        this.topicCleanUpHooks.add(cleanUpAction);
+        return this;
     }
 
     /**
