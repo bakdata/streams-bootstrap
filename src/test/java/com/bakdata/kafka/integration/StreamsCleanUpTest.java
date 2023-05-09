@@ -480,8 +480,6 @@ class StreamsCleanUpTest {
     void shouldCallCleanUpHookForAllTopics() throws InterruptedException {
         this.app = this.createComplexCleanUpHookApplication();
 
-        this.runAppAndClose();
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.runCleanUpWithDeletion();
         final String uniqueAppId = this.app.getUniqueAppId();
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
