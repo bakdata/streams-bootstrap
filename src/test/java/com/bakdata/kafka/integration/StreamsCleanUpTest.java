@@ -28,8 +28,11 @@ package com.bakdata.kafka.integration;
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.bakdata.kafka.CleanUpException;
+import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.TestRecord;
@@ -53,6 +56,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,9 +83,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsCleanUpTest {
     private static final int TIMEOUT_SECONDS = 10;
     @RegisterExtension
@@ -90,6 +100,8 @@ class StreamsCleanUpTest {
     private KafkaStreamsApplication app = null;
     @InjectSoftAssertions
     private SoftAssertions softly;
+    @Mock
+    private Consumer<String> topicCleanUpHook;
 
     @BeforeEach
     void setup() throws InterruptedException {
@@ -453,6 +465,34 @@ class StreamsCleanUpTest {
     }
 
     @Test
+    void shouldCallCleanupHookForInternalTopics() throws InterruptedException {
+        this.app = this.createComplexCleanUpHookApplication();
+
+        this.runCleanUp();
+        final String uniqueAppId = this.app.getUniqueAppId();
+        verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
+        verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
+        verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
+        verifyNoMoreInteractions(this.topicCleanUpHook);
+    }
+
+    @Test
+    void shouldCallCleanUpHookForAllTopics() throws InterruptedException {
+        this.app = this.createComplexCleanUpHookApplication();
+
+        this.runAppAndClose();
+        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.runCleanUpWithDeletion();
+        final String uniqueAppId = this.app.getUniqueAppId();
+        verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
+        verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
+        verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
+        verify(this.topicCleanUpHook).accept(ComplexTopologyApplication.THROUGH_TOPIC);
+        verify(this.topicCleanUpHook).accept(this.app.getOutputTopic());
+        verifyNoMoreInteractions(this.topicCleanUpHook);
+    }
+
+    @Test
     void shouldCallClose() throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseApplication();
         this.app = closeApplication;
@@ -567,6 +607,17 @@ class StreamsCleanUpTest {
     private KafkaStreamsApplication createComplexApplication() {
         this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
         return this.setupApp(new ComplexTopologyApplication(), "input", "output", "value_error");
+    }
+
+    private KafkaStreamsApplication createComplexCleanUpHookApplication() {
+        this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
+        return this.setupApp(new ComplexTopologyApplication() {
+            @Override
+            protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
+                cleanUpRunner.registerTopicCleanUpHook(StreamsCleanUpTest.this.topicCleanUpHook);
+                super.cleanUpRun(cleanUpRunner);
+            }
+        }, "input", "output", "value_error");
     }
 
     private <T extends KafkaStreamsApplication> T setupApp(final T application, final String inputTopicName,

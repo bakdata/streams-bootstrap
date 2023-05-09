@@ -28,17 +28,18 @@ import static com.bakdata.kafka.KafkaApplication.RESET_SLEEP_MS;
 
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import com.bakdata.kafka.util.SchemaTopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import kafka.tools.StreamsResetter;
 import lombok.Builder;
@@ -60,6 +61,19 @@ public final class CleanUpRunner {
     private final TopologyInformation topologyInformation;
     @Getter
     private final @NonNull ImprovedAdminClient adminClient;
+    private final @NonNull Collection<Consumer<String>> topicCleanUpHooks = new ArrayList<>();
+
+
+    /**
+     * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
+     *
+     * @param cleanUpAction Action to run when a topic requires clean up. Topic is passed as parameter
+     * @return this for chaining
+     */
+    public CleanUpRunner registerTopicCleanUpHook(final Consumer<String> cleanUpAction) {
+        this.topicCleanUpHooks.add(cleanUpAction);
+        return this;
+    }
 
     @Builder
     private CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
@@ -155,7 +169,7 @@ public final class CleanUpRunner {
         runResetter(inputTopics, intermediateTopics, allTopics, this.adminClient, this.appId);
         // the StreamsResetter is responsible for deleting internal topics
         this.topologyInformation.getInternalTopics()
-                .forEach(this.adminClient.getSchemaTopicClient()::resetSchemaRegistry);
+                .forEach(this::resetInternalTopic);
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();
@@ -173,9 +187,22 @@ public final class CleanUpRunner {
      * Delete output topics
      */
     public void deleteTopics() {
-        final SchemaTopicClient schemaTopicClient = this.adminClient.getSchemaTopicClient();
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
-        externalTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
+        externalTopics.forEach(this::deleteTopic);
+    }
+
+    private void resetInternalTopic(final String topic) {
+        this.adminClient.getSchemaTopicClient().resetSchemaRegistry(topic);
+        this.runTopicCleanUp(topic);
+    }
+
+    private void runTopicCleanUp(final String topic) {
+        this.topicCleanUpHooks.forEach(hook -> hook.accept(topic));
+    }
+
+    private void deleteTopic(final String topic) {
+        this.adminClient.getSchemaTopicClient().deleteTopicAndResetSchemaRegistry(topic);
+        this.runTopicCleanUp(topic);
     }
 
     private void deleteConsumerGroup() {
