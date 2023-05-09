@@ -465,7 +465,7 @@ class StreamsCleanUpTest {
     }
 
     @Test
-    void shouldCallCleanupHookForInternalTopics() throws InterruptedException {
+    void shouldCallCleanupHookForInternalTopics() {
         this.app = this.createComplexCleanUpHookApplication();
 
         this.runCleanUp();
@@ -477,7 +477,7 @@ class StreamsCleanUpTest {
     }
 
     @Test
-    void shouldCallCleanUpHookForAllTopics() throws InterruptedException {
+    void shouldCallCleanUpHookForAllTopics() {
         this.app = this.createComplexCleanUpHookApplication();
 
         this.runCleanUpWithDeletion();
