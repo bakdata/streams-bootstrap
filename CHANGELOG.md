@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.12.0](https://github.com/bakdata/streams-bootstrap/tree/2.12.0) (2023-05-10)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.2...2.12.0)
+
+**Merged pull requests:**
+
+- Create method to register topic clean up hooks [\#183](https://github.com/bakdata/streams-bootstrap/pull/183) ([@philipp94831](https://github.com/philipp94831))
+- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@jakob-ed](https://github.com/jakob-ed))
+
 ## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) (2023-04-19)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2)
 
