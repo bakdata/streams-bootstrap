@@ -104,7 +104,7 @@ allprojects {
         testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
         testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
-        val fluentKafkaVersion = "2.8.1"
+        val fluentKafkaVersion = "2.9.0"
         testImplementation(
             group = "com.bakdata.fluent-kafka-streams-tests",
             name = "fluent-kafka-streams-tests-junit5",
@@ -116,7 +116,7 @@ allprojects {
             name = "schema-registry-mock-junit5",
             version = fluentKafkaVersion
         )
-        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.3.0") {
+        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.4.0") {
             exclude(group = "org.slf4j", module = "slf4j-log4j12")
         }
 
