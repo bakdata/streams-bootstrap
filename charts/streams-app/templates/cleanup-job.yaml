@@ -3,14 +3,18 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "streams-app-cleanup-job.fullname" . }}
+  name: {{ template "streams-app.fullname" . }}
   labels:
-    app: {{ template "streams-app-cleanup-job.name" . }}
-    chart: {{ template "streams-app-cleanup-job.chart" . }}
+    app: {{ template "streams-app.name" . }}
+    chart: {{ template "streams-app.chart" . }}
     release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
     {{- end }}
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   ttlSecondsAfterFinished: 30
   template:
@@ -25,7 +29,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app-cleanup-job.name" . }}
+        app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
         {{- range $key, $value := .Values.labels }}
         {{ $key }}: {{ $value }}
@@ -34,7 +38,7 @@ spec:
       {{- if .Values.serviceAccountName }}
       serviceAccountName: {{ .Values.serviceAccountName }}
       {{- end }}
-      restartPolicy: {{ .Values.restartPolicy }}
+      restartPolicy: {{ .Values.cleanup.restartPolicy }}
       {{- if .Values.tolerations }}
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
@@ -49,7 +53,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app-cleanup-job.name" . }}
+        - name: {{ template "streams-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -79,9 +83,9 @@ spec:
             {{- end }}
             - name: "{{ .Values.configurationEnvPrefix }}_CLEAN_UP"
               value: "true"
-            {{- if hasKey .Values.streams "deleteOutput" }}
+            {{- if hasKey .Values.cleanup "deleteOutput" }}
             - name: "{{ .Values.configurationEnvPrefix }}_DELETE_OUTPUT"
-              value: {{ .Values.streams.deleteOutput | quote }}
+              value: {{ .Values.cleanup.deleteOutput | quote }}
             {{- end }}
             {{- if and (hasKey .Values.streams "inputTopics") (.Values.streams.inputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
@@ -116,7 +120,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app-cleanup-job.fullname" $ }}
+                  name: {{ template "streams-app.fullname" $ }}
                   key: "{{ $key }}"
             {{- end }}
             {{- range $key, $value := .Values.secretRefs }}
@@ -137,4 +141,4 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-  backoffLimit: {{ .Values.backoffLimit }}
+  backoffLimit: {{ .Values.cleanup.backoffLimit }}

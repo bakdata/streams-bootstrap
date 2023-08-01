@@ -125,3 +125,18 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `service.enabled` | Whether to create a service. This requires the definition of at least one `ports.servicePort`. | `false`     |
 | `service.labels`  | Additional service labels.                                                                     | `{}`        | 
 | `service.type`    | Service type.                                                                                  | `ClusterIP` |
+
+### Cleanup
+
+We use the [post-delete hook of Helm](https://helm.sh/docs/topics/charts_hooks/) to
+deploy a cleanup job for your Kafka Streams app developed using streams-bootstrap to gracefully delete the Kafka 
+Streams app.
+
+Whenever you run `helm uninstall` and your streams app gets uninstall helm will automatically fire the cleanup job.
+If you wish to skip the post-delete hook you can call `helm uninstall` with the `--no-hooks` option.
+
+| Parameter       | Description                                                                                                                                        | Default     |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `restartPolicy` | [Restart policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy) to use for the job.                             | `OnFailure` |
+| `deleteOutput`  | Whether the output topics with their associated schemas and the consumer group should be deleted.                                                  | `true`      |
+| `backoffLimit`  | The number of times to restart an unsuccessful job. See https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy. | `6`         |

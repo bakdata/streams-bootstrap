@@ -196,3 +196,8 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: ""
+
+cleanup:
+  backoffLimit: 6
+  restartPolicy: OnFailure
+  deleteOutput: true
