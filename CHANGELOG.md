@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.12.1](https://github.com/bakdata/streams-bootstrap/tree/2.12.1) (2023-08-15)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.0...2.12.1)
+
+**Closed issues:**
+
+- Upgrade to Kafka 3.4 [\#172](https://github.com/bakdata/streams-bootstrap/issues/172)
+
+**Merged pull requests:**
+
+- Switch to official Rclone image [\#176](https://github.com/bakdata/streams-bootstrap/pull/176) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to Kafka 3.4 [\#184](https://github.com/bakdata/streams-bootstrap/pull/184) ([@torbsto](https://github.com/torbsto))
+
 ## [2.12.0](https://github.com/bakdata/streams-bootstrap/tree/2.12.0) (2023-05-10)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.2...2.12.0)
 
