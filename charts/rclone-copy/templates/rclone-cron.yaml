@@ -53,10 +53,10 @@ spec:
             {{- end }}
           containers:
           - name: rclone-container
-            image: openbridge/ob_bulkstash:{{ .Values.imageRelease }}        
+            image: rclone/rclone:{{ .Values.imageRelease }}
             
             command:
-              - /bin/bash
+              - /bin/sh
             args:
               - -c
               # copy as workaround for rclone.conf read only (see https://github.com/rclone/rclone/issues/3655)
