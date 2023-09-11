@@ -26,6 +26,15 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,9 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
-
-import java.time.Duration;
-import java.util.*;
 
 /**
  * <p>The base class of the entry point of the Kafka application.</p>
