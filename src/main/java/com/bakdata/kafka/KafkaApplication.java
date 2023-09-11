@@ -26,15 +26,6 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -43,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
+
+import java.time.Duration;
+import java.util.*;
 
 /**
  * <p>The base class of the entry point of the Kafka application.</p>
@@ -80,8 +74,8 @@ public abstract class KafkaApplication implements Runnable {
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
-    @CommandLine.Option(names = "--schema-registry-url", required = true, description = "URL of schema registry")
-    private String schemaRegistryUrl = "";
+    @CommandLine.Option(names = "--schema-registry-url", description = "URL of schema registry")
+    private Optional<String> schemaRegistryUrl;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
@@ -93,7 +87,7 @@ public abstract class KafkaApplication implements Runnable {
      * {@code KafkaApplication}.</p>
      * <p>This method calls System exit</p>
      *
-     * @param app An instance of the custom application class.
+     * @param app  An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
      * @see #startApplicationWithoutExit(KafkaApplication, String[])
      */
@@ -116,7 +110,7 @@ public abstract class KafkaApplication implements Runnable {
      * <p>This methods needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>
      *
-     * @param app An instance of the custom application class.
+     * @param app  An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
@@ -173,11 +167,11 @@ public abstract class KafkaApplication implements Runnable {
      * @return admin client
      */
     public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.builder()
+        final ImprovedAdminClient.ImprovedAdminClientBuilder adminClientBuilder = ImprovedAdminClient.builder()
                 .properties(this.getKafkaProperties())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
-                .timeout(ADMIN_TIMEOUT)
-                .build();
+                .timeout(ADMIN_TIMEOUT);
+        this.getSchemaRegistryUrl().map(adminClientBuilder::schemaRegistryUrl);
+        return adminClientBuilder.build();
     }
 
     protected abstract Properties createKafkaProperties();

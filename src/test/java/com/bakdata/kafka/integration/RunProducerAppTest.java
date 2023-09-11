@@ -38,6 +38,7 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
@@ -91,7 +92,7 @@ class RunProducerAppTest {
             }
         };
         app.setBrokers(this.kafkaCluster.getBrokerList());
-        app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        app.setSchemaRegistryUrl(Optional.of(this.schemaRegistryMockExtension.getUrl()));
         app.setOutputTopic(output);
         app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

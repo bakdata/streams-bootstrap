@@ -28,7 +28,6 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.SchemaTopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.jooq.lambda.Seq;
+
+import java.util.Properties;
 
 
 /**
@@ -94,7 +95,8 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         // compression
         kafkaConfig.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
 
-        kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
+        this.getSchemaRegistryUrl()
+                .map(srUrl -> kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, srUrl));
         kafkaConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
         return kafkaConfig;
     }

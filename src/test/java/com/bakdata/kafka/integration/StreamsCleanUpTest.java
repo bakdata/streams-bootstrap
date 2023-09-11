@@ -25,48 +25,16 @@
 package com.bakdata.kafka.integration;
 
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
-import static net.mguenther.kafka.junit.Wait.delay;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import com.bakdata.kafka.CleanUpException;
-import com.bakdata.kafka.CleanUpRunner;
-import com.bakdata.kafka.CloseFlagApp;
-import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
-import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
-import com.bakdata.kafka.test_applications.MirrorValueWithAvro;
-import com.bakdata.kafka.test_applications.WordCount;
-import com.bakdata.kafka.test_applications.WordCountPattern;
+import com.bakdata.kafka.*;
+import com.bakdata.kafka.test_applications.*;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.SendKeyValuesTransactional;
-import net.mguenther.kafka.junit.SendValuesTransactional;
-import net.mguenther.kafka.junit.TopicConfig;
+import net.mguenther.kafka.junit.*;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -87,6 +55,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static net.mguenther.kafka.junit.Wait.delay;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
@@ -553,7 +537,7 @@ class StreamsCleanUpTest {
     }
 
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
-            final String description)
+                                     final String description)
             throws InterruptedException {
         this.runAppAndClose();
 
@@ -583,7 +567,7 @@ class StreamsCleanUpTest {
     }
 
     private KafkaStreamsApplication createWordCountApplication() {
-        return this.setupApp(new WordCount(), "word_input", "word_output", "word_error");
+        return this.setupAppWithNoSR(new WordCount(), "word_input", "word_output", "word_error");
     }
 
     private KafkaStreamsApplication createWordCountPatternApplication() {
@@ -619,22 +603,29 @@ class StreamsCleanUpTest {
     }
 
     private <T extends KafkaStreamsApplication> T setupApp(final T application, final String inputTopicName,
-            final String outputTopicName, final String errorTopicName) {
-        this.setupApp(application, outputTopicName, errorTopicName);
+                                                           final String outputTopicName, final String errorTopicName) {
+        this.setupApp(application, outputTopicName, errorTopicName, Optional.of(this.schemaRegistryMockExtension.getUrl()));
+        application.setInputTopics(List.of(inputTopicName));
+        return application;
+    }
+
+    private <T extends KafkaStreamsApplication> T setupAppWithNoSR(final T application, final String inputTopicName,
+                                                                   final String outputTopicName, final String errorTopicName) {
+        this.setupApp(application, outputTopicName, errorTopicName, Optional.empty());
         application.setInputTopics(List.of(inputTopicName));
         return application;
     }
 
     private <T extends KafkaStreamsApplication> T setupApp(final T application, final Pattern inputPattern,
-            final String outputTopicName, final String errorTopicName) {
-        this.setupApp(application, outputTopicName, errorTopicName);
+                                                           final String outputTopicName, final String errorTopicName) {
+        this.setupApp(application, outputTopicName, errorTopicName, Optional.of(this.schemaRegistryMockExtension.getUrl()));
         application.setInputPattern(inputPattern);
         return application;
     }
 
     private <T extends KafkaStreamsApplication> void setupApp(final T application, final String outputTopicName,
-            final String errorTopicName) {
-        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+                                                              final String errorTopicName, Optional<String> schemaRegistryUrl) {
+        application.setSchemaRegistryUrl(schemaRegistryUrl);
         application.setOutputTopic(outputTopicName);
         application.setErrorTopic(errorTopicName);
         application.setBrokers(this.kafkaCluster.getBrokerList());

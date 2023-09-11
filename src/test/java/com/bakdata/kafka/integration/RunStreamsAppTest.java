@@ -40,6 +40,7 @@ import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -241,7 +242,7 @@ class RunStreamsAppTest {
     private void setupApp(final KafkaStreamsApplication application) {
         this.app = application;
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        this.app.setSchemaRegistryUrl(Optional.of(this.schemaRegistryMockExtension.getUrl()));
         this.app.setStreamsConfig(Map.of(
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
