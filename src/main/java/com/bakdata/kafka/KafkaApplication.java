@@ -60,7 +60,7 @@ public abstract class KafkaApplication implements Runnable {
     public static final int RESET_SLEEP_MS = 5000;
     public static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private static final String ENV_PREFIX = Optional.ofNullable(
-            System.getenv("ENV_PREFIX")).orElse("APP_");
+        System.getenv("ENV_PREFIX")).orElse("APP_");
     /**
      * This variable is usually set on application start. When the application is running in debug mode it is used to
      * reconfigure the child app package logger. By default, it points to the package of this class allowing to execute
@@ -76,9 +76,9 @@ public abstract class KafkaApplication implements Runnable {
     @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
     protected boolean debug;
     @CommandLine.Option(names = "--clean-up", arity = "0..1",
-            description = "Clear the state store and the global Kafka offsets for the "
-                    + "consumer group. Be careful with running in production and with enabling this flag - it "
-                    + "might cause inconsistent processing with multiple replicas.")
+        description = "Clear the state store and the global Kafka offsets for the "
+            + "consumer group. Be careful with running in production and with enabling this flag - it "
+            + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
     @CommandLine.Option(names = "--schema-registry-url", description = "URL of schema registry")
     private Optional<String> schemaRegistryUrl;
@@ -93,7 +93,7 @@ public abstract class KafkaApplication implements Runnable {
      * {@code KafkaApplication}.</p>
      * <p>This method calls System exit</p>
      *
-     * @param app  An instance of the custom application class.
+     * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
      * @see #startApplicationWithoutExit(KafkaApplication, String[])
      */
@@ -116,7 +116,7 @@ public abstract class KafkaApplication implements Runnable {
      * <p>This methods needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>
      *
-     * @param app  An instance of the custom application class.
+     * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
@@ -129,9 +129,9 @@ public abstract class KafkaApplication implements Runnable {
 
     static String[] addEnvironmentVariablesArguments(final String[] args) {
         Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),
-                "Prefix '" + EnvironmentStreamsConfigParser.PREFIX + "' is reserved for Streams config");
+            "Prefix '" + EnvironmentStreamsConfigParser.PREFIX + "' is reserved for Streams config");
         final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
-                .parseVariables(System.getenv());
+            .parseVariables(System.getenv());
         final Collection<String> allArgs = new ArrayList<>(environmentArguments);
         allArgs.addAll(Arrays.asList(args));
         return allArgs.toArray(String[]::new);
@@ -149,7 +149,7 @@ public abstract class KafkaApplication implements Runnable {
         final Properties kafkaConfig = this.createKafkaProperties();
 
         EnvironmentStreamsConfigParser.parseVariables(System.getenv())
-                .forEach(kafkaConfig::setProperty);
+            .forEach(kafkaConfig::setProperty);
         this.streamsConfig.forEach(kafkaConfig::setProperty);
 
         return kafkaConfig;
@@ -174,8 +174,8 @@ public abstract class KafkaApplication implements Runnable {
      */
     public ImprovedAdminClient createAdminClient() {
         final ImprovedAdminClient.ImprovedAdminClientBuilder adminClientBuilder = ImprovedAdminClient.builder()
-                .properties(this.getKafkaProperties())
-                .timeout(ADMIN_TIMEOUT);
+            .properties(this.getKafkaProperties())
+            .timeout(ADMIN_TIMEOUT);
         this.getSchemaRegistryUrl().map(adminClientBuilder::schemaRegistryUrl);
         return adminClientBuilder.build();
     }
