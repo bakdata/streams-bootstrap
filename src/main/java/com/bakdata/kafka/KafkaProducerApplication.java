@@ -119,14 +119,14 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
      */
     protected void runCleanUp() {
         try (final ImprovedAdminClient improvedAdminClient = this.createAdminClient()) {
-            this.cleanUpRun(improvedAdminClient.getTopicClient(), improvedAdminClient.getSchemaTopicClient());
+            this.cleanUpRun(improvedAdminClient.getTopicClient(), improvedAdminClient.getSchemaClient());
         }
     }
 
-    protected void cleanUpRun(final TopicClient topicClient, final Optional<SchemaClient> schemaTopicClient) {
+    protected void cleanUpRun(final TopicClient topicClient, final Optional<SchemaClient> schemaClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
 
-        outputTopics.forEach(topic -> deleteTopicAndResetSchema(topicClient, schemaTopicClient, topic));
+        outputTopics.forEach(topic -> deleteTopicAndResetSchema(topicClient, schemaClient, topic));
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
@@ -135,10 +135,11 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         }
     }
 
-    private static void deleteTopicAndResetSchema(final TopicClient topicClient, final Optional<SchemaClient> schemaTopicClient,
+    private static void deleteTopicAndResetSchema(final TopicClient topicClient,
+        final Optional<SchemaClient> schemaClient,
         final String outputTopic) {
         topicClient.deleteTopicIfExists(outputTopic);
-        schemaTopicClient.ifPresent(schemaClient -> schemaClient.resetSchemaRegistry(outputTopic));
+        schemaClient.ifPresent(client -> client.resetSchemaRegistry(outputTopic));
     }
 
     private Iterable<String> getAllOutputTopics() {

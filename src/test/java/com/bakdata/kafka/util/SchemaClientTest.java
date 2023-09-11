@@ -64,7 +64,7 @@ class SchemaClientTest {
         this.kafkaCluster.start();
     }
 
-    private SchemaClient createSchemaTopicClient() {
+    private SchemaClient createSchemaClient() {
         final Properties kafkaProperties = new Properties();
         kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
         return SchemaClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
@@ -92,7 +92,7 @@ class SchemaClientTest {
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
         assertThat(client.getAllSubjects()).contains(TOPIC + "-value");
 
-        final SchemaClient schemaClient = this.createSchemaTopicClient();
+        final SchemaClient schemaClient = this.createSchemaClient();
         schemaClient.resetSchemaRegistry(TOPIC);
 
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);

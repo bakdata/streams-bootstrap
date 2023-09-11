@@ -46,9 +46,7 @@ public final class ImprovedAdminClient implements Closeable {
 
     @Getter
     private final @NonNull Properties properties;
-    @Getter
     private final @NonNull AdminClient adminClient;
-    @Getter
     private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Duration timeout;
 
@@ -64,7 +62,7 @@ public final class ImprovedAdminClient implements Closeable {
         this.timeout = timeout;
     }
 
-    public Optional<SchemaClient> getSchemaTopicClient() {
+    public Optional<SchemaClient> getSchemaClient() {
         if (nonNull(this.schemaRegistryClient)) {
             return Optional.of(new SchemaClient(this.schemaRegistryClient));
         }

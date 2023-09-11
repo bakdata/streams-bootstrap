@@ -48,11 +48,11 @@ public final class SchemaClient {
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
     /**
-     * Creates a new {@code SchemaTopicClient} using the specified configuration.
+     * Creates a new {@code SchemaClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
      * @param schemaRegistryUrl URL of schema registry
-     * @return {@code SchemaTopicClient}
+     * @return {@code SchemaClient}
      */
     public static SchemaClient create(final Properties configs, final String schemaRegistryUrl) {
         final SchemaRegistryClient schemaRegistryClient =

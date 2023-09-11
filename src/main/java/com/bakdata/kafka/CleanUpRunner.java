@@ -192,7 +192,7 @@ public final class CleanUpRunner {
     }
 
     private void resetInternalTopic(final String topic) {
-        this.adminClient.getSchemaTopicClient()
+        this.adminClient.getSchemaClient()
             .ifPresent(client -> client.resetSchemaRegistry(topic));
         this.runTopicCleanUp(topic);
     }
@@ -204,7 +204,7 @@ public final class CleanUpRunner {
     private void deleteTopicAndResetSchema(final String topic) {
         this.adminClient.getTopicClient()
             .deleteTopicIfExists(topic);
-        this.adminClient.getSchemaTopicClient()
+        this.adminClient.getSchemaClient()
             .ifPresent(client -> client.resetSchemaRegistry(topic));
         this.runTopicCleanUp(topic);
     }
