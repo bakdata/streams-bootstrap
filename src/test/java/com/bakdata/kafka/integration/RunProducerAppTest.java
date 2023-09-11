@@ -38,7 +38,6 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
@@ -92,35 +91,33 @@ class RunProducerAppTest {
             }
         };
         app.setBrokers(this.kafkaCluster.getBrokerList());
-        app.setSchemaRegistryUrl(Optional.of(this.schemaRegistryMockExtension.getUrl()));
+        app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         app.setOutputTopic(output);
-        app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
+        app.setStreamsConfig(Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"));
         app.run();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                        this.schemaRegistryMockExtension.getUrl())
-                .build()))
-                .hasSize(1)
-                .anySatisfy(kv -> {
-                    assertThat(kv.getKey()).isEqualTo("foo");
-                    assertThat(kv.getValue().getContent()).isEqualTo("bar");
-                });
+            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
+            .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                this.schemaRegistryMockExtension.getUrl())
+            .build()))
+            .hasSize(1)
+            .anySatisfy(kv -> {
+                assertThat(kv.getKey()).isEqualTo("foo");
+                assertThat(kv.getValue().getContent()).isEqualTo("bar");
+            });
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
 
         assertThat(client.getAllSubjects())
-                .contains(app.getOutputTopic() + "-value");
+            .contains(app.getOutputTopic() + "-value");
         app.setCleanUp(true);
         app.run();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(client.getAllSubjects())
-                .doesNotContain(app.getOutputTopic() + "-value");
+            .doesNotContain(app.getOutputTopic() + "-value");
         assertThat(this.kafkaCluster.exists(app.getOutputTopic()))
-                .as("Output topic is deleted")
-                .isFalse();
+            .as("Output topic is deleted")
+            .isFalse();
     }
 }

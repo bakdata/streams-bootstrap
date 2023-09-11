@@ -66,7 +66,7 @@ public final class CleanUpRunner {
 
     @Builder
     private CleanUpRunner(final @NonNull Topology topology, final @NonNull String appId,
-            final @NonNull ImprovedAdminClient adminClient, final @NonNull KafkaStreams streams) {
+        final @NonNull ImprovedAdminClient adminClient, final @NonNull KafkaStreams streams) {
         this.appId = appId;
         this.adminClient = adminClient;
         this.streams = streams;
@@ -84,13 +84,13 @@ public final class CleanUpRunner {
      * @param appId unique app id of the streams app
      */
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final Collection<String> allTopics, final ImprovedAdminClient adminClient, final String appId) {
+        final Collection<String> allTopics, final ImprovedAdminClient adminClient, final String appId) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final File tempFile = createTemporaryPropertiesFile(appId, adminClient.getProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
-                .add("--application-id", appId)
-                .add("--bootstrap-servers", adminClient.getBootstrapServers())
-                .add("--config-file", tempFile.toString());
+            .add("--application-id", appId)
+            .add("--bootstrap-servers", adminClient.getBootstrapServers())
+            .add("--config-file", tempFile.toString());
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
             argList.add("--input-topics", String.join(",", existingInputTopics));
@@ -133,16 +133,16 @@ public final class CleanUpRunner {
     }
 
     private static Collection<String> filterExistingTopics(final Collection<String> topics,
-            final Collection<String> allTopics) {
+        final Collection<String> allTopics) {
         return topics.stream()
-                .filter(topicName -> {
-                    final boolean exists = allTopics.contains(topicName);
-                    if (!exists) {
-                        log.warn("Not resetting missing topic {}", topicName);
-                    }
-                    return exists;
-                })
-                .collect(Collectors.toList());
+            .filter(topicName -> {
+                final boolean exists = allTopics.contains(topicName);
+                if (!exists) {
+                    log.warn("Not resetting missing topic {}", topicName);
+                }
+                return exists;
+            })
+            .collect(Collectors.toList());
     }
 
     /**
@@ -169,7 +169,7 @@ public final class CleanUpRunner {
         runResetter(inputTopics, intermediateTopics, allTopics, this.adminClient, this.appId);
         // the StreamsResetter is responsible for deleting internal topics
         this.topologyInformation.getInternalTopics()
-                .forEach(this::resetInternalTopic);
+            .forEach(this::resetInternalTopic);
         if (deleteOutputTopic) {
             this.deleteTopics();
             this.deleteConsumerGroup();
@@ -188,11 +188,12 @@ public final class CleanUpRunner {
      */
     public void deleteTopics() {
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
-        externalTopics.forEach(this::deleteTopic);
+        externalTopics.forEach(this::deleteTopicAndResetSchema);
     }
 
     private void resetInternalTopic(final String topic) {
-        this.adminClient.getSchemaTopicClient().resetSchemaRegistry(topic);
+        this.adminClient.getSchemaTopicClient()
+            .ifPresent(client -> client.resetSchemaRegistry(topic));
         this.runTopicCleanUp(topic);
     }
 
@@ -200,8 +201,11 @@ public final class CleanUpRunner {
         this.topicCleanUpHooks.forEach(hook -> hook.accept(topic));
     }
 
-    private void deleteTopic(final String topic) {
-        this.adminClient.getSchemaTopicClient().deleteTopicAndResetSchemaRegistry(topic);
+    private void deleteTopicAndResetSchema(final String topic) {
+        this.adminClient.getTopicClient()
+            .deleteTopicIfExists(topic);
+        this.adminClient.getSchemaTopicClient()
+            .ifPresent(client -> client.resetSchemaRegistry(topic));
         this.runTopicCleanUp(topic);
     }
 

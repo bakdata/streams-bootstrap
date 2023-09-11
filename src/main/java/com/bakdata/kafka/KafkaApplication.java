@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Objects.nonNull;
+
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import java.time.Duration;
@@ -81,7 +83,7 @@ public abstract class KafkaApplication implements Runnable {
             + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
     @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
-    private Optional<String> schemaRegistryUrl;
+    private String schemaRegistryUrl;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
@@ -176,7 +178,9 @@ public abstract class KafkaApplication implements Runnable {
         final ImprovedAdminClient.ImprovedAdminClientBuilder adminClientBuilder = ImprovedAdminClient.builder()
             .properties(this.getKafkaProperties())
             .timeout(ADMIN_TIMEOUT);
-        this.getSchemaRegistryUrl().map(adminClientBuilder::schemaRegistryUrl);
+        if (nonNull(this.getSchemaRegistryUrl())) {
+            adminClientBuilder.schemaRegistryUrl(this.getSchemaRegistryUrl());
+        }
         return adminClientBuilder.build();
     }
 

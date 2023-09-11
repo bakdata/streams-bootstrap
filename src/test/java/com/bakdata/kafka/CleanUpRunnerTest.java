@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +40,7 @@ class CleanUpRunnerTest {
     void createTemporaryPropertiesFile() throws IOException {
         final WordCount wordCount = new WordCount();
         wordCount.setInputTopics(List.of("input"));
-        wordCount.setSchemaRegistryUrl(Optional.empty());
+        wordCount.setSchemaRegistryUrl(null);
         final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
                 wordCount.getKafkaProperties());
 

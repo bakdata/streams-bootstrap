@@ -52,7 +52,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -584,7 +583,7 @@ class StreamsCleanUpTest {
     }
 
     private KafkaStreamsApplication createWordCountApplication() {
-        return this.setupAppWithNoSR(new WordCount(), "word_input", "word_output", "word_error");
+        return this.setupApp(new WordCount(), "word_input", "word_output", "word_error");
     }
 
     private KafkaStreamsApplication createWordCountPatternApplication() {
@@ -621,30 +620,21 @@ class StreamsCleanUpTest {
 
     private <T extends KafkaStreamsApplication> T setupApp(final T application, final String inputTopicName,
         final String outputTopicName, final String errorTopicName) {
-        this.setupApp(application, outputTopicName, errorTopicName,
-            Optional.of(this.schemaRegistryMockExtension.getUrl()));
-        application.setInputTopics(List.of(inputTopicName));
-        return application;
-    }
-
-    private <T extends KafkaStreamsApplication> T setupAppWithNoSR(final T application, final String inputTopicName,
-        final String outputTopicName, final String errorTopicName) {
-        this.setupApp(application, outputTopicName, errorTopicName, Optional.empty());
+        this.setupApp(application, outputTopicName, errorTopicName);
         application.setInputTopics(List.of(inputTopicName));
         return application;
     }
 
     private <T extends KafkaStreamsApplication> T setupApp(final T application, final Pattern inputPattern,
         final String outputTopicName, final String errorTopicName) {
-        this.setupApp(application, outputTopicName, errorTopicName,
-            Optional.of(this.schemaRegistryMockExtension.getUrl()));
+        this.setupApp(application, outputTopicName, errorTopicName);
         application.setInputPattern(inputPattern);
         return application;
     }
 
     private <T extends KafkaStreamsApplication> void setupApp(final T application, final String outputTopicName,
-        final String errorTopicName, Optional<String> schemaRegistryUrl) {
-        application.setSchemaRegistryUrl(schemaRegistryUrl);
+        final String errorTopicName) {
+        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         application.setOutputTopic(outputTopicName);
         application.setErrorTopic(errorTopicName);
         application.setBrokers(this.kafkaCluster.getBrokerList());

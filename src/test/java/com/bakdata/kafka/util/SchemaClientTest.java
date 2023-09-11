@@ -37,7 +37,6 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -53,23 +52,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
-class SchemaTopicClientTest {
+class SchemaClientTest {
     private static final int TIMEOUT_SECONDS = 10;
     private static final String TOPIC = "topic";
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private final EmbeddedKafkaCluster kafkaCluster =  provisionWith(defaultClusterConfig());
+    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
 
     @BeforeEach
     void setup() {
         this.kafkaCluster.start();
     }
 
-    private SchemaTopicClient createSchemaTopicClient() {
+    private SchemaClient createSchemaTopicClient() {
         final Properties kafkaProperties = new Properties();
-        kafkaProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
-        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
-                Duration.ofSeconds(10L));
+        kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
+        return SchemaClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
     }
 
     @AfterEach
@@ -81,30 +79,26 @@ class SchemaTopicClientTest {
     void shouldDeleteTopic() throws InterruptedException, IOException, RestClientException {
         this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
         assertThat(this.kafkaCluster.exists(TOPIC))
-                .as("Topic is created")
-                .isTrue();
+            .as("Topic is created")
+            .isTrue();
 
         final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
-                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryMockExtension.getUrl())
-                .build();
+            .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
+            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+            .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryMockExtension.getUrl())
+            .build();
         this.kafkaCluster.send(sendRequest);
 
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        assertThat(client.getAllSubjects())
-                .contains(TOPIC + "-value");
+        assertThat(client.getAllSubjects()).contains(TOPIC + "-value");
 
-        try (final SchemaTopicClient schemaTopicClient = this.createSchemaTopicClient()) {
-            schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
-        }
+        final SchemaClient schemaClient = this.createSchemaTopicClient();
+        schemaClient.resetSchemaRegistry(TOPIC);
 
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        assertThat(this.kafkaCluster.exists(TOPIC))
-                .as("Topic is deleted")
-                .isFalse();
+
         assertThat(client.getAllSubjects())
-                .doesNotContain(TOPIC + "-value");
+            .doesNotContain(TOPIC + "-value");
     }
 
 }

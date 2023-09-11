@@ -28,9 +28,7 @@ import com.bakdata.kafka.CleanUpException;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import java.io.Closeable;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,13 +39,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 
 /**
- * Client to interact with Kafka topics and its associated schema registry subjects in a unified way
+ * Client to interact with topics associated schema registry subjects in a unified way
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class SchemaTopicClient implements Closeable {
+public final class SchemaClient {
     private static final int CACHE_CAPACITY = 100;
-    private final @NonNull TopicClient topicClient;
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
     /**
@@ -55,15 +52,12 @@ public final class SchemaTopicClient implements Closeable {
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
      * @param schemaRegistryUrl URL of schema registry
-     * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code SchemaTopicClient}
      */
-    public static SchemaTopicClient create(final Properties configs, final String schemaRegistryUrl,
-            final Duration timeout) {
+    public static SchemaClient create(final Properties configs, final String schemaRegistryUrl) {
         final SchemaRegistryClient schemaRegistryClient =
                 createSchemaRegistryClient(configs, schemaRegistryUrl);
-        final TopicClient topicClient = TopicClient.create(configs, timeout);
-        return new SchemaTopicClient(topicClient, schemaRegistryClient);
+        return new SchemaClient(schemaRegistryClient);
     }
 
     /**
@@ -79,16 +73,6 @@ public final class SchemaTopicClient implements Closeable {
         final Map<String, Object> originals = new HashMap<>();
         configs.forEach((key, value) -> originals.put(key.toString(), value));
         return new CachedSchemaRegistryClient(schemaRegistryUrl, CACHE_CAPACITY, originals);
-    }
-
-    /**
-     * Delete a topic if it exists and reset the corresponding schema registry subjects.
-     *
-     * @param topic the topic name
-     */
-    public void deleteTopicAndResetSchemaRegistry(final String topic) {
-        this.topicClient.deleteTopicIfExists(topic);
-        this.resetSchemaRegistry(topic);
     }
 
     /**
@@ -117,10 +101,5 @@ public final class SchemaTopicClient implements Closeable {
         } catch (final IOException | RestClientException e) {
             throw new CleanUpException("Could not reset schema registry for topic " + topic, e);
         }
-    }
-
-    @Override
-    public void close() {
-        this.topicClient.close();
     }
 }

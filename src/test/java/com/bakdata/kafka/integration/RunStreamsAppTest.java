@@ -40,7 +40,6 @@ import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -113,17 +112,17 @@ class RunStreamsAppTest {
         this.app.setOutputTopic(output);
         this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
-                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                        .build();
+            SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .build();
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .build()))
-                .hasSize(1);
+            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            .build()))
+            .hasSize(1);
     }
 
     @Test
@@ -139,19 +138,19 @@ class RunStreamsAppTest {
         this.app.setOutputTopic(output);
         this.runApp();
         this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input1, List.of(new KeyValue<>("foo", "bar")))
-                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .build());
+            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+            .build());
         this.kafkaCluster.send(SendKeyValuesTransactional.inTransaction(input2, List.of(new KeyValue<>("foo", "baz")))
-                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .build());
+            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+            .build());
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .build()))
-                .hasSize(2);
+            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            .build()))
+            .hasSize(2);
     }
 
     @Test
@@ -184,10 +183,10 @@ class RunStreamsAppTest {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         this.runApp();
         final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
-                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                        .build();
+            SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
+                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .build();
         this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(closeResourcesApplication.getResourcesClosed()).isEqualTo(1);
@@ -208,9 +207,9 @@ class RunStreamsAppTest {
     void shouldNotLeaveGroup() throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseFlagApp();
         this.app.setStreamsConfig(ImmutableMap.<String, String>builder()
-                .putAll(this.app.getStreamsConfig())
-                .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
-                .build());
+            .putAll(this.app.getStreamsConfig())
+            .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
+            .build());
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         this.app.close();
@@ -221,9 +220,9 @@ class RunStreamsAppTest {
     void shouldLeaveGroupWithVolatileGroupId() throws InterruptedException {
         final CloseFlagApp closeApplication = this.createCloseFlagApp();
         this.app.setStreamsConfig(ImmutableMap.<String, String>builder()
-                .putAll(this.app.getStreamsConfig())
-                .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
-                .build());
+            .putAll(this.app.getStreamsConfig())
+            .put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo")
+            .build());
         this.app.setVolatileGroupInstanceId(true);
         this.runApp();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -242,9 +241,9 @@ class RunStreamsAppTest {
     private void setupApp(final KafkaStreamsApplication application) {
         this.app = application;
         this.app.setBrokers(this.kafkaCluster.getBrokerList());
-        this.app.setSchemaRegistryUrl(Optional.of(this.schemaRegistryMockExtension.getUrl()));
+        this.app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         this.app.setStreamsConfig(Map.of(
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+            ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
     }
 

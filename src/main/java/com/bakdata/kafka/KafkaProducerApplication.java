@@ -24,10 +24,14 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Objects.nonNull;
+
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import com.bakdata.kafka.util.SchemaTopicClient;
+import com.bakdata.kafka.util.SchemaClient;
+import com.bakdata.kafka.util.TopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
+import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -85,8 +89,8 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
 
-        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, String.class);
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, String.class);
         // exactly once and order
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         kafkaConfig.setProperty(ProducerConfig.ACKS_CONFIG, "all");
@@ -94,8 +98,12 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         // compression
         kafkaConfig.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
 
-        this.getSchemaRegistryUrl()
-            .map(srUrl -> kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, srUrl));
+        if (nonNull(this.getSchemaRegistryUrl())) {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                this.getSchemaRegistryUrl());
+        }
         kafkaConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
         return kafkaConfig;
     }
@@ -111,20 +119,26 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
      */
     protected void runCleanUp() {
         try (final ImprovedAdminClient improvedAdminClient = this.createAdminClient()) {
-            this.cleanUpRun(improvedAdminClient.getSchemaTopicClient());
+            this.cleanUpRun(improvedAdminClient.getTopicClient(), improvedAdminClient.getSchemaTopicClient());
         }
     }
 
-    protected void cleanUpRun(final SchemaTopicClient schemaTopicClient) {
+    protected void cleanUpRun(final TopicClient topicClient, final Optional<SchemaClient> schemaTopicClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
 
-        outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
+        outputTopics.forEach(topic -> deleteTopicAndResetSchema(topicClient, schemaTopicClient, topic));
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CleanUpException("Error waiting for clean up", e);
         }
+    }
+
+    private static void deleteTopicAndResetSchema(final TopicClient topicClient, final Optional<SchemaClient> schemaTopicClient,
+        final String outputTopic) {
+        topicClient.deleteTopicIfExists(outputTopic);
+        schemaTopicClient.ifPresent(schemaClient -> schemaClient.resetSchemaRegistry(outputTopic));
     }
 
     private Iterable<String> getAllOutputTopics() {

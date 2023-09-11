@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Objects.nonNull;
+
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -269,10 +271,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
         // topology
         kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
-        kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        this.getSchemaRegistryUrl()
-            .map(srUrl -> kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, srUrl));
+
+        if (nonNull(this.getSchemaRegistryUrl())) {
+            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                this.getSchemaRegistryUrl());
+        }
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
         return kafkaConfig;
     }
