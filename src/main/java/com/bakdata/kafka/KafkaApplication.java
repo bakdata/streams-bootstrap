@@ -80,7 +80,7 @@ public abstract class KafkaApplication implements Runnable {
             + "consumer group. Be careful with running in production and with enabling this flag - it "
             + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
-    @CommandLine.Option(names = "--schema-registry-url", description = "URL of schema registry")
+    @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
     private Optional<String> schemaRegistryUrl;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested;
