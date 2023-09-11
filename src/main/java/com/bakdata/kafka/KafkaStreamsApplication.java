@@ -79,19 +79,19 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     protected String errorTopic;
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics",
-            converter = {UseDefaultConverter.class, StringListConverter.class})
+        converter = {UseDefaultConverter.class, StringListConverter.class})
     protected Map<String, List<String>> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     protected Map<String, Pattern> extraInputPatterns = new HashMap<>();
     @CommandLine.Option(names = "--productive", arity = "1",
-            description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
-                    + "more suitable for production environments")
+        description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
+            + "more suitable for production environments")
     private boolean productive = true;
     @CommandLine.Option(names = "--delete-output", arity = "0..1",
-            description = "Delete the output topic during the clean up.")
+        description = "Delete the output topic during the clean up.")
     private boolean deleteOutputTopic;
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
-            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
+        description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
     private KafkaStreams streams;
     private Throwable lastException;
@@ -113,7 +113,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             this.streams = new KafkaStreams(this.createTopology(), kafkaProperties);
             final StreamsUncaughtExceptionHandler uncaughtExceptionHandler = this.getUncaughtExceptionHandler();
             this.streams.setUncaughtExceptionHandler(
-                    new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
+                new CapturingStreamsUncaughtExceptionHandler(uncaughtExceptionHandler));
             final StateListener stateListener = this.getStateListener();
             this.streams.setStateListener(new ClosingResourcesStateListener(stateListener));
 
@@ -272,7 +272,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         this.getSchemaRegistryUrl()
-                .map(srUrl -> kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, srUrl));        kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
+            .map(srUrl -> kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, srUrl));
+        kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
         return kafkaConfig;
     }
 
@@ -319,11 +320,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     protected void runCleanUp() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
-                    .topology(this.createTopology())
-                    .appId(this.getUniqueAppId())
-                    .adminClient(adminClient)
-                    .streams(this.streams)
-                    .build();
+                .topology(this.createTopology())
+                .appId(this.getUniqueAppId())
+                .adminClient(adminClient)
+                .streams(this.streams)
+                .build();
 
             this.cleanUpRun(cleanUpRunner);
         }
