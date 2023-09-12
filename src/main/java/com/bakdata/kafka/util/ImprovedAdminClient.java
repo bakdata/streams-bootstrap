@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ public final class ImprovedAdminClient implements Closeable {
 
     @Builder
     private ImprovedAdminClient(@NonNull final Properties properties,
-        @NonNull final Duration timeout, final String schemaRegistryUrl) {
+            final String schemaRegistryUrl, @NonNull final Duration timeout) {
         Preconditions.checkNotNull(properties.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),
             "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
         this.properties = new Properties(properties);
