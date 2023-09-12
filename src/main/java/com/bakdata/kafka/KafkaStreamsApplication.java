@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Objects.nonNull;
-
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -239,9 +237,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     /**
      * <p>This method should give a default configuration to run your streaming application with.</p>
-     * If the {@link KafkaApplication#schemaRegistryUrl} is set the {@link SpecificAvroSerde} is set as the default key
-     * and value serde. Otherwise, the {@link StringSerde} is configured. To add a custom configuration please add a
-     * similar method to your custom application class:
+     * If {@link KafkaApplication#schemaRegistryUrl} is set {@link SpecificAvroSerde} is set as the default key, value
+     * serde. Otherwise, the {@link StringSerde} is configured as the default key, value serde. To add a custom
+     * configuration please add a similar method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
@@ -360,13 +358,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     private void configureDefaultSerde(final Properties kafkaConfig) {
-        if (nonNull(this.schemaRegistryUrl)) {
+        if (this.schemaRegistryUrl == null) {
+            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
+            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
+        } else {
             kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
             kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
             kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
-        } else {
-            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
-            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
         }
     }
 

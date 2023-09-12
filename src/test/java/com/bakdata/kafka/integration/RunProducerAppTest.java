@@ -93,7 +93,9 @@ class RunProducerAppTest {
         app.setBrokers(this.kafkaCluster.getBrokerList());
         app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         app.setOutputTopic(output);
-        app.setStreamsConfig(Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"));
+        app.setStreamsConfig(Map.of(
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+        ));
         app.run();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
