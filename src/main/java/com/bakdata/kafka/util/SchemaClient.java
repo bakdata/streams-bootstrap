@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 
 /**
- * Client to interact with topics associated schema registry subjects in a unified way
+ * Client to interact with topics associated Schema Registry subjects in a unified way
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public final class SchemaClient {
      * Creates a new {@code SchemaClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
-     * @param schemaRegistryUrl URL of schema registry
+     * @param schemaRegistryUrl URL of Schema Registry
      * @return {@code SchemaClient}
      */
     public static SchemaClient create(final Properties configs, final String schemaRegistryUrl) {
@@ -65,7 +65,7 @@ public final class SchemaClient {
      *
      * @param configs properties passed to
      * {@link CachedSchemaRegistryClient#CachedSchemaRegistryClient(String, int, Map)}
-     * @param schemaRegistryUrl URL of schema registry
+     * @param schemaRegistryUrl URL of Schema Registry
      * @return {@link CachedSchemaRegistryClient}
      */
     public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<Object, Object> configs,
@@ -76,12 +76,12 @@ public final class SchemaClient {
     }
 
     /**
-     * Delete key and value schemas associated with a topic from the schema registry.
+     * Delete key and value schemas associated with a topic from the Schema Registry.
      *
      * @param topic the topic name
      */
     public void resetSchemaRegistry(final String topic) {
-        log.info("Resetting schema registry for topic '{}'", topic);
+        log.info("Resetting Schema Registry for topic '{}'", topic);
         try {
             final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
             final String keySubject = topic + "-key";
@@ -99,7 +99,7 @@ public final class SchemaClient {
                 log.info("No value schema for topic {} available", topic);
             }
         } catch (final IOException | RestClientException e) {
-            throw new CleanUpException("Could not reset schema registry for topic " + topic, e);
+            throw new CleanUpException("Could not reset Schema Registry for topic " + topic, e);
         }
     }
 }

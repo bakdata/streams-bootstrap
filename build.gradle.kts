@@ -35,6 +35,10 @@ configure<com.bakdata.gradle.SonatypeSettings> {
             id.set("BJennWare")
         }
         developer {
+            name.set("Ramin Gharib")
+            id.set("raminqaf")
+        }
+        developer {
             name.set("Arvid Heise")
             id.set("AHeise")
         }
@@ -124,8 +128,16 @@ allprojects {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+tasks {
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
+    test {
+        useJUnitPlatform()
+    }
 }
 
 release {

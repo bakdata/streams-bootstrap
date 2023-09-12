@@ -29,7 +29,7 @@ import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.Properties;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
@@ -50,7 +50,7 @@ public class MirrorValueWithAvro extends KafkaStreamsApplication {
     @Override
     public Properties createKafkaProperties() {
         final Properties kafkaConfig = super.createKafkaProperties();
-        kafkaConfig.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        kafkaConfig.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class.getName());
         kafkaConfig.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
         return kafkaConfig;
     }

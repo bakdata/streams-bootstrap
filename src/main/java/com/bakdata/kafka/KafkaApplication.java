@@ -83,7 +83,7 @@ public abstract class KafkaApplication implements Runnable {
             + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
     @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
-    private String schemaRegistryUrl;
+    protected String schemaRegistryUrl;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
@@ -178,8 +178,8 @@ public abstract class KafkaApplication implements Runnable {
         final ImprovedAdminClient.ImprovedAdminClientBuilder adminClientBuilder = ImprovedAdminClient.builder()
             .properties(this.getKafkaProperties())
             .timeout(ADMIN_TIMEOUT);
-        if (nonNull(this.getSchemaRegistryUrl())) {
-            adminClientBuilder.schemaRegistryUrl(this.getSchemaRegistryUrl());
+        if (nonNull(this.schemaRegistryUrl)) {
+            adminClientBuilder.schemaRegistryUrl(this.schemaRegistryUrl);
         }
         return adminClientBuilder.build();
     }

@@ -45,11 +45,4 @@ public class Mirror extends KafkaStreamsApplication {
         return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
     }
 
-    @Override
-    protected Properties createKafkaProperties() {
-        final Properties kafkaProperties = super.createKafkaProperties();
-        kafkaProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-        kafkaProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-        return kafkaProperties;
-    }
 }

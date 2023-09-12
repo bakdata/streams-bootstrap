@@ -40,6 +40,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.jooq.lambda.Seq;
 
 
@@ -73,7 +74,9 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     /**
      * <p>This method should give a default configuration to run your producer application with.</p>
-     * To add a custom configuration please add a similar method to your custom application class:
+     * If the {@link KafkaApplication#schemaRegistryUrl} is set the {@link SpecificAvroSerializer} is set as the default
+     * key and value serializer. Otherwise, the String serializer is configured. To add a custom configuration, please
+     * add a similar method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
@@ -89,8 +92,6 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
 
-        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, String.class);
-        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, String.class);
         // exactly once and order
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         kafkaConfig.setProperty(ProducerConfig.ACKS_CONFIG, "all");
@@ -98,14 +99,20 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         // compression
         kafkaConfig.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
 
-        if (nonNull(this.getSchemaRegistryUrl())) {
-            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                this.getSchemaRegistryUrl());
-        }
+        this.configureDefaultSerializer(kafkaConfig);
         kafkaConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
         return kafkaConfig;
+    }
+
+    private void configureDefaultSerializer(final Properties kafkaConfig) {
+        if (nonNull(this.schemaRegistryUrl)) {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
+        } else {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        }
     }
 
     protected <K, V> KafkaProducer<K, V> createProducer() {
@@ -119,14 +126,17 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
      */
     protected void runCleanUp() {
         try (final ImprovedAdminClient improvedAdminClient = this.createAdminClient()) {
-            this.cleanUpRun(improvedAdminClient.getTopicClient(), improvedAdminClient.getSchemaClient());
+            this.cleanUpRun(improvedAdminClient);
         }
     }
 
-    protected void cleanUpRun(final TopicClient topicClient, final Optional<SchemaClient> schemaClient) {
-        final Iterable<String> outputTopics = this.getAllOutputTopics();
+    protected void cleanUpRun(final ImprovedAdminClient improvedAdminClient) {
+        final TopicClient topicClient = improvedAdminClient.getTopicClient();
+        final Optional<SchemaClient> schemaClient = improvedAdminClient.getSchemaClient();
 
+        final Iterable<String> outputTopics = this.getAllOutputTopics();
         outputTopics.forEach(topic -> deleteTopicAndResetSchema(topicClient, schemaClient, topic));
+
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
@@ -143,7 +153,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     }
 
     private Iterable<String> getAllOutputTopics() {
-        return Seq.of(this.getOutputTopic())
+        return Seq.of(this.outputTopic)
             .concat(this.extraOutputTopics.values());
     }
 }

@@ -28,6 +28,7 @@ import static com.bakdata.kafka.util.SchemaClient.createSchemaRegistryClient;
 import static java.util.Objects.nonNull;
 
 import com.google.common.base.Preconditions;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.io.Closeable;
 import java.time.Duration;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public final class ImprovedAdminClient implements Closeable {
     @Getter
     private final @NonNull Properties properties;
     private final @NonNull AdminClient adminClient;
-    private final String schemaRegistryUrl;
+    private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Duration timeout;
 
     @Builder
@@ -56,13 +57,14 @@ public final class ImprovedAdminClient implements Closeable {
             "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
         this.properties = new Properties(properties);
         this.adminClient = AdminClient.create(properties);
-        this.schemaRegistryUrl = schemaRegistryUrl;
+        this.schemaRegistryClient =
+            schemaRegistryUrl == null ? null : createSchemaRegistryClient(this.properties, schemaRegistryUrl);
         this.timeout = timeout;
     }
 
     public Optional<SchemaClient> getSchemaClient() {
-        if (nonNull(this.schemaRegistryUrl)) {
-            return Optional.of(new SchemaClient(createSchemaRegistryClient(this.properties, this.schemaRegistryUrl)));
+        if (nonNull(this.schemaRegistryClient)) {
+            return Optional.of(new SchemaClient(this.schemaRegistryClient));
         }
         return Optional.empty();
     }
