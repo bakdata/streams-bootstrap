@@ -75,8 +75,8 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     /**
      * <p>This method should give a default configuration to run your producer application with.</p>
      * If the {@link KafkaApplication#schemaRegistryUrl} is set the {@link SpecificAvroSerializer} is set as the default
-     * key and value serializer. Otherwise, the String serializer is configured. To add a custom configuration, please
-     * add a similar method to your custom application class:
+     * key and value serializer. Otherwise, the {@link StringSerializer} is configured. To add a custom configuration,
+     * please add a similar method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map

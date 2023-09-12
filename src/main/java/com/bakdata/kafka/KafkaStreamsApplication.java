@@ -240,7 +240,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     /**
      * <p>This method should give a default configuration to run your streaming application with.</p>
      * If the {@link KafkaApplication#schemaRegistryUrl} is set the {@link SpecificAvroSerde} is set as the default key
-     * and value serde. Otherwise, the String serde is configured. To add a custom configuration please add a similar
+     * and value serde. Otherwise, the {@link StringSerde} is configured. To add a custom configuration please add a similar
      * method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
