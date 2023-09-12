@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Objects.nonNull;
-
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.google.common.base.Preconditions;
 import java.time.Duration;
@@ -175,13 +173,11 @@ public abstract class KafkaApplication implements Runnable {
      * @return admin client
      */
     public ImprovedAdminClient createAdminClient() {
-        final ImprovedAdminClient.ImprovedAdminClientBuilder adminClientBuilder = ImprovedAdminClient.builder()
+        return ImprovedAdminClient.builder()
             .properties(this.getKafkaProperties())
-            .timeout(ADMIN_TIMEOUT);
-        if (nonNull(this.schemaRegistryUrl)) {
-            adminClientBuilder.schemaRegistryUrl(this.schemaRegistryUrl);
-        }
-        return adminClientBuilder.build();
+            .timeout(ADMIN_TIMEOUT)
+            .schemaRegistryUrl(this.schemaRegistryUrl)
+            .build();
     }
 
     protected abstract Properties createKafkaProperties();

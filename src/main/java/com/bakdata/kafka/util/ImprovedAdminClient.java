@@ -25,7 +25,6 @@
 package com.bakdata.kafka.util;
 
 import static com.bakdata.kafka.util.SchemaClient.createSchemaRegistryClient;
-import static java.util.Objects.nonNull;
 
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -63,10 +62,8 @@ public final class ImprovedAdminClient implements Closeable {
     }
 
     public Optional<SchemaClient> getSchemaClient() {
-        if (nonNull(this.schemaRegistryClient)) {
-            return Optional.of(new SchemaClient(this.schemaRegistryClient));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(this.schemaRegistryClient)
+            .map(SchemaClient::new);
     }
 
     public TopicClient getTopicClient() {
