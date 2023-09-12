@@ -53,17 +53,17 @@ public final class ImprovedAdminClient implements Closeable {
     private ImprovedAdminClient(@NonNull final Properties properties,
             final String schemaRegistryUrl, @NonNull final Duration timeout) {
         Preconditions.checkNotNull(properties.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),
-            "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
+                "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
         this.properties = new Properties(properties);
         this.adminClient = AdminClient.create(properties);
         this.schemaRegistryClient =
-            schemaRegistryUrl == null ? null : createSchemaRegistryClient(this.properties, schemaRegistryUrl);
+                schemaRegistryUrl == null ? null : createSchemaRegistryClient(this.properties, schemaRegistryUrl);
         this.timeout = timeout;
     }
 
     public Optional<SchemaClient> getSchemaClient() {
         return Optional.ofNullable(this.schemaRegistryClient)
-            .map(SchemaClient::new);
+                .map(SchemaClient::new);
     }
 
     public TopicClient getTopicClient() {

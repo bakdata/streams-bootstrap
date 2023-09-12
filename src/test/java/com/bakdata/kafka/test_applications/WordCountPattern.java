@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,9 +48,9 @@ public class WordCountPattern extends KafkaStreamsApplication {
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
         final KTable<String, Long> wordCounts = textLines
-            .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
-            .groupBy((key, word) -> word)
-            .count(Materialized.as("counts"));
+                .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
+                .groupBy((key, word) -> word)
+                .count(Materialized.as("counts"));
 
         final Serde<Long> longValueSerde = Serdes.Long();
         wordCounts.toStream().to(this.outputTopic, Produced.valueSerde(longValueSerde));

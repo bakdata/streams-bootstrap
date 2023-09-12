@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,81 +44,81 @@ class PropertiesTest {
     void shouldPrioritizeConfigCLIParameters() {
         final TestApplication app = new TestApplication();
         KafkaApplication.startApplicationWithoutExit(app,
-            new String[] {
-                "--brokers", "fake",
-                "--schema-registry-url", "fake",
-                "--output-topic", "output",
-                "--input-topics", "input",
-                "--error-topic", "error-topic",
-                "--streams-config", "foo=baz",
-                "--streams-config", "kafka=streams"
-            });
+                new String[]{
+                        "--brokers", "fake",
+                        "--schema-registry-url", "fake",
+                        "--output-topic", "output",
+                        "--input-topics", "input",
+                        "--error-topic", "error-topic",
+                        "--streams-config", "foo=baz",
+                        "--streams-config", "kafka=streams"
+                });
         assertThat(app.getKafkaProperties())
-            .containsEntry("foo", "baz")
-            .containsEntry("kafka", "streams")
-            .containsEntry("hello", "world");
+                .containsEntry("foo", "baz")
+                .containsEntry("kafka", "streams")
+                .containsEntry("hello", "world");
     }
 
     @Test
     void shouldSetDefaultAvroSerdeWhenSchemaRegistryUrlIsSet() {
         final TestApplication app = new TestApplication();
         KafkaApplication.startApplicationWithoutExit(app,
-            new String[] {
-                "--brokers", "fake",
-                "--schema-registry-url", "fake",
-                "--output-topic", "output",
-                "--input-topics", "input",
-                "--error-topic", "error-topic"
-            });
+                new String[]{
+                        "--brokers", "fake",
+                        "--schema-registry-url", "fake",
+                        "--output-topic", "output",
+                        "--input-topics", "input",
+                        "--error-topic", "error-topic"
+                });
         assertThat(app.getKafkaProperties())
-            .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class)
-            .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+                .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class)
+                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
     }
 
     @Test
     void shouldSetDefaultStringSerdeWhenSchemaRegistryUrlIsNotSet() {
         final TestApplication app = new TestApplication();
         KafkaApplication.startApplicationWithoutExit(app,
-            new String[] {
-                "--brokers", "fake",
-                "--output-topic", "output",
-                "--input-topics", "input",
-                "--error-topic", "error-topic"
-            });
+                new String[]{
+                        "--brokers", "fake",
+                        "--output-topic", "output",
+                        "--input-topics", "input",
+                        "--error-topic", "error-topic"
+                });
         assertThat(app.getKafkaProperties())
-            .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
-            .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
+                .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
+                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
     }
 
     @Test
     void shouldSetDefaultAvroSerializerWhenSchemaRegistryUrlIsSet() {
         final TestProducer app = new TestProducer();
         KafkaApplication.startApplicationWithoutExit(app,
-            new String[] {
-                "--brokers", "fake",
-                "--schema-registry-url", "fake",
-                "--output-topic", "output",
-                "--input-topics", "input",
-                "--error-topic", "error-topic"
-            });
+                new String[]{
+                        "--brokers", "fake",
+                        "--schema-registry-url", "fake",
+                        "--output-topic", "output",
+                        "--input-topics", "input",
+                        "--error-topic", "error-topic"
+                });
         assertThat(app.getKafkaProperties())
-            .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-            .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+                .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
     }
 
     @Test
     void shouldSetDefaultStringSerializerWhenSchemaRegistryUrlIsNotSet() {
         final TestProducer app = new TestProducer();
         KafkaApplication.startApplicationWithoutExit(app,
-            new String[] {
-                "--brokers", "fake",
-                "--output-topic", "output",
-                "--input-topics", "input",
-                "--error-topic", "error-topic"
-            });
+                new String[]{
+                        "--brokers", "fake",
+                        "--output-topic", "output",
+                        "--input-topics", "input",
+                        "--error-topic", "error-topic"
+                });
         assertThat(app.getKafkaProperties())
-            .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-            .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+                .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     }
 
     private static class TestApplication extends KafkaStreamsApplication {

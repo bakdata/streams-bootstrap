@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,6 +59,13 @@ import org.jooq.lambda.Seq;
 @Slf4j
 public abstract class KafkaProducerApplication extends KafkaApplication {
 
+    private static void deleteTopicAndResetSchema(final TopicClient topicClient,
+            final Optional<SchemaClient> schemaClient,
+            final String outputTopic) {
+        topicClient.deleteTopicIfExists(outputTopic);
+        schemaClient.ifPresent(client -> client.resetSchemaRegistry(outputTopic));
+    }
+
     @Override
     public void run() {
         super.run();
@@ -104,17 +111,6 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         return kafkaConfig;
     }
 
-    private void configureDefaultSerializer(final Properties kafkaConfig) {
-        if (nonNull(this.schemaRegistryUrl)) {
-            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
-        } else {
-            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        }
-    }
-
     protected <K, V> KafkaProducer<K, V> createProducer() {
         final Properties properties = new Properties();
         properties.putAll(this.getKafkaProperties());
@@ -145,15 +141,19 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         }
     }
 
-    private static void deleteTopicAndResetSchema(final TopicClient topicClient,
-        final Optional<SchemaClient> schemaClient,
-        final String outputTopic) {
-        topicClient.deleteTopicIfExists(outputTopic);
-        schemaClient.ifPresent(client -> client.resetSchemaRegistry(outputTopic));
+    private void configureDefaultSerializer(final Properties kafkaConfig) {
+        if (nonNull(this.schemaRegistryUrl)) {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
+        } else {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        }
     }
 
     private Iterable<String> getAllOutputTopics() {
         return Seq.of(this.outputTopic)
-            .concat(this.extraOutputTopics.values());
+                .concat(this.extraOutputTopics.values());
     }
 }

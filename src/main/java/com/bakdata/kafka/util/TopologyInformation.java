@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -120,6 +120,14 @@ public class TopologyInformation {
         return name.substring(0, name.indexOf(FILTER_SUFFIX));
     }
 
+    private static boolean isSubscriptionResponseTopic(final String topic) {
+        return topic.endsWith(SUBSCRIPTION_RESPONSE_SUFFIX) || topic.contains("FK-JOIN-SUBSCRIPTION-RESPONSE");
+    }
+
+    private static boolean isSubscriptionRegistrationTopic(final String topic) {
+        return topic.endsWith(SUBSCRIPTION_REGISTRATION_SUFFIX) || topic.contains("FK-JOIN-SUBSCRIPTION-REGISTRATION");
+    }
+
     /**
      * Retrieve all topics associated with this topology that are auto-created by Kafka Streams
      *
@@ -175,14 +183,6 @@ public class TopologyInformation {
                 .filter(this::isExternalTopic)
                 .filter(sinks::contains)
                 .collect(Collectors.toList());
-    }
-
-    private static boolean isSubscriptionResponseTopic(final String topic) {
-        return topic.endsWith(SUBSCRIPTION_RESPONSE_SUFFIX) || topic.contains("FK-JOIN-SUBSCRIPTION-RESPONSE");
-    }
-
-    private static boolean isSubscriptionRegistrationTopic(final String topic) {
-        return topic.endsWith(SUBSCRIPTION_REGISTRATION_SUFFIX) || topic.contains("FK-JOIN-SUBSCRIPTION-REGISTRATION");
     }
 
     private boolean isInternalTopic(final String topic) {

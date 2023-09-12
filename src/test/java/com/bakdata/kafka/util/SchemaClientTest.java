@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,12 +64,6 @@ class SchemaClientTest {
         this.kafkaCluster.start();
     }
 
-    private SchemaClient createSchemaClient() {
-        final Properties kafkaProperties = new Properties();
-        kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
-        return SchemaClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
-    }
-
     @AfterEach
     void teardown() {
         this.kafkaCluster.stop();
@@ -79,14 +73,15 @@ class SchemaClientTest {
     void shouldDeleteTopic() throws InterruptedException, IOException, RestClientException {
         this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
         assertThat(this.kafkaCluster.exists(TOPIC))
-            .as("Topic is created")
-            .isTrue();
+                .as("Topic is created")
+                .isTrue();
 
         final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
-            .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
-            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-            .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryMockExtension.getUrl())
-            .build();
+                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
+                .build();
         this.kafkaCluster.send(sendRequest);
 
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
@@ -98,7 +93,13 @@ class SchemaClientTest {
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         assertThat(client.getAllSubjects())
-            .doesNotContain(TOPIC + "-value");
+                .doesNotContain(TOPIC + "-value");
+    }
+
+    private SchemaClient createSchemaClient() {
+        final Properties kafkaProperties = new Properties();
+        kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
+        return SchemaClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
     }
 
 }

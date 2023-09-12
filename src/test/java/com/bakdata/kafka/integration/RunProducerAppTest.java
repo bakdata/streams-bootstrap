@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -97,27 +97,27 @@ class RunProducerAppTest {
         app.run();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
-            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-            .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                this.schemaRegistryMockExtension.getUrl())
-            .build()))
-            .hasSize(1)
-            .anySatisfy(kv -> {
-                assertThat(kv.getKey()).isEqualTo("foo");
-                assertThat(kv.getValue().getContent()).isEqualTo("bar");
-            });
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
+                .build()))
+                .hasSize(1)
+                .anySatisfy(kv -> {
+                    assertThat(kv.getKey()).isEqualTo("foo");
+                    assertThat(kv.getValue().getContent()).isEqualTo("bar");
+                });
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
 
         assertThat(client.getAllSubjects())
-            .contains(app.getOutputTopic() + "-value");
+                .contains(app.getOutputTopic() + "-value");
         app.setCleanUp(true);
         app.run();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         assertThat(client.getAllSubjects())
-            .doesNotContain(app.getOutputTopic() + "-value");
+                .doesNotContain(app.getOutputTopic() + "-value");
         assertThat(this.kafkaCluster.exists(app.getOutputTopic()))
-            .as("Output topic is deleted")
-            .isFalse();
+                .as("Output topic is deleted")
+                .isFalse();
     }
 }

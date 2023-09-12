@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,33 +41,31 @@ import picocli.CommandLine;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class WordCountTest {
-    @InjectSoftAssertions
-    private SoftAssertions softly;
-
     private static final String[] ARGS = {
-        "--input-topics", "Input,Input2",
-        "--output-topic", "Output",
-        "--brokers", "localhost:9092",
-        "--streams-config", "test.ack=1,test1.ack=2"
+            "--input-topics", "Input,Input2",
+            "--output-topic", "Output",
+            "--brokers", "localhost:9092",
+            "--streams-config", "test.ack=1,test1.ack=2"
     };
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
-
     @RegisterExtension
     final TestTopologyExtension<Object, String> testTopology = new TestTopologyExtension<>(this.app::createTopology,
-        this.app.getKafkaProperties());
+            this.app.getKafkaProperties());
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
     void shouldAggregateSameWordStream() {
         this.testTopology.input("Input")
-            .add("bla")
-            .add("blub")
-            .add("bla");
+                .add("bla")
+                .add("blub")
+                .add("bla");
 
         this.testTopology.streamOutput().withValueSerde(Serdes.Long())
-            .expectNextRecord().hasKey("bla").hasValue(1L)
-            .expectNextRecord().hasKey("blub").hasValue(1L)
-            .expectNextRecord().hasKey("bla").hasValue(2L)
-            .expectNoMoreRecord();
+                .expectNextRecord().hasKey("bla").hasValue(1L)
+                .expectNextRecord().hasKey("blub").hasValue(1L)
+                .expectNextRecord().hasKey("bla").hasValue(2L)
+                .expectNoMoreRecord();
     }
 
     @Test
@@ -79,14 +77,14 @@ class WordCountTest {
     @Test
     void shouldSetDefaultSerdeWhenSchemaRegistryUrlIsNotSet() {
         this.softly.assertThat(this.app.getKafkaProperties())
-            .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
+                .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
         this.softly.assertThat(this.app.getKafkaProperties())
-            .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
+                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
     }
 
     @Test
     void shouldParseMultipleInputTopics() {
         this.softly.assertThat(this.app.getInputTopics())
-            .containsExactly("Input", "Input2");
+                .containsExactly("Input", "Input2");
     }
 }
