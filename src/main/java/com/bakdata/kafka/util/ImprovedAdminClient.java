@@ -46,12 +46,12 @@ public final class ImprovedAdminClient implements Closeable {
     @Getter
     private final @NonNull Properties properties;
     private final @NonNull AdminClient adminClient;
-    private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Duration timeout;
+    private final SchemaRegistryClient schemaRegistryClient;
 
     @Builder
     private ImprovedAdminClient(@NonNull final Properties properties,
-        final String schemaRegistryUrl, @NonNull final Duration timeout) {
+        @NonNull final Duration timeout, final String schemaRegistryUrl) {
         Preconditions.checkNotNull(properties.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),
             "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
         this.properties = new Properties(properties);
