@@ -128,16 +128,8 @@ allprojects {
     }
 }
 
-tasks {
-    compileJava {
-        options.encoding = "UTF-8"
-    }
-    compileTestJava {
-        options.encoding = "UTF-8"
-    }
-    test {
-        useJUnitPlatform()
-    }
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 release {
