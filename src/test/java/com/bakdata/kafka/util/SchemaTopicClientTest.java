@@ -37,6 +37,8 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +54,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
-class SchemaClientTest {
+class SchemaTopicClientTest {
     private static final int TIMEOUT_SECONDS = 10;
     private static final String TOPIC = "topic";
     @RegisterExtension
@@ -87,8 +89,8 @@ class SchemaClientTest {
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
         assertThat(client.getAllSubjects()).contains(TOPIC + "-value");
 
-        final SchemaClient schemaClient = this.createSchemaClient();
-        schemaClient.resetSchemaRegistry(TOPIC);
+        final SchemaTopicClient schemaTopicClient = this.createSchemaClient();
+        schemaTopicClient.resetSchemaRegistry(TOPIC);
 
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
@@ -96,10 +98,11 @@ class SchemaClientTest {
                 .doesNotContain(TOPIC + "-value");
     }
 
-    private SchemaClient createSchemaClient() {
+    private SchemaTopicClient createSchemaClient() {
         final Properties kafkaProperties = new Properties();
         kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
-        return SchemaClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl());
+        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
+                Duration.of(TIMEOUT_SECONDS, ChronoUnit.SECONDS));
     }
 
 }

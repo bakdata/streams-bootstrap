@@ -175,8 +175,8 @@ public abstract class KafkaApplication implements Runnable {
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.builder()
                 .properties(this.getKafkaProperties())
-                .timeout(ADMIN_TIMEOUT)
                 .schemaRegistryUrl(this.schemaRegistryUrl)
+                .timeout(ADMIN_TIMEOUT)
                 .build();
     }
 

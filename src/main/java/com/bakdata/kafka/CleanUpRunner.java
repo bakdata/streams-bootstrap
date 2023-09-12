@@ -188,11 +188,11 @@ public final class CleanUpRunner {
      */
     public void deleteTopics() {
         final List<String> externalTopics = this.topologyInformation.getExternalSinkTopics();
-        externalTopics.forEach(this::deleteTopicAndResetSchema);
+        externalTopics.forEach(this::deleteTopic);
     }
 
     private void resetInternalTopic(final String topic) {
-        this.adminClient.getSchemaClient()
+        this.adminClient.getSchemaTopicClient()
                 .ifPresent(client -> client.resetSchemaRegistry(topic));
         this.runTopicCleanUp(topic);
     }
@@ -201,11 +201,9 @@ public final class CleanUpRunner {
         this.topicCleanUpHooks.forEach(hook -> hook.accept(topic));
     }
 
-    private void deleteTopicAndResetSchema(final String topic) {
-        this.adminClient.getTopicClient()
-                .deleteTopicIfExists(topic);
-        this.adminClient.getSchemaClient()
-                .ifPresent(client -> client.resetSchemaRegistry(topic));
+    private void deleteTopic(final String topic) {
+        this.adminClient.getSchemaTopicClient()
+                .ifPresent(client -> client.deleteTopicAndResetSchemaRegistry(topic));
         this.runTopicCleanUp(topic);
     }
 

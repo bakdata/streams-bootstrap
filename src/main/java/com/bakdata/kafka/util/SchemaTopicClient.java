@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,9 @@ import com.bakdata.kafka.CleanUpException;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import java.io.Closeable;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,25 +41,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 
 /**
- * Client to interact with topics associated Schema Registry subjects in a unified way
+ * Client to interact with Kafka topics and its associated schema registry subjects in a unified way
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class SchemaClient {
+public final class SchemaTopicClient implements Closeable {
     private static final int CACHE_CAPACITY = 100;
+    private final @NonNull TopicClient topicClient;
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
     /**
-     * Creates a new {@code SchemaClient} using the specified configuration.
+     * Creates a new {@code SchemaTopicClient} using the specified configuration.
      *
      * @param configs properties passed to {@link AdminClient#create(Properties)}
-     * @param schemaRegistryUrl URL of Schema Registry
-     * @return {@code SchemaClient}
+     * @param schemaRegistryUrl URL of schema registry
+     * @param timeout timeout for waiting for Kafka admin calls
+     * @return {@code SchemaTopicClient}
      */
-    public static SchemaClient create(final Properties configs, final String schemaRegistryUrl) {
+    public static SchemaTopicClient create(final Properties configs, final String schemaRegistryUrl,
+            final Duration timeout) {
         final SchemaRegistryClient schemaRegistryClient =
                 createSchemaRegistryClient(configs, schemaRegistryUrl);
-        return new SchemaClient(schemaRegistryClient);
+        final TopicClient topicClient = TopicClient.create(configs, timeout);
+        return new SchemaTopicClient(topicClient, schemaRegistryClient);
     }
 
     /**
@@ -65,7 +71,7 @@ public final class SchemaClient {
      *
      * @param configs properties passed to
      * {@link CachedSchemaRegistryClient#CachedSchemaRegistryClient(String, int, Map)}
-     * @param schemaRegistryUrl URL of Schema Registry
+     * @param schemaRegistryUrl URL of schema registry
      * @return {@link CachedSchemaRegistryClient}
      */
     public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<Object, Object> configs,
@@ -76,12 +82,22 @@ public final class SchemaClient {
     }
 
     /**
-     * Delete key and value schemas associated with a topic from the Schema Registry.
+     * Delete a topic if it exists and reset the corresponding Schema Registry subjects.
+     *
+     * @param topic the topic name
+     */
+    public void deleteTopicAndResetSchemaRegistry(final String topic) {
+        this.topicClient.deleteTopicIfExists(topic);
+        this.resetSchemaRegistry(topic);
+    }
+
+    /**
+     * Delete key and value schemas associated with a topic from the schema registry.
      *
      * @param topic the topic name
      */
     public void resetSchemaRegistry(final String topic) {
-        log.info("Resetting Schema Registry for topic '{}'", topic);
+        log.info("Resetting schema registry for topic '{}'", topic);
         try {
             final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
             final String keySubject = topic + "-key";
@@ -99,7 +115,12 @@ public final class SchemaClient {
                 log.info("No value schema for topic {} available", topic);
             }
         } catch (final IOException | RestClientException e) {
-            throw new CleanUpException("Could not reset Schema Registry for topic " + topic, e);
+            throw new CleanUpException("Could not reset schema registry for topic " + topic, e);
         }
+    }
+
+    @Override
+    public void close() {
+        this.topicClient.close();
     }
 }

@@ -25,11 +25,8 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import com.bakdata.kafka.util.SchemaClient;
-import com.bakdata.kafka.util.TopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,13 +53,6 @@ import org.jooq.lambda.Seq;
 @RequiredArgsConstructor
 @Slf4j
 public abstract class KafkaProducerApplication extends KafkaApplication {
-
-    private static void deleteTopicAndResetSchema(final TopicClient topicClient,
-            final Optional<SchemaClient> schemaClient,
-            final String outputTopic) {
-        topicClient.deleteTopicIfExists(outputTopic);
-        schemaClient.ifPresent(client -> client.resetSchemaRegistry(outputTopic));
-    }
 
     @Override
     public void run() {
@@ -125,11 +115,13 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     }
 
     protected void cleanUpRun(final ImprovedAdminClient improvedAdminClient) {
-        final TopicClient topicClient = improvedAdminClient.getTopicClient();
-        final Optional<SchemaClient> schemaClient = improvedAdminClient.getSchemaClient();
-
         final Iterable<String> outputTopics = this.getAllOutputTopics();
-        outputTopics.forEach(topic -> deleteTopicAndResetSchema(topicClient, schemaClient, topic));
+        improvedAdminClient.getSchemaTopicClient()
+                .ifPresentOrElse(
+                        schemaTopicClient -> outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry),
+                        () -> outputTopics.forEach(
+                                topic -> improvedAdminClient.getTopicClient().deleteTopicIfExists(topic))
+                );
 
         try {
             Thread.sleep(RESET_SLEEP_MS);
