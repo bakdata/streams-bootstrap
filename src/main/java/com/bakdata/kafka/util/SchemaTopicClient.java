@@ -48,7 +48,7 @@ import org.apache.kafka.clients.admin.AdminClient;
 public final class SchemaTopicClient implements Closeable {
     private static final int CACHE_CAPACITY = 100;
     private final @NonNull TopicClient topicClient;
-    private final @NonNull SchemaRegistryClient schemaRegistryClient;
+    private final SchemaRegistryClient schemaRegistryClient;
 
     /**
      * Creates a new {@code SchemaTopicClient} using the specified configuration.
@@ -64,6 +64,18 @@ public final class SchemaTopicClient implements Closeable {
                 createSchemaRegistryClient(configs, schemaRegistryUrl);
         final TopicClient topicClient = TopicClient.create(configs, timeout);
         return new SchemaTopicClient(topicClient, schemaRegistryClient);
+    }
+
+    /**
+     * Creates a new {@code SchemaTopicClient} with no {@link SchemaRegistryClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param timeout timeout for waiting for Kafka admin calls
+     * @return {@code SchemaTopicClient}
+     */
+    public static SchemaTopicClient create(final Properties configs, final Duration timeout) {
+        final TopicClient topicClient = TopicClient.create(configs, timeout);
+        return new SchemaTopicClient(topicClient, null);
     }
 
     /**
@@ -97,7 +109,11 @@ public final class SchemaTopicClient implements Closeable {
      * @param topic the topic name
      */
     public void resetSchemaRegistry(final String topic) {
-        log.info("Resetting schema registry for topic '{}'", topic);
+        if (this.schemaRegistryClient == null) {
+            log.info("No Schema Registry URL set. Skipping schema deletion for topic {}.", topic);
+            return;
+        }
+        log.info("Resetting Schema Registry for topic '{}'", topic);
         try {
             final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
             final String keySubject = topic + "-key";

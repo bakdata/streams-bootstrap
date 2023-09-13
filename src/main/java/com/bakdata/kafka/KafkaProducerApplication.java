@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.SchemaTopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Properties;
@@ -110,18 +111,13 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
      */
     protected void runCleanUp() {
         try (final ImprovedAdminClient improvedAdminClient = this.createAdminClient()) {
-            this.cleanUpRun(improvedAdminClient);
+            this.cleanUpRun(improvedAdminClient.getSchemaTopicClient());
         }
     }
 
-    protected void cleanUpRun(final ImprovedAdminClient improvedAdminClient) {
+    protected void cleanUpRun(final SchemaTopicClient schemaTopicClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
-        improvedAdminClient.getSchemaTopicClient()
-                .ifPresentOrElse(
-                        schemaTopicClient -> outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry),
-                        () -> outputTopics.forEach(
-                                topic -> improvedAdminClient.getTopicClient().deleteTopicIfExists(topic))
-                );
+        outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
 
         try {
             Thread.sleep(RESET_SLEEP_MS);
