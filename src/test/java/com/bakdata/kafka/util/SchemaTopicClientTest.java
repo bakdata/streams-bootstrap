@@ -28,7 +28,6 @@ package com.bakdata.kafka.util;
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
@@ -80,7 +79,8 @@ class SchemaTopicClientTest {
     }
 
     @Test
-    void shouldDeleteTopicAndSchema() throws InterruptedException, IOException, RestClientException {
+    void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
+            throws InterruptedException, IOException, RestClientException {
         this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
         this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is created")
@@ -111,7 +111,7 @@ class SchemaTopicClientTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException, IOException, RestClientException {
+    void shouldResetSchema() throws InterruptedException, IOException, RestClientException {
         this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
         this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is created")
@@ -137,25 +137,37 @@ class SchemaTopicClientTest {
 
         this.softly.assertThat(client.getAllSubjects())
                 .doesNotContain(TOPIC + "-value");
+        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
+                .isTrue();
     }
 
     @Test
-    void shouldDeleteTopicWhenSchemaRegistryUrlIsNotSet() throws InterruptedException {
+    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws InterruptedException, RestClientException,
+            IOException {
         this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
-        assertThat(this.kafkaCluster.exists(TOPIC))
+        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
                 .as("Topic is created")
                 .isTrue();
 
-        final SendValuesTransactional<String> sendRequest = SendValuesTransactional
-                .inTransaction(TOPIC, List.of("foo", "bar", "baz"))
-                .useDefaults();
+        final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
+                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
+                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl())
+                .build();
         this.kafkaCluster.send(sendRequest);
+
+        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+        this.softly.assertThat(client.getAllSubjects())
+                .contains(TOPIC + "-value");
 
         try (final SchemaTopicClient schemaTopicClient = this.createClientWithNoSchemaRegistry()) {
             schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
         }
 
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        this.softly.assertThat(client.getAllSubjects())
+                .contains(TOPIC + "-value");
         this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
                 .isFalse();
     }

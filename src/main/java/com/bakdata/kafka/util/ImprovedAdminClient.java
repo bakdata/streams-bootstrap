@@ -30,6 +30,7 @@ import com.google.common.base.Preconditions;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.io.Closeable;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.Properties;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,9 +45,10 @@ public final class ImprovedAdminClient implements Closeable {
 
     @Getter
     private final @NonNull Properties properties;
+    @Getter
     private final @NonNull AdminClient adminClient;
-    private final @NonNull Duration timeout;
     private final SchemaRegistryClient schemaRegistryClient;
+    private final @NonNull Duration timeout;
 
     @Builder
     private ImprovedAdminClient(@NonNull final Properties properties,
@@ -58,6 +60,10 @@ public final class ImprovedAdminClient implements Closeable {
         this.schemaRegistryClient =
                 schemaRegistryUrl == null ? null : createSchemaRegistryClient(this.properties, schemaRegistryUrl);
         this.timeout = timeout;
+    }
+
+    public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
+        return Optional.ofNullable(this.schemaRegistryClient);
     }
 
     public SchemaTopicClient getSchemaTopicClient() {

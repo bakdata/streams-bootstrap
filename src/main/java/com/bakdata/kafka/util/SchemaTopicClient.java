@@ -110,7 +110,7 @@ public final class SchemaTopicClient implements Closeable {
      */
     public void resetSchemaRegistry(final String topic) {
         if (this.schemaRegistryClient == null) {
-            log.info("No Schema Registry URL set. Skipping schema deletion for topic {}.", topic);
+            log.debug("No Schema Registry URL set. Skipping schema deletion for topic {}.", topic);
             return;
         }
         log.info("Resetting Schema Registry for topic '{}'", topic);
