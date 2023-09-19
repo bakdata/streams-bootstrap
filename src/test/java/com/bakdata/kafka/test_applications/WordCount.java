@@ -52,8 +52,7 @@ public class WordCount extends KafkaStreamsApplication {
                 .groupBy((key, word) -> word)
                 .count(Materialized.as("counts"));
 
-        final Serde<Long> longValueSerde = Serdes.Long();
-        wordCounts.toStream().to(this.outputTopic, Produced.valueSerde(longValueSerde));
+        wordCounts.toStream().to(this.outputTopic, Produced.valueSerde(Serdes.Long()));
     }
 
     @Override
