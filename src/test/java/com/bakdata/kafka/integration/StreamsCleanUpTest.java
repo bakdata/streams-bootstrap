@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -583,33 +583,33 @@ class StreamsCleanUpTest {
     }
 
     private KafkaStreamsApplication createWordCountApplication() {
-        return this.setupApp(new WordCount(), "word_input", "word_output", "word_error");
+        return this.setupAppNoSr(new WordCount(), "word_input", "word_output", "word_error");
     }
 
     private KafkaStreamsApplication createWordCountPatternApplication() {
-        return this.setupApp(new WordCountPattern(), Pattern.compile(".*_topic"), "word_output", "word_error");
+        return this.setupAppNoSr(new WordCountPattern(), Pattern.compile(".*_topic"), "word_output", "word_error");
     }
 
     private KafkaStreamsApplication createMirrorValueApplication() {
-        return this.setupApp(new MirrorValueWithAvro(), "input", "output", "key_error");
+        return this.setupAppWithSr(new MirrorValueWithAvro(), "input", "output", "key_error");
     }
 
     private CloseFlagApp createCloseApplication() {
-        return this.setupApp(new CloseFlagApp(), "input", "output", "key_error");
+        return this.setupAppWithSr(new CloseFlagApp(), "input", "output", "key_error");
     }
 
     private KafkaStreamsApplication createMirrorKeyApplication() {
-        return this.setupApp(new MirrorKeyWithAvro(), "input", "output", "value_error");
+        return this.setupAppWithSr(new MirrorKeyWithAvro(), "input", "output", "value_error");
     }
 
     private KafkaStreamsApplication createComplexApplication() {
         this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
-        return this.setupApp(new ComplexTopologyApplication(), "input", "output", "value_error");
+        return this.setupAppWithSr(new ComplexTopologyApplication(), "input", "output", "value_error");
     }
 
     private KafkaStreamsApplication createComplexCleanUpHookApplication() {
         this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
-        return this.setupApp(new ComplexTopologyApplication() {
+        return this.setupAppWithSr(new ComplexTopologyApplication() {
             @Override
             protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
                 cleanUpRunner.registerTopicCleanUpHook(StreamsCleanUpTest.this.topicCleanUpHook);
@@ -618,14 +618,22 @@ class StreamsCleanUpTest {
         }, "input", "output", "value_error");
     }
 
-    private <T extends KafkaStreamsApplication> T setupApp(final T application, final String inputTopicName,
+    private <T extends KafkaStreamsApplication> T setupAppWithSr(final T application, final String inputTopicName,
+            final String outputTopicName, final String errorTopicName) {
+        this.setupApp(application, outputTopicName, errorTopicName);
+        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+        application.setInputTopics(List.of(inputTopicName));
+        return application;
+    }
+
+    private <T extends KafkaStreamsApplication> T setupAppNoSr(final T application, final String inputTopicName,
             final String outputTopicName, final String errorTopicName) {
         this.setupApp(application, outputTopicName, errorTopicName);
         application.setInputTopics(List.of(inputTopicName));
         return application;
     }
 
-    private <T extends KafkaStreamsApplication> T setupApp(final T application, final Pattern inputPattern,
+    private <T extends KafkaStreamsApplication> T setupAppNoSr(final T application, final Pattern inputPattern,
             final String outputTopicName, final String errorTopicName) {
         this.setupApp(application, outputTopicName, errorTopicName);
         application.setInputPattern(inputPattern);
@@ -634,7 +642,6 @@ class StreamsCleanUpTest {
 
     private <T extends KafkaStreamsApplication> void setupApp(final T application, final String outputTopicName,
             final String errorTopicName) {
-        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
         application.setOutputTopic(outputTopicName);
         application.setErrorTopic(errorTopicName);
         application.setBrokers(this.kafkaCluster.getBrokerList());

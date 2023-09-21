@@ -7,7 +7,7 @@ pr:
   branches:
     include:
     - master
-    
+
 variables:
 - group: sonarqube
 - group: sign

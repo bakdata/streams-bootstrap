@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,11 @@ package com.bakdata.kafka.test_applications;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -46,9 +44,6 @@ public class WordCountPattern extends KafkaStreamsApplication {
 
     @Override
     public void buildTopology(final StreamsBuilder builder) {
-        final Serde<String> stringSerde = Serdes.String();
-        final Serde<Long> longSerde = Serdes.Long();
-
         final KStream<String, String> textLines = builder.stream(this.getInputPattern());
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
@@ -57,19 +52,12 @@ public class WordCountPattern extends KafkaStreamsApplication {
                 .groupBy((key, word) -> word)
                 .count(Materialized.as("counts"));
 
-        wordCounts.toStream().to(this.outputTopic, Produced.with(stringSerde, longSerde));
+        final Serde<Long> longValueSerde = Serdes.Long();
+        wordCounts.toStream().to(this.outputTopic, Produced.valueSerde(longValueSerde));
     }
 
     @Override
     public String getUniqueAppId() {
         return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
-    }
-
-    @Override
-    public Properties createKafkaProperties() {
-        final Properties kafkaConfig = super.createKafkaProperties();
-        kafkaConfig.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        kafkaConfig.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        return kafkaConfig;
     }
 }

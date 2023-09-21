@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.jooq.lambda.Seq;
 
 
@@ -69,7 +70,9 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     /**
      * <p>This method should give a default configuration to run your producer application with.</p>
-     * To add a custom configuration please add a similar method to your custom application class:
+     * If {@link KafkaApplication#schemaRegistryUrl} is set {@link SpecificAvroSerializer} is set as the default key,
+     * value serializer. Otherwise, {@link StringSerializer} is configured as the default key, value serializer. To add
+     * a custom configuration, please add a similar method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
@@ -85,8 +88,6 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     protected Properties createKafkaProperties() {
         final Properties kafkaConfig = new Properties();
 
-        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
         // exactly once and order
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         kafkaConfig.setProperty(ProducerConfig.ACKS_CONFIG, "all");
@@ -94,7 +95,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         // compression
         kafkaConfig.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
 
-        kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
+        this.configureDefaultSerializer(kafkaConfig);
         kafkaConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
         return kafkaConfig;
     }
@@ -116,8 +117,8 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     protected void cleanUpRun(final SchemaTopicClient schemaTopicClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
-
         outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
+
         try {
             Thread.sleep(RESET_SLEEP_MS);
         } catch (final InterruptedException e) {
@@ -126,8 +127,19 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         }
     }
 
+    private void configureDefaultSerializer(final Properties kafkaConfig) {
+        if (this.schemaRegistryUrl == null) {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        } else {
+            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
+            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
+        }
+    }
+
     private Iterable<String> getAllOutputTopics() {
-        return Seq.of(this.getOutputTopic())
+        return Seq.of(this.outputTopic)
                 .concat(this.extraOutputTopics.values());
     }
 }

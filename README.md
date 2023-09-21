@@ -90,7 +90,7 @@ The following configuration options are available:
 
 - `--brokers`: List of Kafka brokers (comma-separated) (**required**)
 
-- `--schema-registry-url`: The URL of the schema registry (**required**)
+- `--schema-registry-url`: The URL of the Schema Registry
 
 - `--input-topics`: List of input topics (comma-separated)
 
@@ -156,7 +156,7 @@ The following configuration options are available:
 
 - `--brokers`: List of Kafka brokers (comma-separated) (**required**)
 
-- `--schema-registry-url`: The URL of the schema registry (**required**)
+- `--schema-registry-url`: The URL of the Schema Registry
 
 - `--output-topic`: The output topic
 

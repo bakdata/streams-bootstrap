@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -192,7 +192,8 @@ public final class CleanUpRunner {
     }
 
     private void resetInternalTopic(final String topic) {
-        this.adminClient.getSchemaTopicClient().resetSchemaRegistry(topic);
+        this.adminClient.getSchemaTopicClient()
+                .resetSchemaRegistry(topic);
         this.runTopicCleanUp(topic);
     }
 
@@ -201,7 +202,8 @@ public final class CleanUpRunner {
     }
 
     private void deleteTopic(final String topic) {
-        this.adminClient.getSchemaTopicClient().deleteTopicAndResetSchemaRegistry(topic);
+        this.adminClient.getSchemaTopicClient()
+                .deleteTopicAndResetSchemaRegistry(topic);
         this.runTopicCleanUp(topic);
     }
 

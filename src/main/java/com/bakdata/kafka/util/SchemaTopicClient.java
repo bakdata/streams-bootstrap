@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ import org.apache.kafka.clients.admin.AdminClient;
 public final class SchemaTopicClient implements Closeable {
     private static final int CACHE_CAPACITY = 100;
     private final @NonNull TopicClient topicClient;
-    private final @NonNull SchemaRegistryClient schemaRegistryClient;
+    private final SchemaRegistryClient schemaRegistryClient;
 
     /**
      * Creates a new {@code SchemaTopicClient} using the specified configuration.
@@ -67,6 +67,18 @@ public final class SchemaTopicClient implements Closeable {
     }
 
     /**
+     * Creates a new {@code SchemaTopicClient} with no {@link SchemaRegistryClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param timeout timeout for waiting for Kafka admin calls
+     * @return {@code SchemaTopicClient}
+     */
+    public static SchemaTopicClient create(final Properties configs, final Duration timeout) {
+        final TopicClient topicClient = TopicClient.create(configs, timeout);
+        return new SchemaTopicClient(topicClient, null);
+    }
+
+    /**
      * Creates a new {@link CachedSchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
@@ -82,7 +94,7 @@ public final class SchemaTopicClient implements Closeable {
     }
 
     /**
-     * Delete a topic if it exists and reset the corresponding schema registry subjects.
+     * Delete a topic if it exists and reset the corresponding Schema Registry subjects.
      *
      * @param topic the topic name
      */
@@ -97,7 +109,11 @@ public final class SchemaTopicClient implements Closeable {
      * @param topic the topic name
      */
     public void resetSchemaRegistry(final String topic) {
-        log.info("Resetting schema registry for topic '{}'", topic);
+        if (this.schemaRegistryClient == null) {
+            log.debug("No Schema Registry URL set. Skipping schema deletion for topic {}.", topic);
+            return;
+        }
+        log.info("Resetting Schema Registry for topic '{}'", topic);
         try {
             final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
             final String keySubject = topic + "-key";

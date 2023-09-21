@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -80,8 +80,8 @@ public abstract class KafkaApplication implements Runnable {
                     + "consumer group. Be careful with running in production and with enabling this flag - it "
                     + "might cause inconsistent processing with multiple replicas.")
     protected boolean cleanUp;
-    @CommandLine.Option(names = "--schema-registry-url", required = true, description = "URL of schema registry")
-    private String schemaRegistryUrl = "";
+    @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
+    protected String schemaRegistryUrl;
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "print this help and exit")
     private boolean helpRequested;
     //TODO change to more generic parameter name in the future. Retain old name for backwards compatibility
@@ -100,16 +100,6 @@ public abstract class KafkaApplication implements Runnable {
     protected static void startApplication(final KafkaApplication app, final String[] args) {
         final int exitCode = startApplicationWithoutExit(app, args);
         System.exit(exitCode);
-    }
-
-    @Override
-    public void run() {
-        log.info("Starting application");
-        if (this.debug) {
-            Configurator.setLevel("com.bakdata", Level.DEBUG);
-            Configurator.setLevel(appPackageName, Level.DEBUG);
-        }
-        log.debug(this.toString());
     }
 
     /**
@@ -135,6 +125,16 @@ public abstract class KafkaApplication implements Runnable {
         final Collection<String> allArgs = new ArrayList<>(environmentArguments);
         allArgs.addAll(Arrays.asList(args));
         return allArgs.toArray(String[]::new);
+    }
+
+    @Override
+    public void run() {
+        log.info("Starting application");
+        if (this.debug) {
+            Configurator.setLevel("com.bakdata", Level.DEBUG);
+            Configurator.setLevel(appPackageName, Level.DEBUG);
+        }
+        log.debug(this.toString());
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class KafkaApplication implements Runnable {
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.builder()
                 .properties(this.getKafkaProperties())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
+                .schemaRegistryUrl(this.schemaRegistryUrl)
                 .timeout(ADMIN_TIMEOUT)
                 .build();
     }

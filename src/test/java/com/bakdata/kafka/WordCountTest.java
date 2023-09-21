@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,44 @@
 
 package com.bakdata.kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
+import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.test_applications.WordCount;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import picocli.CommandLine;
 
+@ExtendWith(SoftAssertionsExtension.class)
 class WordCountTest {
-    private static final String[] ARGS = {"--input-topics", "Input,Input2", "--output-topic", "Output",
-            "--brokers", "localhost:9092", "--schema-registry-url", "registryUrl", "--streams-config",
-            "test.ack=1,test1.ack=2"};
+    private static final String[] ARGS = {
+            "--input-topics", "Input,Input2",
+            "--output-topic", "Output",
+            "--brokers", "localhost:9092",
+            "--streams-config", "test.ack=1,test1.ack=2"
+    };
     private final WordCount app = CommandLine.populateCommand(new WordCount(), ARGS);
-
     @RegisterExtension
     final TestTopologyExtension<Object, String> testTopology = new TestTopologyExtension<>(this.app::createTopology,
             this.app.getKafkaProperties());
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
     void shouldAggregateSameWordStream() {
-        this.testTopology.input("Input").add("bla")
+        this.testTopology.input("Input")
+                .add("bla")
                 .add("blub")
                 .add("bla");
 
-        this.testTopology.streamOutput().withSerde(Serdes.String(), Serdes.Long())
+        this.testTopology.streamOutput().withValueSerde(Serdes.Long())
                 .expectNextRecord().hasKey("bla").hasValue(1L)
                 .expectNextRecord().hasKey("blub").hasValue(1L)
                 .expectNextRecord().hasKey("bla").hasValue(2L)
@@ -58,13 +70,21 @@ class WordCountTest {
 
     @Test
     void shouldSetKafkaProperties() {
-        assertThat(this.app.getKafkaProperties().getProperty("test.ack")).isEqualTo("1");
-        assertThat(this.app.getKafkaProperties().getProperty("test1.ack")).isEqualTo("2");
+        this.softly.assertThat(this.app.getKafkaProperties()).containsEntry("test.ack", "1");
+        this.softly.assertThat(this.app.getKafkaProperties()).containsEntry("test1.ack", "2");
+    }
+
+    @Test
+    void shouldSetDefaultSerdeWhenSchemaRegistryUrlIsNotSet() {
+        this.softly.assertThat(this.app.getKafkaProperties())
+                .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
+        this.softly.assertThat(this.app.getKafkaProperties())
+                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
     }
 
     @Test
     void shouldParseMultipleInputTopics() {
-        assertThat(this.app.getInputTopics())
+        this.softly.assertThat(this.app.getInputTopics())
                 .containsExactly("Input", "Input2");
     }
 }

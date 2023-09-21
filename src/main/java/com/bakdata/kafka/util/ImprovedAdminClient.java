@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022 bakdata
+ * Copyright (c) 2023 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import com.google.common.base.Preconditions;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.io.Closeable;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.Properties;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,19 +47,23 @@ public final class ImprovedAdminClient implements Closeable {
     private final @NonNull Properties properties;
     @Getter
     private final @NonNull AdminClient adminClient;
-    @Getter
-    private final @NonNull SchemaRegistryClient schemaRegistryClient;
+    private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Duration timeout;
 
     @Builder
     private ImprovedAdminClient(@NonNull final Properties properties,
-            @NonNull final String schemaRegistryUrl, @NonNull final Duration timeout) {
+            final String schemaRegistryUrl, @NonNull final Duration timeout) {
         Preconditions.checkNotNull(properties.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),
                 "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
         this.properties = new Properties(properties);
         this.adminClient = AdminClient.create(properties);
-        this.schemaRegistryClient = createSchemaRegistryClient(properties, schemaRegistryUrl);
+        this.schemaRegistryClient =
+                schemaRegistryUrl == null ? null : createSchemaRegistryClient(this.properties, schemaRegistryUrl);
         this.timeout = timeout;
+    }
+
+    public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
+        return Optional.ofNullable(this.schemaRegistryClient);
     }
 
     public SchemaTopicClient getSchemaTopicClient() {

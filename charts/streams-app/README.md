@@ -11,7 +11,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Deployment
 
 | Parameter                | Description                                                                                                                                                                                                                                                | Default                                    |
-|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | `nameOverride`           | The name of the Kubernetes deployment.                                                                                                                                                                                                                     | `bakdata-streams-app`                      |
 | `replicaCount`           | The number of Kafka Streams replicas.                                                                                                                                                                                                                      | `1`                                        |
 | `resources`              | See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/                                                                                                                                                                         | see [values.yaml](values.yaml) for details |
@@ -32,7 +32,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Storage
 
 | Parameter                  | Description                                                                                                                       | Default |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------|---------|
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `persistence.enabled`      | Use a [persistent volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) to store the state of the streams app. | `false` |
 | `persistence.size`         | Size of the persistent volume.                                                                                                    | `1Gi`   |
 | `persistence.storageClass` | Storage class to use for the persistent volume.                                                                                   |         |
@@ -40,7 +40,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Image
 
 | Parameter          | Description                                | Default      |
-|--------------------|--------------------------------------------|--------------|
+| ------------------ | ------------------------------------------ | ------------ |
 | `image`            | Docker image of the Kafka Streams app.     | `streamsApp` |
 | `imageTag`         | Docker image tag of the Kafka Streams app. | `latest`     |
 | `imagePullPolicy`  | Docker image pull policy.                  | `Always`     |
@@ -49,9 +49,9 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Streams
 
 | Parameter                            | Description                                                                                                                                                                      | Default |
-|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `streams.brokers`                    | Comma separated list of Kafka brokers to connect to.                                                                                                                             |         |
-| `streams.schemaRegistryUrl`          | URL of schema registry to connect to.                                                                                                                                            |         |
+| `streams.schemaRegistryUrl`          | URL of Schema Registry to connect to.                                                                                                                                            | `null`  |
 | `streams.staticMembership`           | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
 | `streams.optimizeLeaveGroupBehavior` | Enabling this optimizes the leave group behavior when a pod is terminated. Depends on the deployment kind, i.e., `statefulSet`. Requires the app to use streams-bootstrap 2.7+.  | `true`  |
 | `streams.config`                     | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |
@@ -67,7 +67,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Other
 
 | Parameter                | Description                                                                                                                                                                                                                                                                                                                       | Default |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `configurationEnvPrefix` | Prefix for environment variables to use that should be parsed as command line arguments.                                                                                                                                                                                                                                          | `APP`   |
 | `commandLine`            | Map of command line arguments passed to the streams app.                                                                                                                                                                                                                                                                          | `{}`    |
 | `debug`                  | Configure logging to debug                                                                                                                                                                                                                                                                                                        | `false` |
@@ -80,14 +80,14 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### JMX Configuration
 
 | Parameter         | Description                                       | Default  |
-|-------------------|---------------------------------------------------|----------|
+| ----------------- | ------------------------------------------------- | -------- |
 | `jmx.port`        | The jmx port which JMX style metrics are exposed. | `5555`   |
 | `jmx.metricRules` | List of JMX metric rules.                         | `[".*"]` |
 
 ### Prometheus JMX Exporter Configuration
 
 | Parameter                        | Description                                                                                                    | Default                                                            |
-|----------------------------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `prometheus.jmx.enabled`         | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `true`                                                             |
 | `prometheus.jmx.image`           | Docker Image for Prometheus JMX Exporter container.                                                            | `solsson/kafka-prometheus-jmx-exporter@sha256`                     |
 | `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143` |
@@ -98,7 +98,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Auto-Scaling
 
 | Parameter                        | Description                                                                                              | Default    |
-|----------------------------------|----------------------------------------------------------------------------------------------------------|------------|
+| -------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------- |
 | `autoscaling.enabled`            | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).          | `false`    |
 | `autoscaling.consumerGroup`      | Name of the consumer group used for checking the offset on the topic and processing the related lag.     |            |
 | `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                         |            |
@@ -114,14 +114,14 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### JVM
 
 | Parameter                      | Description                                                                                                                                  | Default |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `javaOptions.maxRAMPercentage` | https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#:~:text=is%20set%20ergonomically.-,%2DXX%3AMaxRAMPercentage,-%3Dpercent | `true`  |
 | `javaOptions.others`           | List of Java VM options passed to the streams app.                                                                                           | `[]`    |
 
 ### Service
 
 | Parameter         | Description                                                                                    | Default     |
-|-------------------|------------------------------------------------------------------------------------------------|-------------|
+| ----------------- | ---------------------------------------------------------------------------------------------- | ----------- |
 | `service.enabled` | Whether to create a service. This requires the definition of at least one `ports.servicePort`. | `false`     |
-| `service.labels`  | Additional service labels.                                                                     | `{}`        | 
+| `service.labels`  | Additional service labels.                                                                     | `{}`        |
 | `service.type`    | Service type.                                                                                  | `ClusterIP` |

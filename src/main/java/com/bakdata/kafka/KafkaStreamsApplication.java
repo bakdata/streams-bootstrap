@@ -44,6 +44,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.CloseOptions;
 import org.apache.kafka.streams.KafkaStreams.State;
@@ -236,7 +237,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     /**
      * <p>This method should give a default configuration to run your streaming application with.</p>
-     * To add a custom configuration please add a similar method to your custom application class:
+     * If {@link KafkaApplication#schemaRegistryUrl} is set {@link SpecificAvroSerde} is set as the default key, value
+     * serde. Otherwise, the {@link StringSerde} is configured as the default key, value serde. To add a custom
+     * configuration please add a similar method to your custom application class:
      * <pre>{@code
      *   protected Properties createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
@@ -268,10 +271,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "gzip");
 
         // topology
-        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
-        kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl());
+        kafkaConfig.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
+
+        this.configureDefaultSerde(kafkaConfig);
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
         return kafkaConfig;
     }
@@ -353,6 +355,17 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         final CloseOptions options = new CloseOptions().leaveGroup(leaveGroup);
         log.debug("Closing Kafka Streams with leaveGroup={}", leaveGroup);
         this.streams.close(options);
+    }
+
+    private void configureDefaultSerde(final Properties kafkaConfig) {
+        if (this.schemaRegistryUrl == null) {
+            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
+            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
+        } else {
+            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+            kafkaConfig.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
+        }
     }
 
     private boolean isStaticMembershipDisabled() {
