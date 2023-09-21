@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.13.0](https://github.com/bakdata/streams-bootstrap/tree/2.13.0) (2023-09-21)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.1...2.13.0)
+
+**Fixed bugs:**
+
+- Cleanup job fails if topic doesn't have associated schema [\#186](https://github.com/bakdata/streams-bootstrap/issues/186)
+
+**Merged pull requests:**
+
+- Make Schema Registry URL optional [\#187](https://github.com/bakdata/streams-bootstrap/pull/187) ([@raminqaf](https://github.com/raminqaf))
+
 ## [2.12.1](https://github.com/bakdata/streams-bootstrap/tree/2.12.1) (2023-08-15)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.0...2.12.1)
 
