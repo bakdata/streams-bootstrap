@@ -27,9 +27,21 @@ package com.bakdata.kafka;
 import java.util.function.Consumer;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility class that provides helpers for using {@code LargeMessageSerde} with {@link KafkaStreamsApplication}
+ */
 @UtilityClass
 public class LargeMessageUtils {
-    static Consumer<String> createLargeMessageCleanUpHook(final KafkaStreamsApplication app) {
+    /**
+     * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
+     * properties to create a {@link AbstractLargeMessageConfig} are part of
+     * {@link KafkaStreamsApplication#getKafkaProperties()}.
+     *
+     * @param app KafkaStreamsApplication to create hook from
+     * @return hook that cleans up LargeMessage files associated with a topic
+     * @see CleanUpRunner#registerTopicCleanUpHook(Consumer)
+     */
+    public static Consumer<String> createLargeMessageCleanUpHook(final KafkaStreamsApplication app) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(app.getKafkaProperties());
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
         return storer::deleteAllFiles;

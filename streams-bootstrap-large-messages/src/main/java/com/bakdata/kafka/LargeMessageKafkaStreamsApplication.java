@@ -26,12 +26,14 @@ package com.bakdata.kafka;
 
 import java.util.function.Consumer;
 
+/**
+ * Kafka Streams Application that automatically removes files associated with {@code LargeMessageSerde}
+ */
 public abstract class LargeMessageKafkaStreamsApplication extends KafkaStreamsApplication {
 
     @Override
     protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
         this.registerLargeMessageCleanUpHook(cleanUpRunner);
-
         super.cleanUpRun(cleanUpRunner);
     }
 
