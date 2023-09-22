@@ -26,10 +26,9 @@ package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import java.util.Properties;
+import java.util.Map;
+import java.util.function.Function;
 import lombok.experimental.UtilityClass;
-import org.apache.kafka.streams.Topology;
 
 /**
  * Utility class that provides helpers for using Fluent Kafka Streams Tests with {@link KafkaStreamsApplication}
@@ -49,7 +48,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see KafkaStreamsApplication#createTopology()
      */
     public static <K, V> TestTopology<K, V> createTopologyWithSchemaRegistry(final KafkaStreamsApplication app) {
-        return new TestTopology<>(p -> createTopology(app, p), app.getKafkaProperties());
+        return new TestTopology<>(app::createTopology, propertiesWithSchemaRegistryUrl(app));
     }
 
     /**
@@ -66,8 +65,7 @@ public class StreamsBootstrapTopologyFactory {
      */
     public static <K, V> TestTopologyExtension<K, V> createTopologyExtensionWithSchemaRegistry(
             final KafkaStreamsApplication app) {
-        //FIXME properties do not use correct default serde because SR url is not yet set
-        return new TestTopologyExtension<>(p -> createTopology(app, p), app.getKafkaProperties());
+        return new TestTopologyExtension<>(app::createTopology, propertiesWithSchemaRegistryUrl(app));
     }
 
     /**
@@ -78,7 +76,6 @@ public class StreamsBootstrapTopologyFactory {
      * @param <K> Default type of keys
      * @param <V> Default type of values
      * @return {@code TestTopology} that uses topology and configuration provided by {@code KafkaStreamsApplication}
-     *
      * @see KafkaStreamsApplication#getKafkaProperties()
      * @see KafkaStreamsApplication#createTopology()
      */
@@ -93,9 +90,8 @@ public class StreamsBootstrapTopologyFactory {
      * @param app KafkaStreamsApplication to create TestTopology from
      * @param <K> Default type of keys
      * @param <V> Default type of values
-     * @return {@code TestTopologyExtension} that uses topology and configuration provided by {@code
-     * KafkaStreamsApplication}
-     *
+     * @return {@code TestTopologyExtension} that uses topology and configuration provided by
+     * {@code KafkaStreamsApplication}
      * @see KafkaStreamsApplication#getKafkaProperties()
      * @see KafkaStreamsApplication#createTopology()
      */
@@ -103,9 +99,11 @@ public class StreamsBootstrapTopologyFactory {
         return new TestTopologyExtension<>(app::createTopology, app.getKafkaProperties());
     }
 
-    private static Topology createTopology(final KafkaStreamsApplication app, final Properties properties) {
-        app.setSchemaRegistryUrl(properties.getProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
-        return app.createTopology();
+    private static Function<String, Map<?, ?>> propertiesWithSchemaRegistryUrl(final KafkaStreamsApplication app) {
+        return schemaRegistryUrl -> {
+            app.setSchemaRegistryUrl(schemaRegistryUrl);
+            return app.getKafkaProperties();
+        };
     }
 
 }
