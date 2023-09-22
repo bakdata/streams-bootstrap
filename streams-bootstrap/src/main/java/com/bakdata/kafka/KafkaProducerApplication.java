@@ -29,6 +29,7 @@ import com.bakdata.kafka.util.SchemaTopicClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Properties;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -119,9 +120,10 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     protected void cleanUpRun(final SchemaTopicClient schemaTopicClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
+        final Consumer<String> topicCleanUpHook = this.createTopicCleanUpHook();
         outputTopics.forEach(topic -> {
             schemaTopicClient.deleteTopicAndResetSchemaRegistry(topic);
-            this.runTopicCleanUp(topic);
+            topicCleanUpHook.accept(topic);
         });
 
         try {
@@ -133,12 +135,13 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     }
 
     /**
-     * Called whenever a topic is cleaned
+     * Create a hook that is executed whenever a topic is deleted in clean up.
      *
-     * @param topic topic to be cleaned
+     * @return Action to run when a topic requires clean up. Topic is passed as parameter
      */
-    protected void runTopicCleanUp(final String topic) {
+    protected Consumer<String> createTopicCleanUpHook() {
         // do nothing by default
+        return topic -> {};
     }
 
     private void configureDefaultSerializer(final Properties kafkaConfig) {

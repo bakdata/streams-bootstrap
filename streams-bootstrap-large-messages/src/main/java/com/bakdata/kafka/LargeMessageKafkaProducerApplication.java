@@ -32,9 +32,8 @@ import java.util.function.Consumer;
 public abstract class LargeMessageKafkaProducerApplication extends KafkaProducerApplication {
 
     @Override
-    protected void runTopicCleanUp(final String topic) {
-        final Consumer<String> largeMessageCleanUpHook = LargeMessageUtils.createLargeMessageCleanUpHook(this);
-        largeMessageCleanUpHook.accept(topic);
+    protected Consumer<String> createTopicCleanUpHook() {
+        return LargeMessageUtils.createLargeMessageCleanUpHook(this);
     }
 
 }
