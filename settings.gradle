@@ -4,6 +4,10 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'streams-bootstrap-foo'
+rootProject.name = 'streams-bootstrap'
 
-include(":streams-bootstrap", ":streams-bootstrap-test")
+include(
+        ":streams-bootstrap",
+        ":streams-bootstrap-test",
+        ":streams-bootstrap-large-messages",
+)
