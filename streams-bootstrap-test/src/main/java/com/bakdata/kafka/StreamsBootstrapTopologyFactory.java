@@ -99,7 +99,14 @@ public class StreamsBootstrapTopologyFactory {
         return new TestTopologyExtension<>(app::createTopology, app.getKafkaProperties());
     }
 
-    private static Function<String, Map<?, ?>> getKafkaPropertiesWithSchemaRegistryUrl(
+    /**
+     * Get Kafka properties from a {@code KafkaStreamsApplication} after configuring
+     * {@link KafkaStreamsApplication#schemaRegistryUrl}.
+     *
+     * @param app KafkaStreamsApplication to get Kafka properties of
+     * @return Kafka properties
+     */
+    public static Function<String, Map<?, ?>> getKafkaPropertiesWithSchemaRegistryUrl(
             final KafkaStreamsApplication app) {
         return schemaRegistryUrl -> {
             app.setSchemaRegistryUrl(schemaRegistryUrl);

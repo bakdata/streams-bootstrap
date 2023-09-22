@@ -119,7 +119,10 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     protected void cleanUpRun(final SchemaTopicClient schemaTopicClient) {
         final Iterable<String> outputTopics = this.getAllOutputTopics();
-        outputTopics.forEach(schemaTopicClient::deleteTopicAndResetSchemaRegistry);
+        outputTopics.forEach(topic -> {
+            schemaTopicClient.deleteTopicAndResetSchemaRegistry(topic);
+            this.runTopicCleanUp(topic);
+        });
 
         try {
             Thread.sleep(RESET_SLEEP_MS);
@@ -127,6 +130,15 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
             Thread.currentThread().interrupt();
             throw new CleanUpException("Error waiting for clean up", e);
         }
+    }
+
+    /**
+     * Called whenever a topic is cleaned
+     *
+     * @param topic topic to be cleaned
+     */
+    protected void runTopicCleanUp(final String topic) {
+        // do nothing by default
     }
 
     private void configureDefaultSerializer(final Properties kafkaConfig) {

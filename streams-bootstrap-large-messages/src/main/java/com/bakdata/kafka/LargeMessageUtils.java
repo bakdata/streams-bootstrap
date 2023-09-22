@@ -28,20 +28,20 @@ import java.util.function.Consumer;
 import lombok.experimental.UtilityClass;
 
 /**
- * Utility class that provides helpers for using {@code LargeMessageSerde} with {@link KafkaStreamsApplication}
+ * Utility class that provides helpers for using {@code LargeMessageSerde} with {@link KafkaApplication}
  */
 @UtilityClass
 public class LargeMessageUtils {
     /**
      * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
      * properties to create a {@link AbstractLargeMessageConfig} are part of
-     * {@link KafkaStreamsApplication#getKafkaProperties()}.
+     * {@link KafkaApplication#getKafkaProperties()}.
      *
-     * @param app {@code KafkaStreamsApplication} to create hook from
+     * @param app {@code KafkaApplication} to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
      * @see CleanUpRunner#registerTopicCleanUpHook(Consumer)
      */
-    public static Consumer<String> createLargeMessageCleanUpHook(final KafkaStreamsApplication app) {
+    public static Consumer<String> createLargeMessageCleanUpHook(final KafkaApplication app) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(app.getKafkaProperties());
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
         return storer::deleteAllFiles;
@@ -50,11 +50,11 @@ public class LargeMessageUtils {
     /**
      * Register a hook that cleans up LargeMessage files associated with a topic.
      *
-     * @param app {@code KafkaStreamsApplication} to create hook from
+     * @param app {@code KafkaApplication} to create hook from
      * @param cleanUpRunner {@code CleanUpRunner} to register hook on
-     * @see #createLargeMessageCleanUpHook(KafkaStreamsApplication)
+     * @see #createLargeMessageCleanUpHook(KafkaApplication)
      */
-    public static void registerLargeMessageCleanUpHook(final KafkaStreamsApplication app, final CleanUpRunner cleanUpRunner) {
+    public static void registerLargeMessageCleanUpHook(final KafkaApplication app, final CleanUpRunner cleanUpRunner) {
         final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(app);
         cleanUpRunner.registerTopicCleanUpHook(deleteAllFiles);
     }
