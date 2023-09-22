@@ -4,4 +4,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'streams-bootstrap'
+rootProject.name = 'streams-bootstrap-foo'
+
+include(":streams-bootstrap", ":streams-bootstrap-test")
