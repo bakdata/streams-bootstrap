@@ -66,6 +66,7 @@ public class StreamsBootstrapTopologyFactory {
      */
     public static <K, V> TestTopologyExtension<K, V> createTopologyExtensionWithSchemaRegistry(
             final KafkaStreamsApplication app) {
+        //FIXME properties do not use correct default serde because SR url is not yet set
         return new TestTopologyExtension<>(p -> createTopology(app, p), app.getKafkaProperties());
     }
 

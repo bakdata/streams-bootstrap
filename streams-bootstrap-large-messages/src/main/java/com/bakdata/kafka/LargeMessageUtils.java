@@ -37,7 +37,7 @@ public class LargeMessageUtils {
      * properties to create a {@link AbstractLargeMessageConfig} are part of
      * {@link KafkaStreamsApplication#getKafkaProperties()}.
      *
-     * @param app KafkaStreamsApplication to create hook from
+     * @param app {@code KafkaStreamsApplication} to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
      * @see CleanUpRunner#registerTopicCleanUpHook(Consumer)
      */
@@ -45,5 +45,17 @@ public class LargeMessageUtils {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(app.getKafkaProperties());
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
         return storer::deleteAllFiles;
+    }
+
+    /**
+     * Register a hook that cleans up LargeMessage files associated with a topic.
+     *
+     * @param app {@code KafkaStreamsApplication} to create hook from
+     * @param cleanUpRunner {@code CleanUpRunner} to register hook on
+     * @see #createLargeMessageCleanUpHook(KafkaStreamsApplication)
+     */
+    public static void registerLargeMessageCleanUpHook(final KafkaStreamsApplication app, final CleanUpRunner cleanUpRunner) {
+        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(app);
+        cleanUpRunner.registerTopicCleanUpHook(deleteAllFiles);
     }
 }
