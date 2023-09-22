@@ -48,7 +48,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see KafkaStreamsApplication#createTopology()
      */
     public static <K, V> TestTopology<K, V> createTopologyWithSchemaRegistry(final KafkaStreamsApplication app) {
-        return new TestTopology<>(app::createTopology, propertiesWithSchemaRegistryUrl(app));
+        return new TestTopology<>(app::createTopology, getKafkaPropertiesWithSchemaRegistryUrl(app));
     }
 
     /**
@@ -65,7 +65,7 @@ public class StreamsBootstrapTopologyFactory {
      */
     public static <K, V> TestTopologyExtension<K, V> createTopologyExtensionWithSchemaRegistry(
             final KafkaStreamsApplication app) {
-        return new TestTopologyExtension<>(app::createTopology, propertiesWithSchemaRegistryUrl(app));
+        return new TestTopologyExtension<>(app::createTopology, getKafkaPropertiesWithSchemaRegistryUrl(app));
     }
 
     /**
@@ -99,7 +99,8 @@ public class StreamsBootstrapTopologyFactory {
         return new TestTopologyExtension<>(app::createTopology, app.getKafkaProperties());
     }
 
-    private static Function<String, Map<?, ?>> propertiesWithSchemaRegistryUrl(final KafkaStreamsApplication app) {
+    private static Function<String, Map<?, ?>> getKafkaPropertiesWithSchemaRegistryUrl(
+            final KafkaStreamsApplication app) {
         return schemaRegistryUrl -> {
             app.setSchemaRegistryUrl(schemaRegistryUrl);
             return app.getKafkaProperties();
