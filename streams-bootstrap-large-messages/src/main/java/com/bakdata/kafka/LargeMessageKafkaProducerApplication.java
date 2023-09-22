@@ -33,7 +33,7 @@ public abstract class LargeMessageKafkaProducerApplication extends KafkaProducer
 
     @Override
     protected Consumer<String> createTopicCleanUpHook() {
-        return LargeMessageUtils.createLargeMessageCleanUpHook(this);
+        return LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(this);
     }
 
 }

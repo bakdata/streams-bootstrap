@@ -31,7 +31,7 @@ public abstract class LargeMessageKafkaStreamsApplication extends KafkaStreamsAp
 
     @Override
     protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
-        LargeMessageUtils.registerLargeMessageCleanUpHook(this, cleanUpRunner);
+        LargeMessageKafkaApplicationUtils.registerLargeMessageCleanUpHook(this, cleanUpRunner);
         super.cleanUpRun(cleanUpRunner);
     }
 

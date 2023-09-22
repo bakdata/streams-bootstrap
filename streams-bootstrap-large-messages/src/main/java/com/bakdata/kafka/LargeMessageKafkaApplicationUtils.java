@@ -31,7 +31,7 @@ import lombok.experimental.UtilityClass;
  * Utility class that provides helpers for using {@code LargeMessageSerde} with {@link KafkaApplication}
  */
 @UtilityClass
-public class LargeMessageUtils {
+public class LargeMessageKafkaApplicationUtils {
     /**
      * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
      * properties to create a {@link AbstractLargeMessageConfig} are part of
