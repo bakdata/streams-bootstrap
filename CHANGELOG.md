@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.14.0](https://github.com/bakdata/streams-bootstrap/tree/2.14.0) (2023-10-30)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.13.0...2.14.0)
+
+**Merged pull requests:**
+
+- Add modules for easy usage with Fluent Kafka Streams Tests and Large Message SerDe [\#188](https://github.com/bakdata/streams-bootstrap/pull/188) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.13.0](https://github.com/bakdata/streams-bootstrap/tree/2.13.0) (2023-09-21)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.1...2.13.0)
 
@@ -29,7 +36,7 @@
 **Merged pull requests:**
 
 - Create method to register topic clean up hooks [\#183](https://github.com/bakdata/streams-bootstrap/pull/183) ([@philipp94831](https://github.com/philipp94831))
-- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@jakob-ed](https://github.com/jakob-ed))
+- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@JakobEdding](https://github.com/JakobEdding))
 
 ## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) (2023-04-19)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2)
@@ -174,7 +181,7 @@
 - Update documentation [\#144](https://github.com/bakdata/streams-bootstrap/pull/144) ([@philipp94831](https://github.com/philipp94831))
 - Remove default schedule for producer jobs [\#143](https://github.com/bakdata/streams-bootstrap/pull/143) ([@philipp94831](https://github.com/philipp94831))
 - Fix key\-value pairs indentation inside pod.yaml file [\#141](https://github.com/bakdata/streams-bootstrap/pull/141) ([@irux](https://github.com/irux))
-- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@jakob-ed](https://github.com/jakob-ed))
+- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@JakobEdding](https://github.com/JakobEdding))
 
 ## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) (2022-03-02)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1)
