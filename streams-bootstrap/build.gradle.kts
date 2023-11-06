@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     val kafkaVersion: String by project
-    implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafkaVersion)
+    implementation(group = "org.apache.kafka", name = "kafka-tools", version = kafkaVersion)
 
     implementation(group = "info.picocli", name = "picocli", version = "4.7.0")
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
