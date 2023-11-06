@@ -32,6 +32,11 @@ dependencies {
 
     val fluentKafkaVersion: String by project
     testImplementation(project(":streams-bootstrap-test"))
+    testImplementation(group = "org.slf4j", name = "slf4j-api") {
+        version {
+            strictly("1.7.36")
+        }
+    }
     testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
     testImplementation(
         group = "com.bakdata.fluent-kafka-streams-tests",
