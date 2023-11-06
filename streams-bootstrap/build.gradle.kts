@@ -38,7 +38,7 @@ dependencies {
         name = "schema-registry-mock-junit5",
         version = fluentKafkaVersion
     )
-    testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.4.0") {
+    testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.5.0") {
         exclude(group = "org.slf4j", module = "slf4j-log4j12")
     }
 
