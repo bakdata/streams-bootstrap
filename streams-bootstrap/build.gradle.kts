@@ -14,9 +14,9 @@ dependencies {
     val confluentVersion: String by project
     implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-    val log4jVersion = "2.19.0"
+    val log4jVersion = "2.21.1"
     implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-    implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
+    implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
     implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
     implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
@@ -32,11 +32,6 @@ dependencies {
 
     val fluentKafkaVersion: String by project
     testImplementation(project(":streams-bootstrap-test"))
-    testImplementation(group = "org.slf4j", name = "slf4j-api") {
-        version {
-            strictly("1.7.36")
-        }
-    }
     testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
     testImplementation(
         group = "com.bakdata.fluent-kafka-streams-tests",
