@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.15.0](https://github.com/bakdata/streams-bootstrap/tree/2.15.0) (2023-11-10)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.14.0...2.15.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.5 [\#192](https://github.com/bakdata/streams-bootstrap/pull/192) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.14.0](https://github.com/bakdata/streams-bootstrap/tree/2.14.0) (2023-10-30)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.13.0...2.14.0)
 
