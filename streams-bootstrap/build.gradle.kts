@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     val kafkaVersion: String by project
-    implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafkaVersion)
+    implementation(group = "org.apache.kafka", name = "kafka-tools", version = kafkaVersion)
 
     implementation(group = "info.picocli", name = "picocli", version = "4.7.0")
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
@@ -14,9 +14,9 @@ dependencies {
     val confluentVersion: String by project
     implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-    val log4jVersion = "2.19.0"
+    val log4jVersion = "2.21.1"
     implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-    implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
+    implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
     implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
     implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
@@ -38,7 +38,7 @@ dependencies {
         name = "schema-registry-mock-junit5",
         version = fluentKafkaVersion
     )
-    testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.4.0") {
+    testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.5.0") {
         exclude(group = "org.slf4j", module = "slf4j-log4j12")
     }
 
