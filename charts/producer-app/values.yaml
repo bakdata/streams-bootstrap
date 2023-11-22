@@ -1,4 +1,4 @@
-nameOverride: bakdata-producer-app
+fullnameOverride: bakdata-producer-app
 
 image: producerApp
 imageTag: latest

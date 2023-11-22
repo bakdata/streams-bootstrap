@@ -1,4 +1,4 @@
-nameOverride: bakdata-streams-app-job
+fullnameOverride: bakdata-streams-app-cleanup
 
 image: streamsApp
 imageTag: latest

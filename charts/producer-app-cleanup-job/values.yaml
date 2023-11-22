@@ -1,4 +1,4 @@
-nameOverride: bakdata-producer-app-job
+fullnameOverride: bakdata-producer-app-cleanup
 
 image: producerApp
 imageTag: latest

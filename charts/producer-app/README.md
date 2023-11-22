@@ -11,8 +11,9 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Job
 
 | Parameter                    | Description                                                                                                                                                                                                                                                                | Default                                    |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `nameOverride`               | The name of the Kubernetes deployment.                                                                                                                                                                                                                                     | `bakdata-producer-app`                     |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `fullnameOverride`           | Overrides name of the Kubernetes deployment.                                                                                                                                                                                                                               | `bakdata-producer-app`                     |
+| `nameOverride`               | Uses `Helm-release-name + nameOverride` for Kubernetes deployment name.                                                                                                                                                                                                    | `bakdata-producer-app`                     |
 | `resources`                  | See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/                                                                                                                                                                                         | see [values.yaml](values.yaml) for details |
 | `annotations`                | Map of custom annotations to attach to the pod spec.                                                                                                                                                                                                                       | `{}`                                       |
 | `labels`                     | Map of custom labels to attach to the pod spec.                                                                                                                                                                                                                            | `{}`                                       |
@@ -36,7 +37,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Image
 
 | Parameter          | Description                                 | Default       |
-| ------------------ | ------------------------------------------- | ------------- |
+|--------------------|---------------------------------------------|---------------|
 | `image`            | Docker image of the Kafka producer app.     | `producerApp` |
 | `imageTag`         | Docker image tag of the Kafka producer app. | `latest`      |
 | `imagePullPolicy`  | Docker image pull policy.                   | `Always`      |
@@ -45,7 +46,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Streams
 
 | Parameter                   | Description                                                                                                | Default |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------- | ------- |
+|-----------------------------|------------------------------------------------------------------------------------------------------------|---------|
 | `streams.brokers`           | Comma separated list of Kafka brokers to connect to.                                                       |         |
 | `streams.schemaRegistryUrl` | URL of Schema Registry to connect to.                                                                      | `null`  |
 | `streams.config`            | Configurations for your [Kafka producer app](https://kafka.apache.org/documentation/#producerconfigs).     | `{}`    |
@@ -55,7 +56,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Other
 
 | Parameter                | Description                                                                                                                                                                                                                                                                                                                       | Default |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `configurationEnvPrefix` | Prefix for environment variables to use that should be parsed as command line arguments.                                                                                                                                                                                                                                          | `APP`   |
 | `commandLine`            | Map of command line arguments passed to the producer app.                                                                                                                                                                                                                                                                         | `{}`    |
 | `debug`                  | Configure logging to debug                                                                                                                                                                                                                                                                                                        | `false` |
@@ -67,14 +68,14 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### JVM
 
 | Parameter                      | Description                                                                                                                                  | Default |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `javaOptions.maxRAMPercentage` | https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#:~:text=is%20set%20ergonomically.-,%2DXX%3AMaxRAMPercentage,-%3Dpercent | `true`  |
 | `javaOptions.others`           | List of Java VM options passed to the producer app.                                                                                          | `[]`    |
 
 ### Service
 
 | Parameter         | Description                                                                                    | Default     |
-| ----------------- | ---------------------------------------------------------------------------------------------- | ----------- |
+|-------------------|------------------------------------------------------------------------------------------------|-------------|
 | `service.enabled` | Whether to create a service. This requires the definition of at least one `ports.servicePort`. | `false`     |
 | `service.labels`  | Additional service labels.                                                                     | `{}`        |
 | `service.type`    | Service type.                                                                                  | `ClusterIP` |
