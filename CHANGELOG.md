@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.15.1](https://github.com/bakdata/streams-bootstrap/tree/2.15.1) (2023-12-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.0...2.15.1)
+
+**Merged pull requests:**
+
+- Add slf4j dependency [\#194](https://github.com/bakdata/streams-bootstrap/pull/194) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.15.0](https://github.com/bakdata/streams-bootstrap/tree/2.15.0) (2023-11-10)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.14.0...2.15.0)
 
