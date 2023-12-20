@@ -17,7 +17,7 @@ dependencies {
     val log4jVersion = "2.21.1"
     implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
     implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
-    implementation(group = "org.slf4j", name = "slf4j-api", version = "2.0.6")
+    api(group = "org.slf4j", name = "slf4j-api", version = "2.0.6") // required because other dependencies use Slf4j 1.x which is not properly resolved if this library is used in test scope
     implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
     implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
