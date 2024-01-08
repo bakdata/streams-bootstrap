@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.15.2](https://github.com/bakdata/streams-bootstrap/tree/2.15.2) (2024-01-08)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.1...2.15.2)
+
+**Merged pull requests:**
+
+- Update dependencies [\#195](https://github.com/bakdata/streams-bootstrap/pull/195) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.15.1](https://github.com/bakdata/streams-bootstrap/tree/2.15.1) (2023-12-20)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.0...2.15.1)
 
