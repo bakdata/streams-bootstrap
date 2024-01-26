@@ -40,7 +40,7 @@ class CleanUpRunnerTest {
     void createTemporaryPropertiesFile() throws IOException {
         final WordCount wordCount = new WordCount();
         wordCount.setInputTopics(List.of("input"));
-        final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getStreamsApplicationId(),
+        final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
                 wordCount.getKafkaProperties());
 
         assertThat(file).exists();
