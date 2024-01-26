@@ -175,7 +175,7 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_PATTERNS"
               value: "{{- range $key, $value := .Values.streams.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
           {{- end }}
-          {{- if and (.Values.streams.passApplicationId) (hasKey .Values.autoscaling "consumerGroup") }}
+          {{- if hasKey .Values.autoscaling "consumerGroup" }}
             - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
               value: {{ .Values.autoscaling.consumerGroup | quote }}
           {{- end }}

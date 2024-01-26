@@ -15,7 +15,6 @@ configurationEnvPrefix: "APP"
 streams:
 #  brokers: "test:9092"
 #  schemaRegistryUrl: "url:1234"
-  passApplicationId: false
   config: {}
 #    max.poll.records: 500
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
