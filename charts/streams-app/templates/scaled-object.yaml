@@ -26,8 +26,8 @@ spec:
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
   {{- end }}
   triggers:
-    {{- if not (or .Values.streams.inputTopics .Values.autoscaling.topics .Values.streams.extraInputTopics .Values.autoscaling.additionalTriggers) }}
-    {{- fail "To use autoscaling, you must define one of .Values.streams.inputTopics, .Values.autoscaling.topics, .Values.streams.extraInputTopics or .Values.autoscaling.additionalTriggers" }}
+    {{- if not (or .Values.streams.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.streams.extraInputTopics .Values.autoscaling.additionalTriggers) }}
+    {{- fail "To use autoscaling, you must define one of .Values.streams.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.streams.extraInputTopics or .Values.autoscaling.additionalTriggers" }}
     {{- end}}
     # todo: concat .Values.streams.inputTopics and .Values.autoscaling.topics to
     # minimize number of loops when we don't need to support helm 2 anymore
@@ -37,6 +37,15 @@ spec:
         bootstrapServers: {{ $root.Values.streams.brokers }}
         consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
         topic: {{ . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range .Values.autoscaling.internalTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.streams.brokers }}
+        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        topic: {{ printf "%s-%s" $root.Values.autoscaling.consumerGroup . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
