@@ -94,7 +94,13 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
-    @CommandLine.Option(names = "--unique-app-id", description = "Application ID to use for Kafka Streams")
+    /**
+     * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal
+     * state encapsulation. Could be set to: className-inputTopic-outputTopic
+     */
+    @CommandLine.Option(names = "--unique-app-id",
+            description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
+                          + "#getUniqueAppId()")
     private String uniqueAppId;
     private KafkaStreams streams;
     private Throwable lastException;

@@ -111,6 +111,9 @@ The following configuration options are available:
 - `--extra-output-topics`: Additional named output topics if you need to specify multiple topics with different message
   types (`String=String>[,<String=String>...]`)
 
+- `--unique-app-id`: Unique application ID to use for Kafka Streams. Can also be provided by implementing
+  #getUniqueAppId()
+
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
 
 - `--clean-up`: Whether the state of the Kafka Streams app, i.e., offsets and state stores and auto-created topics,
