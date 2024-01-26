@@ -27,6 +27,7 @@ streams:
   # schemaRegistryUrl: "url:1234"
   staticMembership: false
   optimizeLeaveGroupBehavior: true
+  passApplicationId: true
   config: {}
   #   max.poll.records: 500
   #   Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
