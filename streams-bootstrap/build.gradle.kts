@@ -49,3 +49,10 @@ dependencies {
 
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
 }
+
+tasks.withType<Test> {
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED"
+    )
+}
