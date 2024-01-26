@@ -105,7 +105,7 @@ autoscaling:
   # idleReplicas: 0
   ## all topics from streams.inputTopics and streams.extraInputTopics are automatically taken
   ## only use the 'internalTopics' option for adding internal topics, i.e., auto-generated topics by Kafka Streams. Consumer group name will automatically be added as a prefix
-  internalTopics: [ ]
+  internalTopics: []
   #   - bar-repartition                       # results in foo-bar-repartition
   #   - baz-join-subscription-response-topic  # results in foo-baz-join-subscription-response-topic
   ## only use the 'topics' option for adding more topics, e.g., intermediate topics, not covered by `internalTopics`
