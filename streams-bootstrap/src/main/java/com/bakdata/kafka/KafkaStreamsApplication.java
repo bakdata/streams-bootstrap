@@ -94,7 +94,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
-    @CommandLine.Option(names = "--application-id", description = "Application ID to use for Kafka Streams")
+    @CommandLine.Option(names = "--unique-app-id", description = "Application ID to use for Kafka Streams")
     private String uniqueAppId;
     private KafkaStreams streams;
     private Throwable lastException;
@@ -278,7 +278,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         final String uniqueAppId = this.getUniqueAppId();
         if (uniqueAppId == null) {
             if (this.uniqueAppId == null) {
-                throw new IllegalArgumentException("Must pass --application-id or implement #getUniqueAppId()");
+                throw new IllegalArgumentException("Must pass --unique-app-id or implement #getUniqueAppId()");
             }
             return this.uniqueAppId;
         }
@@ -287,7 +287,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         }
         if (!uniqueAppId.equals(this.uniqueAppId)) {
             throw new IllegalArgumentException(
-                    "Application ID provided via --application-id does not match #getUniqueAppId()");
+                    "Application ID provided via --unique-app-id does not match #getUniqueAppId()");
         }
         return uniqueAppId;
     }
