@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.16.0](https://github.com/bakdata/streams-bootstrap/tree/2.16.0) (2024-01-26)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.3...2.16.0)
+
+**Merged pull requests:**
+
+- Add missing default values for internal topics [\#200](https://github.com/bakdata/streams-bootstrap/pull/200) ([@philipp94831](https://github.com/philipp94831))
+- Simplify configuration of internal topics for autoscaling [\#198](https://github.com/bakdata/streams-bootstrap/pull/198) ([@philipp94831](https://github.com/philipp94831))
+- Build in CI using JDK 17 [\#199](https://github.com/bakdata/streams-bootstrap/pull/199) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.15.3](https://github.com/bakdata/streams-bootstrap/tree/2.15.3) (2024-01-09)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.2...2.15.3)
 
