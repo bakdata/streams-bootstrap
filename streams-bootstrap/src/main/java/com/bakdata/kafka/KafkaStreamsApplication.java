@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,6 +94,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
+    @CommandLine.Option(names = "--application-id", description = "Application ID to use for Kafka Streams")
+    private String applicationId;
     private KafkaStreams streams;
     private Throwable lastException;
 
@@ -159,7 +161,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
      * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal
      * state encapsulation. Could be set to: className-inputTopic-outputTopic
      */
-    public abstract String getUniqueAppId();
+    public String getUniqueAppId() {
+        return null;
+    }
 
     /**
      * Create the topology of the Kafka Streams app
@@ -235,6 +239,23 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         return new DefaultStreamsUncaughtExceptionHandler();
     }
 
+    public final String getStreamsApplicationId() {
+        final String uniqueAppId = this.getUniqueAppId();
+        if(uniqueAppId == null) {
+            if(this.applicationId == null) {
+                throw new IllegalArgumentException("Must pass --application-id or implement #getUniqueAppId()");
+            }
+            return this.applicationId;
+        }
+        if(this.applicationId == null) {
+            return uniqueAppId;
+        }
+        if(!uniqueAppId.equals(this.applicationId)) {
+            throw new IllegalArgumentException("Application ID provided via --application-id does not match #getUniqueAppId()");
+        }
+        return uniqueAppId;
+    }
+
     /**
      * <p>This method should give a default configuration to run your streaming application with.</p>
      * If {@link KafkaApplication#schemaRegistryUrl} is set {@link SpecificAvroSerde} is set as the default key, value
@@ -271,7 +292,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         kafkaConfig.setProperty(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "gzip");
 
         // topology
-        kafkaConfig.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
+        kafkaConfig.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, this.getApplicationId());
 
         this.configureDefaultSerde(kafkaConfig);
         kafkaConfig.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBrokers());
@@ -322,7 +343,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final CleanUpRunner cleanUpRunner = CleanUpRunner.builder()
                     .topology(this.createTopology())
-                    .appId(this.getUniqueAppId())
+                    .appId(this.getApplicationId())
                     .adminClient(adminClient)
                     .streams(this.streams)
                     .build();

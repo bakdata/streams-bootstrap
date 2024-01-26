@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ class CleanUpRunnerTest {
     void createTemporaryPropertiesFile() throws IOException {
         final WordCount wordCount = new WordCount();
         wordCount.setInputTopics(List.of("input"));
-        final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
+        final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getStreamsApplicationId(),
                 wordCount.getKafkaProperties());
 
         assertThat(file).exists();

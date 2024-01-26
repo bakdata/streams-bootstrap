@@ -23,6 +23,8 @@ resources:
 
 jobs:
 - template: azure/gradle/build.yml@templates
+  parameters:
+    jdkVersion: '1.17'
 - template: azure/gradle/create_tag_version.yml@templates
 - template: azure/gradle/upload_release.yml@templates
 - template: azure/gradle/upload_snapshot.yml@templates

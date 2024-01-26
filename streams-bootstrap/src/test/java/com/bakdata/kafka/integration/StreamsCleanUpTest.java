@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -172,7 +172,7 @@ class StreamsCleanUpTest {
             this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group exists")
-                    .contains(this.app.getUniqueAppId());
+                    .contains(this.app.getStreamsApplicationId());
         } catch (final TimeoutException | ExecutionException e) {
             throw new RuntimeException("Error retrieving consumer groups", e);
         }
@@ -184,7 +184,7 @@ class StreamsCleanUpTest {
             this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group is deleted")
-                    .doesNotContain(this.app.getUniqueAppId());
+                    .doesNotContain(this.app.getStreamsApplicationId());
         } catch (final TimeoutException | ExecutionException e) {
             throw new RuntimeException("Error retrieving consumer groups", e);
         }
@@ -211,7 +211,7 @@ class StreamsCleanUpTest {
             this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group exists")
-                    .contains(this.app.getUniqueAppId());
+                    .contains(this.app.getStreamsApplicationId());
         } catch (final TimeoutException | ExecutionException e) {
             throw new RuntimeException("Error retrieving consumer groups", e);
         }
@@ -219,12 +219,12 @@ class StreamsCleanUpTest {
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         try (final AdminClient adminClient = AdminClient.create(this.app.getKafkaProperties())) {
-            adminClient.deleteConsumerGroups(List.of(this.app.getUniqueAppId())).all()
+            adminClient.deleteConsumerGroups(List.of(this.app.getStreamsApplicationId())).all()
                     .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     .extracting(ConsumerGroupListing::groupId)
                     .as("Consumer group is deleted")
-                    .doesNotContain(this.app.getUniqueAppId());
+                    .doesNotContain(this.app.getStreamsApplicationId());
         } catch (final TimeoutException | ExecutionException e) {
             throw new RuntimeException("Error deleting consumer group", e);
         }
@@ -237,9 +237,9 @@ class StreamsCleanUpTest {
 
         final String inputTopic = this.app.getInputTopic();
         final String internalTopic =
-                this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
+                this.app.getStreamsApplicationId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
         final String backingTopic =
-                this.app.getUniqueAppId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
+                this.app.getStreamsApplicationId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
         final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
         final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
@@ -410,9 +410,9 @@ class StreamsCleanUpTest {
 
         final String inputSubject = this.app.getInputTopic() + "-value";
         final String internalSubject =
-                this.app.getUniqueAppId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition" + "-value";
+                this.app.getStreamsApplicationId() + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition" + "-value";
         final String backingSubject =
-                this.app.getUniqueAppId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog" + "-value";
+                this.app.getStreamsApplicationId() + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog" + "-value";
         final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
 
         final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
@@ -469,7 +469,7 @@ class StreamsCleanUpTest {
         this.app = this.createComplexCleanUpHookApplication();
 
         this.runCleanUp();
-        final String uniqueAppId = this.app.getUniqueAppId();
+        final String uniqueAppId = this.app.getStreamsApplicationId();
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
@@ -481,7 +481,7 @@ class StreamsCleanUpTest {
         this.app = this.createComplexCleanUpHookApplication();
 
         this.runCleanUpWithDeletion();
-        final String uniqueAppId = this.app.getUniqueAppId();
+        final String uniqueAppId = this.app.getStreamsApplicationId();
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
         verify(this.topicCleanUpHook).accept(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");

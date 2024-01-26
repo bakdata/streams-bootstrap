@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ class TopologyInformationTest {
         this.app = new ComplexTopologyApplication();
         this.app.setInputTopics(List.of("input", "input2"));
         this.app.setOutputTopic("output");
-        this.topologyInformation = new TopologyInformation(this.app.createTopology(), this.app.getUniqueAppId());
+        this.topologyInformation = new TopologyInformation(this.app.createTopology(), this.app.getStreamsApplicationId());
     }
 
     @Test
@@ -131,7 +131,7 @@ class TopologyInformationTest {
     void shouldReturnAllInternalTopics() {
         assertThat(this.topologyInformation.getInternalTopics())
                 .hasSize(3)
-                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId())
+                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getStreamsApplicationId())
                         || topic.startsWith("KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
     }
