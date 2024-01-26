@@ -241,17 +241,18 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     public final String getStreamsApplicationId() {
         final String uniqueAppId = this.getUniqueAppId();
-        if(uniqueAppId == null) {
-            if(this.applicationId == null) {
+        if (uniqueAppId == null) {
+            if (this.applicationId == null) {
                 throw new IllegalArgumentException("Must pass --application-id or implement #getUniqueAppId()");
             }
             return this.applicationId;
         }
-        if(this.applicationId == null) {
+        if (this.applicationId == null) {
             return uniqueAppId;
         }
-        if(!uniqueAppId.equals(this.applicationId)) {
-            throw new IllegalArgumentException("Application ID provided via --application-id does not match #getUniqueAppId()");
+        if (!uniqueAppId.equals(this.applicationId)) {
+            throw new IllegalArgumentException(
+                    "Application ID provided via --application-id does not match #getUniqueAppId()");
         }
         return uniqueAppId;
     }
