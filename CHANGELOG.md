@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.16.1](https://github.com/bakdata/streams-bootstrap/tree/2.16.1) (2024-02-02)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.0...2.16.1)
+
+**Closed issues:**
+
+- Fix secretRefs for cleanup job [\#202](https://github.com/bakdata/streams-bootstrap/issues/202)
+
+**Merged pull requests:**
+
+- Fix secretRefs for cleanup jobs [\#203](https://github.com/bakdata/streams-bootstrap/pull/203) ([@mkcode92](https://github.com/mkcode92))
+- Fix Jacoco for Java 17 [\#201](https://github.com/bakdata/streams-bootstrap/pull/201) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.16.0](https://github.com/bakdata/streams-bootstrap/tree/2.16.0) (2024-01-26)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.3...2.16.0)
 
