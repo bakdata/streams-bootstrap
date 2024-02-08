@@ -1,5 +1,61 @@
 # Change Log
 
+## [2.16.1](https://github.com/bakdata/streams-bootstrap/tree/2.16.1) (2024-02-02)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.0...2.16.1)
+
+**Closed issues:**
+
+- Fix secretRefs for cleanup job [\#202](https://github.com/bakdata/streams-bootstrap/issues/202)
+
+**Merged pull requests:**
+
+- Fix secretRefs for cleanup jobs [\#203](https://github.com/bakdata/streams-bootstrap/pull/203) ([@mkcode92](https://github.com/mkcode92))
+- Fix Jacoco for Java 17 [\#201](https://github.com/bakdata/streams-bootstrap/pull/201) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.16.0](https://github.com/bakdata/streams-bootstrap/tree/2.16.0) (2024-01-26)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.3...2.16.0)
+
+**Merged pull requests:**
+
+- Add missing default values for internal topics [\#200](https://github.com/bakdata/streams-bootstrap/pull/200) ([@philipp94831](https://github.com/philipp94831))
+- Simplify configuration of internal topics for autoscaling [\#198](https://github.com/bakdata/streams-bootstrap/pull/198) ([@philipp94831](https://github.com/philipp94831))
+- Build in CI using JDK 17 [\#199](https://github.com/bakdata/streams-bootstrap/pull/199) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.15.3](https://github.com/bakdata/streams-bootstrap/tree/2.15.3) (2024-01-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.2...2.15.3)
+
+**Merged pull requests:**
+
+- Update dependencies [\#196](https://github.com/bakdata/streams-bootstrap/pull/196) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.15.2](https://github.com/bakdata/streams-bootstrap/tree/2.15.2) (2024-01-08)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.1...2.15.2)
+
+**Merged pull requests:**
+
+- Update dependencies [\#195](https://github.com/bakdata/streams-bootstrap/pull/195) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.15.1](https://github.com/bakdata/streams-bootstrap/tree/2.15.1) (2023-12-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.0...2.15.1)
+
+**Merged pull requests:**
+
+- Add slf4j dependency [\#194](https://github.com/bakdata/streams-bootstrap/pull/194) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.15.0](https://github.com/bakdata/streams-bootstrap/tree/2.15.0) (2023-11-10)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.14.0...2.15.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.5 [\#192](https://github.com/bakdata/streams-bootstrap/pull/192) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.14.0](https://github.com/bakdata/streams-bootstrap/tree/2.14.0) (2023-10-30)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.13.0...2.14.0)
+
+**Merged pull requests:**
+
+- Add modules for easy usage with Fluent Kafka Streams Tests and Large Message SerDe [\#188](https://github.com/bakdata/streams-bootstrap/pull/188) ([@philipp94831](https://github.com/philipp94831))
+
 ## [2.13.0](https://github.com/bakdata/streams-bootstrap/tree/2.13.0) (2023-09-21)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.1...2.13.0)
 
@@ -29,7 +85,7 @@
 **Merged pull requests:**
 
 - Create method to register topic clean up hooks [\#183](https://github.com/bakdata/streams-bootstrap/pull/183) ([@philipp94831](https://github.com/philipp94831))
-- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@jakob-ed](https://github.com/jakob-ed))
+- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@JakobEdding](https://github.com/JakobEdding))
 
 ## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) (2023-04-19)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2)
@@ -174,7 +230,7 @@
 - Update documentation [\#144](https://github.com/bakdata/streams-bootstrap/pull/144) ([@philipp94831](https://github.com/philipp94831))
 - Remove default schedule for producer jobs [\#143](https://github.com/bakdata/streams-bootstrap/pull/143) ([@philipp94831](https://github.com/philipp94831))
 - Fix key\-value pairs indentation inside pod.yaml file [\#141](https://github.com/bakdata/streams-bootstrap/pull/141) ([@irux](https://github.com/irux))
-- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@jakob-ed](https://github.com/jakob-ed))
+- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@JakobEdding](https://github.com/JakobEdding))
 
 ## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) (2022-03-02)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1)

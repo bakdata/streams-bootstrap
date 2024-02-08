@@ -1,14 +1,9 @@
-description = "Collection of commonly used modules when writing a Kafka Streams Application"
-
-
 plugins {
-    `java-library`
     id("net.researchgate.release") version "3.0.2"
-    id("com.bakdata.sonar") version "1.1.7"
-    id("com.bakdata.sonatype") version "1.1.7"
+    id("com.bakdata.sonar") version "1.1.11"
+    id("com.bakdata.sonatype") version "1.1.11"
     id("org.hildan.github.changelog") version "1.12.1"
-    id("com.github.davidmc24.gradle.plugin.avro") version "1.5.0"
-    id("io.freefair.lombok") version "6.6.1"
+    id("io.freefair.lombok") version "6.6.3"
 }
 
 allprojects {
@@ -16,6 +11,7 @@ allprojects {
 
     tasks.withType<Test> {
         maxParallelForks = 1 // Embedded Kafka does not reliably work in parallel since Kafka 3.0
+        useJUnitPlatform()
     }
 
     repositories {
@@ -71,65 +67,19 @@ configure<com.bakdata.gradle.SonatypeSettings> {
 
 configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
     githubUser = "bakdata"
+    githubRepository = "streams-bootstrap"
     futureVersionTag = findProperty("changelog.releaseVersion")?.toString()
     sinceTag = findProperty("changelog.sinceTag")?.toString()
 }
 
-allprojects {
+subprojects {
+    apply(plugin = "java-library")
+    apply(plugin = "io.freefair.lombok")
 
     configure<JavaPluginExtension> {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
-    dependencies {
-        val kafkaVersion: String by project
-        implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafkaVersion)
-
-        implementation(group = "info.picocli", name = "picocli", version = "4.7.0")
-        api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
-        api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
-        val confluentVersion: String by project
-        implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
-        api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-        val log4jVersion = "2.19.0"
-        implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-        implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = log4jVersion)
-        implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
-        implementation(group = "org.jooq", name = "jool", version = "0.9.14")
-
-        val junitVersion = "5.9.1"
-        testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
-        testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
-        testImplementation(group = "org.junit-pioneer", name = "junit-pioneer", version = "1.9.1")
-        testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
-        testImplementation(group = "org.assertj", name = "assertj-core", version = "3.23.1")
-        val mockitoVersion = "4.11.0"
-        testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
-        testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
-
-        val fluentKafkaVersion = "2.9.0"
-        testImplementation(
-            group = "com.bakdata.fluent-kafka-streams-tests",
-            name = "fluent-kafka-streams-tests-junit5",
-            version = fluentKafkaVersion
-        )
-        testImplementation(group = "org.apache.kafka", name = "kafka-streams-test-utils", version = kafkaVersion)
-        testImplementation(
-            group = "com.bakdata.fluent-kafka-streams-tests",
-            name = "schema-registry-mock-junit5",
-            version = fluentKafkaVersion
-        )
-        testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = "3.4.0") {
-            exclude(group = "org.slf4j", module = "slf4j-log4j12")
-        }
-
-        testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
 
 release {
