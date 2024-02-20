@@ -1,4 +1,8 @@
 {{ if .Values.autoscaling.enabled }}
+{{- if and (.Values.streams.appId) (.Values.autoscaling.consumerGroup) -}}
+{{- fail "streams.appId and autoscaling.consumerGroup are mutually exclusive. You can use use streams.appId for apps 2.17.0+. If you don't want to set your app id via Helm or you're using an older version, but still want to use KEDA autoscaling, set autoscaling.consumerGroup" -}}
+{{- end -}}
+{{- $consumerGroup := coalesce .Values.streams.appId .Values.autoscaling.consumerGroup -}}
 {{- $root := . -}}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -35,7 +39,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        consumerGroup: {{ $consumerGroup }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
@@ -44,8 +48,8 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
-        topic: {{ printf "%s-%s" $root.Values.autoscaling.consumerGroup . | quote }}
+        consumerGroup: {{ $consumerGroup }}
+        topic: {{ printf "%s-%s" $consumerGroup . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
@@ -53,7 +57,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        consumerGroup: {{ $consumerGroup }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
@@ -63,7 +67,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        consumerGroup: {{ $consumerGroup }}
         topic: {{ $topic | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
