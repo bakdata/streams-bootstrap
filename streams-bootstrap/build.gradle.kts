@@ -1,7 +1,7 @@
 description = "Collection of commonly used modules when writing a Kafka Streams Application"
 
 plugins {
-    id("com.github.davidmc24.gradle.plugin.avro") version "1.5.0"
+    id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 
 dependencies {
