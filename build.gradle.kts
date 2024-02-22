@@ -1,6 +1,6 @@
 plugins {
     id("net.researchgate.release") version "3.0.2"
-    id("com.bakdata.sonar") version "1.1.16"
+    id("com.bakdata.sonar") version "1.1.17"
     id("com.bakdata.sonatype") version "1.1.14"
     id("org.hildan.github.changelog") version "2.2.0"
     id("io.freefair.lombok") version "8.4"
@@ -76,7 +76,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "io.freefair.lombok")
 
-    java {
+    configure<JavaPluginExtension> {
         toolchain {
             languageVersion = JavaLanguageVersion.of(11)
         }
