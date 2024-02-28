@@ -1,4 +1,4 @@
-name: Release Helm Charts
+name: Publish Helm Charts
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-workflow-passing-data:
-    name: Release & Publish Helm chart
+    name: Publish Helm chart
     uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@v1.13.4
     with:
       charts-path: "./charts"
