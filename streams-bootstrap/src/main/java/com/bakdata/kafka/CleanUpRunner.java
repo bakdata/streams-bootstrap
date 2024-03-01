@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -101,7 +101,7 @@ public final class CleanUpRunner {
         }
         final String[] args = argList.build().toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
-        final int returnCode = resetter.run(args);
+        final int returnCode = resetter.execute(args);
         try {
             Files.delete(tempFile.toPath());
         } catch (final IOException e) {
