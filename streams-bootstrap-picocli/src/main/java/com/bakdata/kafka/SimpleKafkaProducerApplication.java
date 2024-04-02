@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,16 @@
 
 package com.bakdata.kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.function.Supplier;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-import org.junit.jupiter.api.Test;
+@RequiredArgsConstructor
+public class SimpleKafkaProducerApplication extends KafkaProducerApplication {
+    private final @NonNull Supplier<ProducerApp> appFactory;
 
-class EnvironmentStreamsConfigParserTest {
-
-    @Test
-    void shouldParseStreamsConfig() {
-        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
-                "STREAMS_FOO", "bar",
-                "STREAMS_BAZ", "qux"
-        )))
-                .hasSize(2)
-                .containsEntry("foo", "bar")
-                .containsEntry("baz", "qux");
+    @Override
+    protected ProducerApp createApp() {
+        return this.appFactory.get();
     }
-
-    @Test
-    void shouldIgnoreVariablesWithoutPrefix() {
-        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
-                "APP_FOO", "bar"
-        ))).isEmpty();
-    }
-
-    @Test
-    void shouldConvertUnderscores() {
-        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
-                "STREAMS_FOO_BAR", "baz"
-        )))
-                .hasSize(1)
-                .containsEntry("foo.bar", "baz");
-    }
-
 }

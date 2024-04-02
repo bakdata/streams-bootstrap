@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import lombok.experimental.UtilityClass;
 
@@ -39,10 +40,10 @@ public class LargeMessageKafkaApplicationUtils {
      *
      * @param app {@code KafkaApplication} to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
-     * @see CleanUpRunner#registerTopicCleanUpHook(Consumer)
+     * @see StreamsCleanUpRunner#registerTopicDeletionHook(Consumer)
      */
-    public static Consumer<String> createLargeMessageCleanUpHook(final KafkaApplication app) {
-        final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(app.getKafkaProperties());
+    public static Consumer<String> createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
+        final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
         return storer::deleteAllFiles;
     }
@@ -54,8 +55,15 @@ public class LargeMessageKafkaApplicationUtils {
      * @param cleanUpRunner {@code CleanUpRunner} to register hook on
      * @see #createLargeMessageCleanUpHook(KafkaApplication)
      */
-    public static void registerLargeMessageCleanUpHook(final KafkaApplication app, final CleanUpRunner cleanUpRunner) {
-        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(app);
-        cleanUpRunner.registerTopicCleanUpHook(deleteAllFiles);
+    public static void registerLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties,
+            final StreamsCleanUpRunner cleanUpRunner) {
+        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(kafkaProperties);
+        cleanUpRunner.registerTopicDeletionHook(deleteAllFiles);
+    }
+
+    public static void registerLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties,
+            final ProducerCleanUpRunner cleanUpRunner) {
+        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(kafkaProperties);
+        cleanUpRunner.registerTopicDeletionHook(deleteAllFiles);
     }
 }

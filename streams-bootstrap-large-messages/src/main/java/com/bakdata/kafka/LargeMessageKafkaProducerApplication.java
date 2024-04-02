@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,15 @@
 
 package com.bakdata.kafka;
 
-import java.util.function.Consumer;
-
 /**
  * Kafka Producer Application that automatically removes files associated with {@code LargeMessageSerializer}
  */
-public abstract class LargeMessageKafkaProducerApplication extends KafkaProducerApplication {
+public interface LargeMessageKafkaProducerApplication extends ProducerApp {
 
     @Override
-    protected Consumer<String> createTopicCleanUpHook() {
-        return LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(this);
+    default void setupCleanUp(final ProducerCleanUpRunner cleanUpRunner) {
+        LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(cleanUpRunner.getKafkaProperties());
+        ProducerApp.super.setupCleanUp(cleanUpRunner);
     }
 
 }

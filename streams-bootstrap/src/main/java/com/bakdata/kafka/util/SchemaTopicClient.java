@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,9 +32,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,12 +51,12 @@ public final class SchemaTopicClient implements Closeable {
     /**
      * Creates a new {@code SchemaTopicClient} using the specified configuration.
      *
-     * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param configs properties passed to {@link AdminClient#create(Map)}
      * @param schemaRegistryUrl URL of schema registry
      * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code SchemaTopicClient}
      */
-    public static SchemaTopicClient create(final Properties configs, final String schemaRegistryUrl,
+    public static SchemaTopicClient create(final Map<String, Object> configs, final String schemaRegistryUrl,
             final Duration timeout) {
         final SchemaRegistryClient schemaRegistryClient =
                 createSchemaRegistryClient(configs, schemaRegistryUrl);
@@ -69,11 +67,11 @@ public final class SchemaTopicClient implements Closeable {
     /**
      * Creates a new {@code SchemaTopicClient} with no {@link SchemaRegistryClient} using the specified configuration.
      *
-     * @param configs properties passed to {@link AdminClient#create(Properties)}
+     * @param configs properties passed to {@link AdminClient#create(Map)}
      * @param timeout timeout for waiting for Kafka admin calls
      * @return {@code SchemaTopicClient}
      */
-    public static SchemaTopicClient create(final Properties configs, final Duration timeout) {
+    public static SchemaTopicClient create(final Map<String, Object> configs, final Duration timeout) {
         final TopicClient topicClient = TopicClient.create(configs, timeout);
         return new SchemaTopicClient(topicClient, null);
     }
@@ -86,11 +84,9 @@ public final class SchemaTopicClient implements Closeable {
      * @param schemaRegistryUrl URL of schema registry
      * @return {@link CachedSchemaRegistryClient}
      */
-    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<Object, Object> configs,
+    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
-        final Map<String, Object> originals = new HashMap<>();
-        configs.forEach((key, value) -> originals.put(key.toString(), value));
-        return new CachedSchemaRegistryClient(schemaRegistryUrl, CACHE_CAPACITY, originals);
+        return new CachedSchemaRegistryClient(schemaRegistryUrl, CACHE_CAPACITY, configs);
     }
 
     /**

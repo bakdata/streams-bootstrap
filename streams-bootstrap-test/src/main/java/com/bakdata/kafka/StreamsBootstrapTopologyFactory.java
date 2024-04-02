@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
+import com.bakdata.kafka.KafkaEndpointConfig.KafkaEndpointConfigBuilder;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.experimental.UtilityClass;
@@ -47,7 +48,8 @@ public class StreamsBootstrapTopologyFactory {
      * @see KafkaStreamsApplication#getKafkaProperties()
      * @see KafkaStreamsApplication#createTopology()
      */
-    public static <K, V> TestTopology<K, V> createTopologyWithSchemaRegistry(final KafkaStreamsApplication app) {
+    public static <K, V> TestTopology<K, V> createTopologyWithSchemaRegistry(
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return new TestTopology<>(app::createTopology, getKafkaPropertiesWithSchemaRegistryUrl(app));
     }
 
@@ -64,7 +66,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see KafkaStreamsApplication#createTopology()
      */
     public static <K, V> TestTopologyExtension<K, V> createTopologyExtensionWithSchemaRegistry(
-            final KafkaStreamsApplication app) {
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return new TestTopologyExtension<>(app::createTopology, getKafkaPropertiesWithSchemaRegistryUrl(app));
     }
 
@@ -79,8 +81,8 @@ public class StreamsBootstrapTopologyFactory {
      * @see KafkaStreamsApplication#getKafkaProperties()
      * @see KafkaStreamsApplication#createTopology()
      */
-    public static <K, V> TestTopology<K, V> createTopology(final KafkaStreamsApplication app) {
-        return new TestTopology<>(app::createTopology, app.getKafkaProperties());
+    public static <K, V> TestTopology<K, V> createTopology(final ConfiguredStreamsApp<? extends StreamsApp> app) {
+        return new TestTopology<>(app::createTopology, getKafkaProperties(app));
     }
 
     /**
@@ -95,8 +97,9 @@ public class StreamsBootstrapTopologyFactory {
      * @see KafkaStreamsApplication#getKafkaProperties()
      * @see KafkaStreamsApplication#createTopology()
      */
-    public static <K, V> TestTopologyExtension<K, V> createTopologyExtension(final KafkaStreamsApplication app) {
-        return new TestTopologyExtension<>(app::createTopology, app.getKafkaProperties());
+    public static <K, V> TestTopologyExtension<K, V> createTopologyExtension(
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
+        return new TestTopologyExtension<>(app::createTopology, getKafkaProperties(app));
     }
 
     /**
@@ -106,12 +109,29 @@ public class StreamsBootstrapTopologyFactory {
      * @param app KafkaStreamsApplication to get Kafka properties of
      * @return Kafka properties
      */
-    public static Function<String, Map<Object, Object>> getKafkaPropertiesWithSchemaRegistryUrl(
-            final KafkaApplication app) {
+    public static Function<String, Map<String, Object>> getKafkaPropertiesWithSchemaRegistryUrl(
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return schemaRegistryUrl -> {
-            app.setSchemaRegistryUrl(schemaRegistryUrl);
-            return app.getKafkaProperties();
+            final KafkaEndpointConfig endpointConfig = newEndpointConfig()
+                    .schemaRegistryUrl(schemaRegistryUrl)
+                    .build();
+            return app.getKafkaProperties(endpointConfig);
         };
+    }
+
+    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
+        final KafkaEndpointConfig endpointConfig = createEndpointConfig();
+        return app.getKafkaProperties(endpointConfig);
+    }
+
+    private static KafkaEndpointConfig createEndpointConfig() {
+        return newEndpointConfig()
+                .build();
+    }
+
+    private static KafkaEndpointConfigBuilder newEndpointConfig() {
+        return KafkaEndpointConfig.builder()
+                .brokers("localhost:9092");
     }
 
 }

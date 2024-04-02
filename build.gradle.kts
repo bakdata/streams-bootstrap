@@ -1,8 +1,7 @@
 plugins {
-    id("net.researchgate.release") version "3.0.2"
-    id("com.bakdata.sonar") version "1.1.17"
-    id("com.bakdata.sonatype") version "1.2.2"
-    id("org.hildan.github.changelog") version "2.2.0"
+    id("com.bakdata.release") version "1.4.0"
+    id("com.bakdata.sonar") version "1.4.0"
+    id("com.bakdata.sonatype") version "1.4.0"
     id("io.freefair.lombok") version "8.4"
 }
 
@@ -17,6 +16,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://packages.confluent.io/maven/")
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
     }
 }
 
@@ -65,13 +65,6 @@ configure<com.bakdata.gradle.SonatypeSettings> {
     }
 }
 
-configure<org.hildan.github.changelog.plugin.GitHubChangelogExtension> {
-    githubUser = "bakdata"
-    githubRepository = "streams-bootstrap"
-    futureVersionTag = findProperty("changelog.releaseVersion")?.toString()
-    sinceTag = findProperty("changelog.sinceTag")?.toString()
-}
-
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "io.freefair.lombok")
@@ -80,11 +73,5 @@ subprojects {
         toolchain {
             languageVersion = JavaLanguageVersion.of(11)
         }
-    }
-}
-
-release {
-    git {
-        requireBranch.set("master")
     }
 }

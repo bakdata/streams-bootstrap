@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,25 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsTopicConfig;
+import com.bakdata.kafka.TopologyBuilder;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
-public class WordCountPattern extends KafkaStreamsApplication {
-    public static void main(final String[] args) {
-        startApplication(new WordCountPattern(), args);
-    }
+public class WordCountPattern implements StreamsApp {
 
     @Override
-    public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, String> textLines = builder.stream(this.getInputPattern());
+    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+        final KStream<String, String> textLines = builder.streamInputPattern();
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
         final KTable<String, Long> wordCounts = textLines
@@ -53,11 +51,11 @@ public class WordCountPattern extends KafkaStreamsApplication {
                 .count(Materialized.as("counts"));
 
         final Serde<Long> longValueSerde = Serdes.Long();
-        wordCounts.toStream().to(this.outputTopic, Produced.valueSerde(longValueSerde));
+        wordCounts.toStream().to(builder.getTopics().getOutputTopic(), Produced.valueSerde(longValueSerde));
     }
 
     @Override
-    public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
+    public String getUniqueAppId(final StreamsTopicConfig topics) {
+        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
     }
 }

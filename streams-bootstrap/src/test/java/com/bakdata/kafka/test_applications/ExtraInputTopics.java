@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,22 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsTopicConfig;
+import com.bakdata.kafka.TopologyBuilder;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
-public class ExtraInputTopics extends KafkaStreamsApplication {
+public class ExtraInputTopics implements StreamsApp {
     @Override
-    public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, String> input = builder.stream(this.getInputTopics("role"));
-        input.to(this.getOutputTopic());
+    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+        final KStream<String, String> input = builder.streamInput("role");
+        input.to(builder.getTopics().getOutputTopic());
     }
 
     @Override
-    public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
+    public String getUniqueAppId(final StreamsTopicConfig topics) {
+        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
     }
 }

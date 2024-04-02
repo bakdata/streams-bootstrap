@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,31 +26,36 @@ package com.bakdata.kafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.test_applications.WordCount;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class CleanUpRunnerTest {
+class EnvironmentKafkaConfigParserTest {
 
     @Test
-    void createTemporaryPropertiesFile() throws IOException {
-        final WordCount wordCount = new WordCount();
-        wordCount.setInputTopics(List.of("input"));
-        final File file = CleanUpRunner.createTemporaryPropertiesFile(wordCount.getUniqueAppId(),
-                wordCount.getKafkaProperties());
-
-        assertThat(file).exists();
-
-        final Properties properties = new Properties();
-        try (final FileInputStream inStream = new FileInputStream(file)) {
-            properties.load(inStream);
-        }
-
-        final Properties expected = CleanUpRunner.toStringBasedProperties(wordCount.getKafkaProperties());
-        assertThat(properties).containsAllEntriesOf(expected);
+    void shouldParseStreamsConfig() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO", "bar",
+                "KAFKA_BAZ", "qux"
+        )))
+                .hasSize(2)
+                .containsEntry("foo", "bar")
+                .containsEntry("baz", "qux");
     }
+
+    @Test
+    void shouldIgnoreVariablesWithoutPrefix() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "APP_FOO", "bar"
+        ))).isEmpty();
+    }
+
+    @Test
+    void shouldConvertUnderscores() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO_BAR", "baz"
+        )))
+                .hasSize(1)
+                .containsEntry("foo.bar", "baz");
+    }
+
 }

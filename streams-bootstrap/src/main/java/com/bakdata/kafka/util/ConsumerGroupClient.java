@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -57,17 +56,6 @@ public final class ConsumerGroupClient implements Closeable {
      * @return {@code ConsumerGroupClient}
      */
     public static ConsumerGroupClient create(final Map<String, Object> configs, final Duration timeout) {
-        return new ConsumerGroupClient(AdminClient.create(configs), timeout);
-    }
-
-    /**
-     * Creates a new {@code ConsumerGroupClient} using the specified configuration.
-     *
-     * @param configs properties passed to {@link AdminClient#create(Properties)}
-     * @param timeout timeout for waiting for Kafka admin calls
-     * @return {@code ConsumerGroupClient}
-     */
-    public static ConsumerGroupClient create(final Properties configs, final Duration timeout) {
         return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,18 +33,18 @@ import java.util.stream.Collectors;
 /**
  * Parse configuration properties of a Kafka Streams app from environment variables
  */
-public final class EnvironmentStreamsConfigParser {
+public final class EnvironmentKafkaConfigParser {
 
-    static final String PREFIX = "STREAMS_";
+    static final String PREFIX = "KAFKA_";
     private static final Pattern UNDERSCORE = Pattern.compile("_");
     private static final Pattern PREFIX_PATTERN = Pattern.compile("^" + PREFIX);
 
-    private EnvironmentStreamsConfigParser() {
+    private EnvironmentKafkaConfigParser() {
         throw new UnsupportedOperationException("Utility class");
     }
 
     /**
-     * Parse a list of environment variables as a streams configuration. All variables starting with {@code STREAMS_}
+     * Parse a list of environment variables as a streams configuration. All variables starting with {@code KAFKA_}
      * prefix are converted. {@code _} are replaced by {@code .}
      *
      * @param environment map of environment variables
@@ -53,7 +53,7 @@ public final class EnvironmentStreamsConfigParser {
     public static Map<String, String> parseVariables(final Map<String, String> environment) {
         return environment.entrySet().stream()
                 .filter(e -> e.getKey().startsWith(PREFIX))
-                .collect(Collectors.toMap(EnvironmentStreamsConfigParser::convertEnvironmentVariable, Entry::getValue));
+                .collect(Collectors.toMap(EnvironmentKafkaConfigParser::convertEnvironmentVariable, Entry::getValue));
     }
 
     private static String convertEnvironmentVariable(final Entry<String, String> environmentEntry) {

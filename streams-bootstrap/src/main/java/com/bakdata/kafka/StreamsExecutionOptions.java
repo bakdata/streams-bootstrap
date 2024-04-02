@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,23 @@
 
 package com.bakdata.kafka;
 
-import com.google.common.base.Splitter;
-import java.util.List;
-import picocli.CommandLine.ITypeConverter;
+import lombok.Builder;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.KafkaStreams.CloseOptions;
+import org.apache.kafka.streams.StreamsConfig;
 
-/**
- * Converter for lists inside collection type parsed by PicoCLI. List members need to be separated by {@code ;}
- */
-public class StringListConverter implements ITypeConverter<List<String>> {
-    private static final Splitter TOPIC_SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
+@Builder
+public class StreamsExecutionOptions {
+    @Builder.Default
+    private final boolean volatileGroupInstanceId = true;
 
-    @Override
-    public List<String> convert(final String value) {
-        return TOPIC_SPLITTER.splitToList(value);
+    private static boolean isStaticMembershipDisabled(final StreamsConfig config) {
+        return config.originals().get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
+    }
+
+    public CloseOptions createCloseOptions(final StreamsConfig config) {
+        final boolean staticMembershipDisabled = isStaticMembershipDisabled(config);
+        final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
+        return new CloseOptions().leaveGroup(leaveGroup);
     }
 }

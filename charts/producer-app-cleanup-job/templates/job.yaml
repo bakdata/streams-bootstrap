@@ -54,11 +54,13 @@ spec:
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          args:
+            - clean
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
             {{- range $key, $value := .Values.streams.config }}
-            - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+            - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
             {{- end }}
             {{- if hasKey .Values.streams "brokers" }}
@@ -73,8 +75,6 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
               value: {{ .Values.debug | quote }}
             {{- end }}
-            - name: "{{ .Values.configurationEnvPrefix }}_CLEAN_UP"
-              value: "true"
             {{- if hasKey .Values.streams "outputTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
               value: {{ .Values.streams.outputTopic | quote }}

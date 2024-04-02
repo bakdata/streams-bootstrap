@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,14 @@ package com.bakdata.kafka.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.ConfiguredStreamsApp;
+import com.bakdata.kafka.KafkaEndpointConfig;
+import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsAppConfiguration;
+import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
@@ -41,29 +46,42 @@ import org.junit.jupiter.api.Test;
 
 class TopologyInformationTest {
 
-    private KafkaStreamsApplication app = null;
+    private StreamsApp app = null;
+    private StreamsTopicConfig topics;
     private TopologyInformation topologyInformation = null;
 
     @BeforeEach
     void setup() {
         this.app = new ComplexTopologyApplication();
-        this.app.setInputTopics(List.of("input", "input2"));
-        this.app.setOutputTopic("output");
-        this.topologyInformation = new TopologyInformation(this.app.createTopology(), this.app.getUniqueAppId());
+        this.topics = StreamsTopicConfig.builder()
+                .inputTopics(List.of("input", "input2"))
+                .outputTopic("output")
+                .build();
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(this.app, StreamsAppConfiguration.builder()
+                        .topics(this.topics)
+                        .build());
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(
+                KafkaEndpointConfig.builder()
+                        .brokers("localhost:9092")
+                        .build());
+        this.topologyInformation =
+                new TopologyInformation(configuredApp.createTopology(kafkaProperties),
+                        this.app.getUniqueAppId(this.topics));
     }
 
     @Test
     void shouldReturnAllExternalSinkTopics() {
         assertThat(this.topologyInformation.getExternalSinkTopics())
                 .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC,
-                        this.app.getOutputTopic());
+                        this.topics.getOutputTopic());
     }
 
     @Test
     void shouldReturnAllExternalSourceTopics() {
         assertThat(this.topologyInformation.getExternalSourceTopics(List.of()))
                 .hasSize(2)
-                .containsAll(this.app.getInputTopics())
+                .containsAll(this.topics.getInputTopics())
                 .doesNotContain(ComplexTopologyApplication.THROUGH_TOPIC);
     }
 
@@ -72,7 +90,7 @@ class TopologyInformationTest {
         assertThat(this.topologyInformation.getIntermediateTopics(List.of()))
                 .hasSize(1)
                 .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC)
-                .doesNotContainAnyElementsOf(this.app.getInputTopics());
+                .doesNotContainAnyElementsOf(this.topics.getInputTopics());
     }
 
     @Test
@@ -124,14 +142,14 @@ class TopologyInformationTest {
     @Test
     void shouldNotReturnInputTopics() {
         assertThat(this.topologyInformation.getExternalSinkTopics())
-                .doesNotContainAnyElementsOf(this.app.getInputTopics());
+                .doesNotContainAnyElementsOf(this.topics.getInputTopics());
     }
 
     @Test
     void shouldReturnAllInternalTopics() {
         assertThat(this.topologyInformation.getInternalTopics())
                 .hasSize(3)
-                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId())
+                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId(this.topics))
                         || topic.startsWith("KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
     }

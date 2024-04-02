@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,22 +32,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class AvroMirrorTest {
-    private final MirrorWithNonDefaultSerde app = createApp();
+    private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
     @RegisterExtension
     final TestTopologyExtension<String, TestRecord> testTopology =
             StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
 
-    private static MirrorWithNonDefaultSerde createApp() {
+    private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
         final MirrorWithNonDefaultSerde app = new MirrorWithNonDefaultSerde();
-        app.setBrokers("localhost:9092");
-        app.setInputTopics(List.of("input"));
-        app.setOutputTopic("output");
-        return app;
+        return new ConfiguredStreamsApp<>(app, StreamsAppConfiguration.builder()
+                .topics(StreamsTopicConfig.builder()
+                        .inputTopics(List.of("input"))
+                        .outputTopic("output")
+                        .build())
+                .build());
     }
 
     @Test
     void shouldMirror() {
-        final Serde<TestRecord> valueSerde = this.app.getValueSerde();
+        final Serde<TestRecord> valueSerde = this.app.getApp().getValueSerde(
+                this.testTopology.getStreamsConfig().originals());
         final TestRecord record = TestRecord.newBuilder()
                 .setContent("bar")
                 .build();

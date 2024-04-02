@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ import org.apache.kafka.streams.TopologyDescription.Sink;
 import org.apache.kafka.streams.TopologyDescription.Source;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.TableJoined;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.jooq.lambda.Seq;
 
@@ -52,8 +52,7 @@ public class TopologyInformation {
     private static final String FILTER_SUFFIX = "-filter";
     /**
      * See
-     * {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey(KTable, Function, ValueJoiner,
-     * Named, Materialized, boolean)}
+     * {@link org.apache.kafka.streams.kstream.internals.KTableImpl#doJoinOnForeignKey(KTable, Function, ValueJoiner, TableJoined, Materialized, boolean)}
      */
     private static final Collection<String> PSEUDO_TOPIC_SUFFIXES = Set.of("-pk", "-fk", "-vh");
     private final String streamsId;

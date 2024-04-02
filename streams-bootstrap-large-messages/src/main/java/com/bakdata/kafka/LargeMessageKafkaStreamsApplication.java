@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,13 @@ package com.bakdata.kafka;
 /**
  * Kafka Streams Application that automatically removes files associated with {@code LargeMessageSerde}
  */
-public abstract class LargeMessageKafkaStreamsApplication extends KafkaStreamsApplication {
+public interface LargeMessageKafkaStreamsApplication extends StreamsApp {
 
     @Override
-    protected void cleanUpRun(final CleanUpRunner cleanUpRunner) {
-        LargeMessageKafkaApplicationUtils.registerLargeMessageCleanUpHook(this, cleanUpRunner);
-        super.cleanUpRun(cleanUpRunner);
+    default void setupCleanUp(final StreamsCleanUpRunner cleanUpRunner) {
+        LargeMessageKafkaApplicationUtils.registerLargeMessageCleanUpHook(cleanUpRunner.getKafkaProperties(),
+                cleanUpRunner);
+        StreamsApp.super.setupCleanUp(cleanUpRunner);
     }
 
 }

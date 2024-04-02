@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,6 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
@@ -54,13 +53,18 @@ class CliTest {
     void shouldExitWithSuccessCode() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public void buildTopology(final StreamsBuilder builder) {
-                throw new UnsupportedOperationException();
-            }
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        throw new UnsupportedOperationException();
+                    }
 
-            @Override
-            public String getUniqueAppId() {
-                throw new UnsupportedOperationException();
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
 
             @Override
@@ -78,22 +82,17 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnRunError() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
             @Override
-            public void buildTopology(final StreamsBuilder builder) {
+            public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public String getUniqueAppId() {
+            public String getUniqueAppId(final StreamsTopicConfig topics) {
                 throw new UnsupportedOperationException();
             }
-
-            @Override
-            public void run() {
-                throw new RuntimeException();
-            }
-        }, new String[]{
+        }), new String[]{
                 "--brokers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
@@ -106,17 +105,22 @@ class CliTest {
     void shouldExitWithErrorCodeOnCleanupError() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public void buildTopology(final StreamsBuilder builder) {
-                throw new UnsupportedOperationException();
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
 
             @Override
-            public String getUniqueAppId() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void runCleanUp() {
+            public void clean() {
                 throw new RuntimeException();
             }
         }, new String[]{
@@ -124,7 +128,7 @@ class CliTest {
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
-                "--clean-up",
+                "clean",
         });
     }
 
@@ -133,13 +137,18 @@ class CliTest {
     void shouldExitWithErrorCodeOnMissingBrokerParameter() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public void buildTopology(final StreamsBuilder builder) {
-                throw new UnsupportedOperationException();
-            }
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        throw new UnsupportedOperationException();
+                    }
 
-            @Override
-            public String getUniqueAppId() {
-                throw new UnsupportedOperationException();
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
 
             @Override
@@ -158,20 +167,20 @@ class CliTest {
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
         try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
-                final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+                final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
                     @Override
-                    public void buildTopology(final StreamsBuilder builder) {
-                        builder.stream(this.getInputTopics(), Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
                                 .peek((k, v) -> {
                                     throw new RuntimeException();
                                 });
                     }
 
                     @Override
-                    public String getUniqueAppId() {
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
                     }
-                }) {
+                })) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
@@ -191,18 +200,18 @@ class CliTest {
         final String input = "input";
         final String output = "output";
         try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
-                final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+                final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
                     @Override
-                    public void buildTopology(final StreamsBuilder builder) {
-                        builder.stream(this.getInputTopics(), Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
-                                .to(this.getOutputTopic());
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
+                                .to(builder.getTopics().getOutputTopic());
                     }
 
                     @Override
-                    public String getUniqueAppId() {
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
                     }
-                }) {
+                })) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
             kafkaCluster.createTopic(TopicConfig.withName(output).build());
@@ -227,28 +236,28 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithSuccessCodeOnCleanupError() {
+    void shouldExitWithErrorOnCleanupError() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public void buildTopology(final StreamsBuilder builder) {
-                throw new UnsupportedOperationException();
-            }
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        throw new UnsupportedOperationException();
+                    }
 
-            @Override
-            public String getUniqueAppId() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void runCleanUp() {
-                // do nothing
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
         }, new String[]{
                 "--brokers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
-                "--clean-up",
+                "clean",
         });
     }
 
@@ -256,13 +265,18 @@ class CliTest {
     void shouldParseArguments() {
         final KafkaStreamsApplication app = new KafkaStreamsApplication() {
             @Override
-            public void buildTopology(final StreamsBuilder builder) {
-                throw new UnsupportedOperationException();
-            }
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                        throw new UnsupportedOperationException();
+                    }
 
-            @Override
-            public String getUniqueAppId() {
-                throw new UnsupportedOperationException();
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
 
             @Override
@@ -279,15 +293,13 @@ class CliTest {
                 "--extra-input-patterns", "role1=.+,role2=\\d+",
                 "--output-topic", "output1",
                 "--extra-output-topics", "role1=output2,role2=output3",
+                "--kafka-config", "foo=1,bar=2",
         });
         assertThat(app.getInputTopics()).containsExactly("input1", "input2");
         assertThat(app.getExtraInputTopics())
                 .hasSize(2)
                 .containsEntry("role1", List.of("input3"))
                 .containsEntry("role2", List.of("input4", "input5"));
-        assertThat(app.getInputTopics("role1")).isEqualTo(List.of("input3"));
-        assertThat(app.getInputTopic("role2")).isEqualTo("input4");
-        assertThat(app.getInputTopics("role2")).isEqualTo(List.of("input4", "input5"));
         assertThat(app.getInputPattern())
                 .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
         assertThat(app.getExtraInputPatterns())
@@ -296,12 +308,14 @@ class CliTest {
                         pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
                 .hasEntrySatisfying("role2",
                         pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
-        assertThat(app.getInputPattern("role1").pattern()).isEqualTo(Pattern.compile(".+").pattern());
-        assertThat(app.getInputPattern("role2").pattern()).isEqualTo(Pattern.compile("\\d+").pattern());
         assertThat(app.getOutputTopic()).isEqualTo("output1");
         assertThat(app.getExtraOutputTopics())
                 .hasSize(2)
                 .containsEntry("role1", "output2")
                 .containsEntry("role2", "output3");
+        assertThat(app.getKafkaConfig())
+                .hasSize(2)
+                .containsEntry("foo", "1")
+                .containsEntry("bar", "2");
     }
 }

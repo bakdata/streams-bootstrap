@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
@@ -173,15 +173,17 @@ class SchemaTopicClientTest {
     }
 
     private SchemaTopicClient createClientWithSchemaRegistry() {
-        final Properties kafkaProperties = new Properties();
-        kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
+        final Map<String, Object> kafkaProperties = Map.of(
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList()
+        );
         return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
                 Duration.of(TIMEOUT_SECONDS, ChronoUnit.SECONDS));
     }
 
     private SchemaTopicClient createClientWithNoSchemaRegistry() {
-        final Properties kafkaProperties = new Properties();
-        kafkaProperties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList());
+        final Map<String, Object> kafkaProperties = Map.of(
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList()
+        );
         return SchemaTopicClient.create(kafkaProperties, Duration.of(TIMEOUT_SECONDS, ChronoUnit.SECONDS));
     }
 

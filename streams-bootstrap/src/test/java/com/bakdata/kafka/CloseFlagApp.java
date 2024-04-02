@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,12 @@ package com.bakdata.kafka;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
 @Getter
 @Setter
-public class CloseFlagApp extends KafkaStreamsApplication {
+public class CloseFlagApp implements StreamsApp {
 
     private boolean closed = false;
     private Boolean leaveGroup;
@@ -45,14 +44,14 @@ public class CloseFlagApp extends KafkaStreamsApplication {
     }
 
     @Override
-    public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, TestRecord> input = builder.stream(this.getInputTopics());
-        input.to(this.getOutputTopic());
+    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+        final KStream<String, TestRecord> input = builder.streamInput();
+        input.to(builder.getTopics().getOutputTopic());
     }
 
     @Override
-    public String getUniqueAppId() {
-        return this.getClass().getSimpleName() + "-" + this.getOutputTopic();
+    public String getUniqueAppId(final StreamsTopicConfig topics) {
+        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
     }
 
     @Override
