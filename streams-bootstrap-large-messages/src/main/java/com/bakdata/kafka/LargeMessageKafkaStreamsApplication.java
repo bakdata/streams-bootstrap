@@ -25,7 +25,7 @@
 package com.bakdata.kafka;
 
 /**
- * Kafka Streams Application that automatically removes files associated with {@code LargeMessageSerde}
+ * {@link StreamsApp} that automatically removes files associated with {@code LargeMessageSerde}
  */
 public interface LargeMessageKafkaStreamsApplication extends StreamsApp {
 

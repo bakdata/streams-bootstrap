@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 
 /**
  * <p>This class is primarily used to inject environment variables to the passed in command line arguments
- * in {@link KafkaStreamsApplication}.</p>
+ * in {@link ConfiguredStreamsApp} and {@link ConfiguredProducerApp}.</p>
  *
  * <p>In general a usage would look like this:</p>
  * <pre>{@code

@@ -32,24 +32,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class AvroMirrorTest {
-    private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
+    final MirrorWithNonDefaultSerde app = new MirrorWithNonDefaultSerde();
+    private final ConfiguredStreamsApp configuredApp = createApp();
     @RegisterExtension
     final TestTopologyExtension<String, TestRecord> testTopology =
-            StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
-
-    private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
-        final MirrorWithNonDefaultSerde app = new MirrorWithNonDefaultSerde();
-        return new ConfiguredStreamsApp<>(app, StreamsAppConfiguration.builder()
-                .topics(StreamsTopicConfig.builder()
-                        .inputTopics(List.of("input"))
-                        .outputTopic("output")
-                        .build())
-                .build());
-    }
+            StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.configuredApp);
 
     @Test
     void shouldMirror() {
-        final Serde<TestRecord> valueSerde = this.app.getApp().getValueSerde(
+        final Serde<TestRecord> valueSerde = this.app.getValueSerde(
                 this.testTopology.getStreamsConfig().originals());
         final TestRecord record = TestRecord.newBuilder()
                 .setContent("bar")
@@ -62,5 +53,14 @@ class AvroMirrorTest {
                 .withValueSerde(valueSerde)
                 .expectNextRecord().hasKey("foo").hasValue(record)
                 .expectNoMoreRecord();
+    }
+
+    private ConfiguredStreamsApp createApp() {
+        return new ConfiguredStreamsApp(app, StreamsAppConfiguration.builder()
+                .topics(StreamsTopicConfig.builder()
+                        .inputTopics(List.of("input"))
+                        .outputTopic("output")
+                        .build())
+                .build());
     }
 }

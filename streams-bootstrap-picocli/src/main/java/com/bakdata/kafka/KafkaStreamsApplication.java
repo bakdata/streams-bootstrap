@@ -124,22 +124,22 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     public StreamsRunner createRunner() {
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp();
+        final ConfiguredStreamsApp configuredStreamsApp = this.createConfiguredApp();
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
         return configuredStreamsApp.createRunner(endpointConfig, executionOptions);
     }
 
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp();
+        final ConfiguredStreamsApp configuredStreamsApp = this.createConfiguredApp();
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.createCleanUpRunner(endpointConfig);
     }
 
-    public ConfiguredStreamsApp<StreamsApp> createConfiguredApp() {
+    public ConfiguredStreamsApp createConfiguredApp() {
         final StreamsApp streamsApp = this.createApp();
         final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
-        return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);
+        return new ConfiguredStreamsApp(streamsApp, streamsAppConfiguration);
     }
 
     public StreamsAppConfiguration createConfiguration() {

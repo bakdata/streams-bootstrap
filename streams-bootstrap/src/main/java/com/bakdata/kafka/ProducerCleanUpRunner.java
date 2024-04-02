@@ -78,10 +78,7 @@ public final class ProducerCleanUpRunner {
     }
 
     /**
-     * Clean up your Streams app by resetting the app, deleting local state and optionally deleting the output topics
-     * and consumer group
-     *
-     * @param deleteOutputTopic whether to delete output topics and consumer group
+     * Clean up your producer app by deleting the output topics.
      */
     public void clean() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {

@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class StreamsExecutor {
-    private final @NonNull ConfiguredStreamsApp<StreamsApp> app;
+    private final @NonNull ConfiguredStreamsApp app;
     private final @NonNull KafkaEndpointConfig endpointConfig;
 
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {

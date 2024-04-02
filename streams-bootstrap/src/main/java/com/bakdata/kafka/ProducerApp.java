@@ -24,11 +24,9 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 public interface ProducerApp {
 
@@ -37,13 +35,11 @@ public interface ProducerApp {
 
     /**
      * <p>This method should give a default configuration to run your producer application with.</p>
-     * If {@link KafkaApplication#schemaRegistryUrl} is set {@link SpecificAvroSerializer} is set as the default key,
-     * value serializer. Otherwise, {@link StringSerializer} is configured as the default key, value serializer. To add
-     * a custom configuration, please add a similar method to your custom application class:
+     * To add a custom configuration, please add a similar method to your custom application class:
      * <pre>{@code
-     *   protected Properties createKafkaProperties() {
+     *   public Map<String, Object> createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
-     *       Properties kafkaConfig = super.createKafkaProperties();
+     *       Map<String, Object> kafkaConfig = ProducerApp.super.createKafkaProperties();
      *       kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, GenericAvroSerializer.class);
      *       kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GenericAvroSerializer.class);
      *       return kafkaConfig;

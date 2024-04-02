@@ -60,7 +60,7 @@ public final class StreamsCleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
     private final TopologyInformation topologyInformation;
     private final Topology topology;
-    private final @NonNull StreamsAppConfig kafkaProperties;
+    private final @NonNull StreamsAppConfig appConfig;
     private final @NonNull Collection<Consumer<String>> topicDeletionHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> resetHooks = new ArrayList<>();
@@ -80,17 +80,16 @@ public final class StreamsCleanUpRunner {
      * @param inputTopics list of input topics of the streams app
      * @param intermediateTopics list of intermediate topics of the streams app
      * @param allTopics list of all topics that exists in the Kafka cluster
-     * @param adminClient admin client to use for resetting the streams app
-     * @param appId unique app id of the streams app
+     * @param streamsAppConfig configuration properties of the streams app
      */
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final Collection<String> allTopics, final StreamsAppConfig kafkaProperties) {
+            final Collection<String> allTopics, final StreamsAppConfig streamsAppConfig) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
-        final String appId = kafkaProperties.getAppId();
-        final File tempFile = createTemporaryPropertiesFile(appId, kafkaProperties.getKafkaProperties());
+        final String appId = streamsAppConfig.getAppId();
+        final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
-                .add("--bootstrap-servers", kafkaProperties.getBoostrapServers())
+                .add("--bootstrap-servers", streamsAppConfig.getBoostrapServers())
                 .add("--config-file", tempFile.toString());
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
@@ -134,7 +133,7 @@ public final class StreamsCleanUpRunner {
     }
 
     public Map<String, Object> getKafkaProperties() {
-        return this.kafkaProperties.getKafkaProperties();
+        return this.appConfig.getKafkaProperties();
     }
 
     private static Collection<String> filterExistingTopics(final Collection<String> topics,
@@ -177,10 +176,8 @@ public final class StreamsCleanUpRunner {
     }
 
     /**
-     * Clean up your Streams app by resetting the app, deleting local state and optionally deleting the output topics
-     * and consumer group
-     *
-     * @param deleteOutputTopic whether to delete output topics and consumer group
+     * Clean up your Streams app by resetting the app, deleting local state and deleting the output topics
+     * and consumer group.
      */
     public void clean() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
@@ -192,10 +189,7 @@ public final class StreamsCleanUpRunner {
     }
 
     /**
-     * Clean up your Streams app by resetting the app, deleting local state and optionally deleting the output topics
-     * and consumer group
-     *
-     * @param deleteOutputTopic whether to delete output topics and consumer group
+     * Clean up your Streams app by resetting the app, deleting local state.
      */
     public void reset() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
@@ -211,7 +205,7 @@ public final class StreamsCleanUpRunner {
     }
 
     private ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties.getKafkaProperties());
+        return ImprovedAdminClient.create(this.getKafkaProperties());
     }
 
     @RequiredArgsConstructor
@@ -225,7 +219,7 @@ public final class StreamsCleanUpRunner {
                     StreamsCleanUpRunner.this.topologyInformation.getExternalSourceTopics(allTopics);
             final List<String> intermediateTopics =
                     StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
-            runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.kafkaProperties);
+            runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.appConfig);
             // the StreamsResetter is responsible for deleting internal topics
             StreamsCleanUpRunner.this.topologyInformation.getInternalTopics()
                     .forEach(this::resetInternalTopic);
@@ -237,7 +231,7 @@ public final class StreamsCleanUpRunner {
 
         private KafkaStreams createStreams() {
             return new KafkaStreams(StreamsCleanUpRunner.this.topology,
-                    new StreamsConfig(StreamsCleanUpRunner.this.kafkaProperties.getKafkaProperties()));
+                    new StreamsConfig(StreamsCleanUpRunner.this.getKafkaProperties()));
         }
 
         private void cleanAndReset() {
@@ -281,7 +275,7 @@ public final class StreamsCleanUpRunner {
 
         private void deleteConsumerGroup() {
             final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.kafkaProperties.getAppId());
+            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.appConfig.getAppId());
         }
     }
 

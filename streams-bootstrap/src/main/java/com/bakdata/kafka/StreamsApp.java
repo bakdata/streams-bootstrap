@@ -24,12 +24,9 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.NonNull;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
@@ -83,13 +80,11 @@ public interface StreamsApp extends AutoCloseable {
 
     /**
      * <p>This method should give a default configuration to run your streaming application with.</p>
-     * If {@link KafkaApplication#schemaRegistryUrl} is set {@link SpecificAvroSerde} is set as the default key, value
-     * serde. Otherwise, the {@link StringSerde} is configured as the default key, value serde. To add a custom
-     * configuration please add a similar method to your custom application class:
+     * To add a custom configuration please add a similar method to your custom application class:
      * <pre>{@code
-     *   protected Properties createKafkaProperties() {
+     *   protected Map<String, Object> createKafkaProperties(StreamsOptions options) {
      *       # Try to always use the kafka properties from the super class as base Map
-     *       Properties kafkaConfig = super.createKafkaProperties();
+     *       Map<String, Object> kafkaConfig = StreamsApp.super.createKafkaProperties(options);
      *       kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
      *       kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
      *       return kafkaConfig;
@@ -98,7 +93,7 @@ public interface StreamsApp extends AutoCloseable {
      *
      * @return Returns a default Kafka Streams configuration
      */
-    default Map<String, Object> createKafkaProperties(@NonNull final StreamsOptions options) {
+    default Map<String, Object> createKafkaProperties(final StreamsOptions options) {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         // exactly once and order

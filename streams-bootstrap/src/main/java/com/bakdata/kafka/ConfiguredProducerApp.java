@@ -33,8 +33,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 @RequiredArgsConstructor
-public class ConfiguredProducerApp<T extends ProducerApp> {
-    private final @NonNull T app;
+public class ConfiguredProducerApp {
+    private final @NonNull ProducerApp app;
     private final @NonNull ProducerAppConfiguration configuration;
 
     private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {

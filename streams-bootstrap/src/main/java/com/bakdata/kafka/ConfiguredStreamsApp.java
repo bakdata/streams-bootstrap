@@ -34,8 +34,8 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 @RequiredArgsConstructor
-public class ConfiguredStreamsApp<T extends StreamsApp> {
-    private final @NonNull T app;
+public class ConfiguredStreamsApp {
+    private final @NonNull StreamsApp app;
     private final @NonNull StreamsAppConfiguration configuration;
 
     private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {

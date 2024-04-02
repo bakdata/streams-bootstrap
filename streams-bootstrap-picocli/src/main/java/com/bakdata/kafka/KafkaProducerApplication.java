@@ -59,10 +59,10 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         cleanUpRunner.clean();
     }
 
-    public ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
+    public ConfiguredProducerApp createConfiguredApp() {
         final ProducerApp producerApp = this.createApp();
         final ProducerAppConfiguration configuration = this.createConfiguration();
-        return new ConfiguredProducerApp<>(producerApp, configuration);
+        return new ConfiguredProducerApp(producerApp, configuration);
     }
 
     public ProducerAppConfiguration createConfiguration() {
@@ -84,13 +84,13 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     protected abstract ProducerApp createApp();
 
     private ProducerRunner createRunner() {
-        final ConfiguredProducerApp<ProducerApp> app = this.createConfiguredApp();
+        final ConfiguredProducerApp app = this.createConfiguredApp();
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return app.createRunner(endpointConfig);
     }
 
     private ProducerCleanUpRunner createCleanUpRunner() {
-        final ConfiguredProducerApp<ProducerApp> app = this.createConfiguredApp();
+        final ConfiguredProducerApp app = this.createConfiguredApp();
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return app.createCleanUpRunner(endpointConfig);
     }

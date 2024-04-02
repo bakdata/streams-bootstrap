@@ -29,16 +29,15 @@ import java.util.function.Consumer;
 import lombok.experimental.UtilityClass;
 
 /**
- * Utility class that provides helpers for using {@code LargeMessageSerde} with {@link KafkaApplication}
+ * Utility class that provides helpers for cleaning {@code LargeMessageSerde} artifacts
  */
 @UtilityClass
 public class LargeMessageKafkaApplicationUtils {
     /**
      * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
-     * properties to create a {@link AbstractLargeMessageConfig} are part of
-     * {@link KafkaApplication#getKafkaProperties()}.
+     * properties to create a {@link AbstractLargeMessageConfig} are part of {@code kafkaProperties}.
      *
-     * @param app {@code KafkaApplication} to create hook from
+     * @param kafkaProperties Kafka properties to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
      * @see StreamsCleanUpRunner#registerTopicDeletionHook(Consumer)
      */
@@ -51,9 +50,9 @@ public class LargeMessageKafkaApplicationUtils {
     /**
      * Register a hook that cleans up LargeMessage files associated with a topic.
      *
-     * @param app {@code KafkaApplication} to create hook from
+     * @param kafkaProperties Kafka properties to create hook from
      * @param cleanUpRunner {@code CleanUpRunner} to register hook on
-     * @see #createLargeMessageCleanUpHook(KafkaApplication)
+     * @see #createLargeMessageCleanUpHook(Map)
      */
     public static void registerLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties,
             final StreamsCleanUpRunner cleanUpRunner) {
@@ -61,6 +60,13 @@ public class LargeMessageKafkaApplicationUtils {
         cleanUpRunner.registerTopicDeletionHook(deleteAllFiles);
     }
 
+    /**
+     * Register a hook that cleans up LargeMessage files associated with a topic.
+     *
+     * @param kafkaProperties Kafka properties to create hook from
+     * @param cleanUpRunner {@code ProducerCleanUpRunner} to register hook on
+     * @see #createLargeMessageCleanUpHook(Map)
+     */
     public static void registerLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties,
             final ProducerCleanUpRunner cleanUpRunner) {
         final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(kafkaProperties);
