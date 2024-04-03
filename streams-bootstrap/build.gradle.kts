@@ -43,6 +43,8 @@ dependencies {
     testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaJunitVersion) {
         exclude(group = "org.slf4j", module = "slf4j-log4j12")
     }
+    val log4jVersion: String by project
+    testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }
 
 tasks.withType<Test> {

@@ -114,10 +114,7 @@ class StreamsCleanUpTest {
                     .as("Output topic is deleted")
                     .isFalse();
 
-            final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
-                    .flatMap(entry -> Stream.of(entry, entry))
-                    .collect(Collectors.toList());
-            this.runAndAssertContent(entriesTwice, "All entries are twice in the input topic after the 2nd run", app);
+            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 2nd run", app);
         }
     }
 
