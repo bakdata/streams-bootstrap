@@ -84,7 +84,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         try (final StreamsRunner runner = this.createRunner()) {
             this.runners.add(runner);
             runner.run();
-            this.runners.remove(runner);
         }
     }
 

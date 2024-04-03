@@ -73,6 +73,8 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
                         .map(t -> t.create(kafkaConfig))
                         .collect(Collectors.toList()))
                 .cleanHooks(this.cleanHooks)
+                .resetHooks(this.resetHooks)
+                .finishHooks(this.finishHooks)
                 .build();
     }
 

@@ -27,11 +27,13 @@ package com.bakdata.kafka.util;
 import com.bakdata.kafka.CleanUpException;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -84,9 +86,9 @@ public final class SchemaTopicClient implements Closeable {
      * @param schemaRegistryUrl URL of schema registry
      * @return {@link CachedSchemaRegistryClient}
      */
-    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
+    public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
-        return new CachedSchemaRegistryClient(schemaRegistryUrl, CACHE_CAPACITY, configs);
+        return SchemaRegistryClientFactory.newClient(List.of(schemaRegistryUrl), CACHE_CAPACITY, null, configs, null);
     }
 
     /**
