@@ -56,7 +56,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -84,7 +84,7 @@ class CliTest {
     void shouldExitWithErrorCodeOnRunError() {
         KafkaApplication.startApplication(new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+            public void buildTopology(final TopologyBuilder builder) {
                 throw new UnsupportedOperationException();
             }
 
@@ -108,7 +108,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -140,7 +140,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -169,7 +169,7 @@ class CliTest {
         try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
                 final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
                                 .peek((k, v) -> {
                                     throw new RuntimeException();
@@ -202,7 +202,7 @@ class CliTest {
         try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
                 final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
                                 .to(builder.getTopics().getOutputTopic());
                     }
@@ -242,7 +242,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -268,7 +268,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+                    public void buildTopology(final TopologyBuilder builder) {
                         throw new UnsupportedOperationException();
                     }
 

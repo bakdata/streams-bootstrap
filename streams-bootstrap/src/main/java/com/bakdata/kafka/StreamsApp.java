@@ -70,7 +70,7 @@ public interface StreamsApp extends AutoCloseable {
      *
      * @param builder builder to use for building the topology
      */
-    void buildTopology(TopologyBuilder builder, boolean cleanUp);
+    void buildTopology(TopologyBuilder builder);
 
     /**
      * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal
@@ -113,7 +113,7 @@ public interface StreamsApp extends AutoCloseable {
         return kafkaConfig;
     }
 
-    default void setupCleanUp(final StreamsCleanUpRunner cleanUpRunner) {
+    default void setupCleanUp(final StreamsCleanUpConfigurer cleanUpRunner) {
         // do nothing by default
     }
 

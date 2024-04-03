@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import java.time.Duration;
 import lombok.Builder;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.KafkaStreams.CloseOptions;
@@ -33,6 +34,8 @@ import org.apache.kafka.streams.StreamsConfig;
 public class StreamsExecutionOptions {
     @Builder.Default
     private final boolean volatileGroupInstanceId = true;
+    @Builder.Default
+    private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
     private static boolean isStaticMembershipDisabled(final StreamsConfig config) {
         return config.originals().get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
@@ -41,6 +44,6 @@ public class StreamsExecutionOptions {
     public CloseOptions createCloseOptions(final StreamsConfig config) {
         final boolean staticMembershipDisabled = isStaticMembershipDisabled(config);
         final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
-        return new CloseOptions().leaveGroup(leaveGroup);
+        return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
     }
 }

@@ -42,7 +42,7 @@ import org.apache.kafka.streams.kstream.Produced;
 @NoArgsConstructor
 public class MirrorWithNonDefaultSerde implements StreamsApp {
     @Override
-    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+    public void buildTopology(final TopologyBuilder builder) {
         final Serde<TestRecord> valueSerde = this.getValueSerde(builder.getKafkaProperties());
         final KStream<String, TestRecord> input =
                 builder.streamInput(Consumed.with(null, valueSerde));

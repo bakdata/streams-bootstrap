@@ -82,7 +82,7 @@ class ConfiguredStreamsAppTest {
     private static class TestApplication implements StreamsApp {
 
         @Override
-        public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+        public void buildTopology(final TopologyBuilder builder) {
             throw new UnsupportedOperationException();
         }
 

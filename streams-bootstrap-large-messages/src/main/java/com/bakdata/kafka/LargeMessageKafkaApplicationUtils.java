@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.HasTopicHooks.TopicDeletionHook;
 import java.util.Map;
 import java.util.function.Consumer;
 import lombok.experimental.UtilityClass;
@@ -41,7 +42,7 @@ public class LargeMessageKafkaApplicationUtils {
      * @return hook that cleans up LargeMessage files associated with a topic
      * @see StreamsCleanUpRunner#registerTopicDeletionHook(Consumer)
      */
-    public static Consumer<String> createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
+    public static TopicDeletionHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
         return storer::deleteAllFiles;
@@ -54,22 +55,7 @@ public class LargeMessageKafkaApplicationUtils {
      * @param cleanUpRunner {@code CleanUpRunner} to register hook on
      * @see #createLargeMessageCleanUpHook(Map)
      */
-    public static void registerLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties,
-            final StreamsCleanUpRunner cleanUpRunner) {
-        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(kafkaProperties);
-        cleanUpRunner.registerTopicDeletionHook(deleteAllFiles);
-    }
-
-    /**
-     * Register a hook that cleans up LargeMessage files associated with a topic.
-     *
-     * @param kafkaProperties Kafka properties to create hook from
-     * @param cleanUpRunner {@code ProducerCleanUpRunner} to register hook on
-     * @see #createLargeMessageCleanUpHook(Map)
-     */
-    public static void registerLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties,
-            final ProducerCleanUpRunner cleanUpRunner) {
-        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(kafkaProperties);
-        cleanUpRunner.registerTopicDeletionHook(deleteAllFiles);
+    public static void registerLargeMessageCleanUpHook(final HasTopicHooks<?> cleanUpRunner) {
+        cleanUpRunner.registerTopicDeletionHook(LargeMessageKafkaApplicationUtils::createLargeMessageCleanUpHook);
     }
 }

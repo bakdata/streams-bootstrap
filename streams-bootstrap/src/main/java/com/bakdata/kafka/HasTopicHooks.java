@@ -24,38 +24,18 @@
 
 package com.bakdata.kafka;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
 
-@RequiredArgsConstructor
-public class StreamsExecutor {
-    private final @NonNull ConfiguredStreamsApp app;
-    private final @NonNull KafkaEndpointConfig endpointConfig;
+public interface HasTopicHooks<T> {
+    T registerTopicDeletionHook(TopicDeletionHookFactory cleanUpAction);
 
-    public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
-        return this.app.createRunner(this.endpointConfig, executionOptions);
+    @FunctionalInterface
+    interface TopicDeletionHook {
+        void deleted(String topic);
     }
 
-    /**
-     * This method resets the offset for all input topics and deletes internal topics, application state, and optionally
-     * the output and error topic.
-     */
-    public void clean() {
-        final StreamsCleanUpRunner cleanUpRunner = this.createCleanUpRunner();
-        cleanUpRunner.clean();
+    @FunctionalInterface
+    interface TopicDeletionHookFactory {
+        TopicDeletionHook create(Map<String, Object> kafkaConfig);
     }
-
-    /**
-     * This method resets the offset for all input topics and deletes internal topics, application state, and optionally
-     * the output and error topic.
-     */
-    public void reset() {
-        final StreamsCleanUpRunner cleanUpRunner = this.createCleanUpRunner();
-        cleanUpRunner.reset();
-    }
-
-    private StreamsCleanUpRunner createCleanUpRunner() {
-        return this.app.createCleanUpRunner(this.endpointConfig);
-    }
-
 }

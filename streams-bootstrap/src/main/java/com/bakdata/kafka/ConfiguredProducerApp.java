@@ -87,21 +87,31 @@ public class ConfiguredProducerApp {
         return kafkaConfig;
     }
 
-    public ProducerCleanUpRunner createCleanUpRunner(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
-        final ProducerCleanUpRunner cleanUpRunner =
-                new ProducerCleanUpRunner(this.configuration.getTopics(), kafkaProperties);
-
-        this.app.setupCleanUp(cleanUpRunner);
-        return cleanUpRunner;
+    public ExecutableProducerApp withEndpoint(final KafkaEndpointConfig endpointConfig) {
+        return new ExecutableProducerApp(endpointConfig);
     }
 
-    public ProducerRunner createRunner(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
+    @RequiredArgsConstructor
+    public class ExecutableProducerApp {
+        private final @NonNull KafkaEndpointConfig endpointConfig;
+
+        public ProducerCleanUpRunner createCleanUpRunner() {
+            final Map<String, Object> kafkaProperties =
+                    ConfiguredProducerApp.this.getKafkaProperties(this.endpointConfig);
+            final ProducerCleanUpConfigurer configurer = new ProducerCleanUpConfigurer();
+            ConfiguredProducerApp.this.app.setupCleanUp(configurer);
+            return ProducerCleanUpRunner.create(ConfiguredProducerApp.this.configuration.getTopics(), kafkaProperties,
+                    configurer);
+    }
+
+        public ProducerRunner createRunner() {
+            final Map<String, Object> kafkaProperties =
+                    ConfiguredProducerApp.this.getKafkaProperties(this.endpointConfig);
         final ProducerBuilder producerBuilder = ProducerBuilder.builder()
-                .topics(this.configuration.getTopics())
+                .topics(ConfiguredProducerApp.this.configuration.getTopics())
                 .kafkaProperties(kafkaProperties)
                 .build();
-        return new ProducerRunner(() -> this.app.run(producerBuilder));
+            return new ProducerRunner(() -> ConfiguredProducerApp.this.app.run(producerBuilder));
+        }
     }
 }

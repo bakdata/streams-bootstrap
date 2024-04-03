@@ -48,7 +48,7 @@ public class ComplexTopologyApplication implements StreamsApp {
     public static final String THROUGH_TOPIC = "through-topic";
 
     @Override
-    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+    public void buildTopology(final TopologyBuilder builder) {
         final KStream<String, TestRecord> input = builder.streamInput();
 
         input.to(THROUGH_TOPIC);

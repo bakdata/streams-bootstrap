@@ -33,7 +33,7 @@ public class SimpleKafkaProducerApplication extends KafkaProducerApplication {
     private final @NonNull Supplier<ProducerApp> appFactory;
 
     @Override
-    protected ProducerApp createApp() {
+    public ProducerApp createApp() {
         return this.appFactory.get();
     }
 }

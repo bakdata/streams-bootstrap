@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.ProducerCleanUpRunner.waitForCleanUp;
 
+import com.bakdata.kafka.StreamsCleanUpConfigurer.StreamsCleanUpHooks;
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
@@ -34,12 +35,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -61,16 +60,14 @@ public final class StreamsCleanUpRunner {
     private final TopologyInformation topologyInformation;
     private final Topology topology;
     private final @NonNull StreamsAppConfig appConfig;
-    private final @NonNull Collection<Consumer<String>> topicDeletionHooks = new ArrayList<>();
-    private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks = new ArrayList<>();
-    private final @NonNull Collection<Consumer<ImprovedAdminClient>> resetHooks = new ArrayList<>();
-    private final @NonNull Collection<Runnable> finishHooks = new ArrayList<>();
+    private final @NonNull StreamsCleanUpHooks cleanHooks;
 
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
-            final @NonNull Map<String, Object> kafkaProperties) {
+            final @NonNull Map<String, Object> kafkaProperties, final @NonNull StreamsCleanUpConfigurer cleanHooks) {
         final StreamsAppConfig streamsAppConfig = new StreamsAppConfig(kafkaProperties);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, streamsAppConfig.getAppId());
-        return new StreamsCleanUpRunner(topologyInformation, topology, streamsAppConfig);
+        return new StreamsCleanUpRunner(topologyInformation, topology, streamsAppConfig,
+                cleanHooks.create(kafkaProperties));
     }
 
     /**
@@ -150,32 +147,6 @@ public final class StreamsCleanUpRunner {
     }
 
     /**
-     * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
-     *
-     * @param action Action to run when a topic requires clean up. Topic is passed as parameter
-     * @return this for chaining
-     */
-    public StreamsCleanUpRunner registerTopicDeletionHook(final Consumer<String> action) {
-        this.topicDeletionHooks.add(action);
-        return this;
-    }
-
-    public StreamsCleanUpRunner registerCleanHook(final Consumer<ImprovedAdminClient> action) {
-        this.cleanHooks.add(action);
-        return this;
-    }
-
-    public StreamsCleanUpRunner registerResetHook(final Consumer<ImprovedAdminClient> action) {
-        this.resetHooks.add(action);
-        return this;
-    }
-
-    public StreamsCleanUpRunner registerFinishHook(final Runnable action) {
-        this.finishHooks.add(action);
-        return this;
-    }
-
-    /**
      * Clean up your Streams app by resetting the app, deleting local state and deleting the output topics
      * and consumer group.
      */
@@ -183,7 +154,7 @@ public final class StreamsCleanUpRunner {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.cleanAndReset();
-            this.finish();
+            this.cleanHooks.runFinishHooks();
             waitForCleanUp();
         }
     }
@@ -195,13 +166,9 @@ public final class StreamsCleanUpRunner {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.reset();
-            this.finish();
+            this.cleanHooks.runFinishHooks();
             waitForCleanUp();
         }
-    }
-
-    private void finish() {
-        this.finishHooks.forEach(Runnable::run);
     }
 
     private ImprovedAdminClient createAdminClient() {
@@ -226,7 +193,7 @@ public final class StreamsCleanUpRunner {
             try (final KafkaStreams kafkaStreams = this.createStreams()) {
                 kafkaStreams.cleanUp();
             }
-            StreamsCleanUpRunner.this.resetHooks.forEach(this::run);
+            StreamsCleanUpRunner.this.cleanHooks.runResetHooks(this.adminClient);
         }
 
         private KafkaStreams createStreams() {
@@ -242,7 +209,7 @@ public final class StreamsCleanUpRunner {
         private void clean() {
             this.deleteTopics();
             this.deleteConsumerGroup();
-            StreamsCleanUpRunner.this.cleanHooks.forEach(this::run);
+            StreamsCleanUpRunner.this.cleanHooks.runCleanHooks(this.adminClient);
         }
 
         /**
@@ -253,24 +220,16 @@ public final class StreamsCleanUpRunner {
             externalTopics.forEach(this::deleteTopic);
         }
 
-        private void run(final Consumer<? super ImprovedAdminClient> hook) {
-            hook.accept(this.adminClient);
-        }
-
         private void resetInternalTopic(final String topic) {
             this.adminClient.getSchemaTopicClient()
                     .resetSchemaRegistry(topic);
-            this.runTopicDeletionHooks(topic);
-        }
-
-        private void runTopicDeletionHooks(final String topic) {
-            StreamsCleanUpRunner.this.topicDeletionHooks.forEach(hook -> hook.accept(topic));
+            StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteTopic(final String topic) {
             this.adminClient.getSchemaTopicClient()
                     .deleteTopicAndResetSchemaRegistry(topic);
-            this.runTopicDeletionHooks(topic);
+            StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteConsumerGroup() {

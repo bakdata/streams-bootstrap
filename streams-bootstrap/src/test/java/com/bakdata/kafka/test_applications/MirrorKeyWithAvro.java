@@ -39,7 +39,7 @@ import org.apache.kafka.streams.kstream.KStream;
 @NoArgsConstructor
 public class MirrorKeyWithAvro implements StreamsApp {
     @Override
-    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+    public void buildTopology(final TopologyBuilder builder) {
         final KStream<TestRecord, String> input = builder.streamInput();
         input.to(builder.getTopics().getOutputTopic());
     }

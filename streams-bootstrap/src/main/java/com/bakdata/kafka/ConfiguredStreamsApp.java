@@ -97,30 +97,8 @@ public class ConfiguredStreamsApp {
         return this.createTopology(kafkaProperties, false);
     }
 
-    public StreamsCleanUpRunner createCleanUpRunner(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
-        final Topology topology = this.createTopology(kafkaProperties, true);
-        final StreamsCleanUpRunner cleanUpRunner = StreamsCleanUpRunner.create(topology, kafkaProperties);
-        cleanUpRunner.registerFinishHook(this.app::close);
-
-        this.app.setupCleanUp(cleanUpRunner);
-        return cleanUpRunner;
-    }
-
-    public StreamsRunner createRunner(final KafkaEndpointConfig endpointConfig) {
-        return this.createRunner(endpointConfig, StreamsExecutionOptions.builder().build());
-    }
-
-    public StreamsRunner createRunner(final KafkaEndpointConfig endpointConfig,
-            final StreamsExecutionOptions executionOptions) {
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
-        final Topology topology = this.createTopology(kafkaProperties);
-        return StreamsRunner.builder()
-                .topology(topology)
-                .config(new StreamsConfig(kafkaProperties))
-                .executionOptions(executionOptions)
-                .hooks(this.createHooks())
-                .build();
+    public ExecutableStreamsApp withEndpoint(final KafkaEndpointConfig endpointConfig) {
+        return new ExecutableStreamsApp(endpointConfig);
     }
 
     /**
@@ -134,18 +112,52 @@ public class ConfiguredStreamsApp {
         final TopologyBuilder topologyBuilder = TopologyBuilder.builder()
                 .topics(this.configuration.getTopics())
                 .kafkaProperties(kafkaProperties)
+                .cleanUp(cleanUp)
                 .build();
-        this.app.buildTopology(topologyBuilder, cleanUp);
+        this.app.buildTopology(topologyBuilder);
         return topologyBuilder.build();
     }
 
-    private StreamsHooks createHooks() {
-        return StreamsHooks.builder()
-                .stateListener(this.app.getStateListener())
-                .uncaughtExceptionHandler(this.app.getUncaughtExceptionHandler())
-                .onStart(this.app::onStreamsStart)
-                .onShutdown(this.app::close)
-                .build();
+    @RequiredArgsConstructor
+    public class ExecutableStreamsApp {
+
+        private final @NonNull KafkaEndpointConfig endpointConfig;
+
+        public StreamsCleanUpRunner createCleanUpRunner() {
+            final Map<String, Object> kafkaProperties =
+                    ConfiguredStreamsApp.this.getKafkaProperties(this.endpointConfig);
+            final Topology topology = ConfiguredStreamsApp.this.createTopology(kafkaProperties, true);
+            final StreamsCleanUpConfigurer configurer = new StreamsCleanUpConfigurer();
+            ConfiguredStreamsApp.this.app.setupCleanUp(configurer);
+            configurer.registerFinishHook(ConfiguredStreamsApp.this.app::close);
+            return StreamsCleanUpRunner.create(topology, kafkaProperties, configurer);
+        }
+
+        public StreamsRunner createRunner() {
+            return this.createRunner(StreamsExecutionOptions.builder().build());
+        }
+
+        public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
+            final Map<String, Object> kafkaProperties =
+                    ConfiguredStreamsApp.this.getKafkaProperties(this.endpointConfig);
+            final Topology topology = ConfiguredStreamsApp.this.createTopology(kafkaProperties);
+            return StreamsRunner.builder()
+                    .topology(topology)
+                    .config(new StreamsConfig(kafkaProperties))
+                    .executionOptions(executionOptions)
+                    .hooks(this.createHooks())
+                    .build();
+        }
+
+        private StreamsHooks createHooks() {
+            return StreamsHooks.builder()
+                    .stateListener(ConfiguredStreamsApp.this.app.getStateListener())
+                    .uncaughtExceptionHandler(ConfiguredStreamsApp.this.app.getUncaughtExceptionHandler())
+                    .onStart(ConfiguredStreamsApp.this.app::onStreamsStart)
+                    .onShutdown(ConfiguredStreamsApp.this.app::close)
+                    .build();
+        }
+
     }
 
 }

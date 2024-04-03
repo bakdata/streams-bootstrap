@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.ConfiguredStreamsApp.ExecutableStreamsApp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,15 +75,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     @ToString.Exclude
     private List<StreamsRunner> runners = new ArrayList<>();
 
-    public static void main(final String[] args) {
-        startApplication(new KafkaStreamsApplication() {
-            @Override
-            public StreamsApp createApp() {
-                return null;
-            }
-        }, args);
-    }
-
     /**
      * Run the application. If Kafka Streams is run, this method blocks until Kafka Streams has completed shutdown,
      * either because it caught an error or the application has received a shutdown event.
@@ -124,16 +116,14 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     public StreamsRunner createRunner() {
-        final ConfiguredStreamsApp configuredStreamsApp = this.createConfiguredApp();
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
+        final ExecutableStreamsApp executableStreamsApp = this.createExecutableApp();
         final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
-        return configuredStreamsApp.createRunner(endpointConfig, executionOptions);
+        return executableStreamsApp.createRunner(executionOptions);
     }
 
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final ConfiguredStreamsApp configuredStreamsApp = this.createConfiguredApp();
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return configuredStreamsApp.createCleanUpRunner(endpointConfig);
+        final ExecutableStreamsApp executableApp = this.createExecutableApp();
+        return executableApp.createCleanUpRunner();
     }
 
     public ConfiguredStreamsApp createConfiguredApp() {
@@ -163,6 +153,12 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
                 .extraOutputTopics(this.getExtraOutputTopics())
                 .errorTopic(this.errorTopic)
                 .build();
+    }
+
+    public ExecutableStreamsApp createExecutableApp() {
+        final ConfiguredStreamsApp configuredStreamsApp = this.createConfiguredApp();
+        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
+        return configuredStreamsApp.withEndpoint(endpointConfig);
     }
 
     private StreamsOptions createStreamsOptions() {

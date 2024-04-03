@@ -24,12 +24,10 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.ProducerCleanUpConfigurer.ProducerCleanUpHooks;
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.function.Consumer;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +38,17 @@ import org.jooq.lambda.Seq;
  * Clean up the state and artifacts of your Kafka Streams app
  */
 @Slf4j
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProducerCleanUpRunner {
     public static final int RESET_SLEEP_MS = 5000;
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
-    private final @NonNull Collection<Consumer<String>> topicDeletionHooks = new ArrayList<>();
-    private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks = new ArrayList<>();
+    private final @NonNull ProducerCleanUpHooks cleanHooks;
+
+    public static ProducerCleanUpRunner create(@NonNull final ProducerTopicConfig topics,
+            @NonNull final Map<String, Object> kafkaProperties, @NonNull final ProducerCleanUpConfigurer cleanHooks) {
+        return new ProducerCleanUpRunner(topics, kafkaProperties, cleanHooks.create(kafkaProperties));
+    }
 
     static void waitForCleanUp() {
         try {
@@ -55,26 +57,6 @@ public final class ProducerCleanUpRunner {
             Thread.currentThread().interrupt();
             throw new CleanUpException("Error waiting for clean up", e);
         }
-    }
-
-    public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.kafkaProperties);
-    }
-
-    /**
-     * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
-     *
-     * @param cleanUpAction Action to run when a topic requires clean up. Topic is passed as parameter
-     * @return this for chaining
-     */
-    public ProducerCleanUpRunner registerTopicDeletionHook(final Consumer<String> cleanUpAction) {
-        this.topicDeletionHooks.add(cleanUpAction);
-        return this;
-    }
-
-    public ProducerCleanUpRunner registerCleanHook(final Consumer<ImprovedAdminClient> action) {
-        this.cleanHooks.add(action);
-        return this;
     }
 
     /**
@@ -99,7 +81,7 @@ public final class ProducerCleanUpRunner {
 
         private void clean() {
             this.deleteTopics();
-            ProducerCleanUpRunner.this.cleanHooks.forEach(this::run);
+            ProducerCleanUpRunner.this.cleanHooks.runCleanHooks(this.adminClient);
         }
 
         private void deleteTopics() {
@@ -107,18 +89,10 @@ public final class ProducerCleanUpRunner {
             outputTopics.forEach(this::deleteTopic);
         }
 
-        private void run(final Consumer<? super ImprovedAdminClient> hook) {
-            hook.accept(this.adminClient);
-        }
-
-        private void runTopicDeletionHooks(final String topic) {
-            ProducerCleanUpRunner.this.topicDeletionHooks.forEach(hook -> hook.accept(topic));
-        }
-
         private void deleteTopic(final String topic) {
             this.adminClient.getSchemaTopicClient()
                     .deleteTopicAndResetSchemaRegistry(topic);
-            this.runTopicDeletionHooks(topic);
+            ProducerCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private Iterable<String> getAllOutputTopics() {

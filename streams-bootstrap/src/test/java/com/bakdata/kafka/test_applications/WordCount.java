@@ -40,7 +40,7 @@ import org.apache.kafka.streams.kstream.Produced;
 public class WordCount implements StreamsApp {
 
     @Override
-    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+    public void buildTopology(final TopologyBuilder builder) {
         final KStream<String, String> textLines = builder.streamInput();
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);

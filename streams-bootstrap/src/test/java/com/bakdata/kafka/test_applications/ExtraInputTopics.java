@@ -33,7 +33,7 @@ import org.apache.kafka.streams.kstream.KStream;
 @NoArgsConstructor
 public class ExtraInputTopics implements StreamsApp {
     @Override
-    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+    public void buildTopology(final TopologyBuilder builder) {
         final KStream<String, String> input = builder.streamInput("role");
         input.to(builder.getTopics().getOutputTopic());
     }
