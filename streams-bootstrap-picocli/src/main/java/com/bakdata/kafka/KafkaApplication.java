@@ -56,7 +56,7 @@ import picocli.CommandLine.ParseResult;
 @RequiredArgsConstructor
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
-public abstract class KafkaApplication implements Runnable {
+public abstract class KafkaApplication implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
@@ -95,7 +95,8 @@ public abstract class KafkaApplication implements Runnable {
      */
     public static int startApplicationWithoutExit(final KafkaApplication app, final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = new CommandLine(app).setExecutionStrategy(app::executionStrategy);
+        final CommandLine commandLine = new CommandLine(app)
+                .setExecutionStrategy(app::executionStrategy);
         return commandLine.execute(populatedArgs);
     }
 
@@ -109,10 +110,12 @@ public abstract class KafkaApplication implements Runnable {
         return allArgs.toArray(String[]::new);
     }
 
-    @Command(description = "Clear the state store and the global Kafka offsets for the "
-                           + "consumer group. Be careful with running in production and with enabling this flag - it "
-                           + "might cause inconsistent processing with multiple replicas.")
     public abstract void clean();
+
+    @Override
+    public void close() {
+        // do nothing by default
+    }
 
     protected void configureDebug() {
         Configurator.setLevel("com.bakdata", Level.DEBUG);
@@ -135,7 +138,9 @@ public abstract class KafkaApplication implements Runnable {
     }
 
     private int executionStrategy(final ParseResult parseResult) {
-        this.configureCommand(); // custom initialization to be done before executing any command or subcommand
-        return new CommandLine.RunLast().execute(parseResult); // default execution strategy
+        this.configureCommand();
+        final int exitCode = new CommandLine.RunLast().execute(parseResult);
+        this.close();
+        return exitCode;
     }
 }

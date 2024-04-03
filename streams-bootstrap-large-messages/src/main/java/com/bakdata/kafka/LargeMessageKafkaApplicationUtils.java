@@ -54,7 +54,8 @@ public class LargeMessageKafkaApplicationUtils {
      * @param cleanUpRunner {@code CleanUpRunner} to register hook on
      * @see #createLargeMessageCleanUpHook(Map)
      */
-    public static void registerLargeMessageCleanUpHook(final HasTopicHooks<?> cleanUpRunner) {
-        cleanUpRunner.registerTopicDeletionHook(LargeMessageKafkaApplicationUtils::createLargeMessageCleanUpHook);
+    public static <T> T registerLargeMessageCleanUpHook(final HasTopicHooks<T> cleanUpRunner) {
+        return cleanUpRunner.registerTopicDeletionHook(
+                LargeMessageKafkaApplicationUtils::createLargeMessageCleanUpHook);
     }
 }

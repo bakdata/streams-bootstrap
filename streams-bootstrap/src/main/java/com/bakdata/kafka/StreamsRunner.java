@@ -72,11 +72,12 @@ public final class StreamsRunner implements AutoCloseable {
     @Override
     public void close() {
         log.info("Closing Kafka Streams");
-        log.debug("Closing Kafka Streams with leaveGroup={}", this.closeOptions);
-        this.streams.close(this.closeOptions);
-        // close resources after streams because messages currently processed might depend on resources
-        log.info("Calling shutdown hook");
-        this.hooks.onShutdown();
+        final boolean success = this.streams.close(this.closeOptions);
+        if (success) {
+            log.info("Successfully closed Kafka Streams");
+        } else {
+            log.info("Timed out closing Kafka Streams");
+        }
     }
 
     private void checkErrors() {

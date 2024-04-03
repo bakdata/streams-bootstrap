@@ -39,8 +39,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> {
     private final @NonNull T app;
 
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final StreamsCleanUpConfigurer configurer = new StreamsCleanUpConfigurer();
-        this.app.setupCleanUp(configurer);
+        final StreamsCleanUpConfigurer configurer = this.app.setupCleanUp();
         return StreamsCleanUpRunner.create(this.topology, this.kafkaProperties, configurer);
     }
 

@@ -37,8 +37,7 @@ public class ExecutableProducerApp<T extends ProducerApp> {
     private final @NonNull T app;
 
     public ProducerCleanUpRunner createCleanUpRunner() {
-        final ProducerCleanUpConfigurer configurer = new ProducerCleanUpConfigurer();
-        this.app.setupCleanUp(configurer);
+        final ProducerCleanUpConfigurer configurer = this.app.setupCleanUp();
         return ProducerCleanUpRunner.create(this.topics, this.kafkaProperties, configurer);
     }
 

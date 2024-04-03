@@ -35,8 +35,6 @@ import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 public class StreamsHooks {
     @Builder.Default
     private final @NonNull Consumer<KafkaStreams> onStart = streams -> {};
-    @Builder.Default
-    private final @NonNull Runnable onShutdown = () -> {};
     @Getter
     @Builder.Default
     private final @NonNull KafkaStreams.StateListener stateListener = new NoOpStateListener();
@@ -44,10 +42,6 @@ public class StreamsHooks {
     @Builder.Default
     private final @NonNull StreamsUncaughtExceptionHandler uncaughtExceptionHandler =
             new DefaultStreamsUncaughtExceptionHandler();
-
-    public void onShutdown() {
-        this.onShutdown.run();
-    }
 
     public void onStart(final KafkaStreams streams) {
         this.onStart.accept(streams);

@@ -80,7 +80,7 @@ public interface StreamsApp {
         return kafkaConfig;
     }
 
-    default void setupCleanUp(final StreamsCleanUpConfigurer cleanUpRunner) {
-        // do nothing by default
+    default StreamsCleanUpConfigurer setupCleanUp() {
+        return new StreamsCleanUpConfigurer();
     }
 }

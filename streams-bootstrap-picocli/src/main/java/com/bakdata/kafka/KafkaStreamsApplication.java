@@ -36,7 +36,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import picocli.CommandLine;
@@ -57,7 +56,8 @@ import picocli.CommandLine.UseDefaultConverter;
 @Setter
 @RequiredArgsConstructor
 @Slf4j
-public abstract class KafkaStreamsApplication extends KafkaApplication implements AutoCloseable {
+@Command(description = "Run a Kafka Streams application.")
+public abstract class KafkaStreamsApplication extends KafkaApplication {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -96,23 +96,29 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
 
     @Override
     public void close() {
+        super.close();
+        this.stop();
+    }
+
+    public void stop() {
         this.runners.forEach(StreamsRunner::close);
     }
 
+    @Command(
+            description = "Reset the Kafka Streams application. Additionally, delete the consumer group and all "
+                          + "output and intermediate topics associated with the Kafka Streams application.")
     @Override
     public void clean() {
         final StreamsCleanUpRunner runner = this.createCleanUpRunner();
         runner.clean();
-        this.onStreamsShutdown();
     }
 
-    @Command(description = "Clear the state store and the global Kafka offsets for the "
-                           + "consumer group. Be careful with running in production and with enabling this flag - it "
-                           + "might cause inconsistent processing with multiple replicas.")
+    @Command(
+            description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
+                          + "Kafka Streams application.")
     public void reset() {
         final StreamsCleanUpRunner runner = this.createCleanUpRunner();
         runner.reset();
-        this.onStreamsShutdown();
     }
 
     public abstract StreamsApp createApp(boolean cleanUp);
@@ -194,20 +200,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         // do nothing by default
     }
 
-    /**
-     * Method to close resources outside of {@link KafkaStreams}. Will be called by default on  and on
-     * transitioning to {@link State#ERROR}.
-     */
-    protected void onStreamsShutdown() {
-        // do nothing by default
-    }
-
     private StreamsHooks createHooks() {
         return StreamsHooks.builder()
                 .uncaughtExceptionHandler(this.getUncaughtExceptionHandler())
                 .stateListener(this.getStateListener())
                 .onStart(this::onStreamsStart)
-                .onShutdown(this::onStreamsShutdown)
                 .build();
     }
 

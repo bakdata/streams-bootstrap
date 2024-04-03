@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import picocli.CommandLine.Command;
 
 
 /**
@@ -45,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @RequiredArgsConstructor
 @Slf4j
+@Command(description = "Run a Kafka Producer application")
 public abstract class KafkaProducerApplication extends KafkaApplication {
 
     @Override
@@ -53,6 +55,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         runner.run();
     }
 
+    @Command(description = "Delete all output topics associated with the Kafka Producer application.")
     @Override
     public void clean() {
         final ProducerCleanUpRunner cleanUpRunner = this.createCleanUpRunner();

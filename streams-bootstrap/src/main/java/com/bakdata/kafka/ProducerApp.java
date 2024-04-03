@@ -61,7 +61,7 @@ public interface ProducerApp {
         return kafkaConfig;
     }
 
-    default void setupCleanUp(final ProducerCleanUpConfigurer cleanUpRunner) {
-        // do nothing by default
+    default ProducerCleanUpConfigurer setupCleanUp() {
+        return new ProducerCleanUpConfigurer();
     }
 }

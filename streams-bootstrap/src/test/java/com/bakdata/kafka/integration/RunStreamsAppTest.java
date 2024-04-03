@@ -188,7 +188,7 @@
 //        final CloseFlagApp closeApplication = this.createCloseFlagApp();
 //        this.runApp();
 //        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-//        this.app.close();
+//        this.app.stop();
 //        assertThat(closeApplication.getLeaveGroup()).isTrue();
 //    }
 //
@@ -201,7 +201,7 @@
 //                .build());
 //        this.runApp();
 //        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-//        this.app.close();
+//        this.app.stop();
 //        assertThat(closeApplication.getLeaveGroup()).isFalse();
 //    }
 //
@@ -215,7 +215,7 @@
 //        this.app.setVolatileGroupInstanceId(true);
 //        this.runApp();
 //        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-//        this.app.close();
+//        this.app.stop();
 //        assertThat(closeApplication.getLeaveGroup()).isTrue();
 //    }
 //

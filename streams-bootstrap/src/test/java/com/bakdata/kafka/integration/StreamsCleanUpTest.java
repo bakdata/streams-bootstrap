@@ -538,7 +538,6 @@
 //        this.softly.assertThatThrownBy(this::runCleanUpWithDeletion)
 //                .isInstanceOf(CleanUpException.class)
 //                .hasMessageContaining("Error running streams resetter. Exit code 1");
-//        this.app.close();
 //    }
 //
 //    private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
@@ -586,7 +585,7 @@
 //
 //    private void runAppAndClose() throws InterruptedException {
 //        this.runApp();
-//        this.app.close();
+//        this.app.stop();
 //    }
 //
 //    private ConfiguredStreamsApp<StreamsApp> createWordCountApplication() {
