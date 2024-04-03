@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.Value;
@@ -39,8 +40,8 @@ public class StreamsAppConfig {
         return this.kafkaProperties.getString(StreamsConfig.APPLICATION_ID_CONFIG);
     }
 
-    public String getBoostrapServers() {
-        return this.kafkaProperties.getString(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
+    public List<String> getBoostrapServers() {
+        return this.kafkaProperties.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
     }
 
     public Map<String, Object> getKafkaProperties() {

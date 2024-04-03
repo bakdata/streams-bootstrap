@@ -63,6 +63,11 @@ public final class StreamsCleanUpRunner {
     private final @NonNull StreamsCleanUpHooks cleanHooks;
 
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
+            final @NonNull StreamsConfig kafkaProperties) {
+        return create(topology, kafkaProperties, new StreamsCleanUpConfigurer());
+    }
+
+    public static StreamsCleanUpRunner create(final @NonNull Topology topology,
             final @NonNull StreamsConfig kafkaProperties, final @NonNull StreamsCleanUpConfigurer cleanHooks) {
         final StreamsAppConfig streamsAppConfig = new StreamsAppConfig(kafkaProperties);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, streamsAppConfig.getAppId());
@@ -86,7 +91,7 @@ public final class StreamsCleanUpRunner {
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
-                .add("--bootstrap-servers", streamsAppConfig.getBoostrapServers())
+                .add("--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()))
                 .add("--config-file", tempFile.toString());
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
@@ -129,10 +134,6 @@ public final class StreamsCleanUpRunner {
         return parsedProperties;
     }
 
-    public Map<String, Object> getKafkaProperties() {
-        return this.appConfig.getKafkaProperties();
-    }
-
     private static Collection<String> filterExistingTopics(final Collection<String> topics,
             final Collection<String> allTopics) {
         return topics.stream()
@@ -144,6 +145,10 @@ public final class StreamsCleanUpRunner {
                     return exists;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> getKafkaProperties() {
+        return this.appConfig.getKafkaProperties();
     }
 
     /**
