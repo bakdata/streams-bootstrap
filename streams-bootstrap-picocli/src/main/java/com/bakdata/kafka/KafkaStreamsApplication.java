@@ -69,10 +69,10 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     private Map<String, List<String>> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     private Map<String, Pattern> extraInputPatterns = new HashMap<>();
-    @CommandLine.Option(names = "--productive", arity = "1",
+    @CommandLine.Option(names = "--productive", arity = "0..1",
             description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
                           + "more suitable for production environments")
-    private boolean productive = true;
+    private boolean productive;
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
