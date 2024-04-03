@@ -55,12 +55,12 @@ class AvroMirrorTest {
     }
 
     private ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
-        return new ConfiguredStreamsApp<MirrorWithNonDefaultSerde>(new MirrorWithNonDefaultSerde(),
+        return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(),
                 StreamsAppConfiguration.builder()
-                .topics(StreamsTopicConfig.builder()
-                        .inputTopics(List.of("input"))
-                        .outputTopic("output")
-                        .build())
-                .build());
+                        .topics(StreamsTopicConfig.builder()
+                                .inputTopics(List.of("input"))
+                                .outputTopic("output")
+                                .build())
+                        .build());
     }
 }

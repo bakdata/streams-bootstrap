@@ -91,7 +91,7 @@ public final class StreamsCleanUpRunner {
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
-                .add("--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()))
+                .add("--bootstrap-server", streamsAppConfig.getBoostrapServers())
                 .add("--config-file", tempFile.toString());
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
@@ -159,7 +159,6 @@ public final class StreamsCleanUpRunner {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.cleanAndReset();
-            this.cleanHooks.runFinishHooks();
             waitForCleanUp();
         }
     }
@@ -171,7 +170,6 @@ public final class StreamsCleanUpRunner {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.reset();
-            this.cleanHooks.runFinishHooks();
             waitForCleanUp();
         }
     }

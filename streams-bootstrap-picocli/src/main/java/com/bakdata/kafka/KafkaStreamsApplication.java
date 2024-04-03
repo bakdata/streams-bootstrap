@@ -35,6 +35,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KafkaStreams.State;
+import org.apache.kafka.streams.KafkaStreams.StateListener;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.UseDefaultConverter;
@@ -99,6 +103,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public void clean() {
         final StreamsCleanUpRunner runner = this.createCleanUpRunner();
         runner.clean();
+        this.onStreamsShutdown();
     }
 
     @Command(description = "Clear the state store and the global Kafka offsets for the "
@@ -107,6 +112,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public void reset() {
         final StreamsCleanUpRunner runner = this.createCleanUpRunner();
         runner.reset();
+        this.onStreamsShutdown();
     }
 
     public abstract StreamsApp createApp(boolean cleanUp);
@@ -120,7 +126,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public StreamsRunner createRunner() {
         final ExecutableStreamsApp<StreamsApp> executableStreamsApp = this.createExecutableApp(false);
         final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
-        return executableStreamsApp.createRunner(executionOptions);
+        final StreamsHooks hooks = this.createHooks();
+        return executableStreamsApp.createRunner(executionOptions, hooks);
     }
 
     public StreamsCleanUpRunner createCleanUpRunner() {
@@ -131,7 +138,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     public ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
         final StreamsApp streamsApp = this.createApp(cleanUp);
         final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
-        return new ConfiguredStreamsApp<StreamsApp>(streamsApp, streamsAppConfiguration);
+        return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);
     }
 
     public StreamsAppConfiguration createConfiguration() {
@@ -161,6 +168,47 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp(cleanUp);
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.withEndpoint(endpointConfig);
+    }
+
+    /**
+     * Create a {@link StateListener} to use for Kafka Streams.
+     *
+     * @return {@code StateListener}.
+     * @see KafkaStreams#setStateListener(StateListener)
+     */
+    protected StateListener getStateListener() {
+        return new NoOpStateListener();
+    }
+
+    /**
+     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
+     *
+     * @return {@code StreamsUncaughtExceptionHandler}.
+     * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
+     */
+    protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return new DefaultStreamsUncaughtExceptionHandler();
+    }
+
+    protected void onStreamsStart(final KafkaStreams streams) {
+        // do nothing by default
+    }
+
+    /**
+     * Method to close resources outside of {@link KafkaStreams}. Will be called by default on  and on
+     * transitioning to {@link State#ERROR}.
+     */
+    protected void onStreamsShutdown() {
+        // do nothing by default
+    }
+
+    private StreamsHooks createHooks() {
+        return StreamsHooks.builder()
+                .uncaughtExceptionHandler(this.getUncaughtExceptionHandler())
+                .stateListener(this.getStateListener())
+                .onStart(this::onStreamsStart)
+                .onShutdown(this::onStreamsShutdown)
+                .build();
     }
 
     private StreamsOptions createStreamsOptions() {

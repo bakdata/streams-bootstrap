@@ -41,7 +41,6 @@ public class ExecutableStreamsApp<T extends StreamsApp> {
     public StreamsCleanUpRunner createCleanUpRunner() {
         final StreamsCleanUpConfigurer configurer = new StreamsCleanUpConfigurer();
         this.app.setupCleanUp(configurer);
-        configurer.registerFinishHook(this.app::close);
         return StreamsCleanUpRunner.create(this.topology, this.kafkaProperties, configurer);
     }
 
@@ -50,21 +49,19 @@ public class ExecutableStreamsApp<T extends StreamsApp> {
     }
 
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
-        final StreamsHooks hooks = this.createHooks();
+        return this.createRunner(executionOptions, StreamsHooks.builder().build());
+    }
+
+    public StreamsRunner createRunner(final StreamsHooks hooks) {
+        return this.createRunner(StreamsExecutionOptions.builder().build(), hooks);
+    }
+
+    public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions, final StreamsHooks hooks) {
         return StreamsRunner.builder()
                 .topology(this.topology)
                 .config(this.kafkaProperties)
                 .executionOptions(executionOptions)
                 .hooks(hooks)
-                .build();
-    }
-
-    private StreamsHooks createHooks() {
-        return StreamsHooks.builder()
-                .stateListener(this.app.getStateListener())
-                .uncaughtExceptionHandler(this.app.getUncaughtExceptionHandler())
-                .onStart(this.app::onStreamsStart)
-                .onShutdown(this.app::close)
                 .build();
     }
 

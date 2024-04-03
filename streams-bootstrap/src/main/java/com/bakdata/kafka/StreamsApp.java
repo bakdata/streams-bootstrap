@@ -27,43 +27,10 @@ package com.bakdata.kafka;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KafkaStreams.State;
-import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 
-public interface StreamsApp extends AutoCloseable {
+public interface StreamsApp {
     int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
-
-    /**
-     * Method to close resources outside of {@link KafkaStreams}. Will be called by default on  and on
-     * transitioning to {@link State#ERROR}.
-     */
-    @Override
-    default void close() {
-        //do nothing by default
-    }
-
-    /**
-     * Create a {@link StateListener} to use for Kafka Streams.
-     *
-     * @return {@code StateListener}.
-     * @see KafkaStreams#setStateListener(StateListener)
-     */
-    default StateListener getStateListener() {
-        return new NoOpStateListener();
-    }
-
-    /**
-     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
-     *
-     * @return {@code StreamsUncaughtExceptionHandler}.
-     * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
-     */
-    default StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return new DefaultStreamsUncaughtExceptionHandler();
-    }
 
     /**
      * Build the Kafka Streams topology to be run by the app
@@ -114,10 +81,6 @@ public interface StreamsApp extends AutoCloseable {
     }
 
     default void setupCleanUp(final StreamsCleanUpConfigurer cleanUpRunner) {
-        // do nothing by default
-    }
-
-    default void onStreamsStart(final KafkaStreams streams) {
         // do nothing by default
     }
 }

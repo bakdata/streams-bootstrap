@@ -38,7 +38,6 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
     private final @NonNull Collection<TopicDeletionHookFactory> topicDeletionHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> resetHooks = new ArrayList<>();
-    private final @NonNull Collection<Runnable> finishHooks = new ArrayList<>();
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
@@ -62,11 +61,6 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
         return this;
     }
 
-    public StreamsCleanUpConfigurer registerFinishHook(final Runnable action) {
-        this.finishHooks.add(action);
-        return this;
-    }
-
     StreamsCleanUpHooks create(final Map<String, Object> kafkaConfig) {
         return StreamsCleanUpHooks.builder()
                 .topicDeletionHooks(this.topicDeletionHooks.stream()
@@ -74,7 +68,6 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
                         .collect(Collectors.toList()))
                 .cleanHooks(this.cleanHooks)
                 .resetHooks(this.resetHooks)
-                .finishHooks(this.finishHooks)
                 .build();
     }
 
@@ -83,7 +76,6 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
         private final @NonNull Collection<TopicDeletionHook> topicDeletionHooks;
         private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks;
         private final @NonNull Collection<Consumer<ImprovedAdminClient>> resetHooks;
-        private final @NonNull Collection<Runnable> finishHooks;
 
         public void runCleanHooks(final ImprovedAdminClient adminClient) {
             this.cleanHooks.forEach(hook -> hook.accept(adminClient));
@@ -91,10 +83,6 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
 
         public void runResetHooks(final ImprovedAdminClient adminClient) {
             this.resetHooks.forEach(hook -> hook.accept(adminClient));
-        }
-
-        public void runFinishHooks() {
-            this.finishHooks.forEach(Runnable::run);
         }
 
         public void runTopicDeletionHooks(final String topic) {

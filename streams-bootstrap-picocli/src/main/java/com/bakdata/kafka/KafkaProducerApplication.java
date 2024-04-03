@@ -62,7 +62,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     public ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
         final ProducerApp producerApp = this.createApp();
         final ProducerAppConfiguration configuration = this.createConfiguration();
-        return new ConfiguredProducerApp<ProducerApp>(producerApp, configuration);
+        return new ConfiguredProducerApp<>(producerApp, configuration);
     }
 
     public ProducerAppConfiguration createConfiguration() {

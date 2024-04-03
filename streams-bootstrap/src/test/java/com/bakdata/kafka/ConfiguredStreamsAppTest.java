@@ -39,7 +39,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<StreamsApp>(new TestApplication(), StreamsAppConfiguration.builder()
+                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
                         .kafkaConfig(Map.of(
                                 "foo", "baz",
                                 "kafka", "streams"
@@ -56,7 +56,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldSetDefaultAvroSerdeWhenSchemaRegistryUrlIsSet() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<StreamsApp>(new TestApplication(), StreamsAppConfiguration.builder()
+                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
                         .build());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
@@ -70,7 +70,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldSetDefaultStringSerdeWhenSchemaRegistryUrlIsNotSet() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<StreamsApp>(new TestApplication(), StreamsAppConfiguration.builder()
+                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
                         .build());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")

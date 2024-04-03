@@ -38,7 +38,7 @@ class ConfiguredProducerAppTest {
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<ProducerApp>(new TestProducer(), ProducerAppConfiguration.builder()
+                new ConfiguredProducerApp<>(new TestProducer(), ProducerAppConfiguration.builder()
                         .kafkaConfig(Map.of(
                                 "foo", "baz",
                                 "kafka", "streams"
@@ -55,7 +55,7 @@ class ConfiguredProducerAppTest {
     @Test
     void shouldSetDefaultAvroSerializerWhenSchemaRegistryUrlIsSet() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<ProducerApp>(new TestProducer(), ProducerAppConfiguration.builder()
+                new ConfiguredProducerApp<>(new TestProducer(), ProducerAppConfiguration.builder()
                         .build());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
@@ -68,7 +68,7 @@ class ConfiguredProducerAppTest {
     @Test
     void shouldSetDefaultStringSerializerWhenSchemaRegistryUrlIsNotSet() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<ProducerApp>(new TestProducer(), ProducerAppConfiguration.builder()
+                new ConfiguredProducerApp<>(new TestProducer(), ProducerAppConfiguration.builder()
                         .build());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")

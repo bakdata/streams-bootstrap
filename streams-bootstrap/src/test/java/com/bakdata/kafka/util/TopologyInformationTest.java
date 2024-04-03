@@ -58,7 +58,7 @@ class TopologyInformationTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<StreamsApp>(this.app, StreamsAppConfiguration.builder()
+                new ConfiguredStreamsApp<>(this.app, StreamsAppConfiguration.builder()
                         .topics(this.topics)
                         .build());
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(

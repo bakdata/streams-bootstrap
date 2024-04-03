@@ -102,7 +102,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> {
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);
-        return new ExecutableStreamsApp<T>(topology, new StreamsConfig(kafkaProperties), this.app);
+        return new ExecutableStreamsApp<>(topology, new StreamsConfig(kafkaProperties), this.app);
     }
 
     /**
