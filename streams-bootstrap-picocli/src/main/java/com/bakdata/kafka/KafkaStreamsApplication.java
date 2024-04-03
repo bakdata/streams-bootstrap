@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +74,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
     @ToString.Exclude
-    private List<StreamsRunner> runners = new ArrayList<>();
+    private ConcurrentLinkedDeque<StreamsRunner> runners = new ConcurrentLinkedDeque<>();
 
     /**
      * Run the application. If Kafka Streams is run, this method blocks until Kafka Streams has completed shutdown,
@@ -84,6 +85,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         try (final StreamsRunner runner = this.createRunner()) {
             this.runners.add(runner);
             runner.run();
+            this.runners.remove(runner);
         }
     }
 
