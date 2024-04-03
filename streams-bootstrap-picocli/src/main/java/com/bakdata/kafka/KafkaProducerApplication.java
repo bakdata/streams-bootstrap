@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.ConfiguredProducerApp.ExecutableProducerApp;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -60,10 +59,10 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         cleanUpRunner.clean();
     }
 
-    public ConfiguredProducerApp createConfiguredApp() {
+    public ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
         final ProducerApp producerApp = this.createApp();
         final ProducerAppConfiguration configuration = this.createConfiguration();
-        return new ConfiguredProducerApp(producerApp, configuration);
+        return new ConfiguredProducerApp<ProducerApp>(producerApp, configuration);
     }
 
     public ProducerAppConfiguration createConfiguration() {
@@ -85,17 +84,17 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     public abstract ProducerApp createApp();
 
     public ProducerRunner createRunner() {
-        final ExecutableProducerApp executableApp = this.createExecutableApp();
+        final ExecutableProducerApp<ProducerApp> executableApp = this.createExecutableApp();
         return executableApp.createRunner();
     }
 
     public ProducerCleanUpRunner createCleanUpRunner() {
-        final ExecutableProducerApp executableApp = this.createExecutableApp();
+        final ExecutableProducerApp<ProducerApp> executableApp = this.createExecutableApp();
         return executableApp.createCleanUpRunner();
     }
 
-    private ExecutableProducerApp createExecutableApp() {
-        final ConfiguredProducerApp app = this.createConfiguredApp();
+    private ExecutableProducerApp<ProducerApp> createExecutableApp() {
+        final ConfiguredProducerApp<ProducerApp> app = this.createConfiguredApp();
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return app.withEndpoint(endpointConfig);
     }

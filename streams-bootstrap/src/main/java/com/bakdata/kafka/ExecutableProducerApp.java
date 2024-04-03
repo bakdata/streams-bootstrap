@@ -24,17 +24,29 @@
 
 package com.bakdata.kafka;
 
-import java.util.function.Supplier;
+import java.util.Map;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SimpleKafkaStreamsApplication extends KafkaStreamsApplication {
+@Getter
+public class ExecutableProducerApp<T extends ProducerApp> {
+    private final @NonNull ProducerTopicConfig topics;
+    private final @NonNull Map<String, Object> kafkaProperties;
+    private final @NonNull T app;
 
-    private final @NonNull Supplier<StreamsApp> appFactory;
+    public ProducerCleanUpRunner createCleanUpRunner() {
+        final ProducerCleanUpConfigurer configurer = new ProducerCleanUpConfigurer();
+        this.app.setupCleanUp(configurer);
+        return ProducerCleanUpRunner.create(this.topics, this.kafkaProperties, configurer);
+    }
 
-    @Override
-    public StreamsApp createApp(final boolean cleanUp) {
-        return this.appFactory.get();
+    public ProducerRunner createRunner() {
+        final ProducerBuilder producerBuilder = ProducerBuilder.builder()
+                .topics(this.topics)
+                .kafkaProperties(this.kafkaProperties)
+                .build();
+        return new ProducerRunner(() -> this.app.run(producerBuilder));
     }
 }

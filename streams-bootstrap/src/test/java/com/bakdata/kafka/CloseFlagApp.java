@@ -40,11 +40,10 @@
 //    @Override
 //    public void close() {
 //        this.closed = true;
-//        super.close();
 //    }
 //
 //    @Override
-//    public void buildTopology(final TopologyBuilder builder, final boolean cleanUp) {
+//    public void buildTopology(final TopologyBuilder builder) {
 //        final KStream<String, TestRecord> input = builder.streamInput();
 //        input.to(builder.getTopics().getOutputTopic());
 //    }

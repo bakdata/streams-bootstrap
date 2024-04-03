@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.ConfiguredStreamsApp.ExecutableStreamsApp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +73,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
     @ToString.Exclude
+    // ConcurrentLinkedDeque required because calling #close() causes asynchronous #run() calls to finish and thus
+    // concurrently iterating on #runners and removing from #runners
     private ConcurrentLinkedDeque<StreamsRunner> runners = new ConcurrentLinkedDeque<>();
 
     /**
@@ -108,7 +109,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
         runner.reset();
     }
 
-    public abstract StreamsApp createApp();
+    public abstract StreamsApp createApp(boolean cleanUp);
 
     public StreamsExecutionOptions createExecutionOptions() {
         return StreamsExecutionOptions.builder()
@@ -117,20 +118,20 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
     }
 
     public StreamsRunner createRunner() {
-        final ExecutableStreamsApp executableStreamsApp = this.createExecutableApp();
+        final ExecutableStreamsApp<StreamsApp> executableStreamsApp = this.createExecutableApp(false);
         final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
         return executableStreamsApp.createRunner(executionOptions);
     }
 
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final ExecutableStreamsApp executableApp = this.createExecutableApp();
+        final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(true);
         return executableApp.createCleanUpRunner();
     }
 
-    public ConfiguredStreamsApp createConfiguredApp() {
-        final StreamsApp streamsApp = this.createApp();
+    public ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
+        final StreamsApp streamsApp = this.createApp(cleanUp);
         final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
-        return new ConfiguredStreamsApp(streamsApp, streamsAppConfiguration);
+        return new ConfiguredStreamsApp<StreamsApp>(streamsApp, streamsAppConfiguration);
     }
 
     public StreamsAppConfiguration createConfiguration() {
@@ -156,8 +157,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication implement
                 .build();
     }
 
-    public ExecutableStreamsApp createExecutableApp() {
-        final ConfiguredStreamsApp configuredStreamsApp = this.createConfiguredApp();
+    public ExecutableStreamsApp<StreamsApp> createExecutableApp(final boolean cleanUp) {
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp(cleanUp);
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.withEndpoint(endpointConfig);
     }

@@ -27,14 +27,16 @@ package com.bakdata.kafka;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 @RequiredArgsConstructor
-public class ConfiguredProducerApp {
-    private final @NonNull ProducerApp app;
+public class ConfiguredProducerApp<T extends ProducerApp> {
+    @Getter
+    private final @NonNull T app;
     private final @NonNull ProducerAppConfiguration configuration;
 
     private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {
@@ -87,31 +89,12 @@ public class ConfiguredProducerApp {
         return kafkaConfig;
     }
 
-    public ExecutableProducerApp withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        return new ExecutableProducerApp(endpointConfig);
+    public ExecutableProducerApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
+        return new ExecutableProducerApp<>(this.getTopics(), this.getKafkaProperties(endpointConfig), this.app);
     }
 
-    @RequiredArgsConstructor
-    public class ExecutableProducerApp {
-        private final @NonNull KafkaEndpointConfig endpointConfig;
-
-        public ProducerCleanUpRunner createCleanUpRunner() {
-            final Map<String, Object> kafkaProperties =
-                    ConfiguredProducerApp.this.getKafkaProperties(this.endpointConfig);
-            final ProducerCleanUpConfigurer configurer = new ProducerCleanUpConfigurer();
-            ConfiguredProducerApp.this.app.setupCleanUp(configurer);
-            return ProducerCleanUpRunner.create(ConfiguredProducerApp.this.configuration.getTopics(), kafkaProperties,
-                    configurer);
+    public ProducerTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
-        public ProducerRunner createRunner() {
-            final Map<String, Object> kafkaProperties =
-                    ConfiguredProducerApp.this.getKafkaProperties(this.endpointConfig);
-        final ProducerBuilder producerBuilder = ProducerBuilder.builder()
-                .topics(ConfiguredProducerApp.this.configuration.getTopics())
-                .kafkaProperties(kafkaProperties)
-                .build();
-            return new ProducerRunner(() -> ConfiguredProducerApp.this.app.run(producerBuilder));
-        }
-    }
 }

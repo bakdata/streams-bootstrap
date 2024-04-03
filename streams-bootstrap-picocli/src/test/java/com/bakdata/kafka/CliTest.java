@@ -53,7 +53,7 @@ class CliTest {
     void shouldExitWithSuccessCode() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp() {
+            public StreamsApp createApp(final boolean cleanUp) {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -105,7 +105,7 @@ class CliTest {
     void shouldExitWithErrorCodeOnCleanupError() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp() {
+            public StreamsApp createApp(final boolean cleanUp) {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -137,7 +137,7 @@ class CliTest {
     void shouldExitWithErrorCodeOnMissingBrokerParameter() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp() {
+            public StreamsApp createApp(final boolean cleanUp) {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -239,7 +239,7 @@ class CliTest {
     void shouldExitWithErrorOnCleanupError() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp() {
+            public StreamsApp createApp(final boolean cleanUp) {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -265,7 +265,7 @@ class CliTest {
     void shouldParseArguments() {
         final KafkaStreamsApplication app = new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp() {
+            public StreamsApp createApp(final boolean cleanUp) {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {

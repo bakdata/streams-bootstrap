@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -34,8 +35,9 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 @RequiredArgsConstructor
-public class ConfiguredStreamsApp {
-    private final @NonNull StreamsApp app;
+public class ConfiguredStreamsApp<T extends StreamsApp> {
+    @Getter
+    private final @NonNull T app;
     private final @NonNull StreamsAppConfiguration configuration;
 
     private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {
@@ -89,75 +91,33 @@ public class ConfiguredStreamsApp {
         kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());
-        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.app.getUniqueAppId(this.configuration.getTopics()));
+        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.app.getUniqueAppId(this.getTopics()));
         return kafkaConfig;
     }
 
-    public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        return this.createTopology(kafkaProperties, false);
+    public StreamsTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
-    public ExecutableStreamsApp withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        return new ExecutableStreamsApp(endpointConfig);
+    public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
+        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
+        final Topology topology = this.createTopology(kafkaProperties);
+        return new ExecutableStreamsApp<T>(topology, new StreamsConfig(kafkaProperties), this.app);
     }
 
     /**
      * Create the topology of the Kafka Streams app
      *
-     * @return topology of the Kafka Streams app
      * @param kafkaProperties configuration that should be used by clients to configure Kafka utilities
-     * @param cleanUp whether topology is created in cleanUp context
+     * @return topology of the Kafka Streams app
      */
-    private Topology createTopology(final Map<String, Object> kafkaProperties, final boolean cleanUp) {
+    public Topology createTopology(final Map<String, Object> kafkaProperties) {
         final TopologyBuilder topologyBuilder = TopologyBuilder.builder()
-                .topics(this.configuration.getTopics())
+                .topics(this.getTopics())
                 .kafkaProperties(kafkaProperties)
-                .cleanUp(cleanUp)
                 .build();
         this.app.buildTopology(topologyBuilder);
         return topologyBuilder.build();
-    }
-
-    @RequiredArgsConstructor
-    public class ExecutableStreamsApp {
-
-        private final @NonNull KafkaEndpointConfig endpointConfig;
-
-        public StreamsCleanUpRunner createCleanUpRunner() {
-            final Map<String, Object> kafkaProperties =
-                    ConfiguredStreamsApp.this.getKafkaProperties(this.endpointConfig);
-            final Topology topology = ConfiguredStreamsApp.this.createTopology(kafkaProperties, true);
-            final StreamsCleanUpConfigurer configurer = new StreamsCleanUpConfigurer();
-            ConfiguredStreamsApp.this.app.setupCleanUp(configurer);
-            configurer.registerFinishHook(ConfiguredStreamsApp.this.app::close);
-            return StreamsCleanUpRunner.create(topology, kafkaProperties, configurer);
-        }
-
-        public StreamsRunner createRunner() {
-            return this.createRunner(StreamsExecutionOptions.builder().build());
-        }
-
-        public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
-            final Map<String, Object> kafkaProperties =
-                    ConfiguredStreamsApp.this.getKafkaProperties(this.endpointConfig);
-            final Topology topology = ConfiguredStreamsApp.this.createTopology(kafkaProperties);
-            return StreamsRunner.builder()
-                    .topology(topology)
-                    .config(new StreamsConfig(kafkaProperties))
-                    .executionOptions(executionOptions)
-                    .hooks(this.createHooks())
-                    .build();
-        }
-
-        private StreamsHooks createHooks() {
-            return StreamsHooks.builder()
-                    .stateListener(ConfiguredStreamsApp.this.app.getStateListener())
-                    .uncaughtExceptionHandler(ConfiguredStreamsApp.this.app.getUncaughtExceptionHandler())
-                    .onStart(ConfiguredStreamsApp.this.app::onStreamsStart)
-                    .onShutdown(ConfiguredStreamsApp.this.app::close)
-                    .build();
-        }
-
     }
 
 }

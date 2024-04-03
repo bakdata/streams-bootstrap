@@ -49,7 +49,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
     public static <K, V> TestTopology<K, V> createTopologyWithSchemaRegistry(
-            final ConfiguredStreamsApp app) {
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return new TestTopology<>(app::createTopology, getKafkaPropertiesWithSchemaRegistryUrl(app));
     }
 
@@ -66,7 +66,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
     public static <K, V> TestTopologyExtension<K, V> createTopologyExtensionWithSchemaRegistry(
-            final ConfiguredStreamsApp app) {
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return new TestTopologyExtension<>(app::createTopology, getKafkaPropertiesWithSchemaRegistryUrl(app));
     }
 
@@ -81,7 +81,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
-    public static <K, V> TestTopology<K, V> createTopology(final ConfiguredStreamsApp app) {
+    public static <K, V> TestTopology<K, V> createTopology(final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return new TestTopology<>(app::createTopology, getKafkaProperties(app));
     }
 
@@ -98,7 +98,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
     public static <K, V> TestTopologyExtension<K, V> createTopologyExtension(
-            final ConfiguredStreamsApp app) {
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return new TestTopologyExtension<>(app::createTopology, getKafkaProperties(app));
     }
 
@@ -111,7 +111,7 @@ public class StreamsBootstrapTopologyFactory {
      * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
      */
     public static Function<String, Map<String, Object>> getKafkaPropertiesWithSchemaRegistryUrl(
-            final ConfiguredStreamsApp app) {
+            final ConfiguredStreamsApp<? extends StreamsApp> app) {
         return schemaRegistryUrl -> {
             final KafkaEndpointConfig endpointConfig = newEndpointConfig()
                     .schemaRegistryUrl(schemaRegistryUrl)
@@ -120,7 +120,7 @@ public class StreamsBootstrapTopologyFactory {
         };
     }
 
-    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp app) {
+    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
         final KafkaEndpointConfig endpointConfig = createEndpointConfig();
         return app.getKafkaProperties(endpointConfig);
     }

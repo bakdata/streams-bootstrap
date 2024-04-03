@@ -42,7 +42,6 @@ public class TopologyBuilder {
     StreamsBuilder streamsBuilder = new StreamsBuilder();
     @NonNull StreamsTopicConfig topics;
     @NonNull Map<String, Object> kafkaProperties;
-    boolean cleanUp;
 
     public <K, V> KStream<K, V> streamInput(final Consumed<K, V> consumed) {
         return this.streamsBuilder.stream(this.topics.getInputTopics(), consumed);

@@ -32,15 +32,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class AvroMirrorTest {
-    final MirrorWithNonDefaultSerde app = new MirrorWithNonDefaultSerde();
-    private final ConfiguredStreamsApp configuredApp = createApp();
+    private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = this.createApp();
     @RegisterExtension
     final TestTopologyExtension<String, TestRecord> testTopology =
-            StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.configuredApp);
+            StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
 
     @Test
     void shouldMirror() {
-        final Serde<TestRecord> valueSerde = this.app.getValueSerde(
+        final Serde<TestRecord> valueSerde = this.app.getApp().getValueSerde(
                 this.testTopology.getStreamsConfig().originals());
         final TestRecord record = TestRecord.newBuilder()
                 .setContent("bar")
@@ -55,8 +54,9 @@ class AvroMirrorTest {
                 .expectNoMoreRecord();
     }
 
-    private ConfiguredStreamsApp createApp() {
-        return new ConfiguredStreamsApp(app, StreamsAppConfiguration.builder()
+    private ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
+        return new ConfiguredStreamsApp<MirrorWithNonDefaultSerde>(new MirrorWithNonDefaultSerde(),
+                StreamsAppConfiguration.builder()
                 .topics(StreamsTopicConfig.builder()
                         .inputTopics(List.of("input"))
                         .outputTopic("output")

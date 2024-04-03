@@ -33,17 +33,17 @@ import org.apache.kafka.streams.StreamsConfig;
 @Value
 public class StreamsAppConfig {
 
-    @NonNull Map<String, Object> kafkaProperties;
+    @NonNull StreamsConfig kafkaProperties;
 
     public String getAppId() {
-        return (String) this.kafkaProperties.get(StreamsConfig.APPLICATION_ID_CONFIG);
+        return this.kafkaProperties.getString(StreamsConfig.APPLICATION_ID_CONFIG);
     }
 
     public String getBoostrapServers() {
-        return (String) this.kafkaProperties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
+        return this.kafkaProperties.getString(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
     }
 
     public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.kafkaProperties);
+        return Collections.unmodifiableMap(this.kafkaProperties.originals());
     }
 }

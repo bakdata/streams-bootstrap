@@ -32,8 +32,13 @@
 //import static org.mockito.Mockito.verifyNoMoreInteractions;
 //
 //import com.bakdata.kafka.CleanUpException;
+//import com.bakdata.kafka.ConfiguredStreamsApp;
+//import com.bakdata.kafka.StreamsApp;
+//import com.bakdata.kafka.StreamsAppConfiguration;
 //import com.bakdata.kafka.StreamsCleanUpRunner;
 //import com.bakdata.kafka.CloseFlagApp;
+//import com.bakdata.kafka.StreamsOptions;
+//import com.bakdata.kafka.StreamsTopicConfig;
 //import com.bakdata.kafka.TestRecord;
 //import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 //import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
@@ -96,7 +101,7 @@
 //    @RegisterExtension
 //    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
 //    private EmbeddedKafkaCluster kafkaCluster;
-//    private KafkaStreamsApplication app = null;
+//    private ConfiguredStreamsApp<StreamsApp> app = null;
 //    @InjectSoftAssertions
 //    private SoftAssertions softly;
 //    @Mock
@@ -110,10 +115,9 @@
 //    }
 //
 //    @AfterEach
-//    void teardown() throws InterruptedException {
+//    void tearDown() throws InterruptedException {
 //        if (this.app != null) {
 //            this.app.close();
-//            this.app.getStreams().cleanUp();
 //            this.app = null;
 //        }
 //
@@ -585,15 +589,15 @@
 //        this.app.close();
 //    }
 //
-//    private KafkaStreamsApplication createWordCountApplication() {
+//    private ConfiguredStreamsApp<StreamsApp> createWordCountApplication() {
 //        return this.setupAppNoSr(new WordCount(), "word_input", "word_output", "word_error");
 //    }
 //
-//    private KafkaStreamsApplication createWordCountPatternApplication() {
+//    private ConfiguredStreamsApp<StreamsApp> createWordCountPatternApplication() {
 //        return this.setupAppNoSr(new WordCountPattern(), Pattern.compile(".*_topic"), "word_output", "word_error");
 //    }
 //
-//    private KafkaStreamsApplication createMirrorValueApplication() {
+//    private ConfiguredStreamsApp<StreamsApp> createMirrorValueApplication() {
 //        return this.setupAppWithSr(new MirrorValueWithAvro(), "input", "output", "key_error");
 //    }
 //
@@ -601,16 +605,16 @@
 //        return this.setupAppWithSr(new CloseFlagApp(), "input", "output", "key_error");
 //    }
 //
-//    private KafkaStreamsApplication createMirrorKeyApplication() {
+//    private ConfiguredStreamsApp<StreamsApp> createMirrorKeyApplication() {
 //        return this.setupAppWithSr(new MirrorKeyWithAvro(), "input", "output", "value_error");
 //    }
 //
-//    private KafkaStreamsApplication createComplexApplication() {
+//    private ConfiguredStreamsApp<StreamsApp> createComplexApplication() {
 //        this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
 //        return this.setupAppWithSr(new ComplexTopologyApplication(), "input", "output", "value_error");
 //    }
 //
-//    private KafkaStreamsApplication createComplexCleanUpHookApplication() {
+//    private ConfiguredStreamsApp<StreamsApp> createComplexCleanUpHookApplication() {
 //        this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
 //        return this.setupAppWithSr(new ComplexTopologyApplication() {
 //            @Override
@@ -621,37 +625,48 @@
 //        }, "input", "output", "value_error");
 //    }
 //
-//    private <T extends KafkaStreamsApplication> T setupAppWithSr(final T application, final String inputTopicName,
+//    private ConfiguredStreamsApp<StreamsApp> setupAppWithSr(final StreamsApp application, final String inputTopicName,
 //            final String outputTopicName, final String errorTopicName) {
-//        this.setupApp(application, outputTopicName, errorTopicName);
+//        this.setupApp(application, StreamsTopicConfig.builder()
+//                .outputTopic(outputTopicName)
+//                .errorTopic(errorTopicName)
+//                .build());
 //        application.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
 //        application.setInputTopics(List.of(inputTopicName));
 //        return application;
 //    }
 //
-//    private <T extends KafkaStreamsApplication> T setupAppNoSr(final T application, final String inputTopicName,
+//    private ConfiguredStreamsApp<StreamsApp> setupAppNoSr(final StreamsApp application, final String inputTopicName,
 //            final String outputTopicName, final String errorTopicName) {
-//        this.setupApp(application, outputTopicName, errorTopicName);
+//        this.setupApp(application, StreamsTopicConfig.builder()
+//                .outputTopic(outputTopicName)
+//                .errorTopic(errorTopicName)
+//                .build());
 //        application.setInputTopics(List.of(inputTopicName));
 //        return application;
 //    }
 //
-//    private <T extends KafkaStreamsApplication> T setupAppNoSr(final T application, final Pattern inputPattern,
+//    private ConfiguredStreamsApp<StreamsApp> setupAppNoSr(final StreamsApp application, final Pattern inputPattern,
 //            final String outputTopicName, final String errorTopicName) {
-//        this.setupApp(application, outputTopicName, errorTopicName);
+//        this.setupApp(application, StreamsTopicConfig.builder()
+//                .outputTopic(outputTopicName)
+//                .errorTopic(errorTopicName)
+//                .build());
 //        application.setInputPattern(inputPattern);
 //        return application;
 //    }
 //
-//    private <T extends KafkaStreamsApplication> void setupApp(final T application, final String outputTopicName,
-//            final String errorTopicName) {
-//        application.setOutputTopic(outputTopicName);
-//        application.setErrorTopic(errorTopicName);
-//        application.setBrokers(this.kafkaCluster.getBrokerList());
-//        application.setProductive(false);
-//        application.setKafkaConfig(Map.of(
+//    private ConfiguredStreamsApp<StreamsApp> setupApp(final StreamsApp application, StreamsTopicConfig
+//    streamsTopicConfig) {
+//        return new ConfiguredStreamsApp<StreamsApp>(application, StreamsAppConfiguration.builder()
+//                .topics(streamsTopicConfig)
+//                .options(StreamsOptions.builder()
+//                        .productive(false)
+//                        .build())
+//                .kafkaConfig(Map.of(
 //                StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
 //                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-//        ));
+//        ))
+//                .build());
 //    }
 //}
