@@ -30,19 +30,37 @@ import lombok.NonNull;
 import lombok.Value;
 import org.apache.kafka.streams.StreamsConfig;
 
+/**
+ * Class for simplified access to configs provided by {@link StreamsConfig}
+ */
 @Value
-public class StreamsAppConfig {
+public class ImprovedStreamsConfig {
 
     @NonNull StreamsConfig kafkaProperties;
 
+    /**
+     * Get the application id of the underlying {@link StreamsConfig}
+     * @return application id
+     * @see StreamsConfig#APPLICATION_ID_CONFIG
+     */
     public String getAppId() {
         return this.kafkaProperties.getString(StreamsConfig.APPLICATION_ID_CONFIG);
     }
 
+    /**
+     * Get the bootstrap servers of the underlying {@link StreamsConfig}
+     * @return comma separated bootstrap servers config
+     * @see StreamsConfig#BOOTSTRAP_SERVERS_CONFIG
+     */
     public String getBoostrapServers() {
         return String.join(",", this.kafkaProperties.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
     }
 
+    /**
+     * Get all configs of the underlying {@link StreamsConfig}
+     * @return Kafka configs
+     * @see StreamsConfig#originals()
+     */
     public Map<String, Object> getKafkaProperties() {
         return Collections.unmodifiableMap(this.kafkaProperties.originals());
     }

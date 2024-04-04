@@ -29,25 +29,32 @@ import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
+/**
+ * Application that defines a Kafka Streams {@link org.apache.kafka.streams.Topology} and necessary configurations
+ */
 public interface StreamsApp extends AutoCloseable {
     int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
 
     /**
-     * Build the Kafka Streams topology to be run by the app
+     * Build the Kafka Streams {@link org.apache.kafka.streams.Topology} to be run by the app.
      *
-     * @param builder builder to use for building the topology
+     * @param builder provides all runtime application configurations and supports building the
+     * {@link org.apache.kafka.streams.Topology}
      */
     void buildTopology(TopologyBuilder builder);
 
     /**
-     * This must be set to a unique value for every application interacting with your kafka cluster to ensure internal
-     * state encapsulation. Could be set to: className-inputTopic-outputTopic
+     * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
+     * state encapsulation. Could be set to: className-outputTopic
+     *
+     * @param topics provides runtime topic configuration
+     * @return unique application identifier
      */
     String getUniqueAppId(StreamsTopicConfig topics);
 
     /**
      * <p>This method should give a default configuration to run your streaming application with.</p>
-     * To add a custom configuration please add a similar method to your custom application class:
+     * To add a custom configuration, add a similar method to your custom application class:
      * <pre>{@code
      *   protected Map<String, Object> createKafkaProperties(StreamsOptions options) {
      *       # Try to always use the kafka properties from the super class as base Map
@@ -58,9 +65,23 @@ public interface StreamsApp extends AutoCloseable {
      *   }
      * }</pre>
      *
+     * Default configuration configures exactly-once, in-order, and compression:
+     * <pre>
+     * processing.guarantee=exactly_once_v2
+     * producer.max.in.flight.requests.per.connection=1
+     * producer.acks=all
+     * producer.compression.type=gzip
+     * </pre>
+     *
+     * If {@link StreamsConfigurationOptions#isProductive()} is set the following is configured additionally:
+     * <pre>
+     * replication.factor=3
+     * </pre>
+     *
+     * @param options options to dynamically configure
      * @return Returns a default Kafka Streams configuration
      */
-    default Map<String, Object> createKafkaProperties(final StreamsOptions options) {
+    default Map<String, Object> createKafkaProperties(final StreamsConfigurationOptions options) {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         // exactly once and order
@@ -80,8 +101,13 @@ public interface StreamsApp extends AutoCloseable {
         return kafkaConfig;
     }
 
-    default StreamsCleanUpConfigurer setupCleanUp() {
-        return new StreamsCleanUpConfigurer();
+    /**
+     * Configure clean up behavior
+     * @return {@code StreamsCleanUpConfiguration}
+     * @see StreamsCleanUpRunner
+     */
+    default StreamsCleanUpConfiguration setupCleanUp() {
+        return new StreamsCleanUpConfiguration();
     }
 
     @Override

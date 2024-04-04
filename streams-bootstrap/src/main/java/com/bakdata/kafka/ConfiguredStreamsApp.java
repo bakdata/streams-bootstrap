@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -34,6 +35,10 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
+/**
+ * A {@link StreamsApp} with a corresponding {@link StreamsAppConfiguration}
+ * @param <T> type of {@link StreamsApp}
+ */
 @RequiredArgsConstructor
 public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable {
     @Getter
@@ -66,7 +71,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
      *         used.
      *      </li>
      *      <li>
-     *          Configs provided by {@link StreamsApp#createKafkaProperties(StreamsOptions)}
+     *          Configs provided by {@link StreamsApp#createKafkaProperties(StreamsConfigurationOptions)}
      *      </li>
      *      <li>
      *          Configs provided by {@link StreamsAppConfiguration#getKafkaConfig()}
@@ -83,7 +88,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
      *      </li>
      * </ul>
      *
-     * @return Returns Kafka configuration
+     * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
@@ -92,13 +97,22 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());
         kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.app.getUniqueAppId(this.getTopics()));
-        return kafkaConfig;
+        return Collections.unmodifiableMap(kafkaConfig);
     }
 
+    /**
+     * Get topic configuration
+     * @return topic configuration
+     */
     public StreamsTopicConfig getTopics() {
         return this.configuration.getTopics();
     }
 
+    /**
+     * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
+     * @param endpointConfig endpoint to run app on
+     * @return {@code ExecutableProducerApp}
+     */
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);

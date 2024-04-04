@@ -28,15 +28,21 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
+/**
+ * Application that defines how to produce messages to Kafka and necessary configurations
+ */
 @FunctionalInterface
 public interface ProducerApp extends AutoCloseable {
 
+    /**
+     * Called when running the producer
+     * @param builder provides all runtime application configurations
+     */
     void run(ProducerBuilder builder);
-
 
     /**
      * <p>This method should give a default configuration to run your producer application with.</p>
-     * To add a custom configuration, please add a similar method to your custom application class:
+     * To add a custom configuration, add a similar method to your custom application class:
      * <pre>{@code
      *   public Map<String, Object> createKafkaProperties() {
      *       # Try to always use the kafka properties from the super class as base Map
@@ -46,6 +52,13 @@ public interface ProducerApp extends AutoCloseable {
      *       return kafkaConfig;
      *   }
      * }</pre>
+     *
+     * Default configuration configures exactly-once, in-order, and compression:
+     * <pre>
+     * max.in.flight.requests.per.connection=1
+     * acks=all
+     * compression.type=gzip
+     * </pre>
      *
      * @return Returns a default Kafka configuration
      */
@@ -62,8 +75,13 @@ public interface ProducerApp extends AutoCloseable {
         return kafkaConfig;
     }
 
-    default ProducerCleanUpConfigurer setupCleanUp() {
-        return new ProducerCleanUpConfigurer();
+    /**
+     * Configure clean up behavior
+     * @return {@code ProducerCleanUpConfiguration}
+     * @see ProducerCleanUpRunner
+     */
+    default ProducerCleanUpConfiguration setupCleanUp() {
+        return new ProducerCleanUpConfiguration();
     }
 
     @Override

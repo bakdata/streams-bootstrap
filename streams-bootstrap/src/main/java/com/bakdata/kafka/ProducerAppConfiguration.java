@@ -31,11 +31,14 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Configuration of {@link ProducerApp}. This includes {@link ProducerTopicConfig} and Kafka configuration
+ */
 @Builder
 @Value
 public class ProducerAppConfiguration {
     @Builder.Default
     @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
     @Builder.Default
-    @NonNull Map<String, String> kafkaConfig = emptyMap();
+    @NonNull Map<String, Object> kafkaConfig = emptyMap();
 }

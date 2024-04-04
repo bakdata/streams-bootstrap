@@ -25,15 +25,47 @@
 package com.bakdata.kafka;
 
 import java.time.Duration;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import lombok.Builder;
+import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.CloseOptions;
+import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 
+/**
+ * Options to run a Kafka Streams app using {@link StreamsRunner}
+ */
 @Builder
 public class StreamsExecutionOptions {
+    /**
+     * Hook that is called after calling {@link KafkaStreams#start()}
+     */
+    @Builder.Default
+    private final @NonNull Consumer<KafkaStreams> onStart = streams -> {};
+    /**
+     * Configures {@link KafkaStreams#setStateListener(StateListener)}
+     */
+    @Builder.Default
+    private final @NonNull Supplier<StateListener> stateListener = NoOpStateListener::new;
+    /**
+     * Configures {@link KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)}
+     */
+    @Builder.Default
+    private final @NonNull Supplier<StreamsUncaughtExceptionHandler> uncaughtExceptionHandler =
+            DefaultUncaughtExceptionHandler::new;
+    /**
+     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
+     * {@link KafkaStreams#close(CloseOptions)} is called with {@link CloseOptions#leaveGroup(boolean)} disabled
+     */
     @Builder.Default
     private final boolean volatileGroupInstanceId = true;
+    /**
+     * Defines {@link CloseOptions#timeout(Duration)} when calling {@link KafkaStreams#close(CloseOptions)}
+     */
     @Builder.Default
     private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
@@ -41,9 +73,21 @@ public class StreamsExecutionOptions {
         return config.originals().get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
-    public CloseOptions createCloseOptions(final StreamsConfig config) {
+    CloseOptions createCloseOptions(final StreamsConfig config) {
         final boolean staticMembershipDisabled = isStaticMembershipDisabled(config);
         final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
         return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
+    }
+
+    void onStart(final KafkaStreams streams) {
+        this.onStart.accept(streams);
+    }
+
+    StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {
+        return this.uncaughtExceptionHandler.get();
+    }
+
+    StateListener createStateListener() {
+        return this.stateListener.get();
     }
 }

@@ -25,22 +25,35 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+/**
+ * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig} and Kafka configuration
+ * @param <T> type of {@link ProducerApp}
+ */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 public class ExecutableProducerApp<T extends ProducerApp> implements AutoCloseable {
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull T app;
 
+    /**
+     * Create {@code ProducerCleanUpRunner} in order to clean application
+     * @return {@code ProducerCleanUpRunner}
+     */
     public ProducerCleanUpRunner createCleanUpRunner() {
-        final ProducerCleanUpConfigurer configurer = this.app.setupCleanUp();
+        final ProducerCleanUpConfiguration configurer = this.app.setupCleanUp();
         return ProducerCleanUpRunner.create(this.topics, this.kafkaProperties, configurer);
     }
 
+    /**
+     * Create {@code ProducerRunner} in order to run application
+     * @return {@code ProducerRunner}
+     */
     public ProducerRunner createRunner() {
         final ProducerBuilder producerBuilder = ProducerBuilder.builder()
                 .topics(this.topics)

@@ -30,6 +30,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
+/**
+ * A {@link StreamsApp} with a corresponding {@link Topology} and {@link StreamsConfig}
+ * @param <T> type of {@link ProducerApp}
+ */
 @RequiredArgsConstructor
 @Getter
 public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable {
@@ -38,30 +42,32 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
     private final @NonNull StreamsConfig streamsConfig;
     private final @NonNull T app;
 
+    /**
+     * Create {@code StreamsCleanUpRunner} in order to clean application
+     * @return {@code StreamsCleanUpRunner}
+     */
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final StreamsCleanUpConfigurer configurer = this.app.setupCleanUp();
+        final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp();
         return StreamsCleanUpRunner.create(this.topology, this.streamsConfig, configurer);
     }
 
+    /**
+     * Create {@code StreamsRunner} in order to run application with default {@link StreamsExecutionOptions}
+     * @return {@code StreamsRunner}
+     * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig)
+     */
     public StreamsRunner createRunner() {
-        return this.createRunner(StreamsExecutionOptions.builder().build());
+        return new StreamsRunner(this.topology, this.streamsConfig);
     }
 
+    /**
+     * Create {@code StreamsRunner} in order to run application
+     * @param executionOptions options for running Kafka Streams application
+     * @return {@code StreamsRunner}
+     * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig, StreamsExecutionOptions)
+     */
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
-        return this.createRunner(executionOptions, StreamsHooks.builder().build());
-    }
-
-    public StreamsRunner createRunner(final StreamsHooks hooks) {
-        return this.createRunner(StreamsExecutionOptions.builder().build(), hooks);
-    }
-
-    public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions, final StreamsHooks hooks) {
-        return StreamsRunner.builder()
-                .topology(this.topology)
-                .config(this.streamsConfig)
-                .executionOptions(executionOptions)
-                .hooks(hooks)
-                .build();
+        return new StreamsRunner(this.topology, this.streamsConfig, executionOptions);
     }
 
     @Override

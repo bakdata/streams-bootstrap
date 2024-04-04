@@ -168,11 +168,11 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
     /**
      * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
      *
-     * @return {@code StreamsUncaughtExceptionHandler}. {@link ShutdownClientUncaughtExceptionHandler} by default
+     * @return {@code StreamsUncaughtExceptionHandler}. {@link DefaultUncaughtExceptionHandler} by default
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
     protected StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {
-        return new ShutdownClientUncaughtExceptionHandler();
+        return new DefaultUncaughtExceptionHandler();
     }
 
     /**
@@ -185,8 +185,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
 
     private StreamsRunner createRunner(final ExecutableStreamsApp<StreamsApp> app) {
         final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
-        final StreamsHooks hooks = this.createHooks();
-        return app.createRunner(executionOptions, hooks);
+        return app.createRunner(executionOptions);
     }
 
     private RunningApp createRunningApp() {
@@ -198,6 +197,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
     private StreamsExecutionOptions createExecutionOptions() {
         return StreamsExecutionOptions.builder()
                 .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
+                .stateListener(this::createStateListener)
+                .onStart(this::onStreamsStart)
                 .build();
     }
 
@@ -209,8 +211,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
 
     private StreamsAppConfiguration createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
-        final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        final StreamsOptions streamsOptions = this.createStreamsOptions();
+        final Map<String, Object> kafkaConfig = this.getFullKafkaConfig();
+        final StreamsConfigurationOptions streamsOptions = this.createStreamsOptions();
         return StreamsAppConfiguration.builder()
                 .topics(topics)
                 .kafkaConfig(kafkaConfig)
@@ -236,16 +238,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         return configuredStreamsApp.withEndpoint(endpointConfig);
     }
 
-    private StreamsHooks createHooks() {
-        return StreamsHooks.builder()
-                .uncaughtExceptionHandler(this.createUncaughtExceptionHandler())
-                .stateListener(this.createStateListener())
-                .onStart(this::onStreamsStart)
-                .build();
-    }
-
-    private StreamsOptions createStreamsOptions() {
-        return StreamsOptions.builder()
+    private StreamsConfigurationOptions createStreamsOptions() {
+        return StreamsConfigurationOptions.builder()
                 .productive(this.productive)
                 .build();
     }

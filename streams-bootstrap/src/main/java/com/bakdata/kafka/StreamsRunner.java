@@ -24,16 +24,17 @@
 
 package com.bakdata.kafka;
 
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.CloseOptions;
 import org.apache.kafka.streams.KafkaStreams.State;
-import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
+/**
+ * Runs a Kafka Streams application
+ */
 @Slf4j
 public final class StreamsRunner implements AutoCloseable {
 
@@ -41,18 +42,32 @@ public final class StreamsRunner implements AutoCloseable {
     private final @NonNull CapturingStreamsUncaughtExceptionHandler exceptionHandler;
     private final @NonNull StreamsShutdownStateListener shutdownListener;
     private final @NonNull CloseOptions closeOptions;
-    private final @NonNull StreamsHooks hooks;
+    private final @NonNull StreamsExecutionOptions executionOptions;
 
-    @Builder
-    private StreamsRunner(final @NonNull Topology topology, final @NonNull StreamsConfig config,
-            final @NonNull StreamsExecutionOptions executionOptions, final @NonNull StreamsHooks hooks) {
+    /**
+     * Create a {@code StreamsRunner} with default {@link StreamsExecutionOptions}
+     * @param topology topology to be executed
+     * @param config streams configuration
+     */
+    public StreamsRunner(final @NonNull Topology topology, final @NonNull StreamsConfig config) {
+        this(topology, config, StreamsExecutionOptions.builder().build());
+    }
+
+    /**
+     * Create a {@code StreamsRunner}
+     * @param topology topology to be executed
+     * @param config streams configuration
+     * @param options options to customize {@link KafkaStreams} behavior
+     */
+    public StreamsRunner(final @NonNull Topology topology, final @NonNull StreamsConfig config,
+            final @NonNull StreamsExecutionOptions options) {
         this.streams = new KafkaStreams(topology, config);
-        this.exceptionHandler = new CapturingStreamsUncaughtExceptionHandler(hooks.getUncaughtExceptionHandler());
+        this.exceptionHandler = new CapturingStreamsUncaughtExceptionHandler(options.createUncaughtExceptionHandler());
         this.streams.setUncaughtExceptionHandler(this.exceptionHandler);
-        this.shutdownListener = new StreamsShutdownStateListener(hooks.getStateListener());
+        this.shutdownListener = new StreamsShutdownStateListener(options.createStateListener());
         this.streams.setStateListener(this.shutdownListener);
-        this.closeOptions = executionOptions.createCloseOptions(config);
-        this.hooks = hooks;
+        this.closeOptions = options.createCloseOptions(config);
+        this.executionOptions = options;
     }
 
     private static boolean isError(final State newState) {
@@ -61,7 +76,7 @@ public final class StreamsRunner implements AutoCloseable {
 
     /**
      * Run the Streams application. This method blocks until Kafka Streams has completed shutdown, either because it
-     * caught an error or the application has received a shutdown event.
+     * caught an error or {@link #close()} has been called.
      */
     public void run() {
         this.runStreams();
@@ -86,21 +101,13 @@ public final class StreamsRunner implements AutoCloseable {
         }
     }
 
-    /**
-     * Start Kafka Streams and register a ShutdownHook for closing Kafka Streams.
-     */
     private void runStreams() {
         log.info("Starting Kafka Streams");
         this.streams.start();
         log.info("Calling start hook");
-        this.hooks.onStart(this.streams);
+        this.executionOptions.onStart(this.streams);
     }
 
-    /**
-     * Wait for Kafka Streams to shut down. Shutdown is detected by a {@link StateListener}.
-     *
-     * @see State#hasCompletedShutdown()
-     */
     private void awaitStreamsShutdown() {
         try {
             this.shutdownListener.await();

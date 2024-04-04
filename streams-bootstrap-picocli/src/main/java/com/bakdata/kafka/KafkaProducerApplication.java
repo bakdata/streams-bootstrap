@@ -108,7 +108,7 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     private ProducerAppConfiguration createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
-        final Map<String, String> kafkaConfig = this.getKafkaConfig();
+        final Map<String, Object> kafkaConfig = this.getFullKafkaConfig();
         return ProducerAppConfiguration.builder()
                 .topics(topics)
                 .kafkaConfig(kafkaConfig)

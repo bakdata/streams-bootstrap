@@ -26,16 +26,37 @@ package com.bakdata.kafka;
 
 import java.util.Map;
 
-public interface HasTopicHooks<T> {
-    T registerTopicDeletionHook(TopicDeletionHookFactory cleanUpAction);
+/**
+ * Interface for performing actions on topics
+ * @param <SELF> self for chaining
+ */
+@FunctionalInterface
+public interface HasTopicHooks<SELF> {
+    /**
+     * Register a hook that is invoked when performing actions on topics
+     * @param hookFactory factory to create {@link TopicHook} from
+     * @return self for chaining
+     */
+    SELF registerTopicHook(TopicHookFactory hookFactory);
 
-    @FunctionalInterface
-    interface TopicDeletionHook {
-        void deleted(String topic);
+    /**
+     * Hook for performing actions on topics
+     */
+    interface TopicHook {
+        /**
+         * Called when a topic is deleted
+         * @param topic name of the topic
+         */
+        default void deleted(final String topic) {
+            // do nothing
+        }
     }
 
+    /**
+     * Factory to create {@link TopicHook} from Kafka config
+     */
     @FunctionalInterface
-    interface TopicDeletionHookFactory {
-        TopicDeletionHook create(Map<String, Object> kafkaConfig);
+    interface TopicHookFactory {
+        TopicHook create(Map<String, Object> kafkaConfig);
     }
 }

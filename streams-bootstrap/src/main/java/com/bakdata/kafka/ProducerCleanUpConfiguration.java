@@ -34,30 +34,39 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
 
-public class ProducerCleanUpConfigurer implements HasTopicHooks<ProducerCleanUpConfigurer> {
-    private final @NonNull Collection<TopicDeletionHookFactory> topicDeletionHooks = new ArrayList<>();
+/**
+ * Provides configuration options for {@link ProducerCleanUpRunner}
+ */
+public class ProducerCleanUpConfiguration implements HasTopicHooks<ProducerCleanUpConfiguration> {
+    private final @NonNull Collection<TopicHookFactory> topicDeletionHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks = new ArrayList<>();
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
      *
-     * @param cleanUpAction Action to run when a topic requires clean up. Topic is passed as parameter
+     * @param hookFactory Action to run when a topic requires clean up. Topic is passed as parameter
      * @return this for chaining
+     * @see ProducerCleanUpRunner
      */
     @Override
-    public ProducerCleanUpConfigurer registerTopicDeletionHook(final TopicDeletionHookFactory cleanUpAction) {
-        this.topicDeletionHooks.add(cleanUpAction);
+    public ProducerCleanUpConfiguration registerTopicHook(final TopicHookFactory hookFactory) {
+        this.topicDeletionHooks.add(hookFactory);
         return this;
     }
 
-    public ProducerCleanUpConfigurer registerCleanHook(final Consumer<ImprovedAdminClient> action) {
+    /**
+     * Register an action that is executed when {@link ProducerCleanUpRunner#clean()} is called
+     * @param action Action to be executed. {@code ImprovedAdminClient} is provided for interacting with Kafka
+     * @return this for chaining
+     */
+    public ProducerCleanUpConfiguration registerCleanHook(final Consumer<ImprovedAdminClient> action) {
         this.cleanHooks.add(action);
         return this;
     }
 
     ProducerCleanUpHooks create(final Map<String, Object> kafkaConfig) {
         return ProducerCleanUpHooks.builder()
-                .topicDeletionHooks(this.topicDeletionHooks.stream()
+                .topicHooks(this.topicDeletionHooks.stream()
                         .map(t -> t.create(kafkaConfig))
                         .collect(Collectors.toList()))
                 .cleanHooks(this.cleanHooks)
@@ -66,15 +75,15 @@ public class ProducerCleanUpConfigurer implements HasTopicHooks<ProducerCleanUpC
 
     @Builder(access = AccessLevel.PRIVATE)
     static class ProducerCleanUpHooks {
-        private final @NonNull Collection<TopicDeletionHook> topicDeletionHooks;
+        private final @NonNull Collection<TopicHook> topicHooks;
         private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks;
 
-        public void runCleanHooks(final ImprovedAdminClient adminClient) {
+        void runCleanHooks(final ImprovedAdminClient adminClient) {
             this.cleanHooks.forEach(hook -> hook.accept(adminClient));
         }
 
-        public void runTopicDeletionHooks(final String topic) {
-            this.topicDeletionHooks.forEach(hook -> hook.deleted(topic));
+        void runTopicDeletionHooks(final String topic) {
+            this.topicHooks.forEach(hook -> hook.deleted(topic));
         }
     }
 }

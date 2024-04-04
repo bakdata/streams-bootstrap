@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.ProducerCleanUpConfigurer.ProducerCleanUpHooks;
+import com.bakdata.kafka.ProducerCleanUpConfiguration.ProducerCleanUpHooks;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -35,38 +35,48 @@ import org.jooq.lambda.Seq;
 
 
 /**
- * Clean up the state and artifacts of your Kafka Streams app
+ * Delete all output topics specified by a {@link ProducerTopicConfig}
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProducerCleanUpRunner {
-    public static final int RESET_SLEEP_MS = 5000;
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull ProducerCleanUpHooks cleanHooks;
 
+    /**
+     * Create a new {@code ProducerCleanUpRunner} with default {@link ProducerCleanUpConfiguration}
+     *
+     * @param topics topic configuration to infer output topics that require cleaning
+     * @param kafkaProperties configuration to connect to Kafka admin tools
+     * @return {@code ProducerCleanUpRunner}
+     */
     public static ProducerCleanUpRunner create(@NonNull final ProducerTopicConfig topics,
-            @NonNull final Map<String, Object> kafkaProperties, @NonNull final ProducerCleanUpConfigurer cleanHooks) {
-        return new ProducerCleanUpRunner(topics, kafkaProperties, cleanHooks.create(kafkaProperties));
-    }
-
-    static void waitForCleanUp() {
-        try {
-            Thread.sleep(RESET_SLEEP_MS);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new CleanUpException("Error waiting for clean up", e);
-        }
+            @NonNull final Map<String, Object> kafkaProperties) {
+        return create(topics, kafkaProperties, new ProducerCleanUpConfiguration());
     }
 
     /**
-     * Clean up your producer app by deleting the output topics.
+     * Create a new {@code ProducerCleanUpRunner}
+     *
+     * @param topics topic configuration to infer output topics that require cleaning
+     * @param kafkaProperties configuration to connect to Kafka admin tools
+     * @param configuration configuration for hooks that are called when running {@link #clean()}
+     * @return {@code ProducerCleanUpRunner}
+     */
+    public static ProducerCleanUpRunner create(@NonNull final ProducerTopicConfig topics,
+            @NonNull final Map<String, Object> kafkaProperties,
+            @NonNull final ProducerCleanUpConfiguration configuration) {
+        return new ProducerCleanUpRunner(topics, kafkaProperties, configuration.create(kafkaProperties));
+    }
+
+    /**
+     * Delete all output topics
      */
     public void clean() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.clean();
-            waitForCleanUp();
         }
     }
 

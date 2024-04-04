@@ -34,36 +34,50 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
 
-public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpConfigurer> {
-    private final @NonNull Collection<TopicDeletionHookFactory> topicDeletionHooks = new ArrayList<>();
+/**
+ * Provides configuration options for {@link StreamsCleanUpRunner}
+ */
+public class StreamsCleanUpConfiguration implements HasTopicHooks<StreamsCleanUpConfiguration> {
+    private final @NonNull Collection<TopicHookFactory> topicDeletionHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks = new ArrayList<>();
     private final @NonNull Collection<Consumer<ImprovedAdminClient>> resetHooks = new ArrayList<>();
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
      *
-     * @param cleanUpAction Action to run when a topic requires clean up. Topic is passed as parameter
+     * @param hookFactory Action to run when a topic requires clean up. Topic is passed as parameter
      * @return this for chaining
+     * @see StreamsCleanUpRunner
      */
     @Override
-    public StreamsCleanUpConfigurer registerTopicDeletionHook(final TopicDeletionHookFactory cleanUpAction) {
-        this.topicDeletionHooks.add(cleanUpAction);
+    public StreamsCleanUpConfiguration registerTopicHook(final TopicHookFactory hookFactory) {
+        this.topicDeletionHooks.add(hookFactory);
         return this;
     }
 
-    public StreamsCleanUpConfigurer registerCleanHook(final Consumer<ImprovedAdminClient> action) {
+    /**
+     * Register an action that is executed when {@link StreamsCleanUpRunner#clean()} is called
+     * @param action Action to be executed. {@code ImprovedAdminClient} is provided for interacting with Kafka
+     * @return this for chaining
+     */
+    public StreamsCleanUpConfiguration registerCleanHook(final Consumer<ImprovedAdminClient> action) {
         this.cleanHooks.add(action);
         return this;
     }
 
-    public StreamsCleanUpConfigurer registerResetHook(final Consumer<ImprovedAdminClient> action) {
+    /**
+     * Register an action that is executed when {@link StreamsCleanUpRunner#reset()} is called
+     * @param action Action to be executed. {@code ImprovedAdminClient} is provided for interacting with Kafka
+     * @return this for chaining
+     */
+    public StreamsCleanUpConfiguration registerResetHook(final Consumer<ImprovedAdminClient> action) {
         this.resetHooks.add(action);
         return this;
     }
 
     StreamsCleanUpHooks create(final Map<String, Object> kafkaConfig) {
         return StreamsCleanUpHooks.builder()
-                .topicDeletionHooks(this.topicDeletionHooks.stream()
+                .topicHooks(this.topicDeletionHooks.stream()
                         .map(t -> t.create(kafkaConfig))
                         .collect(Collectors.toList()))
                 .cleanHooks(this.cleanHooks)
@@ -73,20 +87,20 @@ public class StreamsCleanUpConfigurer implements HasTopicHooks<StreamsCleanUpCon
 
     @Builder(access = AccessLevel.PRIVATE)
     static class StreamsCleanUpHooks {
-        private final @NonNull Collection<TopicDeletionHook> topicDeletionHooks;
+        private final @NonNull Collection<TopicHook> topicHooks;
         private final @NonNull Collection<Consumer<ImprovedAdminClient>> cleanHooks;
         private final @NonNull Collection<Consumer<ImprovedAdminClient>> resetHooks;
 
-        public void runCleanHooks(final ImprovedAdminClient adminClient) {
+        void runCleanHooks(final ImprovedAdminClient adminClient) {
             this.cleanHooks.forEach(hook -> hook.accept(adminClient));
         }
 
-        public void runResetHooks(final ImprovedAdminClient adminClient) {
+        void runResetHooks(final ImprovedAdminClient adminClient) {
             this.resetHooks.forEach(hook -> hook.accept(adminClient));
         }
 
-        public void runTopicDeletionHooks(final String topic) {
-            this.topicDeletionHooks.forEach(hook -> hook.deleted(topic));
+        void runTopicDeletionHooks(final String topic) {
+            this.topicHooks.forEach(hook -> hook.deleted(topic));
         }
     }
 }

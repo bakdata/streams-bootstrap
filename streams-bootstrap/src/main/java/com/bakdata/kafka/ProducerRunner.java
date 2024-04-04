@@ -27,11 +27,17 @@ package com.bakdata.kafka;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Runs a Kafka Producer application
+ */
 @RequiredArgsConstructor
 public class ProducerRunner {
 
     private final @NonNull Runnable runnable;
 
+    /**
+     * Run the application
+     */
     public void run() {
         this.runnable.run();
     }

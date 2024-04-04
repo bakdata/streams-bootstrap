@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.HasTopicHooks.TopicDeletionHook;
-import com.bakdata.kafka.HasTopicHooks.TopicDeletionHookFactory;
+import com.bakdata.kafka.HasTopicHooks.TopicHook;
+import com.bakdata.kafka.HasTopicHooks.TopicHookFactory;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
@@ -40,9 +40,9 @@ public class LargeMessageKafkaApplicationUtils {
      *
      * @param kafkaProperties Kafka properties to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
-     * @see HasTopicHooks#registerTopicDeletionHook(TopicDeletionHookFactory)
+     * @see HasTopicHooks#registerTopicHook(TopicHookFactory)
      */
-    public static TopicDeletionHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
+    public static TopicHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
         return storer::deleteAllFiles;
@@ -55,7 +55,7 @@ public class LargeMessageKafkaApplicationUtils {
      * @see #createLargeMessageCleanUpHook(Map)
      */
     public static <T> T registerLargeMessageCleanUpHook(final HasTopicHooks<T> cleanUpRunner) {
-        return cleanUpRunner.registerTopicDeletionHook(
+        return cleanUpRunner.registerTopicHook(
                 LargeMessageKafkaApplicationUtils::createLargeMessageCleanUpHook);
     }
 }

@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -33,6 +34,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+/**
+ * A {@link ProducerApp} with a corresponding {@link ProducerAppConfiguration}
+ * @param <T> type of {@link ProducerApp}
+ */
 @RequiredArgsConstructor
 public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseable {
     @Getter
@@ -78,7 +83,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
      *      </li>
      * </ul>
      *
-     * @return Returns Kafka configuration
+     * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
@@ -86,13 +91,24 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
         kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());
-        return kafkaConfig;
+        return Collections.unmodifiableMap(kafkaConfig);
     }
 
+    /**
+     * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
+     * @param endpointConfig endpoint to run app on
+     * @return {@code ExecutableProducerApp}
+     */
     public ExecutableProducerApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        return new ExecutableProducerApp<>(this.getTopics(), this.getKafkaProperties(endpointConfig), this.app);
+        final ProducerTopicConfig topics = this.getTopics();
+        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
+        return new ExecutableProducerApp<>(topics, kafkaProperties, this.app);
     }
 
+    /**
+     * Get topic configuration
+     * @return topic configuration
+     */
     public ProducerTopicConfig getTopics() {
         return this.configuration.getTopics();
     }

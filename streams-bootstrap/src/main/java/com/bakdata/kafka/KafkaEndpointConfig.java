@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
@@ -40,7 +41,12 @@ public class KafkaEndpointConfig {
     private final String schemaRegistryUrl;
 
     /**
-     *
+     * Create Kafka properties to connect to infrastructure.
+     * The following properties are configured:
+     * <ul>
+     *     <li>{@code bootstrap.servers}</li>
+     *     <li>{@code schema.registry.url}</li>
+     * </ul>
      * @return properties used for connecting to Kafka
      */
     public Map<String, String> createKafkaProperties() {
@@ -49,9 +55,13 @@ public class KafkaEndpointConfig {
         if (this.isSchemaRegistryConfigured()) {
             kafkaConfig.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
         }
-        return kafkaConfig;
+        return Collections.unmodifiableMap(kafkaConfig);
     }
 
+    /**
+     * Check if schema registry has been configured
+     * @return true if {@link #schemaRegistryUrl} has been configured
+     */
     public boolean isSchemaRegistryConfigured() {
         return this.schemaRegistryUrl != null;
     }

@@ -35,34 +35,64 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Provides topic configuration for a {@link StreamsApp}
+ */
 @Builder
 @Value
 public class StreamsTopicConfig {
 
     @Builder.Default
     @NonNull List<String> inputTopics = emptyList();
+    /**
+     * Extra input topics that are identified by a role
+     */
     @Builder.Default
     @NonNull Map<String, List<String>> extraInputTopics = emptyMap();
     Pattern inputPattern;
+    /**
+     * Extra input patterns that are identified by a role
+     */
     @Builder.Default
     @NonNull Map<String, Pattern> extraInputPatterns = emptyMap();
     String outputTopic;
+    /**
+     * Extra output topics that are identified by a role
+     */
     @Builder.Default
     @NonNull Map<String, String> extraOutputTopics = emptyMap();
     String errorTopic;
 
+    /**
+     * Get extra input topics for a specified role
+     *
+     * @param role role of extra input topics
+     * @return topic names
+     */
     public List<String> getInputTopics(final String role) {
         final List<String> topics = this.extraInputTopics.get(role);
         Preconditions.checkNotNull(topics, "No input topics for role '%s' available", role);
         return topics;
     }
 
+    /**
+     * Get extra input pattern for a specified role
+     *
+     * @param role role of extra input pattern
+     * @return topic pattern
+     */
     public Pattern getInputPattern(final String role) {
         final Pattern pattern = this.extraInputPatterns.get(role);
         Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
         return pattern;
     }
 
+    /**
+     * Get extra output topic for a specified role
+     *
+     * @param role role of extra output topic
+     * @return topic name
+     */
     public String getOutputTopic(final String role) {
         final String topic = this.extraOutputTopics.get(role);
         Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);

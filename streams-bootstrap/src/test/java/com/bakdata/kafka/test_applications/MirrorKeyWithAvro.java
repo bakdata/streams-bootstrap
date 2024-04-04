@@ -25,7 +25,7 @@
 package com.bakdata.kafka.test_applications;
 
 import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsOptions;
+import com.bakdata.kafka.StreamsConfigurationOptions;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
@@ -50,7 +50,7 @@ public class MirrorKeyWithAvro implements StreamsApp {
     }
 
     @Override
-    public Map<String, Object> createKafkaProperties(final StreamsOptions options) {
+    public Map<String, Object> createKafkaProperties(final StreamsConfigurationOptions options) {
         final Map<String, Object> kafkaConfig = StreamsApp.super.createKafkaProperties(options);
         kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
         kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);

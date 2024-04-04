@@ -30,8 +30,8 @@ package com.bakdata.kafka;
 public interface LargeMessageKafkaProducerApplication extends ProducerApp {
 
     @Override
-    default ProducerCleanUpConfigurer setupCleanUp() {
-        final ProducerCleanUpConfigurer configurer = ProducerApp.super.setupCleanUp();
+    default ProducerCleanUpConfiguration setupCleanUp() {
+        final ProducerCleanUpConfiguration configurer = ProducerApp.super.setupCleanUp();
         return LargeMessageKafkaApplicationUtils.registerLargeMessageCleanUpHook(configurer);
     }
 

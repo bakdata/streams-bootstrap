@@ -27,9 +27,15 @@ package com.bakdata.kafka;
 import lombok.Builder;
 import lombok.Value;
 
+/**
+ * Options to configure {@link StreamsApp#createKafkaProperties(StreamsConfigurationOptions)}
+ */
 @Builder
 @Value
-public class StreamsOptions {
+public class StreamsConfigurationOptions {
 
+    /**
+     * Defines if {@code StreamsApp} should be configured for a productive environment and thus requires resilience
+     */
     boolean productive;
 }

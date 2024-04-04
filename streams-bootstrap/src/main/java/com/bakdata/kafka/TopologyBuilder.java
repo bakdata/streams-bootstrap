@@ -25,8 +25,8 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.Collections;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -35,7 +35,12 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 
-@Builder
+/**
+ * Provides all runtime configurations and supports building a {@link Topology} of a {@link StreamsApp}
+ *
+ * @see StreamsApp#buildTopology(TopologyBuilder)
+ */
+@Builder(access = AccessLevel.PACKAGE)
 @Value
 public class TopologyBuilder {
 
@@ -43,47 +48,103 @@ public class TopologyBuilder {
     @NonNull StreamsTopicConfig topics;
     @NonNull Map<String, Object> kafkaProperties;
 
+    /**
+     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInput(final Consumed<K, V> consumed) {
         return this.streamsBuilder.stream(this.topics.getInputTopics(), consumed);
     }
 
+    /**
+     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInput() {
         return this.streamsBuilder.stream(this.topics.getInputTopics());
     }
 
+    /**
+     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @param role role of extra input topics
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInput(final String role, final Consumed<K, V> consumed) {
         return this.streamsBuilder.stream(this.topics.getInputTopics(role), consumed);
     }
 
+    /**
+     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @param role role of extra input topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInput(final String role) {
         return this.streamsBuilder.stream(this.topics.getInputTopics(role));
     }
 
+    /**
+     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInputPattern(final Consumed<K, V> consumed) {
         return this.streamsBuilder.stream(this.topics.getInputPattern(), consumed);
     }
 
+    /**
+     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInputPattern() {
         return this.streamsBuilder.stream(this.topics.getInputPattern());
     }
 
+    /**
+     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param role role of extra input pattern
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInputPattern(final String role, final Consumed<K, V> consumed) {
         return this.streamsBuilder.stream(this.topics.getInputPattern(role), consumed);
     }
 
+    /**
+     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param role role of extra input pattern
+     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> KStream<K, V> streamInputPattern(final String role) {
         return this.streamsBuilder.stream(this.topics.getInputPattern(role));
     }
 
-    public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.kafkaProperties);
-    }
-
+    /**
+     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * @return {@code ImprovedAdminClient}
+     */
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.create(this.kafkaProperties);
     }
 
-    public Topology build() {
+    Topology build() {
         return this.streamsBuilder.build();
     }
 }

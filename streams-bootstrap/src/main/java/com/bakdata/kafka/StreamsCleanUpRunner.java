@@ -24,9 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.ProducerCleanUpRunner.waitForCleanUp;
-
-import com.bakdata.kafka.StreamsCleanUpConfigurer.StreamsCleanUpHooks;
+import com.bakdata.kafka.StreamsCleanUpConfiguration.StreamsCleanUpHooks;
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
@@ -59,20 +57,35 @@ public final class StreamsCleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
     private final TopologyInformation topologyInformation;
     private final Topology topology;
-    private final @NonNull StreamsAppConfig appConfig;
+    private final @NonNull ImprovedStreamsConfig config;
     private final @NonNull StreamsCleanUpHooks cleanHooks;
 
+    /**
+     * Create a new {@code StreamsCleanUpRunner} with default {@link StreamsCleanUpConfiguration}
+     *
+     * @param topology topology defining the Kafka Streams app
+     * @param streamsConfig configuration to run topology and connect to Kafka admin tools
+     * @return {@code StreamsCleanUpRunner}
+     */
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
-            final @NonNull StreamsConfig kafkaProperties) {
-        return create(topology, kafkaProperties, new StreamsCleanUpConfigurer());
+            final @NonNull StreamsConfig streamsConfig) {
+        return create(topology, streamsConfig, new StreamsCleanUpConfiguration());
     }
 
+    /**
+     * Create a new {@code StreamsCleanUpRunner}
+     *
+     * @param topology topology defining the Kafka Streams app
+     * @param streamsConfig configuration to run topology and connect to Kafka admin tools
+     * @param configuration configuration for hooks that are called when running {@link #clean()} and {@link #reset()}
+     * @return {@code StreamsCleanUpRunner}
+     */
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
-            final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfigurer cleanHooks) {
-        final StreamsAppConfig streamsAppConfig = new StreamsAppConfig(streamsConfig);
-        final TopologyInformation topologyInformation = new TopologyInformation(topology, streamsAppConfig.getAppId());
-        return new StreamsCleanUpRunner(topologyInformation, topology, streamsAppConfig,
-                cleanHooks.create(streamsAppConfig.getKafkaProperties()));
+            final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
+        final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
+        final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
+        final StreamsCleanUpHooks hooks = configuration.create(config.getKafkaProperties());
+        return new StreamsCleanUpRunner(topologyInformation, topology, config, hooks);
     }
 
     /**
@@ -85,7 +98,7 @@ public final class StreamsCleanUpRunner {
      * @param streamsAppConfig configuration properties of the streams app
      */
     public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final Collection<String> allTopics, final StreamsAppConfig streamsAppConfig) {
+            final Collection<String> allTopics, final ImprovedStreamsConfig streamsAppConfig) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final String appId = streamsAppConfig.getAppId();
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
@@ -147,31 +160,31 @@ public final class StreamsCleanUpRunner {
                 .collect(Collectors.toList());
     }
 
-    public Map<String, Object> getKafkaProperties() {
-        return this.appConfig.getKafkaProperties();
-    }
-
     /**
-     * Clean up your Streams app by resetting the app, deleting local state and deleting the output topics
+     * Clean up your Streams app by resetting the app and deleting the output topics
      * and consumer group.
+     * @see #reset()
      */
     public void clean() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.cleanAndReset();
-            waitForCleanUp();
         }
     }
 
     /**
-     * Clean up your Streams app by resetting the app, deleting local state.
+     * Clean up your Streams app by resetting all state stores, consumer group offsets, and internal topics, deleting
+     * local state.
      */
     public void reset() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.reset();
-            waitForCleanUp();
         }
+    }
+
+    private Map<String, Object> getKafkaProperties() {
+        return this.config.getKafkaProperties();
     }
 
     private ImprovedAdminClient createAdminClient() {
@@ -189,7 +202,7 @@ public final class StreamsCleanUpRunner {
                     StreamsCleanUpRunner.this.topologyInformation.getExternalSourceTopics(allTopics);
             final List<String> intermediateTopics =
                     StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
-            runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.appConfig);
+            runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.config);
             // the StreamsResetter is responsible for deleting internal topics
             StreamsCleanUpRunner.this.topologyInformation.getInternalTopics()
                     .forEach(this::resetInternalTopic);
@@ -237,7 +250,7 @@ public final class StreamsCleanUpRunner {
 
         private void deleteConsumerGroup() {
             final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.appConfig.getAppId());
+            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.config.getAppId());
         }
     }
 

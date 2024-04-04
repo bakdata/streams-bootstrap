@@ -37,7 +37,7 @@ public class StreamsAppConfiguration {
     @Builder.Default
     @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
     @Builder.Default
-    @NonNull Map<String, String> kafkaConfig = emptyMap();
+    @NonNull Map<String, Object> kafkaConfig = emptyMap();
     @Builder.Default
-    @NonNull StreamsOptions options = StreamsOptions.builder().build();
+    @NonNull StreamsConfigurationOptions options = StreamsConfigurationOptions.builder().build();
 }

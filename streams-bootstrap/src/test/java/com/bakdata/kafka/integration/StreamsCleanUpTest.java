@@ -618,7 +618,7 @@
 //        return this.setupAppWithSr(new ComplexTopologyApplication() {
 //            @Override
 //            protected void cleanUpRun(final StreamsCleanUpRunner cleanUpRunner) {
-//                cleanUpRunner.registerTopicDeletionHook(StreamsCleanUpTest.this.topicCleanUpHook);
+//                cleanUpRunner.registerTopicHook(StreamsCleanUpTest.this.topicCleanUpHook);
 //                super.cleanUpRun(cleanUpRunner);
 //            }
 //        }, "input", "output", "value_error");

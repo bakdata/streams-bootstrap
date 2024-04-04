@@ -24,26 +24,16 @@
 
 package com.bakdata.kafka;
 
-import java.util.function.Consumer;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 
-@Builder
-public class StreamsHooks {
-    @Builder.Default
-    private final @NonNull Consumer<KafkaStreams> onStart = streams -> {};
-    @Getter
-    @Builder.Default
-    private final @NonNull KafkaStreams.StateListener stateListener = new NoOpStateListener();
-    @Getter
-    @Builder.Default
-    private final @NonNull StreamsUncaughtExceptionHandler uncaughtExceptionHandler =
-            new ShutdownClientUncaughtExceptionHandler();
-
-    public void onStart(final KafkaStreams streams) {
-        this.onStart.accept(streams);
+/**
+ * {@code StreamsUncaughtExceptionHandler} that does not handle the exception and responds with
+ * {@link org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse#SHUTDOWN_CLIENT}. Mimics default behavior of {@link org.apache.kafka.streams.KafkaStreams} if no {@code StreamsUncaughtExceptionHandler} has been configured.
+ * @see org.apache.kafka.streams.KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
+ */
+class DefaultUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
+    @Override
+    public StreamThreadExceptionResponse handle(final Throwable e) {
+        return StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
     }
 }

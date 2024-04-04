@@ -25,28 +25,56 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.Collections;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.common.serialization.Serializer;
 
-@Builder
+/**
+ * Provides all runtime configurations when running a {@link ProducerApp}
+ *
+ * @see ProducerApp#run(ProducerBuilder)
+ */
+@Builder(access = AccessLevel.PACKAGE)
 @Value
 public class ProducerBuilder {
 
     @NonNull ProducerTopicConfig topics;
     @NonNull Map<String, Object> kafkaProperties;
 
-    public <K, V> KafkaProducer<K, V> createProducer() {
+    /**
+     * Create a new {@code Producer} using {@link #kafkaProperties}
+     * @return {@code Producer}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see KafkaProducer#KafkaProducer(Map)
+     */
+    public <K, V> Producer<K, V> createProducer() {
         return new KafkaProducer<>(this.kafkaProperties);
     }
 
-    public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.kafkaProperties);
+    /**
+     * Create a new {@code Producer} using {@link #kafkaProperties} and provided {@code Serializers}
+     * @param keySerializer {@code Serializer} to use for keys
+     * @param valueSerializer {@code Serializer} to use for values
+     * @return {@code Producer}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see KafkaProducer#KafkaProducer(Map, Serializer, Serializer)
+     */
+    public <K, V> Producer<K, V> createProducer(final Serializer<K> keySerializer,
+            final Serializer<V> valueSerializer) {
+        return new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
     }
 
+    /**
+     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * @return {@code ImprovedAdminClient}
+     */
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.create(this.kafkaProperties);
     }
