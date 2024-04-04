@@ -34,6 +34,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 @FunctionalInterface
 public interface ProducerApp extends AutoCloseable {
 
+    default void setup(final ProducerAppSetupConfiguration configuration) {
+        // do nothing by default
+    }
+
     /**
      * Called when running the producer
      * @param builder provides all runtime application configurations

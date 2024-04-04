@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -134,14 +133,6 @@ public class TopologyBuilder {
      */
     public <K, V> KStream<K, V> streamInputPattern(final String role) {
         return this.streamsBuilder.stream(this.topics.getInputPattern(role));
-    }
-
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
     }
 
     Topology build() {

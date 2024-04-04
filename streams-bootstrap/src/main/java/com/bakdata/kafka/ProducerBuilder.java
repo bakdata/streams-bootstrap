@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -69,13 +68,5 @@ public class ProducerBuilder {
     public <K, V> Producer<K, V> createProducer(final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer) {
         return new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
-    }
-
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
     }
 }

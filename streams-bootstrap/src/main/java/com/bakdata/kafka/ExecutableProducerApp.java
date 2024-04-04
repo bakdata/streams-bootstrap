@@ -59,11 +59,20 @@ public class ExecutableProducerApp<T extends ProducerApp> implements AutoCloseab
                 .topics(this.topics)
                 .kafkaProperties(this.kafkaProperties)
                 .build();
+        this.setup();
         return new ProducerRunner(() -> this.app.run(producerBuilder));
     }
 
     @Override
     public void close() {
         this.app.close();
+    }
+
+    private void setup() {
+        final ProducerAppSetupConfiguration configuration = ProducerAppSetupConfiguration.builder()
+                .topics(this.topics)
+                .kafkaProperties(this.kafkaProperties)
+                .build();
+        this.app.setup(configuration);
     }
 }

@@ -24,9 +24,10 @@
 
 package com.bakdata.kafka;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
@@ -34,13 +35,18 @@ import org.apache.kafka.streams.Topology;
  * A {@link StreamsApp} with a corresponding {@link Topology} and {@link StreamsConfig}
  * @param <T> type of {@link ProducerApp}
  */
-@RequiredArgsConstructor
+@Builder(access = AccessLevel.PACKAGE)
 @Getter
 public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable {
 
+    @Getter
     private final @NonNull Topology topology;
+    @Getter
     private final @NonNull StreamsConfig streamsConfig;
+    @Getter
     private final @NonNull T app;
+    @Builder.Default
+    private final @NonNull Runnable setup = () -> {};
 
     /**
      * Create {@code StreamsCleanUpRunner} in order to clean application
@@ -67,6 +73,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig, StreamsExecutionOptions)
      */
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
+        this.setup.run();
         return new StreamsRunner(this.topology, this.streamsConfig, executionOptions);
     }
 

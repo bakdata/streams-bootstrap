@@ -116,7 +116,12 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);
-        return new ExecutableStreamsApp<>(topology, new StreamsConfig(kafkaProperties), this.app);
+        return ExecutableStreamsApp.<T>builder()
+                .topology(topology)
+                .streamsConfig(new StreamsConfig(kafkaProperties))
+                .app(this.app)
+                .setup(() -> this.setupApp(kafkaProperties))
+                .build();
     }
 
     /**
@@ -137,6 +142,14 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
     @Override
     public void close() {
         this.app.close();
+    }
+
+    private void setupApp(final Map<String, Object> kafkaProperties) {
+        final StreamsAppSetupConfiguration configuration = StreamsAppSetupConfiguration.builder()
+                .kafkaProperties(kafkaProperties)
+                .topics(this.getTopics())
+                .build();
+        this.app.setup(configuration);
     }
 
 }
