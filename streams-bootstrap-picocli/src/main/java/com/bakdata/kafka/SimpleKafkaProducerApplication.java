@@ -28,6 +28,9 @@ import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * {@code KafkaProducerApplication} without any additional configuration options.
+ */
 @RequiredArgsConstructor
 public class SimpleKafkaProducerApplication extends KafkaProducerApplication {
     private final @NonNull Supplier<ProducerApp> appFactory;

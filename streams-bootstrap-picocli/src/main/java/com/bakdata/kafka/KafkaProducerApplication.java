@@ -35,12 +35,10 @@ import picocli.CommandLine.Command;
 
 
 /**
- * <p>The base class of the entry point of a producer application.</p>
- * This class provides common configuration options, e.g., {@link #brokers}, for producer applications. Hereby it
- * automatically populates the passed in command line arguments with matching environment arguments
- * {@link EnvironmentArgumentsParser}. To implement your producer application inherit from this class and add your
- * custom options. Call {@link #startApplication(KafkaApplication, String[])} with a fresh instance of your class from
- * your main.
+ * <p>The base class for creating Kafka Producer applications.</p>
+ * This class provides all configuration options provided by {@link KafkaApplication}.
+ * To implement your Kafka Producer application inherit from this class and add your custom options. Run it by
+ * calling {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
  */
 @ToString(callSuper = true)
 @Getter
@@ -54,6 +52,10 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     // concurrently iterating on #runners and removing from #runners
     private ConcurrentLinkedDeque<ExecutableProducerApp<ProducerApp>> runningApps = new ConcurrentLinkedDeque<>();
 
+    /**
+     * Run the application.
+     * @see ProducerRunner#run()
+     */
     @Override
     public void run() {
         try (final ExecutableProducerApp<ProducerApp> app = this.createExecutableApp()) {
@@ -64,6 +66,9 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         }
     }
 
+    /**
+     * Delete all output topics associated with the Kafka Producer application.
+     */
     @Command(description = "Delete all output topics associated with the Kafka Producer application.")
     @Override
     public void clean() {
@@ -73,13 +78,35 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
         }
     }
 
-    public ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
+    /**
+     * @see #stop()
+     */
+    @Override
+    public void close() {
+        super.close();
+        this.stop();
+    }
+
+    /**
+     * Stop all applications that have been started by {@link #run()}.
+     */
+    public void stop() {
+        this.runningApps.forEach(ExecutableProducerApp::close);
+    }
+
+    /**
+     * Create a new {@code ProducerApp} that will be configured and executed according to this application.
+     * @return {@code ProducerApp}
+     */
+    protected abstract ProducerApp createApp();
+
+    private ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
         final ProducerApp producerApp = this.createApp();
         final ProducerAppConfiguration configuration = this.createConfiguration();
         return new ConfiguredProducerApp<>(producerApp, configuration);
     }
 
-    public ProducerAppConfiguration createConfiguration() {
+    private ProducerAppConfiguration createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
         return ProducerAppConfiguration.builder()
@@ -88,23 +115,11 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
                 .build();
     }
 
-    public ProducerTopicConfig createTopicConfig() {
+    private ProducerTopicConfig createTopicConfig() {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())
                 .extraOutputTopics(this.getExtraOutputTopics())
                 .build();
-    }
-
-    public abstract ProducerApp createApp();
-
-    @Override
-    public void close() {
-        super.close();
-        this.stop();
-    }
-
-    public void stop() {
-        this.runningApps.forEach(ExecutableProducerApp::close);
     }
 
     private ExecutableProducerApp<ProducerApp> createExecutableApp() {

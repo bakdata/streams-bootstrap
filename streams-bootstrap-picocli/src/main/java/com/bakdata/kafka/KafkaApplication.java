@@ -44,11 +44,19 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ParseResult;
 
 /**
- * <p>The base class of the entry point of the Kafka application.</p>
- * This class provides common configuration options, e.g., {@link #brokers}, for Kafka applications. Hereby it
- * automatically populates the passed in command line arguments with matching environment arguments
- * {@link EnvironmentArgumentsParser}. To implement your Kafka application inherit from this class and add your custom
- * options.
+ * <p>The base class for creating Kafka applications.</p>
+ * This class provides the following configuration options:
+ * <ul>
+ *     <li>{@link #brokers}</li>
+ *     <li>{@link #outputTopic}</li>
+ *     <li>{@link #extraOutputTopics}</li>
+ *     <li>{@link #brokers}</li>
+ *     <li>{@link #debug}</li>
+ *     <li>{@link #schemaRegistryUrl}</li>
+ *     <li>{@link #kafkaConfig}</li>
+ * </ul>
+ * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
+ * {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
  */
 @ToString
 @Getter
@@ -110,6 +118,9 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
         return allArgs.toArray(String[]::new);
     }
 
+    /**
+     * Clean all resources associated with this application
+     */
     public abstract void clean();
 
     @Override
@@ -117,11 +128,19 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
         // do nothing by default
     }
 
+    /**
+     * Configure application when running in debug mode. By default, Log4j2 log level is configured to debug for
+     * {@code com.bakdata} and the applications package.
+     */
     protected void configureDebug() {
         Configurator.setLevel("com.bakdata", Level.DEBUG);
         Configurator.setLevel(this.getClass().getPackageName(), Level.DEBUG);
     }
 
+    /**
+     * Create {@code KafkaEndpointConfig} specified by {@link #brokers} and {@link #schemaRegistryUrl}
+     * @return {@code KafkaEndpointConfig}
+     */
     protected KafkaEndpointConfig getEndpointConfig() {
         return KafkaEndpointConfig.builder()
                 .brokers(this.brokers)

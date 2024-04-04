@@ -45,12 +45,19 @@ import picocli.CommandLine.UseDefaultConverter;
 
 
 /**
- * <p>The base class of the entry point of the streaming application.</p>
- * This class provides common configuration options e.g. {@link #brokers}, {@link #productive} for streaming
- * application. Hereby it automatically populates the passed in command line arguments with matching environment
- * arguments {@link EnvironmentArgumentsParser}. To implement your streaming application inherit from this class and add
- * your custom options. Call {@link #startApplication(KafkaApplication, String[])} with a fresh instance of your class
- * from your main.
+ * <p>The base class for creating Kafka Streams applications.</p>
+ * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
+ * <ul>
+ *     <li>{@link #inputTopics}</li>
+ *     <li>{@link #inputPattern}</li>
+ *     <li>{@link #errorTopic}</li>
+ *     <li>{@link #extraInputTopics}</li>
+ *     <li>{@link #extraInputPatterns}</li>
+ *     <li>{@link #productive}</li>
+ *     <li>{@link #volatileGroupInstanceId}</li>
+ * </ul>
+ * To implement your Kafka Streams application inherit from this class and add your custom options. Run it by calling
+ * {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
  */
 @ToString(callSuper = true)
 @Getter
@@ -83,8 +90,8 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
     private ConcurrentLinkedDeque<RunningApp> runningApps = new ConcurrentLinkedDeque<>();
 
     /**
-     * Run the application. If Kafka Streams is run, this method blocks until Kafka Streams has completed shutdown,
-     * either because it caught an error or the application has received a shutdown event.
+     * Run the application.
+     * @see StreamsRunner#run()
      */
     @Override
     public void run() {
@@ -95,10 +102,17 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         }
     }
 
-    public void stop() {
+    /**
+     * Stop all applications that have been started by {@link #run()}.
+     */
+    public final void stop() {
         this.runningApps.forEach(RunningApp::close);
     }
 
+    /**
+     * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
+     * topics associated with the Kafka Streams application.
+     */
     @Command(
             description = "Reset the Kafka Streams application. Additionally, delete the consumer group and all "
                           + "output and intermediate topics associated with the Kafka Streams application.")
@@ -110,12 +124,19 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         }
     }
 
+    /**
+     * @see #stop()
+     */
     @Override
     public void close() {
         super.close();
         this.stop();
     }
 
+    /**
+     * Clear all state stores, consumer group offsets, and internal topics associated with the Kafka Streams
+     * application.
+     */
     @Command(
             description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
                           + "Kafka Streams application.")
@@ -126,7 +147,43 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         }
     }
 
-    public StreamsRunner createRunner(final ExecutableStreamsApp<StreamsApp> app) {
+    /**
+     * Create a new {@code StreamsApp} that will be configured and executed according to this application.
+     * @param cleanUp whether {@code StreamsApp} is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return {@code StreamsApp}
+     */
+    protected abstract StreamsApp createApp(boolean cleanUp);
+
+    /**
+     * Create a {@link StateListener} to use for Kafka Streams.
+     *
+     * @return {@code StateListener}. {@link NoOpStateListener} by default
+     * @see KafkaStreams#setStateListener(StateListener)
+     */
+    protected StateListener createStateListener() {
+        return new NoOpStateListener();
+    }
+
+    /**
+     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
+     *
+     * @return {@code StreamsUncaughtExceptionHandler}. {@link ShutdownClientUncaughtExceptionHandler} by default
+     * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
+     */
+    protected StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {
+        return new ShutdownClientUncaughtExceptionHandler();
+    }
+
+    /**
+     * Called after starting Kafka Streams
+     * @param streams running {@code KafkaStreams} instance
+     */
+    protected void onStreamsStart(final KafkaStreams streams) {
+        // do nothing by default
+    }
+
+    private StreamsRunner createRunner(final ExecutableStreamsApp<StreamsApp> app) {
         final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
         final StreamsHooks hooks = this.createHooks();
         return app.createRunner(executionOptions, hooks);
@@ -138,11 +195,58 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         return new RunningApp(app, runner);
     }
 
-    public abstract StreamsApp createApp(boolean cleanUp);
-
-    public StreamsExecutionOptions createExecutionOptions() {
+    private StreamsExecutionOptions createExecutionOptions() {
         return StreamsExecutionOptions.builder()
                 .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .build();
+    }
+
+    private ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
+        final StreamsApp streamsApp = this.createApp(cleanUp);
+        final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
+        return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);
+    }
+
+    private StreamsAppConfiguration createConfiguration() {
+        final StreamsTopicConfig topics = this.createTopicConfig();
+        final Map<String, String> kafkaConfig = this.getKafkaConfig();
+        final StreamsOptions streamsOptions = this.createStreamsOptions();
+        return StreamsAppConfiguration.builder()
+                .topics(topics)
+                .kafkaConfig(kafkaConfig)
+                .options(streamsOptions)
+                .build();
+    }
+
+    private StreamsTopicConfig createTopicConfig() {
+        return StreamsTopicConfig.builder()
+                .inputTopics(this.inputTopics)
+                .extraInputTopics(this.extraInputTopics)
+                .inputPattern(this.inputPattern)
+                .extraInputPatterns(this.extraInputPatterns)
+                .outputTopic(this.getOutputTopic())
+                .extraOutputTopics(this.getExtraOutputTopics())
+                .errorTopic(this.errorTopic)
+                .build();
+    }
+
+    private ExecutableStreamsApp<StreamsApp> createExecutableApp(final boolean cleanUp) {
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp(cleanUp);
+        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
+        return configuredStreamsApp.withEndpoint(endpointConfig);
+    }
+
+    private StreamsHooks createHooks() {
+        return StreamsHooks.builder()
+                .uncaughtExceptionHandler(this.createUncaughtExceptionHandler())
+                .stateListener(this.createStateListener())
+                .onStart(this::onStreamsStart)
+                .build();
+    }
+
+    private StreamsOptions createStreamsOptions() {
+        return StreamsOptions.builder()
+                .productive(this.productive)
                 .build();
     }
 
@@ -161,78 +265,5 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         private void run() {
             this.runner.run();
         }
-    }
-
-    public ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
-        final StreamsApp streamsApp = this.createApp(cleanUp);
-        final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
-        return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);
-    }
-
-    public StreamsAppConfiguration createConfiguration() {
-        final StreamsTopicConfig topics = this.createTopicConfig();
-        final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        final StreamsOptions streamsOptions = this.createStreamsOptions();
-        return StreamsAppConfiguration.builder()
-                .topics(topics)
-                .kafkaConfig(kafkaConfig)
-                .options(streamsOptions)
-                .build();
-    }
-
-    public StreamsTopicConfig createTopicConfig() {
-        return StreamsTopicConfig.builder()
-                .inputTopics(this.inputTopics)
-                .extraInputTopics(this.extraInputTopics)
-                .inputPattern(this.inputPattern)
-                .extraInputPatterns(this.extraInputPatterns)
-                .outputTopic(this.getOutputTopic())
-                .extraOutputTopics(this.getExtraOutputTopics())
-                .errorTopic(this.errorTopic)
-                .build();
-    }
-
-    public ExecutableStreamsApp<StreamsApp> createExecutableApp(final boolean cleanUp) {
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp(cleanUp);
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return configuredStreamsApp.withEndpoint(endpointConfig);
-    }
-
-    /**
-     * Create a {@link StateListener} to use for Kafka Streams.
-     *
-     * @return {@code StateListener}.
-     * @see KafkaStreams#setStateListener(StateListener)
-     */
-    protected StateListener getStateListener() {
-        return new NoOpStateListener();
-    }
-
-    /**
-     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
-     *
-     * @return {@code StreamsUncaughtExceptionHandler}.
-     * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
-     */
-    protected StreamsUncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return new DefaultStreamsUncaughtExceptionHandler();
-    }
-
-    protected void onStreamsStart(final KafkaStreams streams) {
-        // do nothing by default
-    }
-
-    private StreamsHooks createHooks() {
-        return StreamsHooks.builder()
-                .uncaughtExceptionHandler(this.getUncaughtExceptionHandler())
-                .stateListener(this.getStateListener())
-                .onStart(this::onStreamsStart)
-                .build();
-    }
-
-    private StreamsOptions createStreamsOptions() {
-        return StreamsOptions.builder()
-                .productive(this.productive)
-                .build();
     }
 }

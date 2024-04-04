@@ -41,7 +41,7 @@ public class StreamsHooks {
     @Getter
     @Builder.Default
     private final @NonNull StreamsUncaughtExceptionHandler uncaughtExceptionHandler =
-            new DefaultStreamsUncaughtExceptionHandler();
+            new ShutdownClientUncaughtExceptionHandler();
 
     public void onStart(final KafkaStreams streams) {
         this.onStart.accept(streams);

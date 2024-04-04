@@ -32,10 +32,10 @@ import picocli.CommandLine.ITypeConverter;
  * Converter for lists inside collection type parsed by PicoCLI. List members need to be separated by {@code ;}
  */
 public class StringListConverter implements ITypeConverter<List<String>> {
-    private static final Splitter TOPIC_SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
+    private static final Splitter SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
 
     @Override
     public List<String> convert(final String value) {
-        return TOPIC_SPLITTER.splitToList(value);
+        return SPLITTER.splitToList(value);
     }
 }
