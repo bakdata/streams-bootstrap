@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class ExecutableProducerApp<T extends ProducerApp> {
+public class ExecutableProducerApp<T extends ProducerApp> implements AutoCloseable {
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull T app;
@@ -47,5 +47,10 @@ public class ExecutableProducerApp<T extends ProducerApp> {
                 .kafkaProperties(this.kafkaProperties)
                 .build();
         return new ProducerRunner(() -> this.app.run(producerBuilder));
+    }
+
+    @Override
+    public void close() {
+        this.app.close();
     }
 }

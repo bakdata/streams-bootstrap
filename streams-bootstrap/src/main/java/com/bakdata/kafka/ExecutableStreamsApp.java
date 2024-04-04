@@ -32,15 +32,15 @@ import org.apache.kafka.streams.Topology;
 
 @RequiredArgsConstructor
 @Getter
-public class ExecutableStreamsApp<T extends StreamsApp> {
+public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable {
 
     private final @NonNull Topology topology;
-    private final @NonNull StreamsConfig kafkaProperties;
+    private final @NonNull StreamsConfig streamsConfig;
     private final @NonNull T app;
 
     public StreamsCleanUpRunner createCleanUpRunner() {
         final StreamsCleanUpConfigurer configurer = this.app.setupCleanUp();
-        return StreamsCleanUpRunner.create(this.topology, this.kafkaProperties, configurer);
+        return StreamsCleanUpRunner.create(this.topology, this.streamsConfig, configurer);
     }
 
     public StreamsRunner createRunner() {
@@ -58,10 +58,14 @@ public class ExecutableStreamsApp<T extends StreamsApp> {
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions, final StreamsHooks hooks) {
         return StreamsRunner.builder()
                 .topology(this.topology)
-                .config(this.kafkaProperties)
+                .config(this.streamsConfig)
                 .executionOptions(executionOptions)
                 .hooks(hooks)
                 .build();
     }
 
+    @Override
+    public void close() {
+        this.app.close();
+    }
 }

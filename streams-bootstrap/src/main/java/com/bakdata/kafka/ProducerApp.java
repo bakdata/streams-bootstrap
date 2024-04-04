@@ -28,7 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-public interface ProducerApp {
+@FunctionalInterface
+public interface ProducerApp extends AutoCloseable {
 
     void run(ProducerBuilder builder);
 
@@ -63,5 +64,10 @@ public interface ProducerApp {
 
     default ProducerCleanUpConfigurer setupCleanUp() {
         return new ProducerCleanUpConfigurer();
+    }
+
+    @Override
+    default void close() {
+        // do nothing by default
     }
 }

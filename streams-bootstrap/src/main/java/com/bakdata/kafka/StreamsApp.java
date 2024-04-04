@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
-public interface StreamsApp {
+public interface StreamsApp extends AutoCloseable {
     int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
 
     /**
@@ -82,5 +82,10 @@ public interface StreamsApp {
 
     default StreamsCleanUpConfigurer setupCleanUp() {
         return new StreamsCleanUpConfigurer();
+    }
+
+    @Override
+    default void close() {
+        // do nothing by default
     }
 }

@@ -68,8 +68,8 @@ public final class StreamsCleanUpRunner {
     }
 
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
-            final @NonNull StreamsConfig kafkaProperties, final @NonNull StreamsCleanUpConfigurer cleanHooks) {
-        final StreamsAppConfig streamsAppConfig = new StreamsAppConfig(kafkaProperties);
+            final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfigurer cleanHooks) {
+        final StreamsAppConfig streamsAppConfig = new StreamsAppConfig(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, streamsAppConfig.getAppId());
         return new StreamsCleanUpRunner(topologyInformation, topology, streamsAppConfig,
                 cleanHooks.create(streamsAppConfig.getKafkaProperties()));

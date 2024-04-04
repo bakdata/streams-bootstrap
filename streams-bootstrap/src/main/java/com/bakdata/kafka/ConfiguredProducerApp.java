@@ -34,7 +34,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 @RequiredArgsConstructor
-public class ConfiguredProducerApp<T extends ProducerApp> {
+public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseable {
     @Getter
     private final @NonNull T app;
     private final @NonNull ProducerAppConfiguration configuration;
@@ -97,4 +97,8 @@ public class ConfiguredProducerApp<T extends ProducerApp> {
         return this.configuration.getTopics();
     }
 
+    @Override
+    public void close() {
+        this.app.close();
+    }
 }

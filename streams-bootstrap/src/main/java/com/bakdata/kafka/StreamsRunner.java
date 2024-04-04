@@ -92,7 +92,6 @@ public final class StreamsRunner implements AutoCloseable {
     private void runStreams() {
         log.info("Starting Kafka Streams");
         this.streams.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         log.info("Calling start hook");
         this.hooks.onStart(this.streams);
     }

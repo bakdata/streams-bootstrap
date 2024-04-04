@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -79,7 +80,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
     @ToString.Exclude
     // ConcurrentLinkedDeque required because calling #close() causes asynchronous #run() calls to finish and thus
     // concurrently iterating on #runners and removing from #runners
-    private ConcurrentLinkedDeque<StreamsRunner> runners = new ConcurrentLinkedDeque<>();
+    private ConcurrentLinkedDeque<RunningApp> runningApps = new ConcurrentLinkedDeque<>();
 
     /**
      * Run the application. If Kafka Streams is run, this method blocks until Kafka Streams has completed shutdown,
@@ -87,10 +88,25 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
      */
     @Override
     public void run() {
-        try (final StreamsRunner runner = this.createRunner()) {
-            this.runners.add(runner);
-            runner.run();
-            this.runners.remove(runner);
+        try (final RunningApp runningApp = this.createRunningApp()) {
+            this.runningApps.add(runningApp);
+            runningApp.run();
+            this.runningApps.remove(runningApp);
+        }
+    }
+
+    public void stop() {
+        this.runningApps.forEach(RunningApp::close);
+    }
+
+    @Command(
+            description = "Reset the Kafka Streams application. Additionally, delete the consumer group and all "
+                          + "output and intermediate topics associated with the Kafka Streams application.")
+    @Override
+    public void clean() {
+        try (final ExecutableStreamsApp<StreamsApp> app = this.createExecutableApp(true)) {
+            final StreamsCleanUpRunner runner = app.createCleanUpRunner();
+            runner.clean();
         }
     }
 
@@ -100,25 +116,26 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         this.stop();
     }
 
-    public void stop() {
-        this.runners.forEach(StreamsRunner::close);
-    }
-
-    @Command(
-            description = "Reset the Kafka Streams application. Additionally, delete the consumer group and all "
-                          + "output and intermediate topics associated with the Kafka Streams application.")
-    @Override
-    public void clean() {
-        final StreamsCleanUpRunner runner = this.createCleanUpRunner();
-        runner.clean();
-    }
-
     @Command(
             description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
                           + "Kafka Streams application.")
     public void reset() {
-        final StreamsCleanUpRunner runner = this.createCleanUpRunner();
-        runner.reset();
+        try (final ExecutableStreamsApp<StreamsApp> app = this.createExecutableApp(true)) {
+            final StreamsCleanUpRunner runner = app.createCleanUpRunner();
+            runner.reset();
+        }
+    }
+
+    public StreamsRunner createRunner(final ExecutableStreamsApp<StreamsApp> app) {
+        final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
+        final StreamsHooks hooks = this.createHooks();
+        return app.createRunner(executionOptions, hooks);
+    }
+
+    private RunningApp createRunningApp() {
+        final ExecutableStreamsApp<StreamsApp> app = this.createExecutableApp(false);
+        final StreamsRunner runner = this.createRunner(app);
+        return new RunningApp(app, runner);
     }
 
     public abstract StreamsApp createApp(boolean cleanUp);
@@ -129,16 +146,21 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
                 .build();
     }
 
-    public StreamsRunner createRunner() {
-        final ExecutableStreamsApp<StreamsApp> executableStreamsApp = this.createExecutableApp(false);
-        final StreamsExecutionOptions executionOptions = this.createExecutionOptions();
-        final StreamsHooks hooks = this.createHooks();
-        return executableStreamsApp.createRunner(executionOptions, hooks);
-    }
+    @RequiredArgsConstructor
+    private static class RunningApp implements AutoCloseable {
+        private final @NonNull ExecutableStreamsApp<StreamsApp> app;
+        private final @NonNull StreamsRunner runner;
 
-    public StreamsCleanUpRunner createCleanUpRunner() {
-        final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(true);
-        return executableApp.createCleanUpRunner();
+        @Override
+        public void close() {
+            this.runner.close();
+            // close app after streams because messages currently processed might depend on resources
+            this.app.close();
+        }
+
+        private void run() {
+            this.runner.run();
+        }
     }
 
     public ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {

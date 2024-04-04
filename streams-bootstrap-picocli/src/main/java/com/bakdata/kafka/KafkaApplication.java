@@ -96,7 +96,7 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
     public static int startApplicationWithoutExit(final KafkaApplication app, final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final CommandLine commandLine = new CommandLine(app)
-                .setExecutionStrategy(app::executionStrategy);
+                .setExecutionStrategy(app::execute);
         return commandLine.execute(populatedArgs);
     }
 
@@ -129,16 +129,17 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
                 .build();
     }
 
-    private void configureCommand() {
+    private void startApplication() {
         log.info("Starting application");
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         if (this.debug) {
             this.configureDebug();
         }
         log.debug("Starting application: {}", this);
     }
 
-    private int executionStrategy(final ParseResult parseResult) {
-        this.configureCommand();
+    private int execute(final ParseResult parseResult) {
+        this.startApplication();
         final int exitCode = new CommandLine.RunLast().execute(parseResult);
         this.close();
         return exitCode;

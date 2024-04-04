@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -48,18 +49,28 @@ import picocli.CommandLine.Command;
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
 public abstract class KafkaProducerApplication extends KafkaApplication {
+    @ToString.Exclude
+    // ConcurrentLinkedDeque required because calling #close() causes asynchronous #run() calls to finish and thus
+    // concurrently iterating on #runners and removing from #runners
+    private ConcurrentLinkedDeque<ExecutableProducerApp<ProducerApp>> runningApps = new ConcurrentLinkedDeque<>();
 
     @Override
     public void run() {
-        final ProducerRunner runner = this.createRunner();
-        runner.run();
+        try (final ExecutableProducerApp<ProducerApp> app = this.createExecutableApp()) {
+            this.runningApps.add(app);
+            final ProducerRunner runner = app.createRunner();
+            runner.run();
+            this.runningApps.remove(app);
+        }
     }
 
     @Command(description = "Delete all output topics associated with the Kafka Producer application.")
     @Override
     public void clean() {
-        final ProducerCleanUpRunner cleanUpRunner = this.createCleanUpRunner();
-        cleanUpRunner.clean();
+        try (final ExecutableProducerApp<ProducerApp> app = this.createExecutableApp()) {
+            final ProducerCleanUpRunner cleanUpRunner = app.createCleanUpRunner();
+            cleanUpRunner.clean();
+        }
     }
 
     public ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
@@ -86,14 +97,14 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
 
     public abstract ProducerApp createApp();
 
-    public ProducerRunner createRunner() {
-        final ExecutableProducerApp<ProducerApp> executableApp = this.createExecutableApp();
-        return executableApp.createRunner();
+    @Override
+    public void close() {
+        super.close();
+        this.stop();
     }
 
-    public ProducerCleanUpRunner createCleanUpRunner() {
-        final ExecutableProducerApp<ProducerApp> executableApp = this.createExecutableApp();
-        return executableApp.createCleanUpRunner();
+    public void stop() {
+        this.runningApps.forEach(ExecutableProducerApp::close);
     }
 
     private ExecutableProducerApp<ProducerApp> createExecutableApp() {

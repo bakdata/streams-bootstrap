@@ -35,7 +35,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 @RequiredArgsConstructor
-public class ConfiguredStreamsApp<T extends StreamsApp> {
+public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable {
     @Getter
     private final @NonNull T app;
     private final @NonNull StreamsAppConfiguration configuration;
@@ -118,6 +118,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> {
                 .build();
         this.app.buildTopology(topologyBuilder);
         return topologyBuilder.build();
+    }
+
+    @Override
+    public void close() {
+        this.app.close();
     }
 
 }

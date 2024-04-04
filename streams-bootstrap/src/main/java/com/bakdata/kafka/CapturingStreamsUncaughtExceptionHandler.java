@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 
 @RequiredArgsConstructor
-public class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
+class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
 
     private final @NonNull StreamsUncaughtExceptionHandler wrapped;
     private Throwable lastException;
@@ -41,7 +41,7 @@ public class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaught
         return response;
     }
 
-    public void throwException() {
+    void throwException() {
         if (this.lastException instanceof RuntimeException) {
             throw (RuntimeException) this.lastException;
         }
