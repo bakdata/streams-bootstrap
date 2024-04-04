@@ -45,7 +45,12 @@ public class LargeMessageKafkaApplicationUtils {
     public static TopicHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
-        return storer::deleteAllFiles;
+        return new TopicHook() {
+            @Override
+            public void deleted(final String topic) {
+                storer.deleteAllFiles(topic);
+            }
+        };
     }
 
     /**
