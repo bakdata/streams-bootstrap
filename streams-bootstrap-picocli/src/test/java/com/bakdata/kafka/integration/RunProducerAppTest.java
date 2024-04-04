@@ -42,7 +42,7 @@ import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -72,7 +72,7 @@ class RunProducerAppTest {
         final KafkaProducerApplication app = new SimpleKafkaProducerApplication(() -> new ProducerApp() {
             @Override
             public void run(final ProducerBuilder builder) {
-                try (final KafkaProducer<String, TestRecord> producer = builder.createProducer()) {
+                try (final Producer<String, TestRecord> producer = builder.createProducer()) {
                     final TestRecord record = TestRecord.newBuilder().setContent("bar").build();
                     producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", record));
                 }
