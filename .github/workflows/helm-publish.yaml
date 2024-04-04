@@ -2,8 +2,6 @@ name: Publish Helm Charts
 
 on:
   push:
-    tags:
-      - "**"
 
 jobs:
   get-gradle-version:
