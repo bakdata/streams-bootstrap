@@ -58,6 +58,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.MissingSourceTopicException;
 import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
@@ -96,6 +97,7 @@ class RunStreamsAppTest {
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
         final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
                 .kafkaConfig(Map.of(
+                        StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                         ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
                 ))
                 .topics(topics)
