@@ -32,11 +32,31 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Map;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredProducerAppTest {
 
     @Test
     void shouldPrioritizeConfigCLIParameters() {
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), ProducerAppConfiguration.builder()
+                        .kafkaConfig(Map.of(
+                                "foo", "baz",
+                                "kafka", "streams"
+                        ))
+                        .build());
+        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .build()))
+                .containsEntry("foo", "baz")
+                .containsEntry("kafka", "streams")
+                .containsEntry("hello", "world");
+    }
+
+    @Test
+    @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
+    @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
+    void shouldPrioritizeEnvironmentConfigs() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), ProducerAppConfiguration.builder()
                         .kafkaConfig(Map.of(

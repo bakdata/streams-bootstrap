@@ -28,6 +28,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -114,8 +115,17 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
         kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());
-        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.app.getUniqueAppId(this.getTopics()));
+        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
         return Collections.unmodifiableMap(kafkaConfig);
+    }
+
+    /**
+     * Get unique application identifier of {@code StreamsApp}
+     * @return unique application identifier
+     * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
+     */
+    public String getUniqueAppId() {
+        return Objects.requireNonNull(this.app.getUniqueAppId(this.getTopics()));
     }
 
     /**
@@ -136,7 +146,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
         final Topology topology = this.createTopology(kafkaProperties);
         return ExecutableStreamsApp.<T>builder()
                 .topology(topology)
-                .streamsConfig(new StreamsConfig(kafkaProperties))
+                .config(new StreamsConfig(kafkaProperties))
                 .app(this.app)
                 .setup(() -> this.setupApp(kafkaProperties))
                 .build();

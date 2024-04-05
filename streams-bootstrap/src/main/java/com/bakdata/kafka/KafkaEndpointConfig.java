@@ -49,7 +49,7 @@ public class KafkaEndpointConfig {
      * </ul>
      * @return properties used for connecting to Kafka
      */
-    public Map<String, String> createKafkaProperties() {
+    public Map<String, Object> createKafkaProperties() {
         final Map<String, String> kafkaConfig = new HashMap<>();
         kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
         if (this.isSchemaRegistryConfigured()) {

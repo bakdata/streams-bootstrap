@@ -29,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 
 public class StreamsExecutionOptionsTest {
@@ -38,7 +37,7 @@ public class StreamsExecutionOptionsTest {
     void shouldLeaveGroup() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
                 .build();
-        assertThat(options.shouldLeaveGroup(new StreamsConfig(emptyMap()))).isTrue();
+        assertThat(options.shouldLeaveGroup(emptyMap())).isTrue();
     }
 
     @Test
@@ -46,9 +45,9 @@ public class StreamsExecutionOptionsTest {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
                 .volatileGroupInstanceId(false)
                 .build();
-        assertThat(options.shouldLeaveGroup(new StreamsConfig(Map.of(
+        assertThat(options.shouldLeaveGroup(Map.of(
                 ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
-        )))).isFalse();
+        ))).isFalse();
     }
 
     @Test
@@ -56,8 +55,8 @@ public class StreamsExecutionOptionsTest {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
                 .volatileGroupInstanceId(true)
                 .build();
-        assertThat(options.shouldLeaveGroup(new StreamsConfig(Map.of(
+        assertThat(options.shouldLeaveGroup(Map.of(
                 ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
-        )))).isTrue();
+        ))).isTrue();
     }
 }

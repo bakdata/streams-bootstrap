@@ -27,7 +27,6 @@ package com.bakdata.kafka.integration;
 import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +36,6 @@ import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsAppConfiguration;
-import com.bakdata.kafka.StreamsAppConfiguration.StreamsAppConfigurationBuilder;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -65,14 +63,21 @@ import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
 import org.apache.kafka.streams.kstream.KStream;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(SoftAssertionsExtension.class)
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class RunStreamsAppTest {
     private static final int TIMEOUT_SECONDS = 10;
     private EmbeddedKafkaCluster kafkaCluster;
@@ -80,17 +85,22 @@ class RunStreamsAppTest {
     private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
     @Mock
     private StateListener stateListener;
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
-    private static StreamsAppConfigurationBuilder newConfiguration() {
-        return StreamsAppConfiguration.builder()
-                .kafkaConfig(Map.of(
-                        ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-                ));
-    }
-
-    private static void run(final StreamsRunner runner) {
+    static void run(final StreamsRunner runner) {
         // run in Thread because the application blocks indefinitely
         new Thread(runner::run).start();
+    }
+
+    static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
+        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
+                .kafkaConfig(Map.of(
+                        ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+                ))
+                .topics(topics)
+                .build();
+        return new ConfiguredStreamsApp<>(app, configuration);
     }
 
     @BeforeEach
@@ -125,7 +135,7 @@ class RunStreamsAppTest {
                             .build();
             this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
+            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .build()))
@@ -159,7 +169,7 @@ class RunStreamsAppTest {
                             .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .build());
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
+            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .build()))
@@ -187,8 +197,8 @@ class RunStreamsAppTest {
             thread.setUncaughtExceptionHandler(handler);
             thread.start();
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(thread.isAlive()).isFalse();
-            assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
+            this.softly.assertThat(thread.isAlive()).isFalse();
+            this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
         }
@@ -221,20 +231,17 @@ class RunStreamsAppTest {
                             .build();
             this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(thread.isAlive()).isFalse();
-            assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
-                    .satisfies(e -> assertThat(e.getCause()).hasMessage("Error in map"));
+            this.softly.assertThat(thread.isAlive()).isFalse();
+            this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
+                    .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
         }
     }
 
     private ExecutableStreamsApp<StreamsApp> setupApp(final StreamsApp app, final StreamsTopicConfig topics) {
-        final StreamsAppConfiguration configuration = newConfiguration()
-                .topics(topics)
-                .build();
-        final ConfiguredStreamsApp<StreamsApp> appConfiguredStreamsApp = new ConfiguredStreamsApp<>(app, configuration);
-        return appConfiguredStreamsApp.withEndpoint(KafkaEndpointConfig.builder()
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = configureApp(app, topics);
+        return configuredApp.withEndpoint(KafkaEndpointConfig.builder()
                 .brokers(this.kafkaCluster.getBrokerList())
                 .build());
     }

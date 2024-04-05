@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.time.Duration;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.Builder;
@@ -70,18 +71,18 @@ public class StreamsExecutionOptions {
     @Builder.Default
     private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
-    private static boolean isStaticMembershipDisabled(final StreamsConfig config) {
-        return config.originals().get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
+    private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
+        return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
     CloseOptions createCloseOptions(final StreamsConfig config) {
-        final boolean leaveGroup = this.shouldLeaveGroup(config);
+        final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
         return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
     }
 
     @VisibleForTesting
-    boolean shouldLeaveGroup(final StreamsConfig config) {
-        final boolean staticMembershipDisabled = isStaticMembershipDisabled(config);
+    boolean shouldLeaveGroup(final Map<String, Object> originals) {
+        final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
         return staticMembershipDisabled || this.volatileGroupInstanceId;
     }
 

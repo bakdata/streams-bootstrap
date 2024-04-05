@@ -42,7 +42,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
     @Getter
     private final @NonNull Topology topology;
     @Getter
-    private final @NonNull StreamsConfig streamsConfig;
+    private final @NonNull StreamsConfig config;
     @Getter
     private final @NonNull T app;
     @Builder.Default
@@ -54,7 +54,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      */
     public StreamsCleanUpRunner createCleanUpRunner() {
         final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp();
-        return StreamsCleanUpRunner.create(this.topology, this.streamsConfig, configurer);
+        return StreamsCleanUpRunner.create(this.topology, this.config, configurer);
     }
 
     /**
@@ -63,7 +63,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig)
      */
     public StreamsRunner createRunner() {
-        return new StreamsRunner(this.topology, this.streamsConfig);
+        return new StreamsRunner(this.topology, this.config);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      */
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
         this.setup.run();
-        return new StreamsRunner(this.topology, this.streamsConfig, executionOptions);
+        return new StreamsRunner(this.topology, this.config, executionOptions);
     }
 
     @Override
