@@ -74,10 +74,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
      *          Configs provided by {@link StreamsApp#createKafkaProperties(StreamsConfigurationOptions)}
      *      </li>
      *      <li>
-     *          Configs provided by {@link StreamsAppConfiguration#getKafkaConfig()}
+     *          Configs provided via environment variables (see
+     *          {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *      </li>
      *      <li>
-     *          Environment variables {see @{link {@link EnvironmentKafkaConfigParser#parseVariables(Map)}}}
+     *          Configs provided by {@link StreamsAppConfiguration#getKafkaConfig()}
      *      </li>
      *      <li>
      *          Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
@@ -93,8 +94,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
         kafkaConfig.putAll(this.app.createKafkaProperties(this.configuration.getOptions()));
-        kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
+        kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());
         kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.app.getUniqueAppId(this.getTopics()));
         return Collections.unmodifiableMap(kafkaConfig);

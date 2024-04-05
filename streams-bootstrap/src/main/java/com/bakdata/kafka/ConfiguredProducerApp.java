@@ -73,10 +73,11 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
      *          Configs provided by {@link ProducerApp#createKafkaProperties()}
      *      </li>
      *      <li>
-     *          Configs provided by {@link ProducerAppConfiguration#getKafkaConfig()}
+     *          Configs provided via environment variables (see
+     *          {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *      </li>
      *      <li>
-     *          Environment variables {see @{link {@link EnvironmentKafkaConfigParser#parseVariables(Map)}}}
+     *          Configs provided by {@link ProducerAppConfiguration#getKafkaConfig()}
      *      </li>
      *      <li>
      *          Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
@@ -88,8 +89,8 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
         kafkaConfig.putAll(this.app.createKafkaProperties());
-        kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
+        kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());
         return Collections.unmodifiableMap(kafkaConfig);
     }
