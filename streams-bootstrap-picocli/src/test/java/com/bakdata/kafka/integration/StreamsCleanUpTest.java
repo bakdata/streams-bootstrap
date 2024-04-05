@@ -29,6 +29,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
 
+import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.WordCount;
@@ -42,6 +43,7 @@ import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendValuesTransactional;
+import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
@@ -68,7 +70,7 @@ class StreamsCleanUpTest {
 
     private static void runAppAndClose(final KafkaStreamsApplication app) throws InterruptedException {
         runApp(app);
-        app.close();
+        app.stop();
     }
 
     private static void runApp(final KafkaStreamsApplication app) throws InterruptedException {
@@ -144,6 +146,34 @@ class StreamsCleanUpTest {
         }
     }
 
+    @Test
+    void shouldCallClose() throws InterruptedException {
+        try (final CloseFlagApp app = this.createCloseFlagApplication()) {
+            this.kafkaCluster.createTopic(TopicConfig.withName(app.getInputTopics().get(0)).useDefaults());
+            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            this.softly.assertThat(app.isClosed()).isFalse();
+            this.softly.assertThat(app.isAppClosed()).isFalse();
+            // if we don't run the app, the coordinator will be unavailable
+            runAppAndClose(app);
+            this.softly.assertThat(app.isAppClosed()).isTrue();
+            app.setAppClosed(false);
+            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            app.clean();
+            this.softly.assertThat(app.isAppClosed()).isTrue();
+            app.setAppClosed(false);
+            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            app.reset();
+            this.softly.assertThat(app.isAppClosed()).isTrue();
+        }
+    }
+
+    private CloseFlagApp createCloseFlagApplication() {
+        final CloseFlagApp app = new CloseFlagApp();
+        app.setInputTopics(List.of("input"));
+        app.setOutputTopic("output");
+        return this.configure(app);
+    }
+
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
         final ReadKeyValues<String, Long> readRequest = ReadKeyValues.from(outputTopic, Long.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class).build();
@@ -164,12 +194,16 @@ class StreamsCleanUpTest {
     private KafkaStreamsApplication createWordCountApplication() {
         final KafkaStreamsApplication application = new SimpleKafkaStreamsApplication(WordCount::new);
         application.setOutputTopic("word_output");
+        application.setInputTopics(List.of("word_input"));
+        return this.configure(application);
+    }
+
+    private <T extends KafkaStreamsApplication> T configure(final T application) {
         application.setBrokers(this.kafkaCluster.getBrokerList());
         application.setKafkaConfig(Map.of(
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
-        application.setInputTopics(List.of("word_input"));
         return application;
     }
 

@@ -263,7 +263,7 @@ class CliTest {
 
     @Test
     void shouldParseArguments() {
-        final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+        try (final KafkaStreamsApplication app = new KafkaStreamsApplication() {
             @Override
             public StreamsApp createApp(final boolean cleanUp) {
                 return new StreamsApp() {
@@ -283,39 +283,40 @@ class CliTest {
             public void run() {
                 // do nothing
             }
-        };
-        KafkaApplication.startApplicationWithoutExit(app, new String[]{
-                "--brokers", "brokers",
-                "--schema-registry-url", "schema-registry",
-                "--input-topics", "input1,input2",
-                "--extra-input-topics", "role1=input3,role2=input4;input5",
-                "--input-pattern", ".*",
-                "--extra-input-patterns", "role1=.+,role2=\\d+",
-                "--output-topic", "output1",
-                "--extra-output-topics", "role1=output2,role2=output3",
-                "--kafka-config", "foo=1,bar=2",
-        });
-        assertThat(app.getInputTopics()).containsExactly("input1", "input2");
-        assertThat(app.getExtraInputTopics())
-                .hasSize(2)
-                .containsEntry("role1", List.of("input3"))
-                .containsEntry("role2", List.of("input4", "input5"));
-        assertThat(app.getInputPattern())
-                .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
-        assertThat(app.getExtraInputPatterns())
-                .hasSize(2)
-                .hasEntrySatisfying("role1",
-                        pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
-                .hasEntrySatisfying("role2",
-                        pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
-        assertThat(app.getOutputTopic()).isEqualTo("output1");
-        assertThat(app.getExtraOutputTopics())
-                .hasSize(2)
-                .containsEntry("role1", "output2")
-                .containsEntry("role2", "output3");
-        assertThat(app.getKafkaConfig())
-                .hasSize(2)
-                .containsEntry("foo", "1")
-                .containsEntry("bar", "2");
+        }) {
+            KafkaApplication.startApplicationWithoutExit(app, new String[]{
+                    "--brokers", "brokers",
+                    "--schema-registry-url", "schema-registry",
+                    "--input-topics", "input1,input2",
+                    "--extra-input-topics", "role1=input3,role2=input4;input5",
+                    "--input-pattern", ".*",
+                    "--extra-input-patterns", "role1=.+,role2=\\d+",
+                    "--output-topic", "output1",
+                    "--extra-output-topics", "role1=output2,role2=output3",
+                    "--kafka-config", "foo=1,bar=2",
+            });
+            assertThat(app.getInputTopics()).containsExactly("input1", "input2");
+            assertThat(app.getExtraInputTopics())
+                    .hasSize(2)
+                    .containsEntry("role1", List.of("input3"))
+                    .containsEntry("role2", List.of("input4", "input5"));
+            assertThat(app.getInputPattern())
+                    .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
+            assertThat(app.getExtraInputPatterns())
+                    .hasSize(2)
+                    .hasEntrySatisfying("role1",
+                            pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
+                    .hasEntrySatisfying("role2",
+                            pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
+            assertThat(app.getOutputTopic()).isEqualTo("output1");
+            assertThat(app.getExtraOutputTopics())
+                    .hasSize(2)
+                    .containsEntry("role1", "output2")
+                    .containsEntry("role2", "output3");
+            assertThat(app.getKafkaConfig())
+                    .hasSize(2)
+                    .containsEntry("foo", "1")
+                    .containsEntry("bar", "2");
+        }
     }
 }

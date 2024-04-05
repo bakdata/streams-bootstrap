@@ -136,10 +136,17 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     /**
-     * Stop all applications that have been started by {@link #run()}.
+     * @see #stop()
      */
     @Override
     public void close() {
+        this.stop();
+    }
+
+    /**
+     * Stop all applications that have been started by {@link #run()}.
+     */
+    public void stop() {
         this.runningApps.forEach(RunningApp::close);
     }
 
