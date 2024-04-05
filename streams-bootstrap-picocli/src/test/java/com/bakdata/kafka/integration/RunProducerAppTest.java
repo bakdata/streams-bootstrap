@@ -80,9 +80,9 @@ class RunProducerAppTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                final Map<String, Object> kafkaProperties = ProducerApp.super.createKafkaProperties();
-                kafkaProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-                return kafkaProperties;
+                return Map.of(
+                        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class
+                );
             }
         })) {
             app.setBrokers(this.kafkaCluster.getBrokerList());

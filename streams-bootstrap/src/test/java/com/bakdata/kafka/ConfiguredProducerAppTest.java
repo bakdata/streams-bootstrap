@@ -86,10 +86,10 @@ class ConfiguredProducerAppTest {
 
         @Override
         public Map<String, Object> createKafkaProperties() {
-            final Map<String, Object> properties = ProducerApp.super.createKafkaProperties();
-            properties.put("foo", "bar");
-            properties.put("hello", "world");
-            return properties;
+            return Map.of(
+                    "foo", "bar",
+                    "hello", "world"
+            );
         }
     }
 }
