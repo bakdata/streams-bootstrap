@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.bakdata.kafka.KafkaProducerApplication;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
+import com.bakdata.kafka.ProducerRunnable;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -71,11 +72,13 @@ class RunProducerAppTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         try (final KafkaProducerApplication app = new SimpleKafkaProducerApplication(() -> new ProducerApp() {
             @Override
-            public void run(final ProducerBuilder builder) {
-                try (final Producer<String, TestRecord> producer = builder.createProducer()) {
-                    final TestRecord record = TestRecord.newBuilder().setContent("bar").build();
-                    producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", record));
-                }
+            public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+                return () -> {
+                    try (final Producer<String, TestRecord> producer = builder.createProducer()) {
+                        final TestRecord record = TestRecord.newBuilder().setContent("bar").build();
+                        producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", record));
+                    }
+                };
             }
 
             @Override

@@ -65,7 +65,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
     }
 
     /**
-     * <p>This method creates the configuration to run a {@link StreamsApp}.</p>
+     * <p>This method creates the configuration to run a {@link ProducerApp}.</p>
      * Configuration is created in the following order
      * <ul>
      *     <li>

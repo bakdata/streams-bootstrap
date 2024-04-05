@@ -32,7 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -64,7 +66,7 @@ import picocli.CommandLine.ParseResult;
 @RequiredArgsConstructor
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
-public abstract class KafkaApplication implements Runnable, AutoCloseable {
+public abstract class KafkaApplication<O> implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
@@ -78,6 +80,10 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
     private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = new HashMap<>();
+    @ToString.Exclude
+    // ConcurrentLinkedDeque required because calling #close() causes asynchronous #run() calls to finish and thus
+    // concurrently iterating on #runners and removing from #runners
+    private ConcurrentLinkedDeque<RunningApp<Runner>> runningApps = new ConcurrentLinkedDeque<>();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
@@ -88,7 +94,7 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
      * @param args Arguments passed in by the custom application class.
      * @see #startApplicationWithoutExit(KafkaApplication, String[])
      */
-    public static void startApplication(final KafkaApplication app, final String[] args) {
+    public static void startApplication(final KafkaApplication<?> app, final String[] args) {
         final int exitCode = startApplicationWithoutExit(app, args);
         System.exit(exitCode);
     }
@@ -101,7 +107,7 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
-    public static int startApplicationWithoutExit(final KafkaApplication app, final String[] args) {
+    public static int startApplicationWithoutExit(final KafkaApplication<?> app, final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final CommandLine commandLine = new CommandLine(app)
                 .setExecutionStrategy(app::execute);
@@ -121,11 +127,31 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
     /**
      * Clean all resources associated with this application
      */
-    public abstract void clean();
+    public void clean() {
+        try (final ExecutableApp<?, ? extends CleanUpRunner, ?> app = this.createExecutableApp(true)) {
+            final CleanUpRunner cleanUpRunner = app.createCleanUpRunner();
+            cleanUpRunner.clean();
+        }
+    }
 
+    /**
+     * Stop all applications that have been started by {@link #run()}.
+     */
     @Override
     public void close() {
-        // do nothing by default
+        this.runningApps.forEach(RunningApp::close);
+    }
+
+    /**
+     * Run the application.
+     */
+    @Override
+    public void run() {
+        try (final RunningApp<Runner> runningApp = this.createRunningApp()) {
+            this.runningApps.add(runningApp);
+            runningApp.run();
+            this.runningApps.remove(runningApp);
+        }
     }
 
     /**
@@ -148,6 +174,10 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
                 .build();
     }
 
+    protected abstract ExecutableApp<? extends Runner, ? extends CleanUpRunner, O> createExecutableApp(boolean cleanUp);
+
+    protected abstract O createExecutionOptions();
+
     private void startApplication() {
         log.info("Starting application");
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
@@ -162,5 +192,29 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
         final int exitCode = new CommandLine.RunLast().execute(parseResult);
         this.close();
         return exitCode;
+    }
+
+    private RunningApp<Runner> createRunningApp() {
+        final ExecutableApp<? extends Runner, ?, O> app = this.createExecutableApp(false);
+        final O executionOptions = this.createExecutionOptions();
+        final Runner runner = app.createRunner(executionOptions);
+        return new RunningApp<>(app, runner);
+    }
+
+    @RequiredArgsConstructor
+    private static class RunningApp<T extends Runner> implements AutoCloseable {
+        private final @NonNull ExecutableApp<? extends T, ?, ?> app;
+        private final @NonNull T runner;
+
+        @Override
+        public void close() {
+            this.runner.close();
+            // close app after runner because messages currently processed might depend on resources
+            this.app.close();
+        }
+
+        private void run() {
+            this.runner.run();
+        }
     }
 }

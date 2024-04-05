@@ -36,7 +36,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-public class ExecutableProducerApp<T extends ProducerApp> implements AutoCloseable {
+public class ExecutableProducerApp<T extends ProducerApp>
+        implements ExecutableApp<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions> {
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull T app;
@@ -45,6 +46,7 @@ public class ExecutableProducerApp<T extends ProducerApp> implements AutoCloseab
      * Create {@code ProducerCleanUpRunner} in order to clean application
      * @return {@code ProducerCleanUpRunner}
      */
+    @Override
     public ProducerCleanUpRunner createCleanUpRunner() {
         final ProducerCleanUpConfiguration configurer = this.app.setupCleanUp();
         return ProducerCleanUpRunner.create(this.topics, this.kafkaProperties, configurer);
@@ -54,13 +56,19 @@ public class ExecutableProducerApp<T extends ProducerApp> implements AutoCloseab
      * Create {@code ProducerRunner} in order to run application
      * @return {@code ProducerRunner}
      */
+    @Override
     public ProducerRunner createRunner() {
+        return this.createRunner(ProducerExecutionOptions.builder().build());
+    }
+
+    @Override
+    public ProducerRunner createRunner(final ProducerExecutionOptions options) {
         final ProducerBuilder producerBuilder = ProducerBuilder.builder()
                 .topics(this.topics)
                 .kafkaProperties(this.kafkaProperties)
                 .build();
         this.setup();
-        return new ProducerRunner(() -> this.app.run(producerBuilder));
+        return new ProducerRunner(this.app.buildRunnable(producerBuilder));
     }
 
     @Override

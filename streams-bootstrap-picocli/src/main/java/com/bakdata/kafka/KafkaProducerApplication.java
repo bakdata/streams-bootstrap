@@ -25,7 +25,6 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -46,24 +45,14 @@ import picocli.CommandLine.Command;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
-public abstract class KafkaProducerApplication extends KafkaApplication {
-    @ToString.Exclude
-    // ConcurrentLinkedDeque required because calling #close() causes asynchronous #run() calls to finish and thus
-    // concurrently iterating on #runners and removing from #runners
-    private ConcurrentLinkedDeque<ExecutableProducerApp<ProducerApp>> runningApps = new ConcurrentLinkedDeque<>();
+public abstract class KafkaProducerApplication extends KafkaApplication<ProducerExecutionOptions> {
 
     /**
-     * Run the application.
      * @see ProducerRunner#run()
      */
     @Override
     public void run() {
-        try (final ExecutableProducerApp<ProducerApp> app = this.createExecutableApp()) {
-            this.runningApps.add(app);
-            final ProducerRunner runner = app.createRunner();
-            runner.run();
-            this.runningApps.remove(app);
-        }
+        super.run();
     }
 
     /**
@@ -72,36 +61,29 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
     @Command(description = "Delete all output topics associated with the Kafka Producer application.")
     @Override
     public void clean() {
-        try (final ExecutableProducerApp<ProducerApp> app = this.createExecutableApp()) {
-            final ProducerCleanUpRunner cleanUpRunner = app.createCleanUpRunner();
-            cleanUpRunner.clean();
-        }
-    }
-
-    /**
-     * @see #stop()
-     */
-    @Override
-    public void close() {
-        super.close();
-        this.stop();
-    }
-
-    /**
-     * Stop all applications that have been started by {@link #run()}.
-     */
-    public void stop() {
-        this.runningApps.forEach(ExecutableProducerApp::close);
+        super.clean();
     }
 
     /**
      * Create a new {@code ProducerApp} that will be configured and executed according to this application.
      * @return {@code ProducerApp}
      */
-    protected abstract ProducerApp createApp();
+    protected abstract ProducerApp createApp(boolean cleanUp);
 
-    private ConfiguredProducerApp<ProducerApp> createConfiguredApp() {
-        final ProducerApp producerApp = this.createApp();
+    @Override
+    protected ExecutableProducerApp<ProducerApp> createExecutableApp(final boolean cleanUp) {
+        final ConfiguredProducerApp<ProducerApp> app = this.createConfiguredApp(cleanUp);
+        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
+        return app.withEndpoint(endpointConfig);
+    }
+
+    @Override
+    protected ProducerExecutionOptions createExecutionOptions() {
+        return ProducerExecutionOptions.builder().build();
+    }
+
+    private ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
+        final ProducerApp producerApp = this.createApp(cleanUp);
         final ProducerAppConfiguration configuration = this.createConfiguration();
         return new ConfiguredProducerApp<>(producerApp, configuration);
     }
@@ -120,11 +102,5 @@ public abstract class KafkaProducerApplication extends KafkaApplication {
                 .outputTopic(this.getOutputTopic())
                 .extraOutputTopics(this.getExtraOutputTopics())
                 .build();
-    }
-
-    private ExecutableProducerApp<ProducerApp> createExecutableApp() {
-        final ConfiguredProducerApp<ProducerApp> app = this.createConfiguredApp();
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return app.withEndpoint(endpointConfig);
     }
 }

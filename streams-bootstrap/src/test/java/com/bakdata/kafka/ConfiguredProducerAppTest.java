@@ -100,7 +100,7 @@ class ConfiguredProducerAppTest {
     private static class TestProducer implements ProducerApp {
 
         @Override
-        public void run(final ProducerBuilder builder) {
+        public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
             throw new UnsupportedOperationException();
         }
 

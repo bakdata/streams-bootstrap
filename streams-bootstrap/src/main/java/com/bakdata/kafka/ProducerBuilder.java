@@ -36,7 +36,7 @@ import org.apache.kafka.common.serialization.Serializer;
 /**
  * Provides all runtime configurations when running a {@link ProducerApp}
  *
- * @see ProducerApp#run(ProducerBuilder)
+ * @see ProducerApp#buildRunnable(ProducerBuilder)
  */
 @Builder(access = AccessLevel.PACKAGE)
 @Value

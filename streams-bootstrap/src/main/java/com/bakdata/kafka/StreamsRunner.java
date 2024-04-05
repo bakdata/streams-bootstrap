@@ -36,7 +36,7 @@ import org.apache.kafka.streams.Topology;
  * Runs a Kafka Streams application
  */
 @Slf4j
-public final class StreamsRunner implements AutoCloseable {
+public final class StreamsRunner implements Runner {
 
     private final @NonNull KafkaStreams streams;
     private final @NonNull CapturingStreamsUncaughtExceptionHandler exceptionHandler;
@@ -78,6 +78,7 @@ public final class StreamsRunner implements AutoCloseable {
      * Run the Streams application. This method blocks until Kafka Streams has completed shutdown, either because it
      * caught an error or {@link #close()} has been called.
      */
+    @Override
     public void run() {
         this.runStreams();
         this.awaitStreamsShutdown();

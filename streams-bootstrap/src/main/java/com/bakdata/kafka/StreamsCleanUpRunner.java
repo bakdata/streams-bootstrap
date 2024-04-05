@@ -53,7 +53,7 @@ import org.apache.kafka.tools.StreamsResetter;
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StreamsCleanUpRunner {
+public final class StreamsCleanUpRunner implements CleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
     private final TopologyInformation topologyInformation;
     private final Topology topology;
@@ -165,6 +165,7 @@ public final class StreamsCleanUpRunner {
      * and consumer group.
      * @see #reset()
      */
+    @Override
     public void clean() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);

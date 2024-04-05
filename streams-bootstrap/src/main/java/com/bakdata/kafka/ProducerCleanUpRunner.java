@@ -39,7 +39,7 @@ import org.jooq.lambda.Seq;
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProducerCleanUpRunner {
+public final class ProducerCleanUpRunner implements CleanUpRunner {
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull ProducerCleanUpHooks cleanHooks;
@@ -73,6 +73,7 @@ public final class ProducerCleanUpRunner {
     /**
      * Delete all output topics
      */
+    @Override
     public void clean() {
         try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);

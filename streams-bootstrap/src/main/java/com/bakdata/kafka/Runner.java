@@ -24,24 +24,16 @@
 
 package com.bakdata.kafka;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Runs a Kafka Producer application
+ * Interface for running applications
  */
-@RequiredArgsConstructor
-public class ProducerRunner implements Runner {
-
-    private final @NonNull ProducerRunnable runnable;
+public interface Runner extends AutoCloseable {
 
     @Override
-    public void close() {
-        this.runnable.close();
-    }
+    void close();
 
-    @Override
-    public void run() {
-        this.runnable.run();
-    }
+    /**
+     * Run the application
+     */
+    void run();
 }

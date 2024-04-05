@@ -43,10 +43,11 @@ public interface ProducerApp extends AutoCloseable {
     }
 
     /**
-     * Called when running the producer
+     * Create a runnable that produces Kafka messages
      * @param builder provides all runtime application configurations
+     * @return {@code ProducerRunnable}
      */
-    void run(ProducerBuilder builder);
+    ProducerRunnable buildRunnable(ProducerBuilder builder);
 
     /**
      * This method should give a default configuration to run your producer application with.

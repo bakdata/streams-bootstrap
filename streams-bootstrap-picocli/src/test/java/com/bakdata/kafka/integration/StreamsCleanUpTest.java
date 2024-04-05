@@ -68,7 +68,7 @@ class StreamsCleanUpTest {
 
     private static void runAppAndClose(final KafkaStreamsApplication app) throws InterruptedException {
         runApp(app);
-        app.stop();
+        app.close();
     }
 
     private static void runApp(final KafkaStreamsApplication app) throws InterruptedException {

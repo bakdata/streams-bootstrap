@@ -37,7 +37,8 @@ import org.apache.kafka.streams.Topology;
  */
 @Builder(access = AccessLevel.PACKAGE)
 @Getter
-public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable {
+public class ExecutableStreamsApp<T extends StreamsApp>
+        implements ExecutableApp<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions> {
 
     @Getter
     private final @NonNull Topology topology;
@@ -52,6 +53,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      * Create {@code StreamsCleanUpRunner} in order to clean application
      * @return {@code StreamsCleanUpRunner}
      */
+    @Override
     public StreamsCleanUpRunner createCleanUpRunner() {
         final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp();
         return StreamsCleanUpRunner.create(this.topology, this.config, configurer);
@@ -62,6 +64,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      * @return {@code StreamsRunner}
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig)
      */
+    @Override
     public StreamsRunner createRunner() {
         return new StreamsRunner(this.topology, this.config);
     }
@@ -72,6 +75,7 @@ public class ExecutableStreamsApp<T extends StreamsApp> implements AutoCloseable
      * @return {@code StreamsRunner}
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig, StreamsExecutionOptions)
      */
+    @Override
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
         this.setup.run();
         return new StreamsRunner(this.topology, this.config, executionOptions);
