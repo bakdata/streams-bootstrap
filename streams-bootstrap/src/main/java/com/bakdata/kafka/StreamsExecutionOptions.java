@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.time.Duration;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -74,9 +75,14 @@ public class StreamsExecutionOptions {
     }
 
     CloseOptions createCloseOptions(final StreamsConfig config) {
-        final boolean staticMembershipDisabled = isStaticMembershipDisabled(config);
-        final boolean leaveGroup = staticMembershipDisabled || this.volatileGroupInstanceId;
+        final boolean leaveGroup = this.shouldLeaveGroup(config);
         return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
+    }
+
+    @VisibleForTesting
+    boolean shouldLeaveGroup(final StreamsConfig config) {
+        final boolean staticMembershipDisabled = isStaticMembershipDisabled(config);
+        return staticMembershipDisabled || this.volatileGroupInstanceId;
     }
 
     void onStart(final KafkaStreams streams) {
