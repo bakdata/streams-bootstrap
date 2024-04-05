@@ -137,9 +137,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
-     * @param endpointConfig endpoint to run app on
-     * @return {@code ExecutableProducerApp}
+     * Create an {@code ExecutableStreamsApp} using the provided {@code KafkaEndpointConfig}
+     * @return {@code ExecutableStreamsApp}
      */
     @Override
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {

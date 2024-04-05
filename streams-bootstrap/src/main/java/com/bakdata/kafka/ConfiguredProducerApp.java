@@ -109,7 +109,6 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
 
     /**
      * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
-     * @param endpointConfig endpoint to run app on
      * @return {@code ExecutableProducerApp}
      */
     @Override

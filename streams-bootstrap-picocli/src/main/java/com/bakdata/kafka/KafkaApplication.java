@@ -66,7 +66,8 @@ import picocli.CommandLine.ParseResult;
 @RequiredArgsConstructor
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
-public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Runnable, AutoCloseable {
+public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner, O>
+        implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
@@ -94,7 +95,7 @@ public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Ru
      * @param args Arguments passed in by the custom application class.
      * @see #startApplicationWithoutExit(KafkaApplication, String[])
      */
-    public static void startApplication(final KafkaApplication<?, ?> app, final String[] args) {
+    public static void startApplication(final KafkaApplication<?, ?, ?> app, final String[] args) {
         final int exitCode = startApplicationWithoutExit(app, args);
         System.exit(exitCode);
     }
@@ -107,7 +108,7 @@ public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Ru
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
-    public static int startApplicationWithoutExit(final KafkaApplication<?, ?> app, final String[] args) {
+    public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?> app, final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final CommandLine commandLine = new CommandLine(app)
                 .setExecutionStrategy(app::execute);
@@ -163,16 +164,32 @@ public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Ru
         Configurator.setLevel(this.getClass().getPackageName(), Level.DEBUG);
     }
 
-    protected ExecutableApp<? extends Runner, C, O> createExecutableApp(final boolean cleanUp) {
-        final ConfiguredApp<? extends ExecutableApp<? extends Runner, C, O>> configuredStreamsApp =
+    /**
+     * Create a new {@code ExecutableApp} that will be executed according to the requested command.
+     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want to skip
+     * initialization of expensive resources.
+     * @return {@code ExecutableApp}
+     */
+    protected ExecutableApp<R, C, O> createExecutableApp(final boolean cleanUp) {
+        final ConfiguredApp<? extends ExecutableApp<R, C, O>> configuredStreamsApp =
                 this.createConfiguredApp(cleanUp);
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.withEndpoint(endpointConfig);
     }
 
-    protected abstract ConfiguredApp<? extends ExecutableApp<? extends Runner, C, O>> createConfiguredApp(
-            boolean cleanUp);
+    /**
+     * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     * @param cleanUp whether {@code ConfiguredApp} is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return {@code ConfiguredApp}
+     */
+    protected abstract ConfiguredApp<? extends ExecutableApp<R, C, O>> createConfiguredApp(boolean cleanUp);
 
+    /**
+     * Create options for running the app
+     * @return run options
+     * @see ExecutableApp#createRunner(Object)
+     */
     protected abstract O createExecutionOptions();
 
     private KafkaEndpointConfig getEndpointConfig() {
@@ -199,7 +216,7 @@ public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Ru
     }
 
     private RunningApp<Runner> createRunningApp() {
-        final ExecutableApp<? extends Runner, ?, O> app = this.createExecutableApp(false);
+        final ExecutableApp<?, ?, O> app = this.createExecutableApp(false);
         final O executionOptions = this.createExecutionOptions();
         final Runner runner = app.createRunner(executionOptions);
         return new RunningApp<>(app, runner);
@@ -207,7 +224,7 @@ public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Ru
 
     @RequiredArgsConstructor
     private static class RunningApp<T extends Runner> implements AutoCloseable {
-        private final @NonNull ExecutableApp<? extends T, ?, ?> app;
+        private final @NonNull ExecutableApp<?, ?, ?> app;
         private final @NonNull T runner;
 
         @Override

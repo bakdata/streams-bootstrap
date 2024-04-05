@@ -24,7 +24,17 @@
 
 package com.bakdata.kafka;
 
+/**
+ * An application with a corresponding configuration
+ *
+ * @param <E> type of executable app after configuring {@link KafkaEndpointConfig}
+ */
 public interface ConfiguredApp<E> extends AutoCloseable {
+    /**
+     * Create an executable app using the provided {@code KafkaEndpointConfig}
+     * @param endpointConfig endpoint to run app on
+     * @return executable streams app
+     */
     E withEndpoint(KafkaEndpointConfig endpointConfig);
 
     @Override

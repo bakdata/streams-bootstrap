@@ -24,14 +24,33 @@
 
 package com.bakdata.kafka;
 
+/**
+ * An application with a corresponding topic and Kafka configuration
+ * @param <T> type of {@link Runner}
+ * @param <C> type of {@link CleanUpRunner}
+ * @param <O> type of options to create {@link Runner}
+ */
 public interface ExecutableApp<T extends Runner, C extends CleanUpRunner, O> extends AutoCloseable {
 
     @Override
     void close();
 
+    /**
+     * Create {@code Runner} in order to run application with default options
+     * @return {@code Runner}
+     */
     T createRunner();
 
+    /**
+     * Create {@code Runner} in order to run application
+     * @param options options for creating runner
+     * @return {@code Runner}
+     */
     T createRunner(O options);
 
+    /**
+     * Create {@code CleanUpRunner} in order to clean application
+     * @return {@code CleanUpRunner}
+     */
     C createCleanUpRunner();
 }

@@ -24,7 +24,13 @@
 
 package com.bakdata.kafka;
 
+/**
+ * Cleans all resources associated with an application
+ */
 @FunctionalInterface
 public interface CleanUpRunner {
+    /**
+     * Clean all resources associated with an application
+     */
     void clean();
 }
