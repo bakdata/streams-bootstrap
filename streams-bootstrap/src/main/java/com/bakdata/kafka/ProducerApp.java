@@ -24,9 +24,9 @@
 
 package com.bakdata.kafka;
 
-import java.util.HashMap;
+import static java.util.Collections.emptyMap;
+
 import java.util.Map;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
  * Application that defines how to produce messages to Kafka and necessary configurations
@@ -49,38 +49,11 @@ public interface ProducerApp extends AutoCloseable {
     void run(ProducerBuilder builder);
 
     /**
-     * <p>This method should give a default configuration to run your producer application with.</p>
-     * To add a custom configuration, add a similar method to your custom application class:
-     * <pre>{@code
-     *   public Map<String, Object> createKafkaProperties() {
-     *       # Try to always use the kafka properties from the super class as base Map
-     *       Map<String, Object> kafkaConfig = ProducerApp.super.createKafkaProperties();
-     *       kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, GenericAvroSerializer.class);
-     *       kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GenericAvroSerializer.class);
-     *       return kafkaConfig;
-     *   }
-     * }</pre>
-     *
-     * Default configuration configures exactly-once, in-order, and compression:
-     * <pre>
-     * max.in.flight.requests.per.connection=1
-     * acks=all
-     * compression.type=gzip
-     * </pre>
-     *
-     * @return Returns a default Kafka configuration
+     * This method should give a default configuration to run your producer application with.
+     * @return Returns a default Kafka configuration. Empty by default
      */
     default Map<String, Object> createKafkaProperties() {
-        final Map<String, Object> kafkaConfig = new HashMap<>();
-
-        // exactly once and order
-        kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
-        kafkaConfig.put(ProducerConfig.ACKS_CONFIG, "all");
-
-        // compression
-        kafkaConfig.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
-
-        return kafkaConfig;
+        return emptyMap();
     }
 
     /**

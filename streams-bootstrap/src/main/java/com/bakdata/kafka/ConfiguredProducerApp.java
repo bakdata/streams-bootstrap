@@ -55,6 +55,12 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
             kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         }
 
+        kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
+        kafkaConfig.put(ProducerConfig.ACKS_CONFIG, "all");
+
+        // compression
+        kafkaConfig.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
+
         return kafkaConfig;
     }
 
@@ -68,20 +74,26 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
      *         {@link KafkaEndpointConfig#isSchemaRegistryConfigured()}.
      *         If Schema Registry is configured, {@link SpecificAvroSerializer} is used, otherwise
      *         {@link StringSerializer} is used.
-     *      </li>
-     *      <li>
-     *          Configs provided by {@link ProducerApp#createKafkaProperties()}
-     *      </li>
-     *      <li>
-     *          Configs provided via environment variables (see
-     *          {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
-     *      </li>
-     *      <li>
-     *          Configs provided by {@link ProducerAppConfiguration#getKafkaConfig()}
-     *      </li>
-     *      <li>
-     *          Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
-     *      </li>
+     *         Additionally, the following is configured:
+     * <pre>
+     * max.in.flight.requests.per.connection=1
+     * acks=all
+     * compression.type=gzip
+     * </pre>
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link ProducerApp#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided via environment variables (see
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link ProducerAppConfiguration#getKafkaConfig()}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *     </li>
      * </ul>
      *
      * @return Kafka configuration

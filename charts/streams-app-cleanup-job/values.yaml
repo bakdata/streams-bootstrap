@@ -33,7 +33,6 @@ streams:
   extraOutputTopics: {}
 #   role: output
 #  errorTopic: error
-#  productive: true
   deleteOutput: false
 
 commandLine: {}

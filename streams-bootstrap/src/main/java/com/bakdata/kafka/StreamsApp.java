@@ -24,16 +24,14 @@
 
 package com.bakdata.kafka;
 
-import java.util.HashMap;
+import static java.util.Collections.emptyMap;
+
 import java.util.Map;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Application that defines a Kafka Streams {@link org.apache.kafka.streams.Topology} and necessary configurations
  */
 public interface StreamsApp extends AutoCloseable {
-    int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
 
     /**
      * Setup Kafka resources, such as topics, before running this app
@@ -61,52 +59,11 @@ public interface StreamsApp extends AutoCloseable {
     String getUniqueAppId(StreamsTopicConfig topics);
 
     /**
-     * <p>This method should give a default configuration to run your streaming application with.</p>
-     * To add a custom configuration, add a similar method to your custom application class:
-     * <pre>{@code
-     *   protected Map<String, Object> createKafkaProperties(StreamsOptions options) {
-     *       # Try to always use the kafka properties from the super class as base Map
-     *       Map<String, Object> kafkaConfig = StreamsApp.super.createKafkaProperties(options);
-     *       kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
-     *       kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
-     *       return kafkaConfig;
-     *   }
-     * }</pre>
-     *
-     * Default configuration configures exactly-once, in-order, and compression:
-     * <pre>
-     * processing.guarantee=exactly_once_v2
-     * producer.max.in.flight.requests.per.connection=1
-     * producer.acks=all
-     * producer.compression.type=gzip
-     * </pre>
-     *
-     * If {@link StreamsConfigurationOptions#isProductive()} is set the following is configured additionally:
-     * <pre>
-     * replication.factor=3
-     * </pre>
-     *
-     * @param options options to dynamically configure
-     * @return Returns a default Kafka Streams configuration
+     * This method should give a default configuration to run your streaming application with.
+     * @return Returns a default Kafka Streams configuration. Empty by default
      */
-    default Map<String, Object> createKafkaProperties(final StreamsConfigurationOptions options) {
-        final Map<String, Object> kafkaConfig = new HashMap<>();
-
-        // exactly once and order
-        kafkaConfig.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
-        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1);
-
-        // resilience
-        if (options.isProductive()) {
-            kafkaConfig.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, DEFAULT_PRODUCTIVE_REPLICATION_FACTOR);
-        }
-
-        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
-
-        // compression
-        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "gzip");
-
-        return kafkaConfig;
+    default Map<String, Object> createKafkaProperties() {
+        return emptyMap();
     }
 
     /**

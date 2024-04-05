@@ -31,6 +31,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -56,6 +57,15 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
             kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
         }
 
+        // exactly once and order
+        kafkaConfig.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
+        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1);
+
+        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
+
+        // compression
+        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "gzip");
+
         return kafkaConfig;
     }
 
@@ -69,31 +79,38 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
      *         {@link KafkaEndpointConfig#isSchemaRegistryConfigured()}.
      *         If Schema Registry is configured, {@link SpecificAvroSerde} is used, otherwise {@link StringSerde} is
      *         used.
-     *      </li>
-     *      <li>
-     *          Configs provided by {@link StreamsApp#createKafkaProperties(StreamsConfigurationOptions)}
-     *      </li>
-     *      <li>
-     *          Configs provided via environment variables (see
-     *          {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
-     *      </li>
-     *      <li>
-     *          Configs provided by {@link StreamsAppConfiguration#getKafkaConfig()}
-     *      </li>
-     *      <li>
-     *          Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
-     *      </li>
-     *      <li>
-     *          {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
-     *          {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
-     *      </li>
+     *         Additionally, exactly-once, in-order, and compression are configured:
+     * <pre>
+     * processing.guarantee=exactly_once_v2
+     * producer.max.in.flight.requests.per.connection=1
+     * producer.acks=all
+     * producer.compression.type=gzip
+     * </pre>
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link StreamsApp#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided via environment variables (see
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link StreamsAppConfiguration#getKafkaConfig()}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
+     *         {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
+     *     </li>
      * </ul>
      *
      * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
-        kafkaConfig.putAll(this.app.createKafkaProperties(this.configuration.getOptions()));
+        kafkaConfig.putAll(this.app.createKafkaProperties());
         kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
         kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(endpointConfig.createKafkaProperties());

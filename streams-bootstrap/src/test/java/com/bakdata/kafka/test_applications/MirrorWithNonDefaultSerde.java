@@ -25,7 +25,6 @@
 package com.bakdata.kafka.test_applications;
 
 import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsConfigurationOptions;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
@@ -41,6 +40,8 @@ import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
 public class MirrorWithNonDefaultSerde implements StreamsApp {
+
+    boolean foo;
     @Override
     public void buildTopology(final TopologyBuilder builder) {
         final Serde<TestRecord> valueSerde = this.getValueSerde(builder.getKafkaProperties());
@@ -61,10 +62,10 @@ public class MirrorWithNonDefaultSerde implements StreamsApp {
     }
 
     @Override
-    public Map<String, Object> createKafkaProperties(final StreamsConfigurationOptions options) {
-        final Map<String, Object> kafkaConfig = StreamsApp.super.createKafkaProperties(options);
-        kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
-        kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
-        return kafkaConfig;
+    public Map<String, Object> createKafkaProperties() {
+        return Map.of(
+                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class,
+                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class
+        );
     }
 }

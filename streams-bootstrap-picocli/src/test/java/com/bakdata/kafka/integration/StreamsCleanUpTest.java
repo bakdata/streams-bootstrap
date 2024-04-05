@@ -165,7 +165,6 @@ class StreamsCleanUpTest {
         final KafkaStreamsApplication application = new SimpleKafkaStreamsApplication(WordCount::new);
         application.setOutputTopic("word_output");
         application.setBrokers(this.kafkaCluster.getBrokerList());
-        application.setProductive(false);
         application.setKafkaConfig(Map.of(
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

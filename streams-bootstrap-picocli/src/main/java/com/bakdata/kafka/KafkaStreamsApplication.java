@@ -53,7 +53,6 @@ import picocli.CommandLine.UseDefaultConverter;
  *     <li>{@link #errorTopic}</li>
  *     <li>{@link #extraInputTopics}</li>
  *     <li>{@link #extraInputPatterns}</li>
- *     <li>{@link #productive}</li>
  *     <li>{@link #volatileGroupInstanceId}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options. Run it by calling
@@ -77,10 +76,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
     private Map<String, List<String>> extraInputTopics = new HashMap<>();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
     private Map<String, Pattern> extraInputPatterns = new HashMap<>();
-    @CommandLine.Option(names = "--productive", arity = "0..1",
-            description = "Whether to use Kafka Streams configuration values, such as replication.factor=3, that are "
-                          + "more suitable for production environments")
-    private boolean productive;
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
@@ -212,11 +207,9 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
     private StreamsAppConfiguration createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        final StreamsConfigurationOptions streamsOptions = this.createStreamsOptions();
         return StreamsAppConfiguration.builder()
                 .topics(topics)
                 .kafkaConfig(kafkaConfig)
-                .options(streamsOptions)
                 .build();
     }
 
@@ -236,12 +229,6 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp(cleanUp);
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.withEndpoint(endpointConfig);
-    }
-
-    private StreamsConfigurationOptions createStreamsOptions() {
-        return StreamsConfigurationOptions.builder()
-                .productive(this.productive)
-                .build();
     }
 
     @RequiredArgsConstructor

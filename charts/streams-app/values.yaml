@@ -44,7 +44,6 @@ streams:
   extraOutputTopics: {}
   #   role: output
   # errorTopic: error
-  # productive: true
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"

@@ -92,11 +92,11 @@ class ConfiguredStreamsAppTest {
         }
 
         @Override
-        public Map<String, Object> createKafkaProperties(final StreamsConfigurationOptions options) {
-            final Map<String, Object> properties = StreamsApp.super.createKafkaProperties(options);
-            properties.put("foo", "bar");
-            properties.put("hello", "world");
-            return properties;
+        public Map<String, Object> createKafkaProperties() {
+            return Map.of(
+                    "foo", "bar",
+                    "hello", "world"
+            );
         }
     }
 }
