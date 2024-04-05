@@ -42,7 +42,7 @@ import org.apache.kafka.streams.Topology;
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
-public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable {
+public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp<ExecutableStreamsApp<T>> {
     @Getter
     private final @NonNull T app;
     private final @NonNull StreamsAppConfiguration configuration;
@@ -141,6 +141,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements AutoCloseable
      * @param endpointConfig endpoint to run app on
      * @return {@code ExecutableProducerApp}
      */
+    @Override
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);

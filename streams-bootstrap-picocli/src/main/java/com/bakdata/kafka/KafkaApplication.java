@@ -66,7 +66,7 @@ import picocli.CommandLine.ParseResult;
 @RequiredArgsConstructor
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
-public abstract class KafkaApplication<O> implements Runnable, AutoCloseable {
+public abstract class KafkaApplication<C extends CleanUpRunner, O> implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
@@ -94,7 +94,7 @@ public abstract class KafkaApplication<O> implements Runnable, AutoCloseable {
      * @param args Arguments passed in by the custom application class.
      * @see #startApplicationWithoutExit(KafkaApplication, String[])
      */
-    public static void startApplication(final KafkaApplication<?> app, final String[] args) {
+    public static void startApplication(final KafkaApplication<?, ?> app, final String[] args) {
         final int exitCode = startApplicationWithoutExit(app, args);
         System.exit(exitCode);
     }
@@ -107,7 +107,7 @@ public abstract class KafkaApplication<O> implements Runnable, AutoCloseable {
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
-    public static int startApplicationWithoutExit(final KafkaApplication<?> app, final String[] args) {
+    public static int startApplicationWithoutExit(final KafkaApplication<?, ?> app, final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final CommandLine commandLine = new CommandLine(app)
                 .setExecutionStrategy(app::execute);
@@ -163,20 +163,24 @@ public abstract class KafkaApplication<O> implements Runnable, AutoCloseable {
         Configurator.setLevel(this.getClass().getPackageName(), Level.DEBUG);
     }
 
-    /**
-     * Create {@code KafkaEndpointConfig} specified by {@link #brokers} and {@link #schemaRegistryUrl}
-     * @return {@code KafkaEndpointConfig}
-     */
-    protected KafkaEndpointConfig getEndpointConfig() {
+    protected ExecutableApp<? extends Runner, C, O> createExecutableApp(final boolean cleanUp) {
+        final ConfiguredApp<? extends ExecutableApp<? extends Runner, C, O>> configuredStreamsApp =
+                this.createConfiguredApp(cleanUp);
+        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
+        return configuredStreamsApp.withEndpoint(endpointConfig);
+    }
+
+    protected abstract ConfiguredApp<? extends ExecutableApp<? extends Runner, C, O>> createConfiguredApp(
+            boolean cleanUp);
+
+    protected abstract O createExecutionOptions();
+
+    private KafkaEndpointConfig getEndpointConfig() {
         return KafkaEndpointConfig.builder()
                 .brokers(this.brokers)
                 .schemaRegistryUrl(this.schemaRegistryUrl)
                 .build();
     }
-
-    protected abstract ExecutableApp<? extends Runner, ? extends CleanUpRunner, O> createExecutableApp(boolean cleanUp);
-
-    protected abstract O createExecutionOptions();
 
     private void startApplication() {
         log.info("Starting application");

@@ -45,7 +45,8 @@ import picocli.CommandLine.Command;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
-public abstract class KafkaProducerApplication extends KafkaApplication<ProducerExecutionOptions> {
+public abstract class KafkaProducerApplication
+        extends KafkaApplication<ProducerCleanUpRunner, ProducerExecutionOptions> {
 
     /**
      * @see ProducerRunner#run()
@@ -71,18 +72,12 @@ public abstract class KafkaProducerApplication extends KafkaApplication<Producer
     protected abstract ProducerApp createApp(boolean cleanUp);
 
     @Override
-    protected ExecutableProducerApp<ProducerApp> createExecutableApp(final boolean cleanUp) {
-        final ConfiguredProducerApp<ProducerApp> app = this.createConfiguredApp(cleanUp);
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return app.withEndpoint(endpointConfig);
-    }
-
-    @Override
     protected ProducerExecutionOptions createExecutionOptions() {
         return ProducerExecutionOptions.builder().build();
     }
 
-    private ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
+    @Override
+    protected ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
         final ProducerApp producerApp = this.createApp(cleanUp);
         final ProducerAppConfiguration configuration = this.createConfiguration();
         return new ConfiguredProducerApp<>(producerApp, configuration);

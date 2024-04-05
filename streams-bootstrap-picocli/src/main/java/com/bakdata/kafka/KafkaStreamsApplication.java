@@ -62,7 +62,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Streams application.")
-public abstract class KafkaStreamsApplication extends KafkaApplication<StreamsExecutionOptions> {
+public abstract class KafkaStreamsApplication extends KafkaApplication<StreamsCleanUpRunner, StreamsExecutionOptions> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -105,7 +105,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication<StreamsEx
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
                            + "Kafka Streams application.")
     public void reset() {
-        try (final ExecutableStreamsApp<StreamsApp> app = this.createExecutableApp(true)) {
+        try (final ExecutableApp<?, StreamsCleanUpRunner, ?> app = this.createExecutableApp(true)) {
             final StreamsCleanUpRunner runner = app.createCleanUpRunner();
             runner.reset();
         }
@@ -158,13 +158,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication<StreamsEx
     }
 
     @Override
-    protected ExecutableStreamsApp<StreamsApp> createExecutableApp(final boolean cleanUp) {
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp = this.createConfiguredApp(cleanUp);
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return configuredStreamsApp.withEndpoint(endpointConfig);
-    }
-
-    private ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
+    protected ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
         final StreamsApp streamsApp = this.createApp(cleanUp);
         final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
         return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);

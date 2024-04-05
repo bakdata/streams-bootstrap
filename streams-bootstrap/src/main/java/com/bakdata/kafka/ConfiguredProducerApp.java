@@ -39,7 +39,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
  * @param <T> type of {@link ProducerApp}
  */
 @RequiredArgsConstructor
-public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseable {
+public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredApp<ExecutableProducerApp<T>> {
     @Getter
     private final @NonNull T app;
     private final @NonNull ProducerAppConfiguration configuration;
@@ -112,6 +112,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements AutoCloseab
      * @param endpointConfig endpoint to run app on
      * @return {@code ExecutableProducerApp}
      */
+    @Override
     public ExecutableProducerApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final ProducerTopicConfig topics = this.getTopics();
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
