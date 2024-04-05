@@ -34,6 +34,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 @FunctionalInterface
 public interface ProducerApp extends AutoCloseable {
 
+    /**
+     * Setup Kafka resources, such as topics, before running this app
+     * @param configuration provides all runtime application configurations
+     */
     default void setup(final ProducerAppSetupConfiguration configuration) {
         // do nothing by default
     }

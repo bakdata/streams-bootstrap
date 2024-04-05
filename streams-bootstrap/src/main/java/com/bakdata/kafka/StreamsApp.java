@@ -35,6 +35,10 @@ import org.apache.kafka.streams.StreamsConfig;
 public interface StreamsApp extends AutoCloseable {
     int DEFAULT_PRODUCTIVE_REPLICATION_FACTOR = 3;
 
+    /**
+     * Setup Kafka resources, such as topics, before running this app
+     * @param configuration provides all runtime application configurations
+     */
     default void setup(final StreamsAppSetupConfiguration configuration) {
         // do nothing by default
     }

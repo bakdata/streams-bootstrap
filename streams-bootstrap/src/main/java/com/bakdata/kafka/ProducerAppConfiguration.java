@@ -40,5 +40,5 @@ public class ProducerAppConfiguration {
     @Builder.Default
     @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
     @Builder.Default
-    @NonNull Map<String, Object> kafkaConfig = emptyMap();
+    @NonNull Map<String, ?> kafkaConfig = emptyMap();
 }

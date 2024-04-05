@@ -211,7 +211,7 @@ public abstract class KafkaStreamsApplication extends KafkaApplication {
 
     private StreamsAppConfiguration createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
-        final Map<String, Object> kafkaConfig = this.getFullKafkaConfig();
+        final Map<String, String> kafkaConfig = this.getKafkaConfig();
         final StreamsConfigurationOptions streamsOptions = this.createStreamsOptions();
         return StreamsAppConfiguration.builder()
                 .topics(topics)

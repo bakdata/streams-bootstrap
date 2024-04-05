@@ -28,7 +28,6 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,21 +146,6 @@ public abstract class KafkaApplication implements Runnable, AutoCloseable {
                 .brokers(this.brokers)
                 .schemaRegistryUrl(this.schemaRegistryUrl)
                 .build();
-    }
-
-    /**
-     * Kafka configurations overrides
-     * @return Kafka configuration
-     */
-    protected Map<String, Object> getKafkaConfigOverrides() {
-        return Collections.emptyMap();
-    }
-
-    protected Map<String, Object> getFullKafkaConfig() {
-        final Map<String, Object> config = new HashMap<>();
-        config.putAll(this.getKafkaConfigOverrides());
-        config.putAll(this.kafkaConfig);
-        return Collections.unmodifiableMap(config);
     }
 
     private void startApplication() {
