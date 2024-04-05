@@ -146,7 +146,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     /**
      * Stop all applications that have been started by {@link #run()}.
      */
-    public void stop() {
+    public final void stop() {
         this.runningApps.forEach(RunningApp::close);
     }
 
@@ -177,7 +177,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
      * initialization of expensive resources.
      * @return {@code ExecutableApp}
      */
-    protected ExecutableApp<R, C, O> createExecutableApp(final boolean cleanUp) {
+    final ExecutableApp<R, C, O> createExecutableApp(final boolean cleanUp) {
         final ConfiguredApp<? extends ExecutableApp<R, C, O>> configuredStreamsApp =
                 this.createConfiguredApp(cleanUp);
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
@@ -190,14 +190,14 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
      * to skip initialization of expensive resources.
      * @return {@code ConfiguredApp}
      */
-    protected abstract ConfiguredApp<? extends ExecutableApp<R, C, O>> createConfiguredApp(boolean cleanUp);
+    abstract ConfiguredApp<? extends ExecutableApp<R, C, O>> createConfiguredApp(boolean cleanUp);
 
     /**
      * Create options for running the app
      * @return run options
      * @see ExecutableApp#createRunner(Object)
      */
-    protected abstract O createExecutionOptions();
+    abstract O createExecutionOptions();
 
     private KafkaEndpointConfig getEndpointConfig() {
         return KafkaEndpointConfig.builder()

@@ -72,12 +72,12 @@ public abstract class KafkaProducerApplication
     protected abstract ProducerApp createApp(boolean cleanUp);
 
     @Override
-    protected ProducerExecutionOptions createExecutionOptions() {
+    final ProducerExecutionOptions createExecutionOptions() {
         return ProducerExecutionOptions.builder().build();
     }
 
     @Override
-    protected ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
+    final ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
         final ProducerApp producerApp = this.createApp(cleanUp);
         final ProducerAppConfiguration configuration = this.createConfiguration();
         return new ConfiguredProducerApp<>(producerApp, configuration);

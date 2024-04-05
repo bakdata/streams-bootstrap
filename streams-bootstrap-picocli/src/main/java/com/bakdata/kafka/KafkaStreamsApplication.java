@@ -80,7 +80,6 @@ public abstract class KafkaStreamsApplication
     private boolean volatileGroupInstanceId;
 
     /**
-     *
      * @see StreamsRunner#run()
      */
     @Override
@@ -149,7 +148,7 @@ public abstract class KafkaStreamsApplication
     }
 
     @Override
-    protected StreamsExecutionOptions createExecutionOptions() {
+    final StreamsExecutionOptions createExecutionOptions() {
         return StreamsExecutionOptions.builder()
                 .volatileGroupInstanceId(this.volatileGroupInstanceId)
                 .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
@@ -159,7 +158,7 @@ public abstract class KafkaStreamsApplication
     }
 
     @Override
-    protected ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
+    final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
         final StreamsApp streamsApp = this.createApp(cleanUp);
         final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
         return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);
