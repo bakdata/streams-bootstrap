@@ -33,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.bakdata.kafka.CleanUpException;
+import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
@@ -134,7 +135,7 @@ class StreamsCleanUpTest {
         app.createCleanUpRunner().reset();
     }
 
-    private static void clean(final ExecutableApp<?, ?, ?> app) {
+    private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
         app.createCleanUpRunner().clean();
     }
 

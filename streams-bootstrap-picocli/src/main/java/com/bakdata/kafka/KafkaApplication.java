@@ -223,7 +223,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     private RunningApp<Runner> createRunningApp() {
-        final ExecutableApp<?, ?, O> app = this.createExecutableApp(false);
+        final ExecutableApp<R, ?, O> app = this.createExecutableApp(false);
         final O executionOptions = this.createExecutionOptions();
         final Runner runner = app.createRunner(executionOptions);
         return new RunningApp<>(app, runner);
