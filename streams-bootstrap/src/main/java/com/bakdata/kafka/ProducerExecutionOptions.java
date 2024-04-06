@@ -26,6 +26,9 @@ package com.bakdata.kafka;
 
 import lombok.Builder;
 
+/**
+ * Options to run a Kafka Producer app using {@link ProducerRunner}
+ */
 @Builder
 public final class ProducerExecutionOptions {
 }

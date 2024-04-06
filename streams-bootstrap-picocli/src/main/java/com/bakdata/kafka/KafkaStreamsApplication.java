@@ -160,8 +160,8 @@ public abstract class KafkaStreamsApplication
     @Override
     final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
         final StreamsApp streamsApp = this.createApp(cleanUp);
-        final StreamsAppConfiguration streamsAppConfiguration = this.createConfiguration();
-        return new ConfiguredStreamsApp<>(streamsApp, streamsAppConfiguration);
+        final StreamsAppConfiguration configuration = this.createConfiguration();
+        return new ConfiguredStreamsApp<>(streamsApp, configuration);
     }
 
     private StreamsAppConfiguration createConfiguration() {

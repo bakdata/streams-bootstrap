@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  * {@code KafkaProducerApplication} without any additional configuration options.
  */
 @RequiredArgsConstructor
-public class SimpleKafkaProducerApplication extends KafkaProducerApplication {
+public final class SimpleKafkaProducerApplication extends KafkaProducerApplication {
     private final @NonNull Function<Boolean, ProducerApp> appFactory;
 
     /**

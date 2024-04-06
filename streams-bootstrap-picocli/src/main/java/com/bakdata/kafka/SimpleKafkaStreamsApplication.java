@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  * {@code KafkaStreamsApplication} without any additional configuration options.
  */
 @RequiredArgsConstructor
-public class SimpleKafkaStreamsApplication extends KafkaStreamsApplication {
+public final class SimpleKafkaStreamsApplication extends KafkaStreamsApplication {
 
     private final @NonNull Function<Boolean, StreamsApp> appFactory;
 

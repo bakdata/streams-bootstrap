@@ -207,8 +207,8 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     private void startApplication() {
-        log.info("Starting application");
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        log.info("Starting application");
         if (this.debug) {
             this.configureDebug();
         }
