@@ -75,6 +75,11 @@ import picocli.CommandLine.ParseResult;
 public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner, O, A>
         implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
+    @ToString.Exclude
+    @Getter(AccessLevel.NONE)
+    // ConcurrentLinkedDeque required because calling #stop() causes asynchronous #run() calls to finish and thus
+    // concurrently iterating and removing from #runners
+    private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
@@ -87,11 +92,6 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = new HashMap<>();
-    @ToString.Exclude
-    @Getter(AccessLevel.NONE)
-    // ConcurrentLinkedDeque required because calling #stop() causes asynchronous #run() calls to finish and thus
-    // concurrently iterating and removing from #runners
-    private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from
@@ -169,6 +169,14 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     /**
+     * Create a new app that will be configured and executed according to this application.
+     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return app
+     */
+    protected abstract A createApp(boolean cleanUp);
+
+    /**
      * Configure application when running in debug mode. By default, Log4j2 log level is configured to debug for
      * {@code com.bakdata} and the applications package.
      */
@@ -182,14 +190,6 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
      * @return configuration
      */
     abstract Configuration<A, ? extends ConfiguredApp<? extends ExecutableApp<R, C, O>>> createConfiguration();
-
-    /**
-     * Create a new app that will be configured and executed according to this application.
-     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return app
-     */
-    abstract A createApp(boolean cleanUp);
 
     /**
      * Create options for running the app
