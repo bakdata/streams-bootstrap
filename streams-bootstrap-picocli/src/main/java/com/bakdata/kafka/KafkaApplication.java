@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -87,9 +88,10 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = new HashMap<>();
     @ToString.Exclude
+    @Getter(AccessLevel.NONE)
     // ConcurrentLinkedDeque required because calling #stop() causes asynchronous #run() calls to finish and thus
     // concurrently iterating and removing from #runners
-    private ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from

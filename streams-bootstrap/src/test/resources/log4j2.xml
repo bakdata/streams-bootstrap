@@ -12,5 +12,20 @@
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
+        <Logger additivity="false" level="warn" name="io.confluent.kafka.serializers">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.streams.StreamsConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.consumer.ConsumerConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.producer.ProducerConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="kafka.server.KafkaConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>
