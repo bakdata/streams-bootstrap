@@ -39,13 +39,13 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldPrioritizeConfigCLIParameters() {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
-                        .kafkaConfig(Map.of(
-                                "foo", "baz",
-                                "kafka", "streams"
-                        ))
-                        .build());
+        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
+                .kafkaConfig(Map.of(
+                        "foo", "baz",
+                        "kafka", "streams"
+                ))
+                .build();
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .build()))
@@ -58,13 +58,13 @@ class ConfiguredStreamsAppTest {
     @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
-                        .kafkaConfig(Map.of(
-                                "foo", "baz",
-                                "kafka", "streams"
-                        ))
-                        .build());
+        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
+                .kafkaConfig(Map.of(
+                        "foo", "baz",
+                        "kafka", "streams"
+                ))
+                .build();
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .build()))
@@ -75,9 +75,9 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldSetDefaultAvroSerdeWhenSchemaRegistryUrlIsSet() {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
-                        .build());
+        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
+                .build();
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .schemaRegistryUrl("fake")
@@ -89,9 +89,9 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldSetDefaultStringSerdeWhenSchemaRegistryUrlIsNotSet() {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), StreamsAppConfiguration.builder()
-                        .build());
+        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
+                .build();
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .build()))

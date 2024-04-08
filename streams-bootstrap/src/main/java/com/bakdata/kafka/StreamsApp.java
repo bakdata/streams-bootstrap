@@ -34,14 +34,6 @@ import java.util.Map;
 public interface StreamsApp extends AutoCloseable {
 
     /**
-     * Setup Kafka resources, such as topics, before running this app
-     * @param configuration provides all runtime application configurations
-     */
-    default void setup(final StreamsAppSetupConfiguration configuration) {
-        // do nothing by default
-    }
-
-    /**
      * Build the Kafka Streams {@link org.apache.kafka.streams.Topology} to be run by the app.
      *
      * @param builder provides all runtime application configurations and supports building the
@@ -57,6 +49,14 @@ public interface StreamsApp extends AutoCloseable {
      * @return unique application identifier
      */
     String getUniqueAppId(StreamsTopicConfig topics);
+
+    /**
+     * Setup Kafka resources, such as topics, before running this app
+     * @param configuration provides all runtime application configurations
+     */
+    default void setup(final StreamsAppSetupConfiguration configuration) {
+        // do nothing by default
+    }
 
     /**
      * This method should give a default configuration to run your streaming application with.

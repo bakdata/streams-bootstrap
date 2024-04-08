@@ -28,6 +28,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
  * A {@link ProducerApp} with a corresponding {@link ProducerAppConfiguration}
  * @param <T> type of {@link ProducerApp}
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredApp<ExecutableProducerApp<T>> {
     @Getter
     private final @NonNull T app;

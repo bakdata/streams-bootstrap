@@ -31,11 +31,22 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Configuration of {@link StreamsApp}. This includes {@link StreamsTopicConfig} and Kafka configuration
+ */
 @Builder
 @Value
-public class StreamsAppConfiguration {
+public class StreamsAppConfiguration implements Configuration<StreamsApp, ConfiguredStreamsApp<? extends StreamsApp>> {
     @Builder.Default
     @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
     @Builder.Default
     @NonNull Map<String, ?> kafkaConfig = emptyMap();
+
+    /**
+     * Create a new {@code ConfiguredStreamsApp} from this configuration
+     */
+    @Override
+    public <T extends StreamsApp> ConfiguredStreamsApp<T> configure(final T app) {
+        return new ConfiguredStreamsApp<>(app, this);
+    }
 }

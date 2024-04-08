@@ -102,7 +102,7 @@ class RunStreamsAppTest {
                 ))
                 .topics(topics)
                 .build();
-        return new ConfiguredStreamsApp<>(app, configuration);
+        return configuration.configure(app);
     }
 
     @BeforeEach

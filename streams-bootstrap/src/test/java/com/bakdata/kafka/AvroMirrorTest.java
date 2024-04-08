@@ -32,14 +32,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class AvroMirrorTest {
-    private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = this.createApp();
+    private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
     @RegisterExtension
     final TestTopologyExtension<String, TestRecord> testTopology =
             StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
 
+    private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
+        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
+                .topics(StreamsTopicConfig.builder()
+                        .inputTopics(List.of("input"))
+                        .outputTopic("output")
+                        .build())
+                .build();
+        return configuration.configure(new MirrorWithNonDefaultSerde());
+    }
+
     @Test
     void shouldMirror() {
-        final Serde<TestRecord> valueSerde = this.app.getApp().getValueSerde(
+        final Serde<TestRecord> valueSerde = MirrorWithNonDefaultSerde.getValueSerde(
                 this.testTopology.getStreamsConfig().originals());
         final TestRecord record = TestRecord.newBuilder()
                 .setContent("bar")
@@ -52,15 +62,5 @@ class AvroMirrorTest {
                 .withValueSerde(valueSerde)
                 .expectNextRecord().hasKey("foo").hasValue(record)
                 .expectNoMoreRecord();
-    }
-
-    private ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
-        return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(),
-                StreamsAppConfiguration.builder()
-                        .topics(StreamsTopicConfig.builder()
-                                .inputTopics(List.of("input"))
-                                .outputTopic("output")
-                                .build())
-                        .build());
     }
 }

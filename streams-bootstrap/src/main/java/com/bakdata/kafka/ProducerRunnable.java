@@ -30,13 +30,13 @@ package com.bakdata.kafka;
 @FunctionalInterface
 public interface ProducerRunnable extends AutoCloseable {
 
-    @Override
-    default void close() {
-        // do nothing by default
-    }
-
     /**
      * Produce messages to Kafka
      */
     void run();
+
+    @Override
+    default void close() {
+        // do nothing by default
+    }
 }

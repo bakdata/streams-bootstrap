@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 @Command(description = "Run a Kafka Streams application.")
 public abstract class KafkaStreamsApplication
-        extends KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions> {
+        extends KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions, StreamsApp> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -80,14 +81,6 @@ public abstract class KafkaStreamsApplication
     private boolean volatileGroupInstanceId;
 
     /**
-     * @see StreamsRunner#run()
-     */
-    @Override
-    public void run() {
-        super.run();
-    }
-
-    /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
      * topics associated with the Kafka Streams application.
      */
@@ -99,24 +92,30 @@ public abstract class KafkaStreamsApplication
     }
 
     /**
+     * @see StreamsRunner#run()
+     */
+    @Override
+    public void run() {
+        super.run();
+    }
+
+    /**
      * Clear all state stores, consumer group offsets, and internal topics associated with the Kafka Streams
      * application.
      */
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
                            + "Kafka Streams application.")
     public void reset() {
-        try (final ExecutableApp<?, StreamsCleanUpRunner, ?> app = this.createExecutableApp(true)) {
-            final StreamsCleanUpRunner runner = app.createCleanUpRunner();
+        try (final CleanableApp app = this.createCleanableApp()) {
+            final StreamsCleanUpRunner runner = app.getCleanUpRunner();
             runner.reset();
         }
     }
 
     /**
      * Create a new {@code StreamsApp} that will be configured and executed according to this application.
-     * @param cleanUp whether {@code StreamsApp} is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return {@code StreamsApp}
      */
+    @Override
     protected abstract StreamsApp createApp(boolean cleanUp);
 
     /**
@@ -148,29 +147,24 @@ public abstract class KafkaStreamsApplication
     }
 
     @Override
-    final StreamsExecutionOptions createExecutionOptions() {
-        return StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(this.volatileGroupInstanceId)
-                .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
-                .stateListener(this::createStateListener)
-                .onStart(this::onStreamsStart)
-                .build();
-    }
-
-    @Override
-    final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
-        final StreamsApp streamsApp = this.createApp(cleanUp);
-        final StreamsAppConfiguration configuration = this.createConfiguration();
-        return new ConfiguredStreamsApp<>(streamsApp, configuration);
-    }
-
-    private StreamsAppConfiguration createConfiguration() {
+    final StreamsAppConfiguration createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
         return StreamsAppConfiguration.builder()
                 .topics(topics)
                 .kafkaConfig(kafkaConfig)
                 .build();
+    }
+
+    @Override
+    final Optional<StreamsExecutionOptions> createExecutionOptions() {
+        final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
+                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
+                .stateListener(this::createStateListener)
+                .onStart(this::onStreamsStart)
+                .build();
+        return Optional.of(options);
     }
 
     private StreamsTopicConfig createTopicConfig() {

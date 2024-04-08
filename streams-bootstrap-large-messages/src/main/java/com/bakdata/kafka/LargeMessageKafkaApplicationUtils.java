@@ -57,6 +57,7 @@ public class LargeMessageKafkaApplicationUtils {
      * Register a hook that cleans up LargeMessage files associated with a topic.
      *
      * @param cleanUpRunner {@code CleanUpRunner} to register hook on
+     * @return self for chaining
      * @see #createLargeMessageCleanUpHook(Map)
      */
     public static <T> T registerLargeMessageCleanUpHook(final HasTopicHooks<T> cleanUpRunner) {

@@ -24,30 +24,19 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import java.util.Map;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-
 /**
- * Configuration of {@link ProducerApp}. This includes {@link ProducerTopicConfig} and Kafka configuration
+ * Configuration of app
+ * @param <A> type of app to create configured app from
+ * @param <C> type of configured app
  */
-@Builder
-@Value
-public class ProducerAppConfiguration
-        implements Configuration<ProducerApp, ConfiguredProducerApp<? extends ProducerApp>> {
-    @Builder.Default
-    @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
-    @Builder.Default
-    @NonNull Map<String, ?> kafkaConfig = emptyMap();
+@FunctionalInterface
+public interface Configuration<A, C> {
 
     /**
-     * Create a new {@code ConfiguredProducerApp} from this configuration
+     * Create a new configured app from this configuration
+     * @param app app to configure
+     * @return configured app
+     * @param <T> type of app
      */
-    @Override
-    public <T extends ProducerApp> ConfiguredProducerApp<T> configure(final T app) {
-        return new ConfiguredProducerApp<>(app, this);
-    }
+    <T extends A> C configure(T app);
 }

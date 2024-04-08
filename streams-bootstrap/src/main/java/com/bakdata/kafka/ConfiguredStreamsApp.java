@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ import org.apache.kafka.streams.Topology;
  * A {@link StreamsApp} with a corresponding {@link StreamsAppConfiguration}
  * @param <T> type of {@link StreamsApp}
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp<ExecutableStreamsApp<T>> {
     @Getter
     private final @NonNull T app;

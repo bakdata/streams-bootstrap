@@ -35,19 +35,19 @@ import java.util.Map;
 public interface ProducerApp extends AutoCloseable {
 
     /**
+     * Create a runnable that produces Kafka messages
+     * @param builder provides all runtime application configurations
+     * @return {@code ProducerRunnable}
+     */
+    ProducerRunnable buildRunnable(ProducerBuilder builder);
+
+    /**
      * Setup Kafka resources, such as topics, before running this app
      * @param configuration provides all runtime application configurations
      */
     default void setup(final ProducerAppSetupConfiguration configuration) {
         // do nothing by default
     }
-
-    /**
-     * Create a runnable that produces Kafka messages
-     * @param builder provides all runtime application configurations
-     * @return {@code ProducerRunnable}
-     */
-    ProducerRunnable buildRunnable(ProducerBuilder builder);
 
     /**
      * This method should give a default configuration to run your producer application with.

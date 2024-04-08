@@ -42,18 +42,19 @@ import org.apache.kafka.streams.kstream.Produced;
 public class MirrorWithNonDefaultSerde implements StreamsApp {
 
     boolean foo;
-    @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final Serde<TestRecord> valueSerde = this.getValueSerde(builder.getKafkaProperties());
-        final KStream<String, TestRecord> input =
-                builder.streamInput(Consumed.with(null, valueSerde));
-        input.to(builder.getTopics().getOutputTopic(), Produced.valueSerde(valueSerde));
-    }
 
-    public Serde<TestRecord> getValueSerde(final Map<String, Object> kafkaProperties) {
+    public static Serde<TestRecord> getValueSerde(final Map<String, Object> kafkaProperties) {
         final Serde<TestRecord> valueSerde = new SpecificAvroSerde<>();
         valueSerde.configure(kafkaProperties, false);
         return valueSerde;
+    }
+
+    @Override
+    public void buildTopology(final TopologyBuilder builder) {
+        final Serde<TestRecord> valueSerde = getValueSerde(builder.getKafkaProperties());
+        final KStream<String, TestRecord> input =
+                builder.streamInput(Consumed.with(null, valueSerde));
+        input.to(builder.getTopics().getOutputTopic(), Produced.valueSerde(valueSerde));
     }
 
     @Override

@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -46,15 +47,7 @@ import picocli.CommandLine.Command;
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
 public abstract class KafkaProducerApplication
-        extends KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions> {
-
-    /**
-     * @see ProducerRunner#run()
-     */
-    @Override
-    public void run() {
-        super.run();
-    }
+        extends KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ProducerApp> {
 
     /**
      * Delete all output topics associated with the Kafka Producer application.
@@ -66,30 +59,32 @@ public abstract class KafkaProducerApplication
     }
 
     /**
-     * Create a new {@code ProducerApp} that will be configured and executed according to this application.
-     * @return {@code ProducerApp}
+     * @see ProducerRunner#run()
      */
+    @Override
+    public void run() {
+        super.run();
+    }
+
+    /**
+     * Create a new {@code ProducerApp} that will be configured and executed according to this application.
+     */
+    @Override
     protected abstract ProducerApp createApp(boolean cleanUp);
 
     @Override
-    final ProducerExecutionOptions createExecutionOptions() {
-        return ProducerExecutionOptions.builder().build();
-    }
-
-    @Override
-    final ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
-        final ProducerApp producerApp = this.createApp(cleanUp);
-        final ProducerAppConfiguration configuration = this.createConfiguration();
-        return new ConfiguredProducerApp<>(producerApp, configuration);
-    }
-
-    private ProducerAppConfiguration createConfiguration() {
+    final ProducerAppConfiguration createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
         return ProducerAppConfiguration.builder()
                 .topics(topics)
                 .kafkaConfig(kafkaConfig)
                 .build();
+    }
+
+    @Override
+    final Optional<ProducerExecutionOptions> createExecutionOptions() {
+        return Optional.empty();
     }
 
     private ProducerTopicConfig createTopicConfig() {
