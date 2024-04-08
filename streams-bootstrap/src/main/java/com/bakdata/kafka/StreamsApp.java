@@ -68,10 +68,11 @@ public interface StreamsApp extends AutoCloseable {
 
     /**
      * Configure clean up behavior
+     * @param configuration provides all runtime application configurations
      * @return {@code StreamsCleanUpConfiguration}
      * @see StreamsCleanUpRunner
      */
-    default StreamsCleanUpConfiguration setupCleanUp() {
+    default StreamsCleanUpConfiguration setupCleanUp(final StreamsSetupConfiguration configuration) {
         return new StreamsCleanUpConfiguration();
     }
 

@@ -32,10 +32,11 @@ package com.bakdata.kafka;
 public interface HasTopicHooks<SELF> {
     /**
      * Register a hook that is invoked when performing actions on topics
-     * @param hookFactory factory to create {@link TopicHook} from
+     *
+     * @param hook Action to run. Topic is passed as parameter
      * @return self for chaining
      */
-    SELF registerTopicHook(HookFactory<TopicHook> hookFactory);
+    SELF registerTopicHook(TopicHook hook);
 
     /**
      * Hook for performing actions on topics

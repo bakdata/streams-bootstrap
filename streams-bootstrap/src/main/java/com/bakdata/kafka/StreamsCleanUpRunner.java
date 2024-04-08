@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.StreamsCleanUpConfiguration.StreamsCleanUpHooks;
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
@@ -58,7 +57,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     private final TopologyInformation topologyInformation;
     private final Topology topology;
     private final @NonNull ImprovedStreamsConfig config;
-    private final @NonNull StreamsCleanUpHooks cleanHooks;
+    private final @NonNull StreamsCleanUpConfiguration cleanHooks;
 
     /**
      * Create a new {@code StreamsCleanUpRunner} with default {@link StreamsCleanUpConfiguration}
@@ -84,8 +83,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
-        final StreamsCleanUpHooks hooks = configuration.create(config.getKafkaProperties());
-        return new StreamsCleanUpRunner(topologyInformation, topology, config, hooks);
+        return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
 
     /**

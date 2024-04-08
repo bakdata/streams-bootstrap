@@ -118,7 +118,7 @@ class ExecutableStreamsAppTest {
         }
 
         @Override
-        public StreamsCleanUpConfiguration setupCleanUp() {
+        public StreamsCleanUpConfiguration setupCleanUp(final StreamsSetupConfiguration setupConfiguration) {
             return ExecutableStreamsAppTest.this.setupCleanUp.get();
         }
 

@@ -26,10 +26,6 @@ package com.bakdata.kafka;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NonNull;
 
 /**
@@ -37,74 +33,47 @@ import lombok.NonNull;
  */
 public class StreamsCleanUpConfiguration
         implements HasTopicHooks<StreamsCleanUpConfiguration>, HasCleanHook<StreamsCleanUpConfiguration> {
-    private final @NonNull Collection<HookFactory<TopicHook>> topicDeletionHooks = new ArrayList<>();
-    private final @NonNull Collection<HookFactory<Runnable>> cleanHooks = new ArrayList<>();
-    private final @NonNull Collection<HookFactory<Runnable>> resetHooks = new ArrayList<>();
+    private final @NonNull Collection<TopicHook> topicHooks = new ArrayList<>();
+    private final @NonNull Collection<Runnable> cleanHooks = new ArrayList<>();
+    private final @NonNull Collection<Runnable> resetHooks = new ArrayList<>();
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
-     *
-     * @param hookFactory Action to run. Topic is passed as parameter
-     * @return this for chaining
-     * @see StreamsCleanUpRunner
      */
     @Override
-    public StreamsCleanUpConfiguration registerTopicHook(final HookFactory<TopicHook> hookFactory) {
-        this.topicDeletionHooks.add(hookFactory);
+    public StreamsCleanUpConfiguration registerTopicHook(final TopicHook hook) {
+        this.topicHooks.add(hook);
         return this;
     }
 
     /**
      * Register a hook that is executed after {@link StreamsCleanUpRunner#clean()} has finished
-     * @param hookFactory Action to run
-     * @return this for chaining
      */
     @Override
-    public StreamsCleanUpConfiguration registerCleanHook(final HookFactory<Runnable> hookFactory) {
-        this.cleanHooks.add(hookFactory);
+    public StreamsCleanUpConfiguration registerCleanHook(final Runnable hook) {
+        this.cleanHooks.add(hook);
         return this;
     }
 
     /**
      * Register a hook that is executed after {@link StreamsCleanUpRunner#reset()} has finished
-     * @param hookFactory Action to run
-     * @return this for chaining
+     * @param hook factory to create hook from
+     * @return self for chaining
      */
-    public StreamsCleanUpConfiguration registerResetHook(final HookFactory<Runnable> hookFactory) {
-        this.resetHooks.add(hookFactory);
+    public StreamsCleanUpConfiguration registerResetHook(final Runnable hook) {
+        this.resetHooks.add(hook);
         return this;
     }
 
-    StreamsCleanUpHooks create(final Map<String, Object> kafkaConfig) {
-        return StreamsCleanUpHooks.builder()
-                .topicHooks(this.topicDeletionHooks.stream()
-                        .map(t -> t.create(kafkaConfig))
-                        .collect(Collectors.toList()))
-                .cleanHooks(this.cleanHooks.stream()
-                        .map(c -> c.create(kafkaConfig))
-                        .collect(Collectors.toList()))
-                .cleanHooks(this.resetHooks.stream()
-                        .map(c -> c.create(kafkaConfig))
-                        .collect(Collectors.toList()))
-                .build();
+    void runCleanHooks() {
+        this.cleanHooks.forEach(Runnable::run);
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
-    static class StreamsCleanUpHooks {
-        private final @NonNull Collection<TopicHook> topicHooks;
-        private final @NonNull Collection<Runnable> cleanHooks;
-        private final @NonNull Collection<Runnable> resetHooks;
+    void runResetHooks() {
+        this.resetHooks.forEach(Runnable::run);
+    }
 
-        void runCleanHooks() {
-            this.cleanHooks.forEach(Runnable::run);
-        }
-
-        void runResetHooks() {
-            this.resetHooks.forEach(Runnable::run);
-        }
-
-        void runTopicDeletionHooks(final String topic) {
-            this.topicHooks.forEach(hook -> hook.deleted(topic));
-        }
+    void runTopicDeletionHooks(final String topic) {
+        this.topicHooks.forEach(hook -> hook.deleted(topic));
     }
 }

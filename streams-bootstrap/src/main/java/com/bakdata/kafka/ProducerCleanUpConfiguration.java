@@ -26,10 +26,6 @@ package com.bakdata.kafka;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NonNull;
 
 /**
@@ -37,55 +33,32 @@ import lombok.NonNull;
  */
 public class ProducerCleanUpConfiguration
         implements HasTopicHooks<ProducerCleanUpConfiguration>, HasCleanHook<ProducerCleanUpConfiguration> {
-    private final @NonNull Collection<HookFactory<TopicHook>> topicDeletionHooks = new ArrayList<>();
-    private final @NonNull Collection<HookFactory<Runnable>> cleanHooks = new ArrayList<>();
+    private final @NonNull Collection<TopicHook> topicHooks = new ArrayList<>();
+    private final @NonNull Collection<Runnable> cleanHooks = new ArrayList<>();
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
-     *
-     * @param hookFactory Action to run. Topic is passed as parameter
-     * @return this for chaining
-     * @see ProducerCleanUpRunner
      */
     @Override
-    public ProducerCleanUpConfiguration registerTopicHook(final HookFactory<TopicHook> hookFactory) {
-        this.topicDeletionHooks.add(hookFactory);
+    public ProducerCleanUpConfiguration registerTopicHook(final TopicHook hook) {
+        this.topicHooks.add(hook);
         return this;
     }
 
     /**
      * Register an action that is executed after {@link ProducerCleanUpRunner#clean()} has finished
-     * @param action Action to run
-     * @return this for chaining
      */
     @Override
-    public ProducerCleanUpConfiguration registerCleanHook(final HookFactory<Runnable> action) {
-        this.cleanHooks.add(action);
+    public ProducerCleanUpConfiguration registerCleanHook(final Runnable hook) {
+        this.cleanHooks.add(hook);
         return this;
     }
 
-    ProducerCleanUpHooks create(final Map<String, Object> kafkaConfig) {
-        return ProducerCleanUpHooks.builder()
-                .topicHooks(this.topicDeletionHooks.stream()
-                        .map(t -> t.create(kafkaConfig))
-                        .collect(Collectors.toList()))
-                .cleanHooks(this.cleanHooks.stream()
-                        .map(c -> c.create(kafkaConfig))
-                        .collect(Collectors.toList()))
-                .build();
+    void runCleanHooks() {
+        this.cleanHooks.forEach(Runnable::run);
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
-    static class ProducerCleanUpHooks {
-        private final @NonNull Collection<TopicHook> topicHooks;
-        private final @NonNull Collection<Runnable> cleanHooks;
-
-        void runCleanHooks() {
-            this.cleanHooks.forEach(Runnable::run);
-        }
-
-        void runTopicDeletionHooks(final String topic) {
-            this.topicHooks.forEach(hook -> hook.deleted(topic));
-        }
+    void runTopicDeletionHooks(final String topic) {
+        this.topicHooks.forEach(hook -> hook.deleted(topic));
     }
 }

@@ -32,9 +32,9 @@ package com.bakdata.kafka;
 public interface HasCleanHook<SELF> {
     /**
      * Register a hook that is invoked when cleaning apps
-     * @param hookFactory factory to create hook from
+     * @param hook factory to create hook from
      * @return self for chaining
      */
-    SELF registerCleanHook(HookFactory<Runnable> hookFactory);
+    SELF registerCleanHook(Runnable hook);
 
 }

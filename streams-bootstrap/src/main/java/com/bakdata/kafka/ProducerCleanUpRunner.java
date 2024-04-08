@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.ProducerCleanUpConfiguration.ProducerCleanUpHooks;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -42,7 +41,7 @@ import org.jooq.lambda.Seq;
 public final class ProducerCleanUpRunner implements CleanUpRunner {
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
-    private final @NonNull ProducerCleanUpHooks cleanHooks;
+    private final @NonNull ProducerCleanUpConfiguration cleanHooks;
 
     /**
      * Create a new {@code ProducerCleanUpRunner} with default {@link ProducerCleanUpConfiguration}
@@ -67,7 +66,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
     public static ProducerCleanUpRunner create(@NonNull final ProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final ProducerCleanUpConfiguration configuration) {
-        return new ProducerCleanUpRunner(topics, kafkaProperties, configuration.create(kafkaProperties));
+        return new ProducerCleanUpRunner(topics, kafkaProperties, configuration);
     }
 
     /**

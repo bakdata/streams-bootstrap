@@ -39,7 +39,7 @@ public class LargeMessageKafkaApplicationUtils {
      *
      * @param kafkaProperties Kafka properties to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
-     * @see HasTopicHooks#registerTopicHook(HookFactory)
+     * @see HasTopicHooks#registerTopicHook(TopicHook)
      */
     public static TopicHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
@@ -52,15 +52,4 @@ public class LargeMessageKafkaApplicationUtils {
         };
     }
 
-    /**
-     * Register a hook that cleans up LargeMessage files associated with a topic.
-     *
-     * @param cleanUpRunner {@code CleanUpRunner} to register hook on
-     * @return self for chaining
-     * @see #createLargeMessageCleanUpHook(Map)
-     */
-    public static <T> T registerLargeMessageCleanUpHook(final HasTopicHooks<T> cleanUpRunner) {
-        return cleanUpRunner.registerTopicHook(
-                LargeMessageKafkaApplicationUtils::createLargeMessageCleanUpHook);
-    }
 }

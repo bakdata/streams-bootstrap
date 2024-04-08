@@ -36,6 +36,7 @@ import lombok.Value;
 /**
  * Configuration for setting up a {@link ProducerApp}
  * @see ProducerApp#setup(ProducerSetupConfiguration)
+ * @see ProducerApp#setupCleanUp(ProducerSetupConfiguration)
  */
 @Builder
 @Value

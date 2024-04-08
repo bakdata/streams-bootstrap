@@ -114,7 +114,7 @@ class ExecutableProducerAppTest {
         }
 
         @Override
-        public ProducerCleanUpConfiguration setupCleanUp() {
+        public ProducerCleanUpConfiguration setupCleanUp(final ProducerSetupConfiguration configuration) {
             return ExecutableProducerAppTest.this.setupCleanUp.get();
         }
 

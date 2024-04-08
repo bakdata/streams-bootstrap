@@ -59,10 +59,11 @@ public interface ProducerApp extends AutoCloseable {
 
     /**
      * Configure clean up behavior
+     * @param configuration provides all runtime application configurations
      * @return {@code ProducerCleanUpConfiguration}
      * @see ProducerCleanUpRunner
      */
-    default ProducerCleanUpConfiguration setupCleanUp() {
+    default ProducerCleanUpConfiguration setupCleanUp(final ProducerSetupConfiguration configuration) {
         return new ProducerCleanUpConfiguration();
     }
 

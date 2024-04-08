@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import java.util.function.Supplier;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,8 +47,8 @@ public class ExecutableStreamsApp<T extends StreamsApp>
     private final @NonNull StreamsConfig config;
     @Getter
     private final @NonNull T app;
-    @Builder.Default
-    private final @NonNull Runnable setup = () -> {};
+    private final @NonNull Runnable setup;
+    private final @NonNull Supplier<StreamsCleanUpConfiguration> setupCleanup;
 
     /**
      * Create {@code StreamsCleanUpRunner} in order to clean application
@@ -55,7 +56,7 @@ public class ExecutableStreamsApp<T extends StreamsApp>
      */
     @Override
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp();
+        final StreamsCleanUpConfiguration configurer = this.setupCleanup.get();
         return StreamsCleanUpRunner.create(this.topology, this.config, configurer);
     }
 

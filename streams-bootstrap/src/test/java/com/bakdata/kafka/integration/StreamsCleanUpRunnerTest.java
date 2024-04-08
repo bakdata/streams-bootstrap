@@ -40,6 +40,7 @@ import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.StreamsCleanUpRunner;
 import com.bakdata.kafka.StreamsRunner;
+import com.bakdata.kafka.StreamsSetupConfiguration;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
@@ -618,9 +619,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
         return configureApp(new ComplexTopologyApplication() {
             @Override
-            public StreamsCleanUpConfiguration setupCleanUp() {
-                return super.setupCleanUp()
-                        .registerTopicHook(p -> StreamsCleanUpRunnerTest.this.topicHook);
+            public StreamsCleanUpConfiguration setupCleanUp(final StreamsSetupConfiguration configuration) {
+                return super.setupCleanUp(configuration)
+                        .registerTopicHook(StreamsCleanUpRunnerTest.this.topicHook);
             }
         }, StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
