@@ -25,8 +25,7 @@
 package com.bakdata.kafka.integration;
 
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static net.mguenther.kafka.junit.Wait.delay;
 
 import com.bakdata.kafka.CloseFlagApp;
@@ -64,7 +63,7 @@ import org.mockito.quality.Strictness;
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsCleanUpTest {
     private static final int TIMEOUT_SECONDS = 10;
-    private EmbeddedKafkaCluster kafkaCluster;
+    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
     @InjectSoftAssertions
     private SoftAssertions softly;
 
@@ -82,7 +81,6 @@ class StreamsCleanUpTest {
 
     @BeforeEach
     void setup() throws InterruptedException {
-        this.kafkaCluster = provisionWith(defaultClusterConfig());
         this.kafkaCluster.start();
         delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }

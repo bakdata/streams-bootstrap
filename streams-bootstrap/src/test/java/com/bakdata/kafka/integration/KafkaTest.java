@@ -24,10 +24,8 @@
 
 package com.bakdata.kafka.integration;
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
-
 import com.bakdata.kafka.KafkaEndpointConfig;
+import com.bakdata.kafka.TestUtil;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import org.junit.jupiter.api.AfterEach;
@@ -37,11 +35,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 abstract class KafkaTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    EmbeddedKafkaCluster kafkaCluster;
+    final EmbeddedKafkaCluster kafkaCluster = TestUtil.newKafkaCluster();
 
     @BeforeEach
     void setup() {
-        this.kafkaCluster = provisionWith(defaultClusterConfig());
         this.kafkaCluster.start();
     }
 

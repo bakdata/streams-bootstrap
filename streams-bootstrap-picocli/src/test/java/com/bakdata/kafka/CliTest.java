@@ -24,8 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -166,7 +165,7 @@ class CliTest {
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
-        try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+        try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -199,7 +198,7 @@ class CliTest {
     void shouldExitWithSuccessCodeOnShutdown() throws InterruptedException {
         final String input = "input";
         final String output = "output";
-        try (final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+        try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {

@@ -24,8 +24,7 @@
 
 package com.bakdata.kafka.integration;
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +53,7 @@ import org.junit.jupiter.api.Test;
 
 class RunProducerAppTest {
     private static final int TIMEOUT_SECONDS = 10;
-    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
 
     @BeforeEach
     void setup() {

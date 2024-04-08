@@ -25,8 +25,7 @@
 package com.bakdata.kafka.util;
 
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static net.mguenther.kafka.junit.Wait.delay;
 
 import com.bakdata.kafka.TestRecord;
@@ -63,7 +62,7 @@ class SchemaTopicClientTest {
     private static final String TOPIC = "topic";
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(defaultClusterConfig());
+    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
 
     @InjectSoftAssertions
     SoftAssertions softly;

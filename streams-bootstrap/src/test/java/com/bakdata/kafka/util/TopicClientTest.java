@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka.util;
 
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static java.util.Collections.emptyMap;
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,8 +33,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig;
-import net.mguenther.kafka.junit.EmbeddedKafkaConfig;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -44,17 +42,7 @@ import org.junit.jupiter.api.Test;
 class TopicClientTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
-    private final EmbeddedKafkaCluster kafkaCluster = createKafkaCluster();
-
-    private static EmbeddedKafkaCluster createKafkaCluster() {
-        final EmbeddedKafkaConfig kafkaConfig = EmbeddedKafkaConfig.brokers()
-                .withNumberOfBrokers(2)
-                .build();
-        final EmbeddedKafkaClusterConfig clusterConfig = EmbeddedKafkaClusterConfig.newClusterConfig()
-                .configure(kafkaConfig)
-                .build();
-        return provisionWith(clusterConfig);
-    }
+    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
 
     @BeforeEach
     void setup() throws InterruptedException {
