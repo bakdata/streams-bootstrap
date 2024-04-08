@@ -32,6 +32,10 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+/**
+ * Configuration for setting up a {@link StreamsApp}
+ * @see StreamsApp#setup(StreamsAppSetupConfiguration)
+ */
 @Builder
 @Value
 public class StreamsAppSetupConfiguration {

@@ -108,6 +108,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *     </li>
      * </ul>
      *
+     * @param endpointConfig endpoint to run app on
      * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
@@ -174,11 +175,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     private void setupApp(final Map<String, Object> kafkaProperties) {
-        final StreamsAppSetupConfiguration configuration = StreamsAppSetupConfiguration.builder()
+        final StreamsAppSetupConfiguration setupConfiguration = StreamsAppSetupConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(this.getTopics())
                 .build();
-        this.app.setup(configuration);
+        this.app.setup(setupConfiguration);
     }
 
 }

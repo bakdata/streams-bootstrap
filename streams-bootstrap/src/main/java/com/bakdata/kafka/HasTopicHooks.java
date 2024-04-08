@@ -57,6 +57,11 @@ public interface HasTopicHooks<SELF> {
      */
     @FunctionalInterface
     interface TopicHookFactory {
+        /**
+         * Create a new {@code TopicHook}
+         * @param kafkaConfig Kafka configuration for creating {@code TopicHook}
+         * @return {@code TopicHook}
+         */
         TopicHook create(Map<String, Object> kafkaConfig);
     }
 }

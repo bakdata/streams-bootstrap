@@ -97,6 +97,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *     </li>
      * </ul>
      *
+     * @param endpointConfig endpoint to run app on
      * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {

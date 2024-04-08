@@ -52,10 +52,21 @@ public final class ImprovedAdminClient implements Closeable {
     private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Duration timeout;
 
+    /**
+     * Create a new admin client with default timeout
+     * @param properties Kafka configuration
+     * @return admin client
+     */
     public static ImprovedAdminClient create(@NonNull final Map<String, Object> properties) {
         return create(properties, ADMIN_TIMEOUT);
     }
 
+    /**
+     * Create a new admin client
+     * @param properties Kafka configuration
+     * @param timeout timeout when performing admin operations
+     * @return admin client
+     */
     public static ImprovedAdminClient create(@NonNull final Map<String, Object> properties,
             @NonNull final Duration timeout) {
         Preconditions.checkNotNull(properties.get(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),

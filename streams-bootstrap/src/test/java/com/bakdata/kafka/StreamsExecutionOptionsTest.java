@@ -31,7 +31,7 @@ import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.junit.jupiter.api.Test;
 
-public class StreamsExecutionOptionsTest {
+class StreamsExecutionOptionsTest {
 
     @Test
     void shouldLeaveGroup() {
