@@ -103,6 +103,7 @@ class ExecutableProducerAppTest {
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
         executableApp.createCleanUpRunner();
+        verify(this.setupCleanUp).get();
     }
 
     private class TestProducer implements ProducerApp {

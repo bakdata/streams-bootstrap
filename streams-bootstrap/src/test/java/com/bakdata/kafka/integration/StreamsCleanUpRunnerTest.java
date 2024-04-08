@@ -515,7 +515,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             // Wait until all stream application are completely stopped before triggering cleanup
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             final String inputSubject = inputTopic + "-value";
-            final String uniqueAppId = app.getUniqueAppId();
             final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
             this.softly.assertThat(client.getAllSubjects())
                     .contains(inputSubject, manualSubject);

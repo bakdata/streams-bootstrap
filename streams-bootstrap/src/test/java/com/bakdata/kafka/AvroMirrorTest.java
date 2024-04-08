@@ -34,7 +34,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class AvroMirrorTest {
     private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
     @RegisterExtension
-    final TestTopologyExtension<String, TestRecord> testTopology =
+    final TestTopologyExtension<TestRecord, TestRecord> testTopology =
             StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
 
     private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
@@ -49,18 +49,28 @@ class AvroMirrorTest {
 
     @Test
     void shouldMirror() {
-        final Serde<TestRecord> valueSerde = MirrorWithNonDefaultSerde.getValueSerde(
-                this.testTopology.getStreamsConfig().originals());
+        final Serde<TestRecord> keySerde = this.getKeySerde();
+        final Serde<TestRecord> valueSerde = this.getValueSerde();
         final TestRecord record = TestRecord.newBuilder()
                 .setContent("bar")
                 .build();
         this.testTopology.input()
+                .withKeySerde(keySerde)
                 .withValueSerde(valueSerde)
-                .add("foo", record);
+                .add(record, record);
 
         this.testTopology.streamOutput()
+                .withKeySerde(keySerde)
                 .withValueSerde(valueSerde)
-                .expectNextRecord().hasKey("foo").hasValue(record)
+                .expectNextRecord().hasKey(record).hasValue(record)
                 .expectNoMoreRecord();
+    }
+
+    private Serde<TestRecord> getValueSerde() {
+        return this.testTopology.configureValueSerde(MirrorWithNonDefaultSerde.newValueSerde());
+    }
+
+    private Serde<TestRecord> getKeySerde() {
+        return this.testTopology.configureKeySerde(MirrorWithNonDefaultSerde.newKeySerde());
     }
 }

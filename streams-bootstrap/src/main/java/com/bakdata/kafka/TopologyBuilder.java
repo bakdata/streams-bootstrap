@@ -29,6 +29,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -44,8 +45,10 @@ import org.apache.kafka.streams.kstream.KStream;
 public class TopologyBuilder {
 
     StreamsBuilder streamsBuilder = new StreamsBuilder();
-    @NonNull StreamsTopicConfig topics;
-    @NonNull Map<String, Object> kafkaProperties;
+    @NonNull
+    StreamsTopicConfig topics;
+    @NonNull
+    Map<String, Object> kafkaProperties;
 
     /**
      * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
@@ -133,6 +136,28 @@ public class TopologyBuilder {
      */
     public <K, V> KStream<K, V> streamInputPattern(final String role) {
         return this.streamsBuilder.stream(this.topics.getInputPattern(role));
+    }
+
+    /**
+     * Configure a {@code Serde} for values using {@link #kafkaProperties}
+     * @param serde serde to configure
+     * @return configured {@code Serde}
+     * @param <T> type to be (de-)serialized
+     */
+    public <T> Serde<T> configureValueSerde(final Serde<T> serde) {
+        serde.configure(this.kafkaProperties, false);
+        return serde;
+    }
+
+    /**
+     * Configure a {@code Serde} for keys using {@link #kafkaProperties}
+     * @param serde serde to configure
+     * @return configured {@code Serde}
+     * @param <T> type to be (de-)serialized
+     */
+    public <T> Serde<T> configureKeySerde(final Serde<T> serde) {
+        serde.configure(this.kafkaProperties, true);
+        return serde;
     }
 
     Topology build() {

@@ -107,6 +107,7 @@ class ExecutableStreamsAppTest {
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());
         executableApp.createCleanUpRunner();
+        verify(this.setupCleanUp).get();
     }
 
     private class TestApplication implements StreamsApp {
