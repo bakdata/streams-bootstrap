@@ -25,7 +25,6 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
-import com.bakdata.kafka.HasTopicHooks.TopicHookFactory;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
@@ -40,7 +39,7 @@ public class LargeMessageKafkaApplicationUtils {
      *
      * @param kafkaProperties Kafka properties to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
-     * @see HasTopicHooks#registerTopicHook(TopicHookFactory)
+     * @see HasTopicHooks#registerTopicHook(HookFactory)
      */
     public static TopicHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);

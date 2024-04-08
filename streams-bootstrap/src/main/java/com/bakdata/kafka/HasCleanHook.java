@@ -25,28 +25,16 @@
 package com.bakdata.kafka;
 
 /**
- * Interface for performing actions on topics
+ * Interface for performing actions when cleaning apps
  * @param <SELF> self for chaining
  */
 @FunctionalInterface
-public interface HasTopicHooks<SELF> {
+public interface HasCleanHook<SELF> {
     /**
-     * Register a hook that is invoked when performing actions on topics
-     * @param hookFactory factory to create {@link TopicHook} from
+     * Register a hook that is invoked when cleaning apps
+     * @param hookFactory factory to create hook from
      * @return self for chaining
      */
-    SELF registerTopicHook(HookFactory<TopicHook> hookFactory);
+    SELF registerCleanHook(HookFactory<Runnable> hookFactory);
 
-    /**
-     * Hook for performing actions on topics
-     */
-    interface TopicHook {
-        /**
-         * Called when a topic is deleted
-         * @param topic name of the topic
-         */
-        default void deleted(final String topic) {
-            // do nothing
-        }
-    }
 }

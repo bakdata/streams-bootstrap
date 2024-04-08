@@ -92,7 +92,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
 
         private void clean() {
             this.deleteTopics();
-            ProducerCleanUpRunner.this.cleanHooks.runCleanHooks(this.adminClient);
+            ProducerCleanUpRunner.this.cleanHooks.runCleanHooks();
         }
 
         private void deleteTopics() {

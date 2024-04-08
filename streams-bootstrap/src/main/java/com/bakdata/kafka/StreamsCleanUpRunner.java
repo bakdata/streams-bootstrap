@@ -210,7 +210,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             try (final KafkaStreams kafkaStreams = this.createStreams()) {
                 kafkaStreams.cleanUp();
             }
-            StreamsCleanUpRunner.this.cleanHooks.runResetHooks(this.adminClient);
+            StreamsCleanUpRunner.this.cleanHooks.runResetHooks();
         }
 
         private KafkaStreams createStreams() {
@@ -226,7 +226,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private void clean() {
             this.deleteTopics();
             this.deleteConsumerGroup();
-            StreamsCleanUpRunner.this.cleanHooks.runCleanHooks(this.adminClient);
+            StreamsCleanUpRunner.this.cleanHooks.runCleanHooks();
         }
 
         /**

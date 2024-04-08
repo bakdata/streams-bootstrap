@@ -24,29 +24,17 @@
 
 package com.bakdata.kafka;
 
+import java.util.Map;
+
 /**
- * Interface for performing actions on topics
- * @param <SELF> self for chaining
+ * Factory to create a hook from Kafka config
  */
 @FunctionalInterface
-public interface HasTopicHooks<SELF> {
+public interface HookFactory<T> {
     /**
-     * Register a hook that is invoked when performing actions on topics
-     * @param hookFactory factory to create {@link TopicHook} from
-     * @return self for chaining
+     * Create a new hook
+     * @param kafkaConfig Kafka configuration for creating hook
+     * @return hook
      */
-    SELF registerTopicHook(HookFactory<TopicHook> hookFactory);
-
-    /**
-     * Hook for performing actions on topics
-     */
-    interface TopicHook {
-        /**
-         * Called when a topic is deleted
-         * @param topic name of the topic
-         */
-        default void deleted(final String topic) {
-            // do nothing
-        }
-    }
+    T create(Map<String, Object> kafkaConfig);
 }
