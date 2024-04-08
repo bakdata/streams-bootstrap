@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -40,6 +41,7 @@ import lombok.Value;
  */
 @Builder
 @Value
+@EqualsAndHashCode
 public class StreamsTopicConfig {
 
     @Builder.Default

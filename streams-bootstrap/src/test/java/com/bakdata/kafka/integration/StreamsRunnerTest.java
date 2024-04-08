@@ -24,16 +24,12 @@
 
 package com.bakdata.kafka.integration;
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.ConfiguredStreamsApp;
-import com.bakdata.kafka.ExecutableStreamsApp;
-import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsAppConfiguration;
 import com.bakdata.kafka.StreamsExecutionOptions;
@@ -47,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValuesTransactional;
@@ -67,8 +62,6 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -79,9 +72,8 @@ import org.mockito.quality.Strictness;
 @ExtendWith(SoftAssertionsExtension.class)
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
-class RunStreamsAppTest {
+class StreamsRunnerTest extends KafkaTest {
     private static final int TIMEOUT_SECONDS = 10;
-    private EmbeddedKafkaCluster kafkaCluster;
     @Mock
     private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
     @Mock
@@ -89,9 +81,13 @@ class RunStreamsAppTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    static void run(final StreamsRunner runner) {
+    static Thread run(final StreamsRunner runner) {
         // run in Thread because the application blocks indefinitely
-        new Thread(runner::run).start();
+        final Thread thread = new Thread(runner::run);
+        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
+        thread.setUncaughtExceptionHandler(handler);
+        thread.start();
+        return thread;
     }
 
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
@@ -105,99 +101,96 @@ class RunStreamsAppTest {
         return configuration.configure(app);
     }
 
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster = provisionWith(defaultClusterConfig());
-        this.kafkaCluster.start();
+    private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
+        return configureApp(new Mirror(), StreamsTopicConfig.builder()
+                .inputTopics(List.of("input"))
+                .outputTopic("output")
+                .build());
     }
 
-    @AfterEach
-    void tearDown() throws InterruptedException {
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        this.kafkaCluster.stop();
+    private static ConfiguredStreamsApp<StreamsApp> createExtraInputTopicsApplication() {
+        return configureApp(new ExtraInputTopics(), StreamsTopicConfig.builder()
+                .extraInputTopics(Map.of("role", List.of("input1", "input2")))
+                .outputTopic("output")
+                .build());
+    }
+
+    private static ConfiguredStreamsApp<StreamsApp> createErrorApplication() {
+        return configureApp(new ErrorApplication(), StreamsTopicConfig.builder()
+                .inputTopics(List.of("input"))
+                .outputTopic("output")
+                .build());
     }
 
     @Test
     void shouldRunApp() throws InterruptedException {
-        final String input = "input";
-        final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of(input))
-                .outputTopic(output)
-                .build();
-        try (final ExecutableStreamsApp<StreamsApp> app = this.setupApp(new Mirror(), topics);
-                final StreamsRunner runner = app.createRunner()) {
+        try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
+                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+                        .createRunner()) {
+            final String inputTopic = app.getTopics().getInputTopics().get(0);
+            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic).useDefaults());
+            final String outputTopic = app.getTopics().getOutputTopic();
+            this.kafkaCluster.createTopic(TopicConfig.withName(outputTopic).useDefaults());
             run(runner);
             final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                    SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
+                    SendKeyValuesTransactional.inTransaction(inputTopic, List.of(new KeyValue<>("foo", "bar")))
                             .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .build();
             this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .build()))
+            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(outputTopic, String.class, String.class)
+                            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .build()))
                     .hasSize(1);
         }
     }
 
     @Test
     void shouldUseMultipleExtraInputTopics() throws InterruptedException {
-        final String input1 = "input1";
-        final String input2 = "input2";
-        final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.withName(input1).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.withName(input2).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .extraInputTopics(Map.of("role", List.of(input1, input2)))
-                .outputTopic(output)
-                .build();
-        try (final ExecutableStreamsApp<StreamsApp> app = this.setupApp(new ExtraInputTopics(), topics);
-                final StreamsRunner runner = app.createRunner()) {
+        try (final ConfiguredStreamsApp<StreamsApp> app = createExtraInputTopicsApplication();
+                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+                        .createRunner()) {
+            final List<String> inputTopics = app.getTopics().getExtraInputTopics().get("role");
+            final String inputTopic1 = inputTopics.get(0);
+            final String inputTopic2 = inputTopics.get(1);
+            final String outputTopic = app.getTopics().getOutputTopic();
+            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic1).useDefaults());
+            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic2).useDefaults());
+            this.kafkaCluster.createTopic(TopicConfig.withName(outputTopic).useDefaults());
             run(runner);
             this.kafkaCluster.send(
-                    SendKeyValuesTransactional.inTransaction(input1, List.of(new KeyValue<>("foo", "bar")))
+                    SendKeyValuesTransactional.inTransaction(inputTopic1, List.of(new KeyValue<>("foo", "bar")))
                             .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .build());
             this.kafkaCluster.send(
-                    SendKeyValuesTransactional.inTransaction(input2, List.of(new KeyValue<>("foo", "baz")))
+                    SendKeyValuesTransactional.inTransaction(inputTopic2, List.of(new KeyValue<>("foo", "baz")))
                             .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .build());
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .build()))
+            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(outputTopic, String.class, String.class)
+                            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .build()))
                     .hasSize(2);
         }
     }
 
     @Test
     void shouldThrowOnMissingInputTopic() throws InterruptedException {
-        final String input = "input";
-        final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of(input))
-                .outputTopic(output)
-                .build();
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
-        try (final ExecutableStreamsApp<StreamsApp> app = this.setupApp(new Mirror(), topics);
-                final StreamsRunner runner = app.createRunner(StreamsExecutionOptions.builder()
-                        .stateListener(() -> this.stateListener)
-                        .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
-                        .build())) {
-            final Thread thread = new Thread(runner::run);
-            final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-            thread.setUncaughtExceptionHandler(handler);
-            thread.start();
+        try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
+                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+                        .createRunner(StreamsExecutionOptions.builder()
+                                .stateListener(() -> this.stateListener)
+                                .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
+                                .build())) {
+            final Thread thread = run(runner);
+            final CapturingUncaughtExceptionHandler handler =
+                    (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             this.softly.assertThat(thread.isAlive()).isFalse();
             this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
@@ -208,26 +201,22 @@ class RunStreamsAppTest {
 
     @Test
     void shouldCloseOnMapError() throws InterruptedException {
-        final String input = "input";
-        final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of(input))
-                .outputTopic(output)
-                .build();
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
-        try (final ExecutableStreamsApp<StreamsApp> app = this.setupApp(new ErrorApplication(), topics);
-                final StreamsRunner runner = app.createRunner(StreamsExecutionOptions.builder()
-                        .stateListener(() -> this.stateListener)
-                        .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
-                        .build())) {
-            final Thread thread = new Thread(runner::run);
-            final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-            thread.setUncaughtExceptionHandler(handler);
-            thread.start();
+        try (final ConfiguredStreamsApp<StreamsApp> app = createErrorApplication();
+                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+                        .createRunner(StreamsExecutionOptions.builder()
+                                .stateListener(() -> this.stateListener)
+                                .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
+                                .build())) {
+            final String inputTopic = app.getTopics().getInputTopics().get(0);
+            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic).useDefaults());
+            final String outputTopic = app.getTopics().getOutputTopic();
+            this.kafkaCluster.createTopic(TopicConfig.withName(outputTopic).useDefaults());
+            final Thread thread = run(runner);
+            final CapturingUncaughtExceptionHandler handler =
+                    (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
             final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                    SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
+                    SendKeyValuesTransactional.inTransaction(inputTopic, List.of(new KeyValue<>("foo", "bar")))
                             .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                             .build();
@@ -239,13 +228,6 @@ class RunStreamsAppTest {
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
         }
-    }
-
-    private ExecutableStreamsApp<StreamsApp> setupApp(final StreamsApp app, final StreamsTopicConfig topics) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = configureApp(app, topics);
-        return configuredApp.withEndpoint(KafkaEndpointConfig.builder()
-                .brokers(this.kafkaCluster.getBrokerList())
-                .build());
     }
 
     @Getter

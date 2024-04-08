@@ -25,9 +25,7 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.integration.RunStreamsAppTest.configureApp;
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+import static com.bakdata.kafka.integration.StreamsRunnerTest.configureApp;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -38,7 +36,6 @@ import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
-import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.StreamsCleanUpRunner;
@@ -50,7 +47,6 @@ import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
 import com.bakdata.kafka.test_applications.MirrorValueWithAvro;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.test_applications.WordCountPattern;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -65,7 +61,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import net.mguenther.kafka.junit.KeyValue;
 import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValuesTransactional;
@@ -80,11 +75,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -93,11 +85,8 @@ import org.mockito.quality.Strictness;
 @ExtendWith(SoftAssertionsExtension.class)
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
-class StreamsCleanUpTest {
+class StreamsCleanUpRunnerTest extends KafkaTest {
     private static final int TIMEOUT_SECONDS = 10;
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private EmbeddedKafkaCluster kafkaCluster;
     @InjectSoftAssertions
     private SoftAssertions softly;
     @Mock
@@ -141,22 +130,10 @@ class StreamsCleanUpTest {
 
     private static void run(final ExecutableApp<StreamsRunner, ?, ?> app) throws InterruptedException {
         try (final StreamsRunner runner = app.createRunner()) {
-            RunStreamsAppTest.run(runner);
+            StreamsRunnerTest.run(runner);
             // Wait until stream application has consumed all data
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
-    }
-
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster = provisionWith(defaultClusterConfig());
-        this.kafkaCluster.start();
-    }
-
-    @AfterEach
-    void tearDown() throws InterruptedException {
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        this.kafkaCluster.stop();
     }
 
     @Test
@@ -596,7 +573,7 @@ class StreamsCleanUpTest {
                         this.createEndpoint());
                 final StreamsRunner runner = executableApp.createRunner()) {
             this.kafkaCluster.createTopic(TopicConfig.withName(app.getTopics().getInputTopics().get(0)).useDefaults());
-            RunStreamsAppTest.run(runner);
+            StreamsRunnerTest.run(runner);
             // Wait until stream application has consumed all data
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             // should throw exception because consumer group is still active
@@ -644,7 +621,7 @@ class StreamsCleanUpTest {
             @Override
             public StreamsCleanUpConfiguration setupCleanUp() {
                 return super.setupCleanUp()
-                        .registerTopicHook(p -> StreamsCleanUpTest.this.topicHook);
+                        .registerTopicHook(p -> StreamsCleanUpRunnerTest.this.topicHook);
             }
         }, StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
@@ -674,19 +651,6 @@ class StreamsCleanUpTest {
     private void assertSize(final String outputTopic, final int expectedMessageCount) throws InterruptedException {
         final List<KeyValue<String, Long>> records = this.readOutputTopic(outputTopic);
         this.softly.assertThat(records).hasSize(expectedMessageCount);
-    }
-
-    private KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
-        return KafkaEndpointConfig.builder()
-                .brokers(this.kafkaCluster.getBrokerList())
-                .build();
-    }
-
-    private KafkaEndpointConfig createEndpoint() {
-        return KafkaEndpointConfig.builder()
-                .brokers(this.kafkaCluster.getBrokerList())
-                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
-                .build();
     }
 
 }

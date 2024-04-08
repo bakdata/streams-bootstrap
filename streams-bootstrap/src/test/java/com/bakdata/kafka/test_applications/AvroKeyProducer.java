@@ -22,33 +22,33 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.test_applications;
 
-import static java.util.Collections.emptyMap;
-
+import com.bakdata.kafka.ProducerApp;
+import com.bakdata.kafka.ProducerBuilder;
+import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.TestRecord;
 import java.util.Map;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Value;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 
-/**
- * Configuration of {@link StreamsApp}. This includes {@link StreamsTopicConfig} and Kafka configuration
- */
-@Builder
-@Value
-@EqualsAndHashCode
-public class StreamsAppConfiguration implements Configuration<StreamsApp, ConfiguredStreamsApp<? extends StreamsApp>> {
-    @Builder.Default
-    @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
-    @Builder.Default
-    @NonNull Map<String, ?> kafkaConfig = emptyMap();
-
-    /**
-     * Create a new {@code ConfiguredStreamsApp} from this configuration
-     */
+public class AvroKeyProducer implements ProducerApp {
     @Override
-    public <T extends StreamsApp> ConfiguredStreamsApp<T> configure(final T app) {
-        return new ConfiguredStreamsApp<>(app, this);
+    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+        return () -> {
+            try (final Producer<TestRecord, String> producer = builder.createProducer()) {
+                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
+                        TestRecord.newBuilder().setContent("key").build(), "value"));
+            }
+        };
+    }
+
+    @Override
+    public Map<String, Object> createKafkaProperties() {
+        return Map.of(
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
+        );
     }
 }

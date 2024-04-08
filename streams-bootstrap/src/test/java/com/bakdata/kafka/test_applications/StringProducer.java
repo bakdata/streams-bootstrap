@@ -22,33 +22,21 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.test_applications;
 
-import static java.util.Collections.emptyMap;
+import com.bakdata.kafka.ProducerApp;
+import com.bakdata.kafka.ProducerBuilder;
+import com.bakdata.kafka.ProducerRunnable;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.Map;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-
-/**
- * Configuration for setting up a {@link ProducerApp}
- * @see ProducerApp#setup(ProducerAppSetupConfiguration)
- */
-@Builder
-@Value
-public class ProducerAppSetupConfiguration {
-    @Builder.Default
-    @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
-    @Builder.Default
-    @NonNull Map<String, Object> kafkaProperties = emptyMap();
-
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+public class StringProducer implements ProducerApp {
+    @Override
+    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+        return () -> {
+            try (final Producer<String, String> producer = builder.createProducer()) {
+                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", "bar"));
+            }
+        };
     }
 }

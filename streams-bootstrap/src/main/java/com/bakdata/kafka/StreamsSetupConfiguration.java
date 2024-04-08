@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -33,22 +34,23 @@ import lombok.NonNull;
 import lombok.Value;
 
 /**
- * Configuration of {@link StreamsApp}. This includes {@link StreamsTopicConfig} and Kafka configuration
+ * Configuration for setting up a {@link StreamsApp}
+ * @see StreamsApp#setup(StreamsSetupConfiguration)
  */
 @Builder
 @Value
 @EqualsAndHashCode
-public class StreamsAppConfiguration implements Configuration<StreamsApp, ConfiguredStreamsApp<? extends StreamsApp>> {
+public class StreamsSetupConfiguration {
     @Builder.Default
     @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
     @Builder.Default
-    @NonNull Map<String, ?> kafkaConfig = emptyMap();
+    @NonNull Map<String, Object> kafkaProperties = emptyMap();
 
     /**
-     * Create a new {@code ConfiguredStreamsApp} from this configuration
+     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * @return {@code ImprovedAdminClient}
      */
-    @Override
-    public <T extends StreamsApp> ConfiguredStreamsApp<T> configure(final T app) {
-        return new ConfiguredStreamsApp<>(app, this);
+    public ImprovedAdminClient createAdminClient() {
+        return ImprovedAdminClient.create(this.kafkaProperties);
     }
 }

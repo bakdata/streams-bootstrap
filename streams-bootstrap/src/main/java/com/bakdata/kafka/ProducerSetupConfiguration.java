@@ -29,18 +29,20 @@ import static java.util.Collections.emptyMap;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 
 /**
- * Configuration for setting up a {@link StreamsApp}
- * @see StreamsApp#setup(StreamsAppSetupConfiguration)
+ * Configuration for setting up a {@link ProducerApp}
+ * @see ProducerApp#setup(ProducerSetupConfiguration)
  */
 @Builder
 @Value
-public class StreamsAppSetupConfiguration {
+@EqualsAndHashCode
+public class ProducerSetupConfiguration {
     @Builder.Default
-    @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
+    @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
     @Builder.Default
     @NonNull Map<String, Object> kafkaProperties = emptyMap();
 

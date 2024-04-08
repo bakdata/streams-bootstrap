@@ -66,6 +66,7 @@ public class ExecutableStreamsApp<T extends StreamsApp>
      */
     @Override
     public StreamsRunner createRunner() {
+        this.setup.run();
         return new StreamsRunner(this.topology, this.config);
     }
 

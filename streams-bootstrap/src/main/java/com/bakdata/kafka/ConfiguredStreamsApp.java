@@ -175,7 +175,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     private void setupApp(final Map<String, Object> kafkaProperties) {
-        final StreamsAppSetupConfiguration setupConfiguration = StreamsAppSetupConfiguration.builder()
+        final StreamsSetupConfiguration setupConfiguration = StreamsSetupConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(this.getTopics())
                 .build();

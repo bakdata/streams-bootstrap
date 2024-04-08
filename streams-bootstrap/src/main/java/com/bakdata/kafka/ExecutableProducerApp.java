@@ -77,7 +77,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
     }
 
     private void setup() {
-        final ProducerAppSetupConfiguration configuration = ProducerAppSetupConfiguration.builder()
+        final ProducerSetupConfiguration configuration = ProducerSetupConfiguration.builder()
                 .topics(this.topics)
                 .kafkaProperties(this.kafkaProperties)
                 .build();

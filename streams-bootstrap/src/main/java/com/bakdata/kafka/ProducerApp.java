@@ -45,7 +45,7 @@ public interface ProducerApp extends AutoCloseable {
      * Setup Kafka resources, such as topics, before running this app
      * @param configuration provides all runtime application configurations
      */
-    default void setup(final ProducerAppSetupConfiguration configuration) {
+    default void setup(final ProducerSetupConfiguration configuration) {
         // do nothing by default
     }
 

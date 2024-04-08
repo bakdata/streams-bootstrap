@@ -28,6 +28,7 @@ import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -36,6 +37,7 @@ import lombok.Value;
  */
 @Builder
 @Value
+@EqualsAndHashCode
 public class ProducerAppConfiguration
         implements Configuration<ProducerApp, ConfiguredProducerApp<? extends ProducerApp>> {
     @Builder.Default

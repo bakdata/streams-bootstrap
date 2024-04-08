@@ -54,7 +54,7 @@ public interface StreamsApp extends AutoCloseable {
      * Setup Kafka resources, such as topics, before running this app
      * @param configuration provides all runtime application configurations
      */
-    default void setup(final StreamsAppSetupConfiguration configuration) {
+    default void setup(final StreamsSetupConfiguration configuration) {
         // do nothing by default
     }
 
