@@ -24,6 +24,9 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -145,7 +148,19 @@ public class TopologyBuilder {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serde<T> configureValueSerde(final Serde<T> serde) {
-        serde.configure(this.kafkaProperties, false);
+        return this.configureValueSerde(serde, emptyMap());
+    }
+
+    /**
+     * Configure a {@code Serde} for values using {@link #kafkaProperties} and config overrides
+     * @param serde serde to configure
+     * @param config configuration overrides
+     * @return configured {@code Serde}
+     * @param <T> type to be (de-)serialized
+     */
+    public <T> Serde<T> configureValueSerde(final Serde<T> serde, final Map<String, Object> config) {
+        final Map<String, Object> serdeConfig = this.mergeConfig(config);
+        serde.configure(serdeConfig, false);
         return serde;
     }
 
@@ -156,8 +171,27 @@ public class TopologyBuilder {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serde<T> configureKeySerde(final Serde<T> serde) {
-        serde.configure(this.kafkaProperties, true);
+        return this.configureKeySerde(serde, emptyMap());
+    }
+
+    /**
+     * Configure a {@code Serde} for keys using {@link #kafkaProperties} and config overrides
+     * @param serde serde to configure
+     * @param config configuration overrides
+     * @return configured {@code Serde}
+     * @param <T> type to be (de-)serialized
+     */
+    public <T> Serde<T> configureKeySerde(final Serde<T> serde, final Map<String, Object> config) {
+        final Map<String, Object> serdeConfig = this.mergeConfig(config);
+        serde.configure(serdeConfig, true);
         return serde;
+    }
+
+    private Map<String, Object> mergeConfig(final Map<String, Object> config) {
+        return ImmutableMap.<String, Object>builder()
+                .putAll(this.kafkaProperties)
+                .putAll(config)
+                .build();
     }
 
     Topology build() {
