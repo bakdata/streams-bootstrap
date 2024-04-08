@@ -147,7 +147,7 @@ public abstract class KafkaStreamsApplication
     }
 
     @Override
-    final StreamsAppConfiguration createConfiguration() {
+    protected final StreamsAppConfiguration createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
         return StreamsAppConfiguration.builder()
@@ -157,7 +157,7 @@ public abstract class KafkaStreamsApplication
     }
 
     @Override
-    final Optional<StreamsExecutionOptions> createExecutionOptions() {
+    protected final Optional<StreamsExecutionOptions> createExecutionOptions() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
                 .volatileGroupInstanceId(this.volatileGroupInstanceId)
                 .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)

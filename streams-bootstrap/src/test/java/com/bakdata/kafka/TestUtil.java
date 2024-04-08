@@ -30,15 +30,20 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaConfig.brokers;
 
 import lombok.experimental.UtilityClass;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
+import net.mguenther.kafka.junit.EmbeddedKafkaConfig.EmbeddedKafkaConfigBuilder;
 
 @UtilityClass
 public class TestUtil {
     public static EmbeddedKafkaCluster newKafkaCluster() {
         return provisionWith(newClusterConfig()
-                .configure(brokers()
-                        .with("transaction.state.log.num.partitions", 10)
-                        .with("offsets.topic.num.partitions", 10)
+                .configure(newKafkaConfig()
                         .build())
                 .build());
+    }
+
+    public static EmbeddedKafkaConfigBuilder newKafkaConfig() {
+        return brokers()
+                .with("transaction.state.log.num.partitions", 10)
+                .with("offsets.topic.num.partitions", 10);
     }
 }

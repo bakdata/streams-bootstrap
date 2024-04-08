@@ -73,7 +73,7 @@ public abstract class KafkaProducerApplication
     protected abstract ProducerApp createApp(boolean cleanUp);
 
     @Override
-    final ProducerAppConfiguration createConfiguration() {
+    protected final ProducerAppConfiguration createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
         return ProducerAppConfiguration.builder()
@@ -83,7 +83,7 @@ public abstract class KafkaProducerApplication
     }
 
     @Override
-    final Optional<ProducerExecutionOptions> createExecutionOptions() {
+    protected final Optional<ProducerExecutionOptions> createExecutionOptions() {
         return Optional.empty();
     }
 

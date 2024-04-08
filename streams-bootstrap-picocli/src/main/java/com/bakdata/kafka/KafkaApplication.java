@@ -177,6 +177,19 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     protected abstract A createApp(boolean cleanUp);
 
     /**
+     * Create configuration to configure app
+     * @return configuration
+     */
+    protected abstract Configuration<A, ? extends ConfiguredApp<? extends ExecutableApp<R, C, O>>> createConfiguration();
+
+    /**
+     * Create options for running the app
+     * @return run options if available
+     * @see ExecutableApp#createRunner(Object)
+     */
+    protected abstract Optional<O> createExecutionOptions();
+
+    /**
      * Configure application when running in debug mode. By default, Log4j2 log level is configured to debug for
      * {@code com.bakdata} and the applications package.
      */
@@ -186,23 +199,10 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     /**
-     * Create configuration to configure app
-     * @return configuration
-     */
-    abstract Configuration<A, ? extends ConfiguredApp<? extends ExecutableApp<R, C, O>>> createConfiguration();
-
-    /**
-     * Create options for running the app
-     * @return run options if available
-     * @see ExecutableApp#createRunner(Object)
-     */
-    abstract Optional<O> createExecutionOptions();
-
-    /**
      * Create a new {@code CleanableApp}
      * @return {@code CleanableApp}
      */
-    final CleanableApp createCleanableApp() {
+    protected final CleanableApp createCleanableApp() {
         final ExecutableApp<R, C, O> executableApp = this.createExecutableApp(true);
         final C cleanUpRunner = executableApp.createCleanUpRunner();
         final CleanableApp cleanableApp = new CleanableApp(executableApp, cleanUpRunner);
@@ -214,7 +214,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
      * Create a new {@code RunnableApp}
      * @return {@code RunnableApp}
      */
-    final RunnableApp createRunnableApp() {
+    protected final RunnableApp createRunnableApp() {
         final ExecutableApp<R, ?, O> app = this.createExecutableApp(false);
         final Optional<O> executionOptions = this.createExecutionOptions();
         final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
@@ -278,7 +278,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     @RequiredArgsConstructor
-    class CleanableApp implements AutoCloseable, Stoppable {
+    protected class CleanableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull C cleanUpRunner;
@@ -296,7 +296,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     @RequiredArgsConstructor
-    class RunnableApp implements AutoCloseable, Stoppable {
+    protected class RunnableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull R runner;

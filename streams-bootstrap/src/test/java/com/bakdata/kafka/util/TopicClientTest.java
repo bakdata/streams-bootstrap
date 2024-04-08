@@ -24,8 +24,10 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
+import static com.bakdata.kafka.TestUtil.newKafkaConfig;
 import static java.util.Collections.emptyMap;
+import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.newClusterConfig;
 import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +44,11 @@ import org.junit.jupiter.api.Test;
 class TopicClientTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
-    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
+    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(newClusterConfig()
+            .configure(newKafkaConfig()
+                    .withNumberOfBrokers(2)
+                    .build())
+            .build());
 
     @BeforeEach
     void setup() throws InterruptedException {

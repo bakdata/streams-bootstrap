@@ -27,7 +27,7 @@ package com.bakdata.kafka;
 /**
  * {@link ProducerApp} that automatically removes files associated with {@code LargeMessageSerializer}
  */
-public interface LargeMessageKafkaProducerApplication extends ProducerApp {
+public interface LargeMessageProducerApp extends ProducerApp {
 
     @Override
     default ProducerCleanUpConfiguration setupCleanUp() {
