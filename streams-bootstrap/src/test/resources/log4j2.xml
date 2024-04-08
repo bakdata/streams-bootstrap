@@ -27,5 +27,8 @@
         <Logger additivity="false" level="warn" name="kafka.server.KafkaConfig">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.admin.AdminClientConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>
