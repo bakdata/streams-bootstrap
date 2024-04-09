@@ -137,10 +137,12 @@ public final class SchemaTopicClient implements Closeable {
     @Override
     public void close() {
         this.topicClient.close();
-        try {
-            this.schemaRegistryClient.close();
-        } catch (final IOException e) {
-            throw new UncheckedIOException("Error closing schema registry client", e);
+        if (this.schemaRegistryClient != null) {
+            try {
+                this.schemaRegistryClient.close();
+            } catch (final IOException e) {
+                throw new UncheckedIOException("Error closing schema registry client", e);
+            }
         }
     }
 }
