@@ -54,7 +54,7 @@ public class CloseFlagApp extends KafkaStreamsApplication {
 
             @Override
             public String getUniqueAppId(final StreamsTopicConfig topics) {
-                return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+                return CloseFlagApp.this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
             }
 
             @Override
