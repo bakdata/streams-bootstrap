@@ -48,6 +48,8 @@ import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
 import com.bakdata.kafka.test_applications.MirrorValueWithAvro;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.test_applications.WordCountPattern;
+import com.bakdata.kafka.util.ConsumerGroupClient;
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -56,9 +58,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,8 +67,6 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValuesTransactional;
 import net.mguenther.kafka.junit.SendValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
@@ -188,25 +186,19 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final AdminClient adminClient = this.createAdminClient()) {
-                this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-                        .extracting(ConsumerGroupListing::groupId)
+            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
+                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
-                        .contains(app.getUniqueAppId());
-            } catch (final TimeoutException | ExecutionException e) {
-                throw new RuntimeException("Error retrieving consumer groups", e);
+                        .isTrue();
             }
 
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             clean(executableApp);
 
-            try (final AdminClient adminClient = this.createAdminClient()) {
-                this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-                        .extracting(ConsumerGroupListing::groupId)
+            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
+                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
                         .as("Consumer group is deleted")
-                        .doesNotContain(app.getUniqueAppId());
-            } catch (final TimeoutException | ExecutionException e) {
-                throw new RuntimeException("Error retrieving consumer groups", e);
+                        .isFalse();
             }
         }
     }
@@ -232,26 +224,19 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final AdminClient adminClient = this.createAdminClient()) {
-                this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-                        .extracting(ConsumerGroupListing::groupId)
+            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
+                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
-                        .contains(app.getUniqueAppId());
-            } catch (final TimeoutException | ExecutionException e) {
-                throw new RuntimeException("Error retrieving consumer groups", e);
+                        .isTrue();
             }
 
             delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-            try (final AdminClient adminClient = this.createAdminClient()) {
-                adminClient.deleteConsumerGroups(List.of(app.getUniqueAppId())).all()
-                        .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                this.softly.assertThat(adminClient.listConsumerGroups().all().get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-                        .extracting(ConsumerGroupListing::groupId)
+            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
+                adminClient.deleteConsumerGroup(app.getUniqueAppId());
+                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
                         .as("Consumer group is deleted")
-                        .doesNotContain(app.getUniqueAppId());
-            } catch (final TimeoutException | ExecutionException e) {
-                throw new RuntimeException("Error deleting consumer group", e);
+                        .isFalse();
             }
             this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
         }
@@ -629,8 +614,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 .build());
     }
 
-    private AdminClient createAdminClient() {
-        return AdminClient.create(this.createEndpoint().createKafkaProperties());
+    private ImprovedAdminClient createAdminClient() {
+        return ImprovedAdminClient.create(this.createEndpoint().createKafkaProperties());
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {

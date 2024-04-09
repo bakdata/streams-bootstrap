@@ -165,10 +165,9 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      */
     @Override
     public void clean() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
-            final Task task = new Task(adminClient);
-            task.cleanAndReset();
-        }
+        final ImprovedAdminClient adminClient = this.createAdminClient();
+        final Task task = new Task(adminClient);
+        task.cleanAndReset();
     }
 
     /**
@@ -176,10 +175,9 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      * local state.
      */
     public void reset() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
-            final Task task = new Task(adminClient);
-            task.reset();
-        }
+        final ImprovedAdminClient adminClient = this.createAdminClient();
+        final Task task = new Task(adminClient);
+        task.reset();
     }
 
     private Map<String, Object> getKafkaProperties() {

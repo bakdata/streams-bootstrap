@@ -31,6 +31,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -136,5 +137,10 @@ public final class SchemaTopicClient implements Closeable {
     @Override
     public void close() {
         this.topicClient.close();
+        try {
+            this.schemaRegistryClient.close();
+        } catch (final IOException e) {
+            throw new UncheckedIOException("Error closing schema registry client", e);
+        }
     }
 }

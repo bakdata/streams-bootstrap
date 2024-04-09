@@ -74,10 +74,9 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
      */
     @Override
     public void clean() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
-            final Task task = new Task(adminClient);
-            task.clean();
-        }
+        final ImprovedAdminClient adminClient = this.createAdminClient();
+        final Task task = new Task(adminClient);
+        task.clean();
     }
 
     private ImprovedAdminClient createAdminClient() {
