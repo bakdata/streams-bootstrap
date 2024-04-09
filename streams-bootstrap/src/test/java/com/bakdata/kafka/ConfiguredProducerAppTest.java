@@ -44,7 +44,8 @@ class ConfiguredProducerAppTest {
                         "kafka", "streams"
                 ))
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .build()))
@@ -59,7 +60,8 @@ class ConfiguredProducerAppTest {
     void shouldPrioritizeEnvironmentConfigs() {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .build()))
@@ -72,7 +74,8 @@ class ConfiguredProducerAppTest {
     void shouldSetDefaultAvroSerializerWhenSchemaRegistryUrlIsSet() {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .schemaRegistryUrl("fake")
@@ -85,7 +88,8 @@ class ConfiguredProducerAppTest {
     void shouldSetDefaultStringSerializerWhenSchemaRegistryUrlIsNotSet() {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
                 .build()))

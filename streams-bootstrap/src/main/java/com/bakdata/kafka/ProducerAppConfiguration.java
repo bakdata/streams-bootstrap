@@ -38,18 +38,10 @@ import lombok.Value;
 @Builder
 @Value
 @EqualsAndHashCode
-public class ProducerAppConfiguration
-        implements Configuration<ProducerApp, ConfiguredProducerApp<? extends ProducerApp>> {
+public class ProducerAppConfiguration {
     @Builder.Default
     @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
     @Builder.Default
     @NonNull Map<String, ?> kafkaConfig = emptyMap();
 
-    /**
-     * Create a new {@code ConfiguredProducerApp} from this configuration
-     */
-    @Override
-    public <T extends ProducerApp> ConfiguredProducerApp<T> configure(final T app) {
-        return new ConfiguredProducerApp<>(app, this);
-    }
 }

@@ -98,7 +98,7 @@ class StreamsRunnerTest extends KafkaTest {
                 ))
                 .topics(topics)
                 .build();
-        return configuration.configure(app);
+        return new ConfiguredStreamsApp<>(app, configuration);
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {

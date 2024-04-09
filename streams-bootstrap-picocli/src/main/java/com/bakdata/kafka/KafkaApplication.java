@@ -62,9 +62,8 @@ import picocli.CommandLine.ParseResult;
  * {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
  *
  * @param <R> type of {@link Runner} used by this app
- * @param <C> type of {@link CleanUpRunner} used by this app
+ * @param <CR> type of {@link CleanUpRunner} used by this app
  * @param <O> type of options to create runner
- * @param <A> type of app
  */
 @ToString
 @Getter
@@ -72,8 +71,8 @@ import picocli.CommandLine.ParseResult;
 @RequiredArgsConstructor
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
-public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner, O, A, E extends ExecutableApp<R, C,
-        O>>
+public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunner, O, E extends ExecutableApp<R, CR,
+        O>, CA extends ConfiguredApp<E>>
         implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @ToString.Exclude
@@ -134,20 +133,6 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     /**
-     * Create a new app that will be configured and executed according to this application.
-     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return app
-     */
-    public abstract A createApp(boolean cleanUp);
-
-    /**
-     * Create configuration to configure app
-     * @return configuration
-     */
-    public abstract Configuration<A, ? extends ConfiguredApp<E>> createConfiguration();
-
-    /**
      * Create options for running the app
      * @return run options if available
      * @see ExecutableApp#createRunner(Object)
@@ -155,11 +140,19 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     public abstract Optional<O> createExecutionOptions();
 
     /**
+     * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     * @param cleanUp whether {@code ConfiguredApp} is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return {@code ConfiguredApp}
+     */
+    public abstract CA createConfiguredApp(final boolean cleanUp);
+
+    /**
      * Clean all resources associated with this application
      */
     public void clean() {
         try (final CleanableApp cleanableApp = this.createCleanableApp()) {
-            final C cleanUpRunner = cleanableApp.getCleanUpRunner();
+            final CR cleanUpRunner = cleanableApp.getCleanUpRunner();
             cleanUpRunner.clean();
         }
     }
@@ -224,8 +217,8 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
      * @return {@code CleanableApp}
      */
     protected final CleanableApp createCleanableApp() {
-        final ExecutableApp<R, C, O> executableApp = this.createExecutableApp(true);
-        final C cleanUpRunner = executableApp.createCleanUpRunner();
+        final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp(true);
+        final CR cleanUpRunner = executableApp.createCleanUpRunner();
         final CleanableApp cleanableApp = new CleanableApp(executableApp, cleanUpRunner);
         this.activeApps.add(cleanableApp);
         return cleanableApp;
@@ -242,19 +235,6 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
         final RunnableApp runnableApp = new RunnableApp(app, runner);
         this.activeApps.add(runnableApp);
         return runnableApp;
-    }
-
-    /**
-     * Create a new {@code ConfiguredApp} that will be executed according to this application.
-     * @param cleanUp whether {@code ConfiguredApp} is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return {@code ConfiguredApp}
-     */
-    private ConfiguredApp<E> createConfiguredApp(final boolean cleanUp) {
-        final A app = this.createApp(cleanUp);
-        final Configuration<A, ? extends ConfiguredApp<E>> configuration =
-                this.createConfiguration();
-        return configuration.configure(app);
     }
 
     private void startApplication() {
@@ -282,7 +262,7 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     protected class CleanableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
-        private final @NonNull C cleanUpRunner;
+        private final @NonNull CR cleanUpRunner;
 
         @Override
         public void close() {

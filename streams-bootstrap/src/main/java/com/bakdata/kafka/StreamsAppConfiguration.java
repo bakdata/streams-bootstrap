@@ -38,17 +38,10 @@ import lombok.Value;
 @Builder
 @Value
 @EqualsAndHashCode
-public class StreamsAppConfiguration implements Configuration<StreamsApp, ConfiguredStreamsApp<? extends StreamsApp>> {
+public class StreamsAppConfiguration {
     @Builder.Default
     @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
     @Builder.Default
     @NonNull Map<String, ?> kafkaConfig = emptyMap();
 
-    /**
-     * Create a new {@code ConfiguredStreamsApp} from this configuration
-     */
-    @Override
-    public <T extends StreamsApp> ConfiguredStreamsApp<T> configure(final T app) {
-        return new ConfiguredStreamsApp<>(app, this);
-    }
 }

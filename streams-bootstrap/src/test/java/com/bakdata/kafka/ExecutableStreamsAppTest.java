@@ -56,7 +56,8 @@ class ExecutableStreamsAppTest {
         final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .brokers("localhost:9092")
                 .build();
@@ -78,7 +79,8 @@ class ExecutableStreamsAppTest {
         final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .brokers("localhost:9092")
                 .build();
@@ -100,7 +102,8 @@ class ExecutableStreamsAppTest {
         final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .brokers("localhost:9092")
                 .build();

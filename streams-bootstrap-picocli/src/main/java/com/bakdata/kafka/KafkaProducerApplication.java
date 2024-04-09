@@ -46,15 +46,16 @@ import picocli.CommandLine.Command;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
-public abstract class KafkaProducerApplication
-        extends
-        KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ProducerApp,
-                ExecutableProducerApp<? extends ProducerApp>> {
+public abstract class KafkaProducerApplication extends
+        KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions,
+                ExecutableProducerApp<ProducerApp>, ConfiguredProducerApp<ProducerApp>> {
 
     /**
      * Create a new {@code ProducerApp} that will be configured and executed according to this application.
+     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return app
      */
-    @Override
     public abstract ProducerApp createApp(boolean cleanUp);
 
     /**
@@ -74,7 +75,10 @@ public abstract class KafkaProducerApplication
         super.run();
     }
 
-    @Override
+    /**
+     * Create configuration to configure app
+     * @return configuration
+     */
     public final ProducerAppConfiguration createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
@@ -94,5 +98,12 @@ public abstract class KafkaProducerApplication
                 .outputTopic(this.getOutputTopic())
                 .extraOutputTopics(this.getExtraOutputTopics())
                 .build();
+    }
+
+    @Override
+    public final ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
+        final ProducerApp app = this.createApp(cleanUp);
+        final ProducerAppConfiguration configuration = this.createConfiguration();
+        return new ConfiguredProducerApp<>(app, configuration);
     }
 }

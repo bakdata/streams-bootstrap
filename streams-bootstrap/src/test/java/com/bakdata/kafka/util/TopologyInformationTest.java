@@ -60,7 +60,7 @@ class TopologyInformationTest {
         final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
                 .topics(this.topics)
                 .build();
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(this.app);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this.app, configuration);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(
                 KafkaEndpointConfig.builder()
                         .brokers("localhost:9092")

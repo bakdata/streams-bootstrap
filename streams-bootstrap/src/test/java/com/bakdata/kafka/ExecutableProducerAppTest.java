@@ -54,7 +54,8 @@ class ExecutableProducerAppTest {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .brokers("localhost:9092")
                 .build();
@@ -75,7 +76,8 @@ class ExecutableProducerAppTest {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .brokers("localhost:9092")
                 .build();
@@ -96,7 +98,8 @@ class ExecutableProducerAppTest {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        final ConfiguredProducerApp<ProducerApp> configuredApp = configuration.configure(new TestProducer());
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .brokers("localhost:9092")
                 .build();

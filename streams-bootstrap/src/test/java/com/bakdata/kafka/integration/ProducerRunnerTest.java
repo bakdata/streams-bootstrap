@@ -54,7 +54,7 @@ class ProducerRunnerTest extends KafkaTest {
         final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
                 .topics(topics)
                 .build();
-        return configuration.configure(app);
+        return new ConfiguredProducerApp<>(app, configuration);
     }
 
     @Test

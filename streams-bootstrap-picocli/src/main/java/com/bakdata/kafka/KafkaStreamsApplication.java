@@ -63,10 +63,9 @@ import picocli.CommandLine.UseDefaultConverter;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Streams application.")
-public abstract class KafkaStreamsApplication
-        extends
-        KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions, StreamsApp,
-                ExecutableStreamsApp<? extends StreamsApp>> {
+public abstract class KafkaStreamsApplication extends
+        KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions,
+                ExecutableStreamsApp<StreamsApp>, ConfiguredStreamsApp<StreamsApp>> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -84,8 +83,10 @@ public abstract class KafkaStreamsApplication
 
     /**
      * Create a new {@code StreamsApp} that will be configured and executed according to this application.
+     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return app
      */
-    @Override
     public abstract StreamsApp createApp(boolean cleanUp);
 
     /**
@@ -120,7 +121,10 @@ public abstract class KafkaStreamsApplication
         }
     }
 
-    @Override
+    /**
+     * Create configuration to configure app
+     * @return configuration
+     */
     public final StreamsAppConfiguration createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
@@ -151,6 +155,13 @@ public abstract class KafkaStreamsApplication
                 .extraOutputTopics(this.getExtraOutputTopics())
                 .errorTopic(this.errorTopic)
                 .build();
+    }
+
+    @Override
+    public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
+        final StreamsApp app = this.createApp(cleanUp);
+        final StreamsAppConfiguration configuration = this.createConfiguration();
+        return new ConfiguredStreamsApp<>(app, configuration);
     }
 
     /**
