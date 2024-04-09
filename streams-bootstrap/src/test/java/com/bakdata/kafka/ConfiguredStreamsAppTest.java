@@ -59,10 +59,6 @@ class ConfiguredStreamsAppTest {
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
         final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .kafkaConfig(Map.of(
-                        "foo", "baz",
-                        "kafka", "streams"
-                ))
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp = configuration.configure(new TestApplication());
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
