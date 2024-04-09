@@ -50,6 +50,12 @@ public abstract class KafkaProducerApplication
         extends KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ProducerApp> {
 
     /**
+     * Create a new {@code ProducerApp} that will be configured and executed according to this application.
+     */
+    @Override
+    public abstract ProducerApp createApp(boolean cleanUp);
+
+    /**
      * Delete all output topics associated with the Kafka Producer application.
      */
     @Command(description = "Delete all output topics associated with the Kafka Producer application.")
@@ -66,14 +72,8 @@ public abstract class KafkaProducerApplication
         super.run();
     }
 
-    /**
-     * Create a new {@code ProducerApp} that will be configured and executed according to this application.
-     */
     @Override
-    protected abstract ProducerApp createApp(boolean cleanUp);
-
-    @Override
-    protected final ProducerAppConfiguration createConfiguration() {
+    public final ProducerAppConfiguration createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
         return ProducerAppConfiguration.builder()
@@ -83,11 +83,11 @@ public abstract class KafkaProducerApplication
     }
 
     @Override
-    protected final Optional<ProducerExecutionOptions> createExecutionOptions() {
+    public final Optional<ProducerExecutionOptions> createExecutionOptions() {
         return Optional.empty();
     }
 
-    private ProducerTopicConfig createTopicConfig() {
+    public final ProducerTopicConfig createTopicConfig() {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())
                 .extraOutputTopics(this.getExtraOutputTopics())

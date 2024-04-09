@@ -44,7 +44,7 @@ public class CloseFlagApp extends KafkaStreamsApplication {
     }
 
     @Override
-    protected StreamsApp createApp(final boolean cleanUp) {
+    public StreamsApp createApp(final boolean cleanUp) {
         return new StreamsApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {

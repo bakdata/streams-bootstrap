@@ -81,6 +81,12 @@ public abstract class KafkaStreamsApplication
     private boolean volatileGroupInstanceId;
 
     /**
+     * Create a new {@code StreamsApp} that will be configured and executed according to this application.
+     */
+    @Override
+    public abstract StreamsApp createApp(boolean cleanUp);
+
+    /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
      * topics associated with the Kafka Streams application.
      */
@@ -112,11 +118,38 @@ public abstract class KafkaStreamsApplication
         }
     }
 
-    /**
-     * Create a new {@code StreamsApp} that will be configured and executed according to this application.
-     */
     @Override
-    protected abstract StreamsApp createApp(boolean cleanUp);
+    public final StreamsAppConfiguration createConfiguration() {
+        final StreamsTopicConfig topics = this.createTopicConfig();
+        final Map<String, String> kafkaConfig = this.getKafkaConfig();
+        return StreamsAppConfiguration.builder()
+                .topics(topics)
+                .kafkaConfig(kafkaConfig)
+                .build();
+    }
+
+    @Override
+    public final Optional<StreamsExecutionOptions> createExecutionOptions() {
+        final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
+                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
+                .stateListener(this::createStateListener)
+                .onStart(this::onStreamsStart)
+                .build();
+        return Optional.of(options);
+    }
+
+    public final StreamsTopicConfig createTopicConfig() {
+        return StreamsTopicConfig.builder()
+                .inputTopics(this.inputTopics)
+                .extraInputTopics(this.extraInputTopics)
+                .inputPattern(this.inputPattern)
+                .extraInputPatterns(this.extraInputPatterns)
+                .outputTopic(this.getOutputTopic())
+                .extraOutputTopics(this.getExtraOutputTopics())
+                .errorTopic(this.errorTopic)
+                .build();
+    }
 
     /**
      * Create a {@link StateListener} to use for Kafka Streams.
@@ -144,38 +177,5 @@ public abstract class KafkaStreamsApplication
      */
     protected void onStreamsStart(final KafkaStreams streams) {
         // do nothing by default
-    }
-
-    @Override
-    protected final StreamsAppConfiguration createConfiguration() {
-        final StreamsTopicConfig topics = this.createTopicConfig();
-        final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        return StreamsAppConfiguration.builder()
-                .topics(topics)
-                .kafkaConfig(kafkaConfig)
-                .build();
-    }
-
-    @Override
-    protected final Optional<StreamsExecutionOptions> createExecutionOptions() {
-        final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(this.volatileGroupInstanceId)
-                .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
-                .stateListener(this::createStateListener)
-                .onStart(this::onStreamsStart)
-                .build();
-        return Optional.of(options);
-    }
-
-    private StreamsTopicConfig createTopicConfig() {
-        return StreamsTopicConfig.builder()
-                .inputTopics(this.inputTopics)
-                .extraInputTopics(this.extraInputTopics)
-                .inputPattern(this.inputPattern)
-                .extraInputPatterns(this.extraInputPatterns)
-                .outputTopic(this.getOutputTopic())
-                .extraOutputTopics(this.getExtraOutputTopics())
-                .errorTopic(this.errorTopic)
-                .build();
     }
 }

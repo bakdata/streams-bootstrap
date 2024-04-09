@@ -133,6 +133,27 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
     }
 
     /**
+     * Create a new app that will be configured and executed according to this application.
+     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return app
+     */
+    public abstract A createApp(boolean cleanUp);
+
+    /**
+     * Create configuration to configure app
+     * @return configuration
+     */
+    public abstract Configuration<A, ? extends ConfiguredApp<? extends ExecutableApp<R, C, O>>> createConfiguration();
+
+    /**
+     * Create options for running the app
+     * @return run options if available
+     * @see ExecutableApp#createRunner(Object)
+     */
+    public abstract Optional<O> createExecutionOptions();
+
+    /**
      * Clean all resources associated with this application
      */
     public void clean() {
@@ -168,26 +189,12 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
         }
     }
 
-    /**
-     * Create a new app that will be configured and executed according to this application.
-     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return app
-     */
-    protected abstract A createApp(boolean cleanUp);
-
-    /**
-     * Create configuration to configure app
-     * @return configuration
-     */
-    protected abstract Configuration<A, ? extends ConfiguredApp<? extends ExecutableApp<R, C, O>>> createConfiguration();
-
-    /**
-     * Create options for running the app
-     * @return run options if available
-     * @see ExecutableApp#createRunner(Object)
-     */
-    protected abstract Optional<O> createExecutionOptions();
+    public KafkaEndpointConfig getEndpointConfig() {
+        return KafkaEndpointConfig.builder()
+                .brokers(this.brokers)
+                .schemaRegistryUrl(this.schemaRegistryUrl)
+                .build();
+    }
 
     /**
      * Configure application when running in debug mode. By default, Log4j2 log level is configured to debug for
@@ -247,13 +254,6 @@ public abstract class KafkaApplication<R extends Runner, C extends CleanUpRunner
         final Configuration<A, ? extends ConfiguredApp<? extends ExecutableApp<R, C, O>>> configuration =
                 this.createConfiguration();
         return configuration.configure(app);
-    }
-
-    private KafkaEndpointConfig getEndpointConfig() {
-        return KafkaEndpointConfig.builder()
-                .brokers(this.brokers)
-                .schemaRegistryUrl(this.schemaRegistryUrl)
-                .build();
     }
 
     private void startApplication() {
