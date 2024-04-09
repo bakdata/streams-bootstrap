@@ -64,7 +64,9 @@ import picocli.CommandLine.UseDefaultConverter;
 @Slf4j
 @Command(description = "Run a Kafka Streams application.")
 public abstract class KafkaStreamsApplication
-        extends KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions, StreamsApp> {
+        extends
+        KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions, StreamsApp,
+                ExecutableStreamsApp<? extends StreamsApp>> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")

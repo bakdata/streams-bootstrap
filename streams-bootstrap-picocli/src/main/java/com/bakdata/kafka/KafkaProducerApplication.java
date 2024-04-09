@@ -47,7 +47,9 @@ import picocli.CommandLine.Command;
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
 public abstract class KafkaProducerApplication
-        extends KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ProducerApp> {
+        extends
+        KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ProducerApp,
+                ExecutableProducerApp<? extends ProducerApp>> {
 
     /**
      * Create a new {@code ProducerApp} that will be configured and executed according to this application.
