@@ -25,6 +25,10 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-log4j12")
     }
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
-    val confluentVersion: String by project
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
+    val fluentKafkaVersion: String by project
+    testImplementation(
+        group = "com.bakdata.fluent-kafka-streams-tests",
+        name = "schema-registry-mock-junit5",
+        version = fluentKafkaVersion
+    )
 }

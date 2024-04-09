@@ -34,6 +34,7 @@ import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import java.util.Map;
@@ -50,9 +51,12 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 class RunProducerAppTest {
     private static final int TIMEOUT_SECONDS = 10;
+    @RegisterExtension
+    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
 
     @BeforeEach
@@ -88,7 +92,7 @@ class RunProducerAppTest {
             }
         })) {
             app.setBrokers(this.kafkaCluster.getBrokerList());
-            app.setSchemaRegistryUrl("mock://");
+            app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
             app.setOutputTopic(output);
             app.setKafkaConfig(Map.of(
                     ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
@@ -98,7 +102,8 @@ class RunProducerAppTest {
             assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://")
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                            this.schemaRegistryMockExtension.getUrl())
                     .build()))
                     .hasSize(1)
                     .anySatisfy(kv -> {
