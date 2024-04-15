@@ -31,12 +31,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.ConfiguredProducerApp;
+import com.bakdata.kafka.EffectiveProducerAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableProducerApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerCleanUpConfiguration;
-import com.bakdata.kafka.ProducerSetupConfiguration;
 import com.bakdata.kafka.ProducerTopicConfig;
 import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.test_applications.AvroKeyProducer;
@@ -157,7 +157,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     private ConfiguredProducerApp<ProducerApp> createCleanUpHookApplication() {
         return configureApp(new StringProducer() {
             @Override
-            public ProducerCleanUpConfiguration setupCleanUp(final ProducerSetupConfiguration configuration) {
+            public ProducerCleanUpConfiguration setupCleanUp(final EffectiveProducerAppConfiguration configuration) {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(ProducerCleanUpRunnerTest.this.topicHook);
             }

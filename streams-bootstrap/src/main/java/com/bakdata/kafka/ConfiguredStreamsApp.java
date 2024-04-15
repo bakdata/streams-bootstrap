@@ -145,7 +145,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);
-        final StreamsSetupConfiguration setupConfiguration = StreamsSetupConfiguration.builder()
+        final EffectiveStreamsAppConfiguration effectiveConfiguration = EffectiveStreamsAppConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(this.getTopics())
                 .build();
@@ -153,8 +153,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
                 .topology(topology)
                 .config(new StreamsConfig(kafkaProperties))
                 .app(this.app)
-                .setup(() -> this.app.setup(setupConfiguration))
-                .setupCleanup(() -> this.app.setupCleanUp(setupConfiguration))
+                .setup(() -> this.app.setup(effectiveConfiguration))
+                .setupCleanup(() -> this.app.setupCleanUp(effectiveConfiguration))
                 .build();
     }
 

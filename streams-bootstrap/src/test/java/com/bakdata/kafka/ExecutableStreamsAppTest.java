@@ -43,7 +43,7 @@ import org.mockito.quality.Strictness;
 class ExecutableStreamsAppTest {
 
     @Mock
-    private Consumer<StreamsSetupConfiguration> setup;
+    private Consumer<EffectiveStreamsAppConfiguration> setup;
     @Mock
     private Supplier<StreamsCleanUpConfiguration> setupCleanUp;
 
@@ -64,7 +64,7 @@ class ExecutableStreamsAppTest {
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
-        verify(this.setup).accept(StreamsSetupConfiguration.builder()
+        verify(this.setup).accept(EffectiveStreamsAppConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(topics)
                 .build());
@@ -87,7 +87,7 @@ class ExecutableStreamsAppTest {
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(StreamsExecutionOptions.builder().build());
-        verify(this.setup).accept(StreamsSetupConfiguration.builder()
+        verify(this.setup).accept(EffectiveStreamsAppConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(topics)
                 .build());
@@ -116,12 +116,12 @@ class ExecutableStreamsAppTest {
     private class TestApplication implements StreamsApp {
 
         @Override
-        public void setup(final StreamsSetupConfiguration configuration) {
+        public void setup(final EffectiveStreamsAppConfiguration configuration) {
             ExecutableStreamsAppTest.this.setup.accept(configuration);
         }
 
         @Override
-        public StreamsCleanUpConfiguration setupCleanUp(final StreamsSetupConfiguration setupConfiguration) {
+        public StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration setupConfiguration) {
             return ExecutableStreamsAppTest.this.setupCleanUp.get();
         }
 

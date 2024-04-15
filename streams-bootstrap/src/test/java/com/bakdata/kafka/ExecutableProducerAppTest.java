@@ -42,7 +42,7 @@ import org.mockito.quality.Strictness;
 class ExecutableProducerAppTest {
 
     @Mock
-    private Consumer<ProducerSetupConfiguration> setup;
+    private Consumer<EffectiveProducerAppConfiguration> setup;
     @Mock
     private Supplier<ProducerCleanUpConfiguration> setupCleanUp;
 
@@ -62,7 +62,7 @@ class ExecutableProducerAppTest {
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
-        verify(this.setup).accept(ProducerSetupConfiguration.builder()
+        verify(this.setup).accept(EffectiveProducerAppConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(topics)
                 .build());
@@ -84,7 +84,7 @@ class ExecutableProducerAppTest {
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
-        verify(this.setup).accept(ProducerSetupConfiguration.builder()
+        verify(this.setup).accept(EffectiveProducerAppConfiguration.builder()
                 .kafkaProperties(kafkaProperties)
                 .topics(topics)
                 .build());
@@ -112,12 +112,12 @@ class ExecutableProducerAppTest {
     private class TestProducer implements ProducerApp {
 
         @Override
-        public void setup(final ProducerSetupConfiguration configuration) {
+        public void setup(final EffectiveProducerAppConfiguration configuration) {
             ExecutableProducerAppTest.this.setup.accept(configuration);
         }
 
         @Override
-        public ProducerCleanUpConfiguration setupCleanUp(final ProducerSetupConfiguration configuration) {
+        public ProducerCleanUpConfiguration setupCleanUp(final EffectiveProducerAppConfiguration configuration) {
             return ExecutableProducerAppTest.this.setupCleanUp.get();
         }
 

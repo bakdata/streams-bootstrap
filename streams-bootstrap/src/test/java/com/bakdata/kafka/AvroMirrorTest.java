@@ -67,10 +67,14 @@ class AvroMirrorTest {
     }
 
     private Serde<TestRecord> getValueSerde() {
-        return this.testTopology.configureValueSerde(MirrorWithNonDefaultSerde.newValueSerde());
+        return this.createSerdeFactory().configureForValues(MirrorWithNonDefaultSerde.newValueSerde());
+    }
+
+    private Configurator createSerdeFactory() {
+        return StreamsBootstrapTopologyFactory.createConfigurator(this.testTopology);
     }
 
     private Serde<TestRecord> getKeySerde() {
-        return this.testTopology.configureKeySerde(MirrorWithNonDefaultSerde.newKeySerde());
+        return this.createSerdeFactory().configureForKeys(MirrorWithNonDefaultSerde.newKeySerde());
     }
 }

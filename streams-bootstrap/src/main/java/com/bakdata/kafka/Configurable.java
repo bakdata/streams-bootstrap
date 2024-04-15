@@ -24,16 +24,9 @@
 
 package com.bakdata.kafka;
 
-/**
- * {@link StreamsApp} that automatically removes files associated with {@code LargeMessageSerde}
- */
-public interface LargeMessageStreamsApp extends StreamsApp {
+import java.util.Map;
 
-    @Override
-    default StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration configuration) {
-        final StreamsCleanUpConfiguration configurer = StreamsApp.super.setupCleanUp(configuration);
-        return configurer.registerTopicHook(
-                LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(configuration.getKafkaProperties()));
-    }
-
+@FunctionalInterface
+interface Configurable<T> {
+    T configure(Map<String, Object> config, boolean isKey);
 }

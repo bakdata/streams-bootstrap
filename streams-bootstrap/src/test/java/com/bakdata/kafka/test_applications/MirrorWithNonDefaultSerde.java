@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.Configurator;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
@@ -41,18 +42,19 @@ import org.apache.kafka.streams.kstream.Produced;
 @NoArgsConstructor
 public class MirrorWithNonDefaultSerde implements StreamsApp {
 
-    public static SpecificAvroSerde<TestRecord> newKeySerde() {
+    public static Serde<TestRecord> newKeySerde() {
         return new SpecificAvroSerde<>();
     }
 
-    public static SpecificAvroSerde<TestRecord> newValueSerde() {
+    public static Serde<TestRecord> newValueSerde() {
         return new SpecificAvroSerde<>();
     }
 
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final Serde<TestRecord> valueSerde = builder.configureValueSerde(newValueSerde());
-        final Serde<TestRecord> keySerde = builder.configureKeySerde(newKeySerde());
+        final Configurator configurator = builder.createConfigurator();
+        final Serde<TestRecord> valueSerde = configurator.configureForValues(newValueSerde());
+        final Serde<TestRecord> keySerde = configurator.configureForKeys(newKeySerde());
         final KStream<TestRecord, TestRecord> input =
                 builder.streamInput(Consumed.with(keySerde, valueSerde));
         input.to(builder.getTopics().getOutputTopic(), Produced.with(keySerde, valueSerde));

@@ -24,16 +24,34 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
+import com.bakdata.kafka.util.ImprovedAdminClient;
+import java.util.Map;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Value;
+
 /**
- * {@link StreamsApp} that automatically removes files associated with {@code LargeMessageSerde}
+ * Configuration for setting up a {@link StreamsApp}
+ * @see StreamsApp#setup(EffectiveStreamsAppConfiguration)
+ * @see StreamsApp#setupCleanUp(EffectiveStreamsAppConfiguration)
  */
-public interface LargeMessageStreamsApp extends StreamsApp {
+@Builder
+@Value
+@EqualsAndHashCode
+public class EffectiveStreamsAppConfiguration {
+    @Builder.Default
+    @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
+    @Builder.Default
+    @NonNull Map<String, Object> kafkaProperties = emptyMap();
 
-    @Override
-    default StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration configuration) {
-        final StreamsCleanUpConfiguration configurer = StreamsApp.super.setupCleanUp(configuration);
-        return configurer.registerTopicHook(
-                LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(configuration.getKafkaProperties()));
+    /**
+     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * @return {@code ImprovedAdminClient}
+     */
+    public ImprovedAdminClient createAdminClient() {
+        return ImprovedAdminClient.create(this.kafkaProperties);
     }
-
 }

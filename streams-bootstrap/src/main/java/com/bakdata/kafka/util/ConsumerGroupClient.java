@@ -35,6 +35,7 @@ import java.util.concurrent.TimeoutException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 
@@ -45,7 +46,7 @@ import org.apache.kafka.clients.admin.ConsumerGroupListing;
 @Slf4j
 public final class ConsumerGroupClient implements Closeable {
 
-    private final @NonNull AdminClient adminClient;
+    private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
 
     /**

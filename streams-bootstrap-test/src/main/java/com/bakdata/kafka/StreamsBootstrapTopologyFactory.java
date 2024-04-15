@@ -120,6 +120,10 @@ public class StreamsBootstrapTopologyFactory {
         };
     }
 
+    public static Configurator createConfigurator(final TestTopology<?, ?> testTopology) {
+        return new Configurator(testTopology.getProperties());
+    }
+
     private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
         final KafkaEndpointConfig endpointConfig = createEndpointConfig();
         return app.getKafkaProperties(endpointConfig);
@@ -134,5 +138,4 @@ public class StreamsBootstrapTopologyFactory {
         return KafkaEndpointConfig.builder()
                 .brokers("localhost:9092");
     }
-
 }

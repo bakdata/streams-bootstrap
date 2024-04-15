@@ -24,15 +24,11 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -141,56 +137,14 @@ public class TopologyBuilder {
         return this.streamsBuilder.stream(this.topics.getInputPattern(role));
     }
 
-    /**
-     * Configure a {@code Serde} for values using {@link #kafkaProperties}
-     * @param serde serde to configure
-     * @return configured {@code Serde}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serde<T> configureValueSerde(final Serde<T> serde) {
-        return this.configureValueSerde(serde, emptyMap());
+    public Configurator createConfigurator() {
+        return new Configurator(this.kafkaProperties);
     }
 
-    /**
-     * Configure a {@code Serde} for values using {@link #kafkaProperties} and config overrides
-     * @param serde serde to configure
-     * @param config configuration overrides
-     * @return configured {@code Serde}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serde<T> configureValueSerde(final Serde<T> serde, final Map<String, Object> config) {
-        final Map<String, Object> serdeConfig = this.mergeConfig(config);
-        serde.configure(serdeConfig, false);
-        return serde;
-    }
-
-    /**
-     * Configure a {@code Serde} for keys using {@link #kafkaProperties}
-     * @param serde serde to configure
-     * @return configured {@code Serde}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serde<T> configureKeySerde(final Serde<T> serde) {
-        return this.configureKeySerde(serde, emptyMap());
-    }
-
-    /**
-     * Configure a {@code Serde} for keys using {@link #kafkaProperties} and config overrides
-     * @param serde serde to configure
-     * @param config configuration overrides
-     * @return configured {@code Serde}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serde<T> configureKeySerde(final Serde<T> serde, final Map<String, Object> config) {
-        final Map<String, Object> serdeConfig = this.mergeConfig(config);
-        serde.configure(serdeConfig, true);
-        return serde;
-    }
-
-    private Map<String, Object> mergeConfig(final Map<String, Object> config) {
-        return ImmutableMap.<String, Object>builder()
-                .putAll(this.kafkaProperties)
-                .putAll(config)
+    public EffectiveStreamsAppConfiguration createEffectiveConfiguration() {
+        return EffectiveStreamsAppConfiguration.builder()
+                .kafkaProperties(this.kafkaProperties)
+                .topics(this.topics)
                 .build();
     }
 

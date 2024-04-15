@@ -34,15 +34,16 @@ import lombok.NonNull;
 import lombok.Value;
 
 /**
- * Configuration for setting up a {@link StreamsApp}
- * @see StreamsApp#setup(StreamsSetupConfiguration)
+ * Configuration for setting up a {@link ProducerApp}
+ * @see ProducerApp#setup(EffectiveProducerAppConfiguration)
+ * @see ProducerApp#setupCleanUp(EffectiveProducerAppConfiguration)
  */
 @Builder
 @Value
 @EqualsAndHashCode
-public class StreamsSetupConfiguration {
+public class EffectiveProducerAppConfiguration {
     @Builder.Default
-    @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
+    @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
     @Builder.Default
     @NonNull Map<String, Object> kafkaProperties = emptyMap();
 

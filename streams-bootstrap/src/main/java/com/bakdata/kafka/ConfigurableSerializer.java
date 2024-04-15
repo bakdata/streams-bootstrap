@@ -24,34 +24,20 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.serialization.Serializer;
 
-/**
- * Configuration for setting up a {@link ProducerApp}
- * @see ProducerApp#setup(ProducerSetupConfiguration)
- * @see ProducerApp#setupCleanUp(ProducerSetupConfiguration)
- */
-@Builder
-@Value
-@EqualsAndHashCode
-public class ProducerSetupConfiguration {
-    @Builder.Default
-    @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
-    @Builder.Default
-    @NonNull Map<String, Object> kafkaProperties = emptyMap();
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+final class ConfigurableSerializer<T> implements Configurable<Serializer<T>> {
 
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    private final @NonNull Serializer<T> serializer;
+
+    @Override
+    public Serializer<T> configure(final Map<String, Object> config, final boolean isKey) {
+        this.serializer.configure(config, isKey);
+        return this.serializer;
     }
 }

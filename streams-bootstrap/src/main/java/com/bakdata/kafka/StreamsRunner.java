@@ -70,10 +70,6 @@ public final class StreamsRunner implements Runner {
         this.executionOptions = options;
     }
 
-    private static boolean isError(final State newState) {
-        return newState == State.ERROR;
-    }
-
     /**
      * Run the Streams application. This method blocks until Kafka Streams has completed shutdown, either because it
      * caught an error or {@link #close()} has been called.
@@ -97,9 +93,13 @@ public final class StreamsRunner implements Runner {
     }
 
     private void checkErrors() {
-        if (isError(this.streams.state())) {
+        if (this.hasErrored()) {
             this.exceptionHandler.throwException();
         }
+    }
+
+    private boolean hasErrored() {
+        return this.streams.state() == State.ERROR;
     }
 
     private void runStreams() {

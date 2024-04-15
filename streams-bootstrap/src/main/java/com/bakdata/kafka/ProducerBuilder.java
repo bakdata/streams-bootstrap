@@ -24,9 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,8 +42,10 @@ import org.apache.kafka.common.serialization.Serializer;
 @Value
 public class ProducerBuilder {
 
-    @NonNull ProducerTopicConfig topics;
-    @NonNull Map<String, Object> kafkaProperties;
+    @NonNull
+    ProducerTopicConfig topics;
+    @NonNull
+    Map<String, Object> kafkaProperties;
 
     /**
      * Create a new {@code Producer} using {@link #kafkaProperties}
@@ -73,57 +72,14 @@ public class ProducerBuilder {
         return new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
     }
 
-    /**
-     * Configure a {@code Serializer} for values using {@link #kafkaProperties}
-     * @param serializer serializer to configure
-     * @return configured {@code Serializer}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serializer<T> configureValueSerializer(final Serializer<T> serializer) {
-        return this.configureValueSerializer(serializer, emptyMap());
+    public Configurator createConfigurator() {
+        return new Configurator(this.kafkaProperties);
     }
 
-    /**
-     * Configure a {@code Serializer} for values using {@link #kafkaProperties} and config overrides
-     * @param serializer serializer to configure
-     * @param config configuration overrides
-     * @return configured {@code Serializer}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serializer<T> configureValueSerializer(final Serializer<T> serializer,
-            final Map<String, Object> config) {
-        final Map<String, Object> serializerConfig = this.mergeConfig(config);
-        serializer.configure(serializerConfig, false);
-        return serializer;
-    }
-
-    /**
-     * Configure a {@code Serializer} for keys using {@link #kafkaProperties}
-     * @param serializer serializer to configure
-     * @return configured {@code Serializer}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serializer<T> configureKeySerializer(final Serializer<T> serializer) {
-        return this.configureKeySerializer(serializer, emptyMap());
-    }
-
-    /**
-     * Configure a {@code Serializer} for keys using {@link #kafkaProperties} and config overrides
-     * @param serializer serializer to configure
-     * @param config configuration overrides
-     * @return configured {@code Serializer}
-     * @param <T> type to be (de-)serialized
-     */
-    public <T> Serializer<T> configureKeySerializer(final Serializer<T> serializer, final Map<String, Object> config) {
-        final Map<String, Object> serializerConfig = this.mergeConfig(config);
-        serializer.configure(serializerConfig, true);
-        return serializer;
-    }
-
-    private Map<String, Object> mergeConfig(final Map<String, Object> config) {
-        return ImmutableMap.<String, Object>builder()
-                .putAll(this.kafkaProperties)
-                .putAll(config)
+    public EffectiveProducerAppConfiguration createEffectiveConfiguration() {
+        return EffectiveProducerAppConfiguration.builder()
+                .kafkaProperties(this.kafkaProperties)
+                .topics(this.topics)
                 .build();
     }
 }
