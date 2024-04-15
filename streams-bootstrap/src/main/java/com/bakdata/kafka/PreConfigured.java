@@ -157,6 +157,11 @@ public final class PreConfigured<T> {
         return new PreConfigured<>(configurable, configOverrides, false);
     }
 
+    /**
+     * Configure using a base config
+     * @param baseConfig Base config. {@link #configOverrides} override properties of base config.
+     * @return configured instance
+     */
     public T configure(final Map<String, Object> baseConfig) {
         final Map<String, Object> serializerConfig = this.mergeConfig(baseConfig);
         return this.configurable.configure(serializerConfig, this.isKey);
