@@ -33,6 +33,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
+/**
+ * Configure {@link Serde} and {@link Serializer} using base properties
+ */
 @RequiredArgsConstructor
 public class Configurator {
 
@@ -124,6 +127,12 @@ public class Configurator {
         return this.configure(key(serializer, configOverrides));
     }
 
+    /**
+     * Configure a {@code PreConfigured} object using {@link #kafkaProperties}
+     * @param preConfigured pre-configured {@link Serde} or {@link Serializer}
+     * @return configured instance
+     * @param <T> type of configured instance
+     */
     public <T> T configure(final PreConfigured<T> preConfigured) {
         return preConfigured.configure(this.kafkaProperties);
     }

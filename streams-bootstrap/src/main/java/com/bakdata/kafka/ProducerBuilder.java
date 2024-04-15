@@ -72,10 +72,19 @@ public class ProducerBuilder {
         return new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
     }
 
+    /**
+     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
+     * {@link org.apache.kafka.common.serialization.Serializer} using {@link #kafkaProperties}.
+     * @return {@code Configurator}
+     */
     public Configurator createConfigurator() {
         return new Configurator(this.kafkaProperties);
     }
 
+    /**
+     * Create {@code EffectiveProducerAppConfiguration} used by this app
+     * @return {@code EffectiveProducerAppConfiguration}
+     */
     public EffectiveProducerAppConfiguration createEffectiveConfiguration() {
         return EffectiveProducerAppConfiguration.builder()
                 .kafkaProperties(this.kafkaProperties)

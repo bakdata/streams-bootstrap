@@ -84,8 +84,4 @@ public class ExecutableProducerApp<T extends ProducerApp>
                 .kafkaProperties(this.kafkaProperties)
                 .build();
     }
-
-    private void setup(final EffectiveProducerAppConfiguration configuration) {
-        this.app.setup(configuration);
-    }
 }

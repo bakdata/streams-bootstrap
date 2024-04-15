@@ -137,10 +137,19 @@ public class TopologyBuilder {
         return this.streamsBuilder.stream(this.topics.getInputPattern(role));
     }
 
+    /**
+     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
+     * {@link org.apache.kafka.common.serialization.Serializer} using {@link #kafkaProperties}.
+     * @return {@code Configurator}
+     */
     public Configurator createConfigurator() {
         return new Configurator(this.kafkaProperties);
     }
 
+    /**
+     * Create {@code EffectiveStreamsAppConfiguration} used by this app
+     * @return {@code EffectiveStreamsAppConfiguration}
+     */
     public EffectiveStreamsAppConfiguration createEffectiveConfiguration() {
         return EffectiveStreamsAppConfiguration.builder()
                 .kafkaProperties(this.kafkaProperties)

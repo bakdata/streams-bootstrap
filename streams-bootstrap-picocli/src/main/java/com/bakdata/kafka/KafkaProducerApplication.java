@@ -93,6 +93,10 @@ public abstract class KafkaProducerApplication extends
         return Optional.empty();
     }
 
+    /**
+     * Topics used by {@link ProducerApp}
+     * @return {@code ProducerTopicConfig}
+     */
     public final ProducerTopicConfig createTopicConfig() {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())

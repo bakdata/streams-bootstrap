@@ -145,6 +145,10 @@ public abstract class KafkaStreamsApplication extends
         return Optional.of(options);
     }
 
+    /**
+     * Topics used by {@link StreamsApp}
+     * @return {@code StreamsTopicConfig}
+     */
     public final StreamsTopicConfig createTopicConfig() {
         return StreamsTopicConfig.builder()
                 .inputTopics(this.inputTopics)

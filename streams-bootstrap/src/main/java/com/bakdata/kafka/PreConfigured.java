@@ -25,8 +25,9 @@
 package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableMap;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -34,41 +35,97 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
+/**
+ * A pre-configured {@link Serde} or {@link Serializer}, i.e., configs and isKey are set.
+ * @param <T> type of underlying configurable
+ */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PreConfigured<T> {
     private final @NonNull Configurable<T> configurable;
     private final @NonNull Map<String, Object> configOverrides;
     private final boolean isKey;
 
+    /**
+     * Pre-configure a {@code Serde} for values
+     * @param serde {@code Serde} to pre-configure
+     * @return pre-configured serde
+     * @param <T> type (de-)serialized by the {@code Serde}
+     */
     public static <T> PreConfigured<Serde<T>> value(final Serde<T> serde) {
         return value(configurable(serde));
     }
 
+    /**
+     * Pre-configure a {@code Serde} for values with config overrides
+     * @param serde {@code Serde} to pre-configure
+     * @param configOverrides configs passed to {@link Serde#configure(Map, boolean)}
+     * @return pre-configured serde
+     * @param <T> type (de-)serialized by the {@code Serde}
+     */
     public static <T> PreConfigured<Serde<T>> value(final Serde<T> serde, final Map<String, Object> configOverrides) {
         return value(configurable(serde), configOverrides);
     }
 
+    /**
+     * Pre-configure a {@code Serde} for keys
+     * @param serde {@code Serde} to pre-configure
+     * @return pre-configured serde
+     * @param <T> type (de-)serialized by the {@code Serde}
+     */
     public static <T> PreConfigured<Serde<T>> key(final Serde<T> serde) {
         return key(configurable(serde));
     }
 
+    /**
+     * Pre-configure a {@code Serde} for keys with config overrides
+     * @param serde {@code Serde} to pre-configure
+     * @param configOverrides configs passed to {@link Serde#configure(Map, boolean)}
+     * @return pre-configured serde
+     * @param <T> type (de-)serialized by the {@code Serde}
+     */
     public static <T> PreConfigured<Serde<T>> key(final Serde<T> serde, final Map<String, Object> configOverrides) {
         return key(configurable(serde), configOverrides);
     }
 
+    /**
+     * Pre-configure a {@code Serializer} for values
+     * @param serializer {@code Serializer} to pre-configure
+     * @return pre-configured serializer
+     * @param <T> type serialized by the {@code Serializer}
+     */
     public static <T> PreConfigured<Serializer<T>> value(final Serializer<T> serializer) {
         return value(configurable(serializer));
     }
 
+    /**
+     * Pre-configure a {@code Serializer} for values
+     * @param serializer {@code Serializer} to pre-configure
+     * @param configOverrides configs passed to {@link Serializer#configure(Map, boolean)}
+     * @return pre-configured serializer
+     * @param <T> type serialized by the {@code Serializer}
+     */
     public static <T> PreConfigured<Serializer<T>> value(final Serializer<T> serializer,
             final Map<String, Object> configOverrides) {
         return value(configurable(serializer), configOverrides);
     }
 
+    /**
+     * Pre-configure a {@code Serializer} for keys
+     * @param serializer {@code Serializer} to pre-configure
+     * @return pre-configured serializer
+     * @param <T> type serialized by the {@code Serializer}
+     */
     public static <T> PreConfigured<Serializer<T>> key(final Serializer<T> serializer) {
         return key(configurable(serializer));
     }
 
+    /**
+     * Pre-configure a {@code Serializer} for keys
+     * @param serializer {@code Serializer} to pre-configure
+     * @param configOverrides configs passed to {@link Serializer#configure(Map, boolean)}
+     * @return pre-configured serializer
+     * @param <T> type serialized by the {@code Serializer}
+     */
     public static <T> PreConfigured<Serializer<T>> key(final Serializer<T> serializer,
             final Map<String, Object> configOverrides) {
         return key(configurable(serializer), configOverrides);
@@ -106,10 +163,9 @@ public final class PreConfigured<T> {
     }
 
     private Map<String, Object> mergeConfig(final Map<String, Object> baseConfig) {
-        return ImmutableMap.<String, Object>builder()
-                .putAll(baseConfig)
-                .putAll(this.configOverrides)
-                .build();
+        final Map<String, Object> config = new HashMap<>(baseConfig);
+        config.putAll(this.configOverrides);
+        return unmodifiableMap(config);
     }
 
 }

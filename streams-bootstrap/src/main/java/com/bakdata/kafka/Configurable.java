@@ -28,5 +28,11 @@ import java.util.Map;
 
 @FunctionalInterface
 interface Configurable<T> {
+    /**
+     * Configure this class
+     * @param config configs in key/value pairs
+     * @param isKey whether is for key or value
+     * @return configured instance
+     */
     T configure(Map<String, Object> config, boolean isKey);
 }

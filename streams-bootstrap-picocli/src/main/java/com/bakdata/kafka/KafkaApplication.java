@@ -64,6 +64,8 @@ import picocli.CommandLine.ParseResult;
  * @param <R> type of {@link Runner} used by this app
  * @param <CR> type of {@link CleanUpRunner} used by this app
  * @param <O> type of options to create runner
+ * @param <E> type of {@link ExecutableApp} used by this app
+ * @param <CA> type of {@link ConfiguredApp} used by this app
  */
 @ToString
 @Getter
