@@ -24,15 +24,11 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import java.util.Map;
-
 /**
  * Application that defines how to produce messages to Kafka and necessary configurations
  */
 @FunctionalInterface
-public interface ProducerApp extends AutoCloseable {
+public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpConfiguration> {
 
     /**
      * Create a runnable that produces Kafka messages
@@ -42,34 +38,12 @@ public interface ProducerApp extends AutoCloseable {
     ProducerRunnable buildRunnable(ProducerBuilder builder);
 
     /**
-     * Setup Kafka resources, such as topics, before running this app
-     * @param configuration provides all runtime application configurations
-     */
-    default void setup(final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
-        // do nothing by default
-    }
-
-    /**
-     * This method should give a default configuration to run your producer application with.
-     * @return Returns a default Kafka configuration. Empty by default
-     */
-    default Map<String, Object> createKafkaProperties() {
-        return emptyMap();
-    }
-
-    /**
-     * Configure clean up behavior
-     * @param configuration provides all runtime application configurations
      * @return {@code ProducerCleanUpConfiguration}
      * @see ProducerCleanUpRunner
      */
+    @Override
     default ProducerCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
         return new ProducerCleanUpConfiguration();
-    }
-
-    @Override
-    default void close() {
-        // do nothing by default
     }
 }

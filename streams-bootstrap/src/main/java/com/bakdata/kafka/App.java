@@ -24,35 +24,42 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
+import java.util.Map;
+
 /**
- * Application that defines a Kafka Streams {@link org.apache.kafka.streams.Topology} and necessary configurations
+ * Kafka application that defines necessary configurations
+ * @param <T> type of topic config
+ * @param <C> type of clean up config
  */
-public interface StreamsApp extends App<StreamsTopicConfig, StreamsCleanUpConfiguration> {
+public interface App<T, C> extends AutoCloseable {
 
     /**
-     * Build the Kafka Streams {@link org.apache.kafka.streams.Topology} to be run by the app.
-     *
-     * @param builder provides all runtime application configurations and supports building the
-     * {@link org.apache.kafka.streams.Topology}
+     * Configure clean up behavior
+     * @param configuration provides all runtime application configurations
+     * @return clean up configuration
      */
-    void buildTopology(TopologyBuilder builder);
+    C setupCleanUp(final EffectiveAppConfiguration<T> configuration);
 
-    /**
-     * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
-     * state encapsulation. Could be set to: className-outputTopic
-     *
-     * @param topics provides runtime topic configuration
-     * @return unique application identifier
-     */
-    String getUniqueAppId(StreamsTopicConfig topics);
-
-    /**
-     * @return {@code StreamsCleanUpConfiguration}
-     * @see StreamsCleanUpRunner
-     */
     @Override
-    default StreamsCleanUpConfiguration setupCleanUp(
-            final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
-        return new StreamsCleanUpConfiguration();
+    default void close() {
+        // do nothing by default
+    }
+
+    /**
+     * This method should give a default configuration to run your application with.
+     * @return Returns a default Kafka configuration. Empty by default
+     */
+    default Map<String, Object> createKafkaProperties() {
+        return emptyMap();
+    }
+
+    /**
+     * Setup Kafka resources, such as topics, before running this app
+     * @param configuration provides all runtime application configurations
+     */
+    default void setup(final EffectiveAppConfiguration<T> configuration) {
+        // do nothing by default
     }
 }

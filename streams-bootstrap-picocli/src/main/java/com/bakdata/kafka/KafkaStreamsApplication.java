@@ -65,7 +65,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @Command(description = "Run a Kafka Streams application.")
 public abstract class KafkaStreamsApplication extends
         KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions,
-                ExecutableStreamsApp<StreamsApp>, ConfiguredStreamsApp<StreamsApp>> {
+                ExecutableStreamsApp<StreamsApp>, ConfiguredStreamsApp<StreamsApp>, StreamsTopicConfig, StreamsApp> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = new ArrayList<>();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -82,14 +82,6 @@ public abstract class KafkaStreamsApplication extends
     private boolean volatileGroupInstanceId;
 
     /**
-     * Create a new {@code StreamsApp} that will be configured and executed according to this application.
-     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return app
-     */
-    public abstract StreamsApp createApp(boolean cleanUp);
-
-    /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
      * topics associated with the Kafka Streams application.
      */
@@ -98,14 +90,6 @@ public abstract class KafkaStreamsApplication extends
     @Override
     public void clean() {
         super.clean();
-    }
-
-    /**
-     * @see StreamsRunner#run()
-     */
-    @Override
-    public void run() {
-        super.run();
     }
 
     /**
@@ -121,16 +105,6 @@ public abstract class KafkaStreamsApplication extends
         }
     }
 
-    /**
-     * Create configuration to configure app
-     * @return configuration
-     */
-    public final AppConfiguration<StreamsTopicConfig> createConfiguration() {
-        final StreamsTopicConfig topics = this.createTopicConfig();
-        final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        return new AppConfiguration<>(topics, kafkaConfig);
-    }
-
     @Override
     public final Optional<StreamsExecutionOptions> createExecutionOptions() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
@@ -142,10 +116,7 @@ public abstract class KafkaStreamsApplication extends
         return Optional.of(options);
     }
 
-    /**
-     * Topics used by {@link StreamsApp}
-     * @return {@code StreamsTopicConfig}
-     */
+    @Override
     public final StreamsTopicConfig createTopicConfig() {
         return StreamsTopicConfig.builder()
                 .inputTopics(this.inputTopics)
@@ -159,9 +130,8 @@ public abstract class KafkaStreamsApplication extends
     }
 
     @Override
-    public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
-        final StreamsApp app = this.createApp(cleanUp);
-        final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
+    public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final StreamsApp app,
+            final AppConfiguration<StreamsTopicConfig> configuration) {
         return new ConfiguredStreamsApp<>(app, configuration);
     }
 

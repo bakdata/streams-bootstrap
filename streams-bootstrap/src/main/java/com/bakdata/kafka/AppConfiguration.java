@@ -44,6 +44,10 @@ public class AppConfiguration<T> {
     @NonNull
     Map<String, ?> kafkaConfig;
 
+    /**
+     * Create a new {@code AppConfiguration} with empty Kafka configuration
+     * @param topics topics to use for app
+     */
     public AppConfiguration(final T topics) {
         this(topics, emptyMap());
     }

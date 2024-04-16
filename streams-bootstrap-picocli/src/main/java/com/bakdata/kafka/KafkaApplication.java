@@ -63,9 +63,11 @@ import picocli.CommandLine.ParseResult;
  *
  * @param <R> type of {@link Runner} used by this app
  * @param <CR> type of {@link CleanUpRunner} used by this app
- * @param <O> type of options to create runner
+ * @param <O> type of execution options to create runner
  * @param <E> type of {@link ExecutableApp} used by this app
  * @param <CA> type of {@link ConfiguredApp} used by this app
+ * @param <T> type of topic config used by this app
+ * @param <A> type of app
  */
 @ToString
 @Getter
@@ -74,7 +76,7 @@ import picocli.CommandLine.ParseResult;
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
 public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunner, O, E extends ExecutableApp<R, CR,
-        O>, CA extends ConfiguredApp<E>>
+        O>, CA extends ConfiguredApp<E>, T, A>
         implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @ToString.Exclude
@@ -104,7 +106,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @param args Arguments passed in by the custom application class.
      * @see #startApplicationWithoutExit(KafkaApplication, String[])
      */
-    public static void startApplication(final KafkaApplication<?, ?, ?, ?, ?> app, final String[] args) {
+    public static void startApplication(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
         final int exitCode = startApplicationWithoutExit(app, args);
         System.exit(exitCode);
     }
@@ -117,7 +119,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
-    public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?, ?, ?> app, final String[] args) {
+    public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app,
+            final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
         final CommandLine commandLine = new CommandLine(app)
                 .setExecutionStrategy(app::execute);
@@ -142,12 +145,18 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public abstract Optional<O> createExecutionOptions();
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to this application.
-     * @param cleanUp whether {@code ConfiguredApp} is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return {@code ConfiguredApp}
+     * Topics used by app
+     * @return topic configuration
      */
-    public abstract CA createConfiguredApp(final boolean cleanUp);
+    public abstract T createTopicConfig();
+
+    /**
+     * Create a new app that will be configured and executed according to this application.
+     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return app
+     */
+    public abstract A createApp(boolean cleanUp);
 
     /**
      * Clean all resources associated with this application
@@ -199,11 +208,42 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@code ExecutableApp}
      */
     public final E createExecutableApp(final boolean cleanUp) {
-        final ConfiguredApp<E> configuredStreamsApp =
-                this.createConfiguredApp(cleanUp);
+        final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp(cleanUp);
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.withEndpoint(endpointConfig);
     }
+
+    /**
+     * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     *
+     * @param cleanUp whether {@code ConfiguredApp} is created for clean up purposes. In that case, the user might want
+     * to skip initialization of expensive resources.
+     * @return {@code ConfiguredApp}
+     */
+    public final CA createConfiguredApp(final boolean cleanUp) {
+        final AppConfiguration<T> configuration = this.createConfiguration();
+        final A app = this.createApp(cleanUp);
+        return this.createConfiguredApp(app, configuration);
+    }
+
+    /**
+     * Create configuration to configure app
+     * @return configuration
+     */
+    public final AppConfiguration<T> createConfiguration() {
+        final T topics = this.createTopicConfig();
+        final Map<String, String> kafkaConfig = this.getKafkaConfig();
+        return new AppConfiguration<>(topics, kafkaConfig);
+    }
+
+    /**
+     * Create a new {@code ConfiguredApp} that will be executed according to the given config.
+     *
+     * @param app app to configure.
+     * @param configuration configuration for app
+     * @return {@code ConfiguredApp}
+     */
+    protected abstract CA createConfiguredApp(final A app, AppConfiguration<T> configuration);
 
     /**
      * Configure application when running in debug mode. By default, Log4j2 log level is configured to debug for
