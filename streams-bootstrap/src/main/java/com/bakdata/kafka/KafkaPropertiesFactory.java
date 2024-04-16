@@ -24,43 +24,26 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import lombok.Builder;
+import lombok.NonNull;
 
-/**
- * Kafka application that defines necessary configurations
- * @param <T> type of topic config
- * @param <C> type of clean up config
- */
-@FunctionalInterface
-public interface App<T, C> extends AutoCloseable {
+@Builder
+class KafkaPropertiesFactory {
+    private final @NonNull Map<String, Object> baseConfig;
+    private final @NonNull App<?, ?> app;
+    private final @NonNull AppConfiguration<?> configuration;
+    private final @NonNull KafkaEndpointConfig endpointConfig;
 
-    /**
-     * Configure clean up behavior
-     * @param configuration provides all runtime application configurations
-     * @return clean up configuration
-     */
-    C setupCleanUp(final EffectiveAppConfiguration<T> configuration);
-
-    @Override
-    default void close() {
-        // do nothing by default
-    }
-
-    /**
-     * This method should give a default configuration to run your application with.
-     * @return Returns a default Kafka configuration. Empty by default
-     */
-    default Map<String, Object> createKafkaProperties() {
-        return emptyMap();
-    }
-
-    /**
-     * Setup Kafka resources, such as topics, before running this app
-     * @param configuration provides all runtime application configurations
-     */
-    default void setup(final EffectiveAppConfiguration<T> configuration) {
-        // do nothing by default
+    Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
+        final Map<String, Object> kafkaConfig = new HashMap<>(this.baseConfig);
+        kafkaConfig.putAll(this.app.createKafkaProperties());
+        kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
+        kafkaConfig.putAll(this.configuration.getKafkaConfig());
+        kafkaConfig.putAll(this.endpointConfig.createKafkaProperties());
+        kafkaConfig.putAll(configOverrides);
+        return Collections.unmodifiableMap(kafkaConfig);
     }
 }

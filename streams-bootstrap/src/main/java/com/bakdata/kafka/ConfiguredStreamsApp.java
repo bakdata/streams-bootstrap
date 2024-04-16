@@ -25,7 +25,6 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     private final @NonNull T app;
     private final @NonNull AppConfiguration<StreamsTopicConfig> configuration;
 
-    private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {
+    private static Map<String, Object> createBaseConfig(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         if (endpointConfig.isSchemaRegistryConfigured()) {
@@ -111,13 +110,10 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
-        kafkaConfig.putAll(this.app.createKafkaProperties());
-        kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
-        kafkaConfig.putAll(this.configuration.getKafkaConfig());
-        kafkaConfig.putAll(endpointConfig.createKafkaProperties());
-        kafkaConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId());
-        return Collections.unmodifiableMap(kafkaConfig);
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+        return propertiesFactory.createKafkaProperties(Map.of(
+                StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId()
+        ));
     }
 
     /**
@@ -174,6 +170,16 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     @Override
     public void close() {
         this.app.close();
+    }
+
+    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
+        final Map<String, Object> baseConfig = createBaseConfig(endpointConfig);
+        return KafkaPropertiesFactory.builder()
+                .baseConfig(baseConfig)
+                .app(this.app)
+                .configuration(this.configuration)
+                .endpointConfig(endpointConfig)
+                .build();
     }
 
 }

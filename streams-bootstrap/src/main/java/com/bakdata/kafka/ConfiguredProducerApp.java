@@ -24,8 +24,9 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull AppConfiguration<ProducerTopicConfig> configuration;
 
-    private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {
+    private static Map<String, Object> createBaseConfig(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         if (endpointConfig.isSchemaRegistryConfigured()) {
@@ -100,12 +101,8 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      * @return Kafka configuration
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaConfig = createKafkaProperties(endpointConfig);
-        kafkaConfig.putAll(this.app.createKafkaProperties());
-        kafkaConfig.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
-        kafkaConfig.putAll(this.configuration.getKafkaConfig());
-        kafkaConfig.putAll(endpointConfig.createKafkaProperties());
-        return Collections.unmodifiableMap(kafkaConfig);
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+        return propertiesFactory.createKafkaProperties(emptyMap());
     }
 
     /**
@@ -130,5 +127,15 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     @Override
     public void close() {
         this.app.close();
+    }
+
+    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
+        final Map<String, Object> baseConfig = createBaseConfig(endpointConfig);
+        return KafkaPropertiesFactory.builder()
+                .baseConfig(baseConfig)
+                .app(this.app)
+                .configuration(this.configuration)
+                .endpointConfig(endpointConfig)
+                .build();
     }
 }
