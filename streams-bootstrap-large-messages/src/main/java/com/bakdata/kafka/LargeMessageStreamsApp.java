@@ -30,7 +30,8 @@ package com.bakdata.kafka;
 public interface LargeMessageStreamsApp extends StreamsApp {
 
     @Override
-    default StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration configuration) {
+    default StreamsCleanUpConfiguration setupCleanUp(
+            final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         final StreamsCleanUpConfiguration configurer = StreamsApp.super.setupCleanUp(configuration);
         return configurer.registerTopicHook(
                 LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(configuration.getKafkaProperties()));

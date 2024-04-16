@@ -29,9 +29,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsAppConfiguration;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -91,13 +91,10 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .kafkaConfig(Map.of(
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics, Map.of(
                         StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                         ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-                ))
-                .topics(topics)
-                .build();
+        ));
         return new ConfiguredStreamsApp<>(app, configuration);
     }
 

@@ -35,14 +35,14 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
- * A {@link ProducerApp} with a corresponding {@link ProducerAppConfiguration}
+ * A {@link ProducerApp} with a corresponding {@link AppConfiguration}
  * @param <T> type of {@link ProducerApp}
  */
 @RequiredArgsConstructor
 public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredApp<ExecutableProducerApp<T>> {
     @Getter
     private final @NonNull T app;
-    private final @NonNull ProducerAppConfiguration configuration;
+    private final @NonNull AppConfiguration<ProducerTopicConfig> configuration;
 
     private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -89,7 +89,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link ProducerAppConfiguration#getKafkaConfig()}
+     *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
      *     </li>
      *     <li>
      *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}

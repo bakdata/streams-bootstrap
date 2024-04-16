@@ -38,14 +38,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 /**
- * A {@link StreamsApp} with a corresponding {@link StreamsAppConfiguration}
+ * A {@link StreamsApp} with a corresponding {@link AppConfiguration}
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
 public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp<ExecutableStreamsApp<T>> {
     @Getter
     private final @NonNull T app;
-    private final @NonNull StreamsAppConfiguration configuration;
+    private final @NonNull AppConfiguration<StreamsTopicConfig> configuration;
 
     private static Map<String, Object> createKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -96,7 +96,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link StreamsAppConfiguration#getKafkaConfig()}
+     *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
      *     </li>
      *     <li>
      *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
@@ -145,10 +145,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);
-        final EffectiveStreamsAppConfiguration effectiveConfiguration = EffectiveStreamsAppConfiguration.builder()
-                .kafkaProperties(kafkaProperties)
-                .topics(this.getTopics())
-                .build();
+        final EffectiveAppConfiguration<StreamsTopicConfig> effectiveConfiguration =
+                new EffectiveAppConfiguration<>(this.getTopics(), kafkaProperties);
         return ExecutableStreamsApp.<T>builder()
                 .topology(topology)
                 .config(new StreamsConfig(kafkaProperties))

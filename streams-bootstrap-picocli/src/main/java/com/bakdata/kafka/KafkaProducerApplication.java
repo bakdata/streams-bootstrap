@@ -79,13 +79,10 @@ public abstract class KafkaProducerApplication extends
      * Create configuration to configure app
      * @return configuration
      */
-    public final ProducerAppConfiguration createConfiguration() {
+    public final AppConfiguration<ProducerTopicConfig> createConfiguration() {
         final ProducerTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        return ProducerAppConfiguration.builder()
-                .topics(topics)
-                .kafkaConfig(kafkaConfig)
-                .build();
+        return new AppConfiguration<>(topics, kafkaConfig);
     }
 
     @Override
@@ -107,7 +104,7 @@ public abstract class KafkaProducerApplication extends
     @Override
     public final ConfiguredProducerApp<ProducerApp> createConfiguredApp(final boolean cleanUp) {
         final ProducerApp app = this.createApp(cleanUp);
-        final ProducerAppConfiguration configuration = this.createConfiguration();
+        final AppConfiguration<ProducerTopicConfig> configuration = this.createConfiguration();
         return new ConfiguredProducerApp<>(app, configuration);
     }
 }

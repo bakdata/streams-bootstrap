@@ -147,14 +147,11 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create {@code EffectiveStreamsAppConfiguration} used by this app
-     * @return {@code EffectiveStreamsAppConfiguration}
+     * Create {@code EffectiveAppConfiguration} used by this app
+     * @return {@code EffectiveAppConfiguration}
      */
-    public EffectiveStreamsAppConfiguration createEffectiveConfiguration() {
-        return EffectiveStreamsAppConfiguration.builder()
-                .kafkaProperties(this.kafkaProperties)
-                .topics(this.topics)
-                .build();
+    public EffectiveAppConfiguration<StreamsTopicConfig> createEffectiveConfiguration() {
+        return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
     }
 
     Topology build() {

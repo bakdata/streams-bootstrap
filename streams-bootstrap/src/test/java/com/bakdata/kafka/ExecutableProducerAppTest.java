@@ -42,7 +42,7 @@ import org.mockito.quality.Strictness;
 class ExecutableProducerAppTest {
 
     @Mock
-    private Consumer<EffectiveProducerAppConfiguration> setup;
+    private Consumer<EffectiveAppConfiguration<ProducerTopicConfig>> setup;
     @Mock
     private Supplier<ProducerCleanUpConfiguration> setupCleanUp;
 
@@ -51,9 +51,7 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .topics(topics)
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
@@ -62,10 +60,7 @@ class ExecutableProducerAppTest {
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
-        verify(this.setup).accept(EffectiveProducerAppConfiguration.builder()
-                .kafkaProperties(kafkaProperties)
-                .topics(topics)
-                .build());
+        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -73,9 +68,7 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .topics(topics)
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
@@ -84,10 +77,7 @@ class ExecutableProducerAppTest {
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
-        verify(this.setup).accept(EffectiveProducerAppConfiguration.builder()
-                .kafkaProperties(kafkaProperties)
-                .topics(topics)
-                .build());
+        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -95,9 +85,7 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .topics(topics)
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
@@ -112,12 +100,13 @@ class ExecutableProducerAppTest {
     private class TestProducer implements ProducerApp {
 
         @Override
-        public void setup(final EffectiveProducerAppConfiguration configuration) {
+        public void setup(final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
             ExecutableProducerAppTest.this.setup.accept(configuration);
         }
 
         @Override
-        public ProducerCleanUpConfiguration setupCleanUp(final EffectiveProducerAppConfiguration configuration) {
+        public ProducerCleanUpConfiguration setupCleanUp(
+                final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
             return ExecutableProducerAppTest.this.setupCleanUp.get();
         }
 

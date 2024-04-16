@@ -24,28 +24,26 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 
 /**
- * Configuration for setting up a {@link ProducerApp}
- * @see ProducerApp#setup(EffectiveProducerAppConfiguration)
- * @see ProducerApp#setupCleanUp(EffectiveProducerAppConfiguration)
+ * Configuration for setting up an app
+ * @see StreamsApp#setup(EffectiveAppConfiguration)
+ * @see StreamsApp#setupCleanUp(EffectiveAppConfiguration)
+ * @see ProducerApp#setup(EffectiveAppConfiguration)
+ * @see ProducerApp#setupCleanUp(EffectiveAppConfiguration)
  */
-@Builder
 @Value
 @EqualsAndHashCode
-public class EffectiveProducerAppConfiguration {
-    @Builder.Default
-    @NonNull ProducerTopicConfig topics = ProducerTopicConfig.builder().build();
-    @Builder.Default
-    @NonNull Map<String, Object> kafkaProperties = emptyMap();
+public class EffectiveAppConfiguration<T> {
+    @NonNull
+    T topics;
+    @NonNull
+    Map<String, Object> kafkaProperties;
 
     /**
      * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}

@@ -54,7 +54,7 @@ public interface StreamsApp extends AutoCloseable {
      * Setup Kafka resources, such as topics, before running this app
      * @param configuration provides all runtime application configurations
      */
-    default void setup(final EffectiveStreamsAppConfiguration configuration) {
+    default void setup(final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         // do nothing by default
     }
 
@@ -72,7 +72,8 @@ public interface StreamsApp extends AutoCloseable {
      * @return {@code StreamsCleanUpConfiguration}
      * @see StreamsCleanUpRunner
      */
-    default StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration configuration) {
+    default StreamsCleanUpConfiguration setupCleanUp(
+            final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         return new StreamsCleanUpConfiguration();
     }
 

@@ -43,7 +43,7 @@ import org.mockito.quality.Strictness;
 class ExecutableStreamsAppTest {
 
     @Mock
-    private Consumer<EffectiveStreamsAppConfiguration> setup;
+    private Consumer<EffectiveAppConfiguration<StreamsTopicConfig>> setup;
     @Mock
     private Supplier<StreamsCleanUpConfiguration> setupCleanUp;
 
@@ -53,9 +53,7 @@ class ExecutableStreamsAppTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .topics(topics)
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
@@ -64,10 +62,7 @@ class ExecutableStreamsAppTest {
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
-        verify(this.setup).accept(EffectiveStreamsAppConfiguration.builder()
-                .kafkaProperties(kafkaProperties)
-                .topics(topics)
-                .build());
+        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -76,9 +71,7 @@ class ExecutableStreamsAppTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .topics(topics)
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
@@ -87,10 +80,7 @@ class ExecutableStreamsAppTest {
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(StreamsExecutionOptions.builder().build());
-        verify(this.setup).accept(EffectiveStreamsAppConfiguration.builder()
-                .kafkaProperties(kafkaProperties)
-                .topics(topics)
-                .build());
+        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -99,9 +89,7 @@ class ExecutableStreamsAppTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .topics(topics)
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
@@ -116,12 +104,13 @@ class ExecutableStreamsAppTest {
     private class TestApplication implements StreamsApp {
 
         @Override
-        public void setup(final EffectiveStreamsAppConfiguration configuration) {
+        public void setup(final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
             ExecutableStreamsAppTest.this.setup.accept(configuration);
         }
 
         @Override
-        public StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration setupConfiguration) {
+        public StreamsCleanUpConfiguration setupCleanUp(
+                final EffectiveAppConfiguration<StreamsTopicConfig> setupConfiguration) {
             return ExecutableStreamsAppTest.this.setupCleanUp.get();
         }
 

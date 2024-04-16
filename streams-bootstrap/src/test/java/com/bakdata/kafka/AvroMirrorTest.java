@@ -38,12 +38,10 @@ class AvroMirrorTest {
             StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
 
     private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .topics(StreamsTopicConfig.builder()
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(StreamsTopicConfig.builder()
                         .inputTopics(List.of("input"))
                         .outputTopic("output")
-                        .build())
-                .build();
+                .build());
         return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(), configuration);
     }
 

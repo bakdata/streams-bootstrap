@@ -26,22 +26,26 @@ package com.bakdata.kafka;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Runs a Kafka Producer application
  */
 @RequiredArgsConstructor
+@Slf4j
 public class ProducerRunner implements Runner {
 
     private final @NonNull ProducerRunnable runnable;
 
     @Override
     public void close() {
+        log.info("Closing producer");
         this.runnable.close();
     }
 
     @Override
     public void run() {
+        log.info("Starting producer");
         this.runnable.run();
     }
 }

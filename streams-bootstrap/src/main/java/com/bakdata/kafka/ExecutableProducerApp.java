@@ -48,7 +48,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
      */
     @Override
     public ProducerCleanUpRunner createCleanUpRunner() {
-        final EffectiveProducerAppConfiguration configuration = this.createEffectiveConfiguration();
+        final EffectiveAppConfiguration<ProducerTopicConfig> configuration = this.createEffectiveConfiguration();
         final ProducerCleanUpConfiguration configurer = this.app.setupCleanUp(configuration);
         return ProducerCleanUpRunner.create(this.topics, this.kafkaProperties, configurer);
     }
@@ -68,7 +68,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
                 .topics(this.topics)
                 .kafkaProperties(this.kafkaProperties)
                 .build();
-        final EffectiveProducerAppConfiguration configuration = this.createEffectiveConfiguration();
+        final EffectiveAppConfiguration<ProducerTopicConfig> configuration = this.createEffectiveConfiguration();
         this.app.setup(configuration);
         return new ProducerRunner(this.app.buildRunnable(producerBuilder));
     }
@@ -78,10 +78,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
         this.app.close();
     }
 
-    private EffectiveProducerAppConfiguration createEffectiveConfiguration() {
-        return EffectiveProducerAppConfiguration.builder()
-                .topics(this.topics)
-                .kafkaProperties(this.kafkaProperties)
-                .build();
+    private EffectiveAppConfiguration<ProducerTopicConfig> createEffectiveConfiguration() {
+        return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
     }
 }

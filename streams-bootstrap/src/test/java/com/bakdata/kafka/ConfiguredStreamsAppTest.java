@@ -37,14 +37,20 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredStreamsAppTest {
 
+    private static StreamsTopicConfig emptyTopicConfig() {
+        return StreamsTopicConfig.builder().build();
+    }
+
+    private static AppConfiguration<StreamsTopicConfig> newAppConfiguration() {
+        return new AppConfiguration<>(emptyTopicConfig());
+    }
+
     @Test
     void shouldPrioritizeConfigCLIParameters() {
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .kafkaConfig(Map.of(
-                        "foo", "baz",
-                        "kafka", "streams"
-                ))
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                "foo", "baz",
+                "kafka", "streams"
+        ));
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
@@ -59,8 +65,7 @@ class ConfiguredStreamsAppTest {
     @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
@@ -73,8 +78,7 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldSetDefaultAvroSerdeWhenSchemaRegistryUrlIsSet() {
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
@@ -88,8 +92,7 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldSetDefaultStringSerdeWhenSchemaRegistryUrlIsNotSet() {
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()

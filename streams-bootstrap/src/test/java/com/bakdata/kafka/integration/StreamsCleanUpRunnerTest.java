@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.ConfiguredStreamsApp;
-import com.bakdata.kafka.EffectiveStreamsAppConfiguration;
+import com.bakdata.kafka.EffectiveAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
@@ -604,7 +604,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(ComplexTopologyApplication.THROUGH_TOPIC).useDefaults());
         return configureApp(new ComplexTopologyApplication() {
             @Override
-            public StreamsCleanUpConfiguration setupCleanUp(final EffectiveStreamsAppConfiguration configuration) {
+            public StreamsCleanUpConfiguration setupCleanUp(
+                    final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(StreamsCleanUpRunnerTest.this.topicHook);
             }

@@ -27,21 +27,24 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyMap;
 
 import java.util.Map;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 /**
- * Configuration of {@link StreamsApp}. This includes {@link StreamsTopicConfig} and Kafka configuration
+ * Configuration of an app. This includes topics and Kafka configuration
  */
-@Builder
 @Value
+@RequiredArgsConstructor
 @EqualsAndHashCode
-public class StreamsAppConfiguration {
-    @Builder.Default
-    @NonNull StreamsTopicConfig topics = StreamsTopicConfig.builder().build();
-    @Builder.Default
-    @NonNull Map<String, ?> kafkaConfig = emptyMap();
+public class AppConfiguration<T> {
+    @NonNull
+    T topics;
+    @NonNull
+    Map<String, ?> kafkaConfig;
 
+    public AppConfiguration(final T topics) {
+        this(topics, emptyMap());
+    }
 }

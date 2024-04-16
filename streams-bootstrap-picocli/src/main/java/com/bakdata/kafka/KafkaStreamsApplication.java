@@ -125,13 +125,10 @@ public abstract class KafkaStreamsApplication extends
      * Create configuration to configure app
      * @return configuration
      */
-    public final StreamsAppConfiguration createConfiguration() {
+    public final AppConfiguration<StreamsTopicConfig> createConfiguration() {
         final StreamsTopicConfig topics = this.createTopicConfig();
         final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        return StreamsAppConfiguration.builder()
-                .topics(topics)
-                .kafkaConfig(kafkaConfig)
-                .build();
+        return new AppConfiguration<>(topics, kafkaConfig);
     }
 
     @Override
@@ -164,7 +161,7 @@ public abstract class KafkaStreamsApplication extends
     @Override
     public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final boolean cleanUp) {
         final StreamsApp app = this.createApp(cleanUp);
-        final StreamsAppConfiguration configuration = this.createConfiguration();
+        final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
         return new ConfiguredStreamsApp<>(app, configuration);
     }
 

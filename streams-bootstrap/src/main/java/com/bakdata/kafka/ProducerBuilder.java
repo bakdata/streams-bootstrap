@@ -82,13 +82,10 @@ public class ProducerBuilder {
     }
 
     /**
-     * Create {@code EffectiveProducerAppConfiguration} used by this app
-     * @return {@code EffectiveProducerAppConfiguration}
+     * Create {@code EffectiveAppConfiguration} used by this app
+     * @return {@code EffectiveAppConfiguration}
      */
-    public EffectiveProducerAppConfiguration createEffectiveConfiguration() {
-        return EffectiveProducerAppConfiguration.builder()
-                .kafkaProperties(this.kafkaProperties)
-                .topics(this.topics)
-                .build();
+    public EffectiveAppConfiguration<ProducerTopicConfig> createEffectiveConfiguration() {
+        return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
     }
 }

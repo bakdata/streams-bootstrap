@@ -26,10 +26,10 @@ package com.bakdata.kafka.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsAppConfiguration;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import java.util.List;
@@ -57,9 +57,7 @@ class TopologyInformationTest {
                 .inputTopics(List.of("input", "input2"))
                 .outputTopic("output")
                 .build();
-        final StreamsAppConfiguration configuration = StreamsAppConfiguration.builder()
-                .topics(this.topics)
-                .build();
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(this.topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this.app, configuration);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(
                 KafkaEndpointConfig.builder()

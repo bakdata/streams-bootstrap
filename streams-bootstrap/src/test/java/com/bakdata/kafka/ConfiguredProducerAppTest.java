@@ -36,14 +36,20 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredProducerAppTest {
 
+    private static AppConfiguration<ProducerTopicConfig> newAppConfiguration() {
+        return new AppConfiguration<>(emptyTopicConfig());
+    }
+
+    private static ProducerTopicConfig emptyTopicConfig() {
+        return ProducerTopicConfig.builder().build();
+    }
+
     @Test
     void shouldPrioritizeConfigCLIParameters() {
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .kafkaConfig(Map.of(
-                        "foo", "baz",
-                        "kafka", "streams"
-                ))
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                "foo", "baz",
+                "kafka", "streams"
+        ));
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
@@ -58,8 +64,7 @@ class ConfiguredProducerAppTest {
     @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
@@ -72,8 +77,7 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldSetDefaultAvroSerializerWhenSchemaRegistryUrlIsSet() {
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
@@ -86,8 +90,7 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldSetDefaultStringSerializerWhenSchemaRegistryUrlIsNotSet() {
-        final ProducerAppConfiguration configuration = ProducerAppConfiguration.builder()
-                .build();
+        final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
