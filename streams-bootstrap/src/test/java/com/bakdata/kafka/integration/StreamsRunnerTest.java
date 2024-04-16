@@ -83,7 +83,7 @@ class StreamsRunnerTest extends KafkaTest {
 
     static Thread run(final StreamsRunner runner) {
         // run in Thread because the application blocks indefinitely
-        final Thread thread = new Thread(runner::run);
+        final Thread thread = new Thread(runner);
         final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
         thread.setUncaughtExceptionHandler(handler);
         thread.start();

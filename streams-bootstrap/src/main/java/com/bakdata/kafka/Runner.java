@@ -27,7 +27,7 @@ package com.bakdata.kafka;
 /**
  * Interface for running applications
  */
-public interface Runner extends AutoCloseable {
+public interface Runner extends AutoCloseable, Runnable {
 
     @Override
     void close();
@@ -35,5 +35,6 @@ public interface Runner extends AutoCloseable {
     /**
      * Run the application
      */
+    @Override
     void run();
 }
