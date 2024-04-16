@@ -32,6 +32,7 @@ import lombok.Value;
 
 /**
  * Configuration for setting up an app
+ * @param <T> type of topic config
  * @see StreamsApp#setup(EffectiveAppConfiguration)
  * @see StreamsApp#setupCleanUp(EffectiveAppConfiguration)
  * @see ProducerApp#setup(EffectiveAppConfiguration)

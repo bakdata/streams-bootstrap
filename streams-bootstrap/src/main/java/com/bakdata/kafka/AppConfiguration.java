@@ -34,6 +34,7 @@ import lombok.Value;
 
 /**
  * Configuration of an app. This includes topics and Kafka configuration
+ * @param <T> type of topic config
  */
 @Value
 @RequiredArgsConstructor
