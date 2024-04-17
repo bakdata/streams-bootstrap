@@ -53,4 +53,13 @@ public class EffectiveAppConfiguration<T> {
     public ImprovedAdminClient createAdminClient() {
         return ImprovedAdminClient.create(this.kafkaProperties);
     }
+
+    /**
+     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
+     * {@link org.apache.kafka.common.serialization.Serializer} using {@link #kafkaProperties}.
+     * @return {@code Configurator}
+     */
+    public Configurator createConfigurator() {
+        return new Configurator(this.kafkaProperties);
+    }
 }
