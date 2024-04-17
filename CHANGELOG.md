@@ -1,6 +1,8 @@
 # Change Log
 - no changes!
 
+- no changes!
+
 
 ## [2.16.1](https://github.com/bakdata/streams-bootstrap/tree/2.16.1) (2024-02-02)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.0...2.16.1)
