@@ -29,17 +29,24 @@ package com.bakdata.kafka;
  */
 public interface LargeMessageProducerApp extends ProducerApp {
 
-    static ProducerCleanUpConfiguration registerLargeMessageCleanUpHook(final ProducerCleanUpConfiguration configurer,
-            final EffectiveAppConfiguration<?> configuration) {
-        return configurer.registerTopicHook(
+    /**
+     * Register a hook that cleans up LargeMessage files associated with a topic
+     * @param cleanUpConfiguration Configuration to register hook on
+     * @param configuration Configuration to create hook from
+     * @return {@code ProducerCleanUpConfiguration} with registered topic hook
+     * @see LargeMessageKafkaApplicationUtils#createLargeMessageCleanUpHook(EffectiveAppConfiguration)
+     */
+    static ProducerCleanUpConfiguration registerLargeMessageCleanUpHook(
+            final ProducerCleanUpConfiguration cleanUpConfiguration, final EffectiveAppConfiguration<?> configuration) {
+        return cleanUpConfiguration.registerTopicHook(
                 LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(configuration));
     }
 
     @Override
     default ProducerCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
-        final ProducerCleanUpConfiguration configurer = ProducerApp.super.setupCleanUp(configuration);
-        return registerLargeMessageCleanUpHook(configurer, configuration);
+        final ProducerCleanUpConfiguration cleanUpConfiguration = ProducerApp.super.setupCleanUp(configuration);
+        return registerLargeMessageCleanUpHook(cleanUpConfiguration, configuration);
     }
 
 }

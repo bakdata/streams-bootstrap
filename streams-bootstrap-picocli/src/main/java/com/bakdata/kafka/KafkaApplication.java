@@ -232,8 +232,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     public final AppConfiguration<T> createConfiguration() {
         final T topics = this.createTopicConfig();
-        final Map<String, String> kafkaConfig = this.getKafkaConfig();
-        return new AppConfiguration<>(topics, kafkaConfig);
+        return new AppConfiguration<>(topics, this.kafkaConfig);
     }
 
     /**
