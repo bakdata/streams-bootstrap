@@ -24,8 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.Preconfigured.key;
-import static com.bakdata.kafka.Preconfigured.value;
+import static com.bakdata.kafka.Preconfigured.create;
 
 import java.util.Map;
 import lombok.NonNull;
@@ -48,7 +47,7 @@ public class Configurator {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serde<T> configureForValues(final Serde<T> serde) {
-        return this.configure(value(serde));
+        return this.configureForValues(create(serde));
     }
 
     /**
@@ -59,7 +58,7 @@ public class Configurator {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serde<T> configureForValues(final Serde<T> serde, final Map<String, Object> configOverrides) {
-        return this.configure(value(serde, configOverrides));
+        return this.configureForValues(create(serde, configOverrides));
     }
 
     /**
@@ -69,7 +68,7 @@ public class Configurator {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serde<T> configureForKeys(final Serde<T> serde) {
-        return this.configure(key(serde));
+        return this.configureForKeys(create(serde));
     }
 
     /**
@@ -80,7 +79,7 @@ public class Configurator {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serde<T> configureForKeys(final Serde<T> serde, final Map<String, Object> configOverrides) {
-        return this.configure(key(serde, configOverrides));
+        return this.configureForKeys(create(serde, configOverrides));
     }
 
     /**
@@ -90,7 +89,7 @@ public class Configurator {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serializer<T> configureForValues(final Serializer<T> serializer) {
-        return this.configure(value(serializer));
+        return this.configureForValues(create(serializer));
     }
 
     /**
@@ -102,7 +101,7 @@ public class Configurator {
      */
     public <T> Serializer<T> configureForValues(final Serializer<T> serializer,
             final Map<String, Object> configOverrides) {
-        return this.configure(value(serializer, configOverrides));
+        return this.configureForValues(create(serializer, configOverrides));
     }
 
     /**
@@ -112,7 +111,7 @@ public class Configurator {
      * @param <T> type to be (de-)serialized
      */
     public <T> Serializer<T> configureForKeys(final Serializer<T> serializer) {
-        return this.configure(key(serializer));
+        return this.configureForKeys(create(serializer));
     }
 
     /**
@@ -124,17 +123,27 @@ public class Configurator {
      */
     public <T> Serializer<T> configureForKeys(final Serializer<T> serializer,
             final Map<String, Object> configOverrides) {
-        return this.configure(key(serializer, configOverrides));
+        return this.configureForKeys(create(serializer, configOverrides));
     }
 
     /**
-     * Configure a {@code Preconfigured} object using {@link #kafkaProperties}
+     * Configure a {@code Preconfigured} for values object using {@link #kafkaProperties}
      * @param preconfigured pre-configured {@link Serde} or {@link Serializer}
      * @return configured instance
      * @param <T> type of configured instance
      */
-    public <T> T configure(final Preconfigured<T> preconfigured) {
-        return preconfigured.configure(this.kafkaProperties);
+    public <T> T configureForValues(final Preconfigured<T> preconfigured) {
+        return preconfigured.configureForValues(this.kafkaProperties);
+    }
+
+    /**
+     * Configure a {@code Preconfigured} for keys object using {@link #kafkaProperties}
+     * @param preconfigured pre-configured {@link Serde} or {@link Serializer}
+     * @return configured instance
+     * @param <T> type of configured instance
+     */
+    public <T> T configureForKeys(final Preconfigured<T> preconfigured) {
+        return preconfigured.configureForKeys(this.kafkaProperties);
     }
 
 }
