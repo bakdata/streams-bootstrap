@@ -52,4 +52,17 @@ public class LargeMessageKafkaApplicationUtils {
         };
     }
 
+    /**
+     * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
+     * properties to create a {@link AbstractLargeMessageConfig} are part of
+     * {@link EffectiveAppConfiguration#getKafkaProperties()}.
+     *
+     * @param configuration Configuration to create hook from
+     * @return hook that cleans up LargeMessage files associated with a topic
+     * @see #createLargeMessageCleanUpHook(Map)
+     */
+    public static TopicHook createLargeMessageCleanUpHook(final EffectiveAppConfiguration<?> configuration) {
+        return createLargeMessageCleanUpHook(configuration.getKafkaProperties());
+    }
+
 }
