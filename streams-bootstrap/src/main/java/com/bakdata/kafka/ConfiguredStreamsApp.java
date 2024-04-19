@@ -147,8 +147,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
                 .topology(topology)
                 .config(new StreamsConfig(kafkaProperties))
                 .app(this.app)
-                .setup(() -> this.app.setup(effectiveConfiguration))
-                .setupCleanup(() -> this.app.setupCleanUp(effectiveConfiguration))
+                .effectiveConfig(effectiveConfiguration)
                 .build();
     }
 
@@ -159,10 +158,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @return topology of the Kafka Streams app
      */
     public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        final TopologyBuilder topologyBuilder = TopologyBuilder.builder()
-                .topics(this.getTopics())
-                .kafkaProperties(kafkaProperties)
-                .build();
+        final TopologyBuilder topologyBuilder = new TopologyBuilder(this.getTopics(), kafkaProperties);
         this.app.buildTopology(topologyBuilder);
         return topologyBuilder.build();
     }

@@ -25,8 +25,8 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
-import lombok.Builder;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
@@ -38,7 +38,7 @@ import org.apache.kafka.streams.kstream.KStream;
  *
  * @see StreamsApp#buildTopology(TopologyBuilder)
  */
-@Builder
+@RequiredArgsConstructor
 @Value
 public class TopologyBuilder {
 

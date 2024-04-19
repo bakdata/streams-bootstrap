@@ -64,10 +64,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
 
     @Override
     public ProducerRunner createRunner(final ProducerExecutionOptions options) {
-        final ProducerBuilder producerBuilder = ProducerBuilder.builder()
-                .topics(this.topics)
-                .kafkaProperties(this.kafkaProperties)
-                .build();
+        final ProducerBuilder producerBuilder = new ProducerBuilder(this.topics, this.kafkaProperties);
         final EffectiveAppConfiguration<ProducerTopicConfig> configuration = this.createEffectiveConfiguration();
         this.app.setup(configuration);
         return new ProducerRunner(this.app.buildRunnable(producerBuilder));

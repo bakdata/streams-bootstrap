@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.PreConfigured.key;
-import static com.bakdata.kafka.PreConfigured.value;
+import static com.bakdata.kafka.Preconfigured.key;
+import static com.bakdata.kafka.Preconfigured.value;
 
 import java.util.Map;
 import lombok.NonNull;
@@ -128,12 +128,12 @@ public class Configurator {
     }
 
     /**
-     * Configure a {@code PreConfigured} object using {@link #kafkaProperties}
+     * Configure a {@code Preconfigured} object using {@link #kafkaProperties}
      * @param preConfigured pre-configured {@link Serde} or {@link Serializer}
      * @return configured instance
      * @param <T> type of configured instance
      */
-    public <T> T configure(final PreConfigured<T> preConfigured) {
+    public <T> T configure(final Preconfigured<T> preConfigured) {
         return preConfigured.configure(this.kafkaProperties);
     }
 

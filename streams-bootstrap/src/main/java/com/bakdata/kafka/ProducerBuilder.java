@@ -25,9 +25,8 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -38,7 +37,7 @@ import org.apache.kafka.common.serialization.Serializer;
  *
  * @see ProducerApp#buildRunnable(ProducerBuilder)
  */
-@Builder(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor
 @Value
 public class ProducerBuilder {
 

@@ -40,7 +40,7 @@ import org.apache.kafka.common.serialization.Serializer;
  * @param <T> type of underlying configurable
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class PreConfigured<T> {
+public final class Preconfigured<T> {
     private final @NonNull Configurable<T> configurable;
     private final @NonNull Map<String, Object> configOverrides;
     private final boolean isKey;
@@ -51,7 +51,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serde
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> PreConfigured<Serde<T>> value(final Serde<T> serde) {
+    public static <T> Preconfigured<Serde<T>> value(final Serde<T> serde) {
         return value(configurable(serde));
     }
 
@@ -62,7 +62,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serde
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> PreConfigured<Serde<T>> value(final Serde<T> serde, final Map<String, Object> configOverrides) {
+    public static <T> Preconfigured<Serde<T>> value(final Serde<T> serde, final Map<String, Object> configOverrides) {
         return value(configurable(serde), configOverrides);
     }
 
@@ -72,7 +72,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serde
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> PreConfigured<Serde<T>> key(final Serde<T> serde) {
+    public static <T> Preconfigured<Serde<T>> key(final Serde<T> serde) {
         return key(configurable(serde));
     }
 
@@ -83,7 +83,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serde
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> PreConfigured<Serde<T>> key(final Serde<T> serde, final Map<String, Object> configOverrides) {
+    public static <T> Preconfigured<Serde<T>> key(final Serde<T> serde, final Map<String, Object> configOverrides) {
         return key(configurable(serde), configOverrides);
     }
 
@@ -93,7 +93,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serializer
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> PreConfigured<Serializer<T>> value(final Serializer<T> serializer) {
+    public static <T> Preconfigured<Serializer<T>> value(final Serializer<T> serializer) {
         return value(configurable(serializer));
     }
 
@@ -104,7 +104,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serializer
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> PreConfigured<Serializer<T>> value(final Serializer<T> serializer,
+    public static <T> Preconfigured<Serializer<T>> value(final Serializer<T> serializer,
             final Map<String, Object> configOverrides) {
         return value(configurable(serializer), configOverrides);
     }
@@ -115,7 +115,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serializer
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> PreConfigured<Serializer<T>> key(final Serializer<T> serializer) {
+    public static <T> Preconfigured<Serializer<T>> key(final Serializer<T> serializer) {
         return key(configurable(serializer));
     }
 
@@ -126,7 +126,7 @@ public final class PreConfigured<T> {
      * @return pre-configured serializer
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> PreConfigured<Serializer<T>> key(final Serializer<T> serializer,
+    public static <T> Preconfigured<Serializer<T>> key(final Serializer<T> serializer,
             final Map<String, Object> configOverrides) {
         return key(configurable(serializer), configOverrides);
     }
@@ -139,22 +139,22 @@ public final class PreConfigured<T> {
         return new ConfigurableSerializer<>(serializer);
     }
 
-    private static <T> PreConfigured<T> key(final Configurable<T> configurable) {
+    private static <T> Preconfigured<T> key(final Configurable<T> configurable) {
         return key(configurable, emptyMap());
     }
 
-    private static <T> PreConfigured<T> key(final Configurable<T> configurable,
+    private static <T> Preconfigured<T> key(final Configurable<T> configurable,
             final Map<String, Object> configOverrides) {
-        return new PreConfigured<>(configurable, configOverrides, true);
+        return new Preconfigured<>(configurable, configOverrides, true);
     }
 
-    private static <T> PreConfigured<T> value(final Configurable<T> configurable) {
+    private static <T> Preconfigured<T> value(final Configurable<T> configurable) {
         return value(configurable, emptyMap());
     }
 
-    private static <T> PreConfigured<T> value(final Configurable<T> configurable,
+    private static <T> Preconfigured<T> value(final Configurable<T> configurable,
             final Map<String, Object> configOverrides) {
-        return new PreConfigured<>(configurable, configOverrides, false);
+        return new Preconfigured<>(configurable, configOverrides, false);
     }
 
     /**
