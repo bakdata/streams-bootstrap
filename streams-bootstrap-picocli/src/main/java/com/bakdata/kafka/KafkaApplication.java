@@ -24,11 +24,12 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,7 +88,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
-    private Map<String, String> extraOutputTopics = new HashMap<>();
+    private Map<String, String> extraOutputTopics = emptyMap();
     @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
     private String brokers;
     @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
@@ -95,7 +96,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
     private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
-    private Map<String, String> kafkaConfig = new HashMap<>();
+    private Map<String, String> kafkaConfig = emptyMap();
 
     /**
      * <p>This methods needs to be called in the executable custom application class inheriting from

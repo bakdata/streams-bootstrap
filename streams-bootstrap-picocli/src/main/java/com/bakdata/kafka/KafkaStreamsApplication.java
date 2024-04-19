@@ -24,8 +24,9 @@
 
 package com.bakdata.kafka;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,16 +68,16 @@ public abstract class KafkaStreamsApplication extends
         KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions,
                 ExecutableStreamsApp<StreamsApp>, ConfiguredStreamsApp<StreamsApp>, StreamsTopicConfig, StreamsApp> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
-    private List<String> inputTopics = new ArrayList<>();
+    private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
     private Pattern inputPattern;
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     private String errorTopic;
     @CommandLine.Option(names = "--extra-input-topics", split = ",", description = "Additional named input topics",
             converter = {UseDefaultConverter.class, StringListConverter.class})
-    private Map<String, List<String>> extraInputTopics = new HashMap<>();
+    private Map<String, List<String>> extraInputTopics = emptyMap();
     @CommandLine.Option(names = "--extra-input-patterns", split = ",", description = "Additional named input patterns")
-    private Map<String, Pattern> extraInputPatterns = new HashMap<>();
+    private Map<String, Pattern> extraInputPatterns = emptyMap();
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
