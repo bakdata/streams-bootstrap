@@ -39,7 +39,7 @@ import org.apache.kafka.common.serialization.Serializer;
  * A pre-configured {@link Serde} or {@link Serializer}, i.e., configs and isKey are set.
  * @param <T> type of underlying configurable
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Preconfigured<T> {
     private final @NonNull Configurable<T> configurable;
     private final @NonNull Map<String, Object> configOverrides;
