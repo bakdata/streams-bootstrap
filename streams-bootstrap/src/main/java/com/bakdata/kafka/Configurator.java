@@ -129,12 +129,12 @@ public class Configurator {
 
     /**
      * Configure a {@code Preconfigured} object using {@link #kafkaProperties}
-     * @param preConfigured pre-configured {@link Serde} or {@link Serializer}
+     * @param preconfigured pre-configured {@link Serde} or {@link Serializer}
      * @return configured instance
      * @param <T> type of configured instance
      */
-    public <T> T configure(final Preconfigured<T> preConfigured) {
-        return preConfigured.configure(this.kafkaProperties);
+    public <T> T configure(final Preconfigured<T> preconfigured) {
+        return preconfigured.configure(this.kafkaProperties);
     }
 
 }

@@ -31,12 +31,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class ConfigurableSerde<T> implements Configurable<Serde<T>> {
+final class ConfigurableSerde<S extends Serde<T>, T> implements Configurable<S> {
 
-    private final @NonNull Serde<T> serde;
+    private final @NonNull S serde;
 
     @Override
-    public Serde<T> configure(final Map<String, Object> config, final boolean isKey) {
+    public S configure(final Map<String, Object> config, final boolean isKey) {
         this.serde.configure(config, isKey);
         return this.serde;
     }

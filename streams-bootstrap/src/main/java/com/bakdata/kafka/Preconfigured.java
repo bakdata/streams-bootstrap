@@ -49,9 +49,10 @@ public final class Preconfigured<T> {
      * Pre-configure a {@code Serde} for values
      * @param serde {@code Serde} to pre-configure
      * @return pre-configured serde
+     * @param <S> type of {@link Serde}
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> Preconfigured<Serde<T>> value(final Serde<T> serde) {
+    public static <S extends Serde<T>, T> Preconfigured<S> value(final S serde) {
         return value(configurable(serde));
     }
 
@@ -60,9 +61,11 @@ public final class Preconfigured<T> {
      * @param serde {@code Serde} to pre-configure
      * @param configOverrides configs passed to {@link Serde#configure(Map, boolean)}
      * @return pre-configured serde
+     * @param <S> type of {@link Serde}
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> Preconfigured<Serde<T>> value(final Serde<T> serde, final Map<String, Object> configOverrides) {
+    public static <S extends Serde<T>, T> Preconfigured<S> value(final S serde,
+            final Map<String, Object> configOverrides) {
         return value(configurable(serde), configOverrides);
     }
 
@@ -70,9 +73,10 @@ public final class Preconfigured<T> {
      * Pre-configure a {@code Serde} for keys
      * @param serde {@code Serde} to pre-configure
      * @return pre-configured serde
+     * @param <S> type of {@link Serde}
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> Preconfigured<Serde<T>> key(final Serde<T> serde) {
+    public static <S extends Serde<T>, T> Preconfigured<S> key(final S serde) {
         return key(configurable(serde));
     }
 
@@ -81,9 +85,11 @@ public final class Preconfigured<T> {
      * @param serde {@code Serde} to pre-configure
      * @param configOverrides configs passed to {@link Serde#configure(Map, boolean)}
      * @return pre-configured serde
+     * @param <S> type of {@link Serde}
      * @param <T> type (de-)serialized by the {@code Serde}
      */
-    public static <T> Preconfigured<Serde<T>> key(final Serde<T> serde, final Map<String, Object> configOverrides) {
+    public static <S extends Serde<T>, T> Preconfigured<S> key(final S serde,
+            final Map<String, Object> configOverrides) {
         return key(configurable(serde), configOverrides);
     }
 
@@ -91,9 +97,10 @@ public final class Preconfigured<T> {
      * Pre-configure a {@code Serializer} for values
      * @param serializer {@code Serializer} to pre-configure
      * @return pre-configured serializer
+     * @param <S> type of {@link Serializer}
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> Preconfigured<Serializer<T>> value(final Serializer<T> serializer) {
+    public static <S extends Serializer<T>, T> Preconfigured<S> value(final S serializer) {
         return value(configurable(serializer));
     }
 
@@ -102,9 +109,10 @@ public final class Preconfigured<T> {
      * @param serializer {@code Serializer} to pre-configure
      * @param configOverrides configs passed to {@link Serializer#configure(Map, boolean)}
      * @return pre-configured serializer
+     * @param <S> type of {@link Serializer}
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> Preconfigured<Serializer<T>> value(final Serializer<T> serializer,
+    public static <S extends Serializer<T>, T> Preconfigured<S> value(final S serializer,
             final Map<String, Object> configOverrides) {
         return value(configurable(serializer), configOverrides);
     }
@@ -113,9 +121,10 @@ public final class Preconfigured<T> {
      * Pre-configure a {@code Serializer} for keys
      * @param serializer {@code Serializer} to pre-configure
      * @return pre-configured serializer
+     * @param <S> type of {@link Serializer}
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> Preconfigured<Serializer<T>> key(final Serializer<T> serializer) {
+    public static <S extends Serializer<T>, T> Preconfigured<S> key(final S serializer) {
         return key(configurable(serializer));
     }
 
@@ -124,18 +133,19 @@ public final class Preconfigured<T> {
      * @param serializer {@code Serializer} to pre-configure
      * @param configOverrides configs passed to {@link Serializer#configure(Map, boolean)}
      * @return pre-configured serializer
+     * @param <S> type of {@link Serializer}
      * @param <T> type serialized by the {@code Serializer}
      */
-    public static <T> Preconfigured<Serializer<T>> key(final Serializer<T> serializer,
+    public static <S extends Serializer<T>, T> Preconfigured<S> key(final S serializer,
             final Map<String, Object> configOverrides) {
         return key(configurable(serializer), configOverrides);
     }
 
-    private static <T> ConfigurableSerde<T> configurable(final Serde<T> serde) {
+    private static <S extends Serde<T>, T> ConfigurableSerde<S, T> configurable(final S serde) {
         return new ConfigurableSerde<>(serde);
     }
 
-    private static <T> ConfigurableSerializer<T> configurable(final Serializer<T> serializer) {
+    private static <S extends Serializer<T>, T> ConfigurableSerializer<S, T> configurable(final S serializer) {
         return new ConfigurableSerializer<>(serializer);
     }
 

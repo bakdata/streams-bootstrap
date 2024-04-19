@@ -31,12 +31,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serializer;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class ConfigurableSerializer<T> implements Configurable<Serializer<T>> {
+final class ConfigurableSerializer<S extends Serializer<T>, T> implements Configurable<S> {
 
-    private final @NonNull Serializer<T> serializer;
+    private final @NonNull S serializer;
 
     @Override
-    public Serializer<T> configure(final Map<String, Object> config, final boolean isKey) {
+    public S configure(final Map<String, Object> config, final boolean isKey) {
         this.serializer.configure(config, isKey);
         return this.serializer;
     }
