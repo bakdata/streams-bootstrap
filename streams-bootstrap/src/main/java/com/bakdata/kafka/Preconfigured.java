@@ -25,7 +25,6 @@
 package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +43,20 @@ public final class Preconfigured<T> {
     private final @NonNull Configurable<T> configurable;
     private final @NonNull Map<String, Object> configOverrides;
 
+    private Preconfigured(final Configurable<T> configurable) {
+        this(configurable, emptyMap());
+    }
+
+    /**
+     * Create a pre-configured {@code Serde} that returns {@code null} when calling
+     * {@link Preconfigured#configureForKeys(Map)} and {@link Preconfigured#configureForValues(Map)}
+     * @return pre-configured serde
+     * @param <T> type (de-)serialized by the {@code Serde}
+     */
+    public static <T> Preconfigured<Serde<T>> defaultSerde() {
+        return new Preconfigured<>(new DefaultConfigurable<>());
+    }
+
     /**
      * Pre-configure a {@code Serde}
      * @param serde {@code Serde} to pre-configure
@@ -52,7 +65,7 @@ public final class Preconfigured<T> {
      * @param <T> type (de-)serialized by the {@code Serde}
      */
     public static <S extends Serde<T>, T> Preconfigured<S> create(final S serde) {
-        return create(configurable(serde));
+        return new Preconfigured<>(configurable(serde));
     }
 
     /**
@@ -65,7 +78,17 @@ public final class Preconfigured<T> {
      */
     public static <S extends Serde<T>, T> Preconfigured<S> create(final S serde,
             final Map<String, Object> configOverrides) {
-        return create(configurable(serde), configOverrides);
+        return new Preconfigured<>(configurable(serde), configOverrides);
+    }
+
+    /**
+     * Create a pre-configured {@code Serializer} that returns {@code null} when calling
+     * {@link Preconfigured#configureForKeys(Map)} and {@link Preconfigured#configureForValues(Map)}
+     * @return pre-configured serializer
+     * @param <T> type (de-)serialized by the {@code Serializer}
+     */
+    public static <T> Preconfigured<Serializer<T>> defaultSerializer() {
+        return new Preconfigured<>(new DefaultConfigurable<>());
     }
 
     /**
@@ -76,7 +99,7 @@ public final class Preconfigured<T> {
      * @param <T> type serialized by the {@code Serializer}
      */
     public static <S extends Serializer<T>, T> Preconfigured<S> create(final S serializer) {
-        return create(configurable(serializer));
+        return new Preconfigured<>(configurable(serializer));
     }
 
     /**
@@ -89,7 +112,7 @@ public final class Preconfigured<T> {
      */
     public static <S extends Serializer<T>, T> Preconfigured<S> create(final S serializer,
             final Map<String, Object> configOverrides) {
-        return create(configurable(serializer), configOverrides);
+        return new Preconfigured<>(configurable(serializer), configOverrides);
     }
 
     private static <S extends Serde<T>, T> ConfigurableSerde<S, T> configurable(final S serde) {
@@ -100,27 +123,17 @@ public final class Preconfigured<T> {
         return new ConfigurableSerializer<>(serializer);
     }
 
-    private static <T> Preconfigured<T> create(final Configurable<T> configurable) {
-        return create(configurable, emptyMap());
-    }
-
-    private static <T> Preconfigured<T> create(final Configurable<T> configurable,
-            final Map<String, Object> configOverrides) {
-        return new Preconfigured<>(configurable, configOverrides);
-    }
-
     /**
-     * Configure using a base config for values
+     * Configure for values using a base config
      * @param baseConfig Base config. {@link #configOverrides} override properties of base config.
      * @return configured instance
      */
     public T configureForValues(final Map<String, Object> baseConfig) {
-        final boolean isKey = false;
-        return this.configure(baseConfig, isKey);
+        return this.configure(baseConfig, false);
     }
 
     /**
-     * Configure using a base config for keys
+     * Configure for keys using a base config
      * @param baseConfig Base config. {@link #configOverrides} override properties of base config.
      * @return configured instance
      */
@@ -136,7 +149,7 @@ public final class Preconfigured<T> {
     private Map<String, Object> mergeConfig(final Map<String, Object> baseConfig) {
         final Map<String, Object> config = new HashMap<>(baseConfig);
         config.putAll(this.configOverrides);
-        return unmodifiableMap(config);
+        return config;
     }
 
 }
