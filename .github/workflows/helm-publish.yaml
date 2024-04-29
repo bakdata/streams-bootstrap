@@ -2,17 +2,42 @@ name: Publish Helm Charts
 
 on:
   push:
-    tags:
-      - "**"
 
 jobs:
+  get-gradle-version:
+    name: Get Gradle Version
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: bakdata/ci-templates/actions/checkout@1.32.0
+
+      - name: Set up Gradle with version ${{ inputs.gradle-version }}
+        uses: bakdata/ci-templates/actions/java-gradle-setup@1.42.0
+        with:
+          java-distribution: "microsoft"
+          java-version: "11"
+          gradle-version: "wrapper"
+          gradle-cache: "true"
+          gradle-cache-read-only: "false"
+
+      - name: Get version
+        id: get-version
+        run: |
+          version=$(./gradlew properties -q | grep "^version:" | awk '{print $2}' | tr -d '[:space:]' | xargs)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+        shell: bash
+
   call-workflow-passing-data:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@v1.13.4
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@feature/helm-snapshots
+    needs: get-gradle-version
     with:
       charts-path: "./charts"
       subdirs: "['producer-app','producer-app-cleanup-job','rclone-copy','streams-app','streams-app-cleanup-job']"
       gh-pages-branch: gh-pages
+      version: ${{ needs.get-gradle-version.outputs.version }}
     secrets:
       github-username: ${{ secrets.GH_USERNAME }}
       github-email: ${{ secrets.GH_EMAIL }}
