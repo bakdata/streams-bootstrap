@@ -58,7 +58,7 @@ public class StreamsExecutionOptions {
      */
     @Builder.Default
     private final @NonNull Supplier<StreamsUncaughtExceptionHandler> uncaughtExceptionHandler =
-            DefaultUncaughtExceptionHandler::new;
+            DefaultStreamsUncaughtExceptionHandler::new;
     /**
      * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
      * {@link KafkaStreams#close(CloseOptions)} is called with {@link CloseOptions#leaveGroup(boolean)} disabled

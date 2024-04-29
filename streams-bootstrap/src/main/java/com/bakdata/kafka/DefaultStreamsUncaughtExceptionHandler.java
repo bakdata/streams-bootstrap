@@ -31,7 +31,7 @@ import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
  * {@link org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse#SHUTDOWN_CLIENT}. Mimics default behavior of {@link org.apache.kafka.streams.KafkaStreams} if no {@code StreamsUncaughtExceptionHandler} has been configured.
  * @see org.apache.kafka.streams.KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
  */
-class DefaultUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
+class DefaultStreamsUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
     @Override
     public StreamThreadExceptionResponse handle(final Throwable e) {
         return StreamThreadExceptionResponse.SHUTDOWN_CLIENT;

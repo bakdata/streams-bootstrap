@@ -149,11 +149,11 @@ public abstract class KafkaStreamsApplication extends
     /**
      * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
      *
-     * @return {@code StreamsUncaughtExceptionHandler}. {@link DefaultUncaughtExceptionHandler} by default
+     * @return {@code StreamsUncaughtExceptionHandler}. {@link DefaultStreamsUncaughtExceptionHandler} by default
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
     protected StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {
-        return new DefaultUncaughtExceptionHandler();
+        return new DefaultStreamsUncaughtExceptionHandler();
     }
 
     /**
