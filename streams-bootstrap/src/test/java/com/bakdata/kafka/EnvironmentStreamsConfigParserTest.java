@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class EnvironmentKafkaConfigParserTest {
+class EnvironmentStreamsConfigParserTest {
 
     @Test
     void shouldParseStreamsConfig() {
