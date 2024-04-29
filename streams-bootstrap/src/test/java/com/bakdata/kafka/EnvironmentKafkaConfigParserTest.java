@@ -34,8 +34,8 @@ class EnvironmentKafkaConfigParserTest {
     @Test
     void shouldParseStreamsConfig() {
         assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
-                "KAFKA_FOO", "bar",
-                "KAFKA_BAZ", "qux"
+                "STREAMS_FOO", "bar",
+                "STREAMS_BAZ", "qux"
         )))
                 .hasSize(2)
                 .containsEntry("foo", "bar")
@@ -52,7 +52,7 @@ class EnvironmentKafkaConfigParserTest {
     @Test
     void shouldConvertUnderscores() {
         assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
-                "KAFKA_FOO_BAR", "baz"
+                "STREAMS_FOO_BAR", "baz"
         )))
                 .hasSize(1)
                 .containsEntry("foo.bar", "baz");

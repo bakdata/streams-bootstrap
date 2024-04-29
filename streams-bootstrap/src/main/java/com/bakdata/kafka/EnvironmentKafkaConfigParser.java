@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public final class EnvironmentKafkaConfigParser {
 
-    static final String PREFIX = "KAFKA_";
+    static final String PREFIX = "STREAMS_";
     private static final Pattern UNDERSCORE = Pattern.compile("_");
     private static final Pattern PREFIX_PATTERN = Pattern.compile("^" + PREFIX);
 
@@ -44,7 +44,7 @@ public final class EnvironmentKafkaConfigParser {
     }
 
     /**
-     * Parse a list of environment variables as a streams configuration. All variables starting with {@code KAFKA_}
+     * Parse a list of environment variables as a streams configuration. All variables starting with {@code STREAMS_}
      * prefix are converted. {@code _} are replaced by {@code .}
      *
      * @param environment map of environment variables
