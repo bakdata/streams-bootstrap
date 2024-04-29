@@ -33,13 +33,13 @@ import java.util.stream.Collectors;
 /**
  * Parse configuration properties of a Kafka Streams app from environment variables
  */
-public final class EnvironmentKafkaConfigParser {
+public final class EnvironmentStreamsConfigParser {
 
     static final String PREFIX = "STREAMS_";
     private static final Pattern UNDERSCORE = Pattern.compile("_");
     private static final Pattern PREFIX_PATTERN = Pattern.compile("^" + PREFIX);
 
-    private EnvironmentKafkaConfigParser() {
+    private EnvironmentStreamsConfigParser() {
         throw new UnsupportedOperationException("Utility class");
     }
 
@@ -53,7 +53,7 @@ public final class EnvironmentKafkaConfigParser {
     public static Map<String, String> parseVariables(final Map<String, String> environment) {
         return environment.entrySet().stream()
                 .filter(e -> e.getKey().startsWith(PREFIX))
-                .collect(Collectors.toMap(EnvironmentKafkaConfigParser::convertEnvironmentVariable, Entry::getValue));
+                .collect(Collectors.toMap(EnvironmentStreamsConfigParser::convertEnvironmentVariable, Entry::getValue));
     }
 
     private static String convertEnvironmentVariable(final Entry<String, String> environmentEntry) {

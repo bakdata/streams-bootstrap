@@ -33,7 +33,7 @@ class EnvironmentKafkaConfigParserTest {
 
     @Test
     void shouldParseStreamsConfig() {
-        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
                 "STREAMS_FOO", "bar",
                 "STREAMS_BAZ", "qux"
         )))
@@ -44,14 +44,14 @@ class EnvironmentKafkaConfigParserTest {
 
     @Test
     void shouldIgnoreVariablesWithoutPrefix() {
-        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
                 "APP_FOO", "bar"
         ))).isEmpty();
     }
 
     @Test
     void shouldConvertUnderscores() {
-        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
                 "STREAMS_FOO_BAR", "baz"
         )))
                 .hasSize(1)
