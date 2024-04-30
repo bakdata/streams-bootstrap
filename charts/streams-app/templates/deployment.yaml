@@ -48,7 +48,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
-      {{- range $key, $value := .Values.annotations }}
+      {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
       {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
@@ -58,7 +58,7 @@ spec:
       labels:
         app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
-        {{- range $key, $value := .Values.labels }}
+        {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
     spec:
@@ -99,6 +99,7 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
