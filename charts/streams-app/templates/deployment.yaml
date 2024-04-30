@@ -39,7 +39,7 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumerGroup) .Values.annotations }}
+    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumerGroup) .Values.podAnnotations }}
       annotations:
       {{- if .Values.awsRole }}
         iam.amazonaws.com/role: {{ .Values.awsRole }}
@@ -51,7 +51,7 @@ spec:
       {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
-      {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
+      {{- if and .Values.autoscaling.consumerGroup (not .Values.podAnnotations.consumerGroup) }}
         consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
       {{- end }}
     {{- end }}
