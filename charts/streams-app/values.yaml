@@ -200,3 +200,10 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: ""
+
+podAnnotations: []
+
+podLabels: []
+
+terminationGracePeriodSeconds: 300
+
