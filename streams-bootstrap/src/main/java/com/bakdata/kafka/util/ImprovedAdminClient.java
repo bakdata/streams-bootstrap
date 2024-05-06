@@ -90,6 +90,10 @@ public final class ImprovedAdminClient implements Closeable {
         return new PooledAdmin(this.adminClient);
     }
 
+    public Admin getAdminClient() {
+        return new PooledAdmin(this.adminClient);
+    }
+
     public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
         return Optional.ofNullable(this.schemaRegistryClient)
                 .map(PooledSchemaRegistryClient::new);
