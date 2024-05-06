@@ -24,6 +24,6 @@ spec:
       protocol: {{ .protocol }}
       {{- end }}
     {{- end }}
-   {{- end }}
+  {{- end }}
   type: {{ .Values.service.type }}
 {{- end }}

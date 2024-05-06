@@ -116,6 +116,16 @@ spec:
             - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
           {{- end }}
+          {{- range .Values.ports }}
+            {{- if .servicePort }} # TODO verify that there is at most one service port
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: STREAMS_APPLICATION_SERVER
+              value: "$(POD_ID):{{ .servicePort }}"
+            {{- end }}
+          {{- end }}
           {{- if .Values.streams.staticMembership }}
             - name: STREAMS_GROUP_INSTANCE_ID
               valueFrom:
