@@ -61,8 +61,8 @@ class ConfiguredProducerAppTest {
     }
 
     @Test
-    @SetEnvironmentVariable(key = "STREAMS_FOO", value = "baz")
-    @SetEnvironmentVariable(key = "STREAMS_STREAMS", value = "streams")
+    @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
+    @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
         final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
@@ -71,7 +71,7 @@ class ConfiguredProducerAppTest {
                 .brokers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
-                .containsEntry("streams", "streams")
+                .containsEntry("kafka", "streams")
                 .containsEntry("hello", "world");
     }
 
