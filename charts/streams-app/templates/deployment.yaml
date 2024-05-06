@@ -117,7 +117,7 @@ spec:
               value: {{ $value | quote }}
           {{- end }}
           {{- range .Values.ports }}
-            {{- if .servicePort }} # TODO verify that there is at most one service port
+            {{- if .servicePort }} # TODO verify that there is at most one service port. Currently, if there are multiple service ports, the first one will be used
             - name: POD_IP
               valueFrom:
                 fieldRef:

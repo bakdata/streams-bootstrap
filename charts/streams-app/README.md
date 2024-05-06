@@ -121,8 +121,8 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### Service
 
-| Parameter         | Description                                                                                    | Default     |
-| ----------------- | ---------------------------------------------------------------------------------------------- | ----------- |
-| `service.enabled` | Whether to create a service. This requires the definition of at least one `ports.servicePort`. | `false`     |
-| `service.labels`  | Additional service labels.                                                                     | `{}`        |
-| `service.type`    | Service type.                                                                                  | `ClusterIP` |
+| Parameter         | Description                                                                                                                                                  | Default     |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `service.enabled` | Whether to create a service. This requires the definition of at least one `ports.servicePort`. This also configures `application.server` for the streams app | `false`     |
+| `service.labels`  | Additional service labels.                                                                                                                                   | `{}`        |
+| `service.type`    | Service type.                                                                                                                                                | `ClusterIP` |
