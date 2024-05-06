@@ -123,7 +123,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: STREAMS_APPLICATION_SERVER
-              value: "$(POD_IP):{{ .servicePort }}"
+              value: "$(POD_IP):{{ .containerPort }}"
             {{- end }}
           {{- end }}
           {{- if .Values.streams.staticMembership }}
