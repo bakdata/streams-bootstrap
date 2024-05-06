@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,16 @@
 package com.bakdata.kafka.util;
 
 import com.bakdata.kafka.CleanUpException;
-import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import lombok.NonNull;
@@ -79,18 +81,18 @@ public final class SchemaTopicClient implements Closeable {
     }
 
     /**
-     * Creates a new {@link CachedSchemaRegistryClient} using the specified configuration.
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
-     * {@link CachedSchemaRegistryClient#CachedSchemaRegistryClient(String, int, Map)}
+     * {@link SchemaRegistryClientFactory#newClient(List, int, List, Map, Map)}
      * @param schemaRegistryUrl URL of schema registry
-     * @return {@link CachedSchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      */
-    public static CachedSchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<Object, Object> configs,
+    public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<Object, Object> configs,
             @NonNull final String schemaRegistryUrl) {
         final Map<String, Object> originals = new HashMap<>();
         configs.forEach((key, value) -> originals.put(key.toString(), value));
-        return new CachedSchemaRegistryClient(schemaRegistryUrl, CACHE_CAPACITY, originals);
+        return SchemaRegistryClientFactory.newClient(List.of(schemaRegistryUrl), CACHE_CAPACITY, null, originals, null);
     }
 
     /**
@@ -138,5 +140,12 @@ public final class SchemaTopicClient implements Closeable {
     @Override
     public void close() {
         this.topicClient.close();
+        if (this.schemaRegistryClient != null) {
+            try {
+                this.schemaRegistryClient.close();
+            } catch (final IOException e) {
+                throw new UncheckedIOException("Error closing schema registry client", e);
+            }
+        }
     }
 }
