@@ -99,7 +99,6 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
