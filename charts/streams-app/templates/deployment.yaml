@@ -39,7 +39,7 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumerGroup) .Values.podAnnotations }}
+    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumerGroup) .Values.annotations }}
       annotations:
       {{- if .Values.awsRole }}
         iam.amazonaws.com/role: {{ .Values.awsRole }}
@@ -48,17 +48,17 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
-      {{- range $key, $value := .Values.podAnnotations }}
+      {{- range $key, $value := .Values.annotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
-      {{- if and .Values.autoscaling.consumerGroup (not .Values.podAnnotations.consumerGroup) }}
+      {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
         consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
       {{- end }}
     {{- end }}
       labels:
         app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
-        {{- range $key, $value := .Values.podLabels }}
+        {{- range $key, $value := .Values.labels }}
         {{ $key }}: {{ $value }}
         {{- end }}
     spec:

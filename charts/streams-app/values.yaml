@@ -201,9 +201,4 @@ persistence:
   ##
   # storageClass: ""
 
-podAnnotations: []
-
-podLabels: []
-
 terminationGracePeriodSeconds: 300
-
