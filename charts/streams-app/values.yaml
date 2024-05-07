@@ -204,5 +204,3 @@ persistence:
 podAnnotations: []
 
 podLabels: []
-
-
