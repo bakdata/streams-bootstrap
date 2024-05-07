@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,12 +29,17 @@ import static com.bakdata.kafka.util.SchemaTopicClient.createSchemaRegistryClien
 import com.google.common.base.Preconditions;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.io.Closeable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Properties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
@@ -45,8 +50,7 @@ public final class ImprovedAdminClient implements Closeable {
 
     @Getter
     private final @NonNull Properties properties;
-    @Getter
-    private final @NonNull AdminClient adminClient;
+    private final @NonNull Admin adminClient;
     private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Duration timeout;
 
@@ -62,20 +66,25 @@ public final class ImprovedAdminClient implements Closeable {
         this.timeout = timeout;
     }
 
+    public Admin getAdminClient() {
+        return new PooledAdmin(this.adminClient);
+    }
+
     public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
-        return Optional.ofNullable(this.schemaRegistryClient);
+        return Optional.ofNullable(this.schemaRegistryClient)
+                .map(PooledSchemaRegistryClient::new);
     }
 
     public SchemaTopicClient getSchemaTopicClient() {
-        return new SchemaTopicClient(this.getTopicClient(), this.schemaRegistryClient);
+        return new SchemaTopicClient(this.getTopicClient(), this.getSchemaRegistryClient().orElse(null));
     }
 
     public TopicClient getTopicClient() {
-        return new TopicClient(this.adminClient, this.timeout);
+        return new TopicClient(this.getAdminClient(), this.timeout);
     }
 
     public ConsumerGroupClient getConsumerGroupClient() {
-        return new ConsumerGroupClient(this.adminClient, this.timeout);
+        return new ConsumerGroupClient(this.getAdminClient(), this.timeout);
     }
 
     public String getBootstrapServers() {
@@ -85,5 +94,39 @@ public final class ImprovedAdminClient implements Closeable {
     @Override
     public void close() {
         this.adminClient.close();
+        if (this.schemaRegistryClient != null) {
+            try {
+                this.schemaRegistryClient.close();
+            } catch (final IOException e) {
+                throw new UncheckedIOException("Error closing schema registry client", e);
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class PooledAdmin implements Admin {
+        @Delegate(excludes = AutoCloseable.class)
+        private final @NonNull Admin admin;
+
+        @Override
+        public void close(final Duration timeout) {
+            // do nothing
+        }
+
+        @Override
+        public void close() {
+            // do nothing
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class PooledSchemaRegistryClient implements SchemaRegistryClient {
+        @Delegate(excludes = Closeable.class)
+        private final @NonNull SchemaRegistryClient schemaRegistryClient;
+
+        @Override
+        public void close() {
+            // do nothing
+        }
     }
 }

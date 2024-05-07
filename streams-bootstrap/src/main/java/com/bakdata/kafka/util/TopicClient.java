@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
@@ -51,7 +52,7 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 @Slf4j
 public final class TopicClient implements Closeable {
 
-    private final @NonNull AdminClient adminClient;
+    private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
 
     /**
