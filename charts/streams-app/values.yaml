@@ -200,3 +200,5 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: ""
+
+terminationGracePeriodSeconds: 300
