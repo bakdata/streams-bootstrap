@@ -1,8 +1,37 @@
 # Change Log
-- no changes!
 
-- no changes!
+## [2.18.1](https://github.com/bakdata/streams-bootstrap/tree/2.18.1) (2024-05-08)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.1...2.18.1)
 
+
+## [2.18.1](https://github.com/bakdata/streams-bootstrap/tree/2.18.1) (2024-05-08)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.0...2.18.1)
+
+**Merged pull requests:**
+
+- Shorten log4j\-config\-volume to log4j [\#218](https://github.com/bakdata/streams-bootstrap/pull/218) ([@raminqaf](https://github.com/raminqaf))
+- Add terminationGracePeriodSeconds [\#212](https://github.com/bakdata/streams-bootstrap/pull/212) ([@vostres](https://github.com/vostres))
+- Prevent closing of reused admin clients [\#213](https://github.com/bakdata/streams-bootstrap/pull/213) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade fluent kafka streams to 2.13.1 [\#215](https://github.com/bakdata/streams-bootstrap/pull/215) ([@philipp94831](https://github.com/philipp94831))
+- Publish snapshots for Helm charts [\#211](https://github.com/bakdata/streams-bootstrap/pull/211) ([@philipp94831](https://github.com/philipp94831))
+- Update CI templates [\#210](https://github.com/bakdata/streams-bootstrap/pull/210) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.18.0](https://github.com/bakdata/streams-bootstrap/tree/2.18.0) (2024-04-17)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.17.0...2.18.0)
+
+**Merged pull requests:**
+
+- Bump fluent\-kafka\-streams\-tests [\#208](https://github.com/bakdata/streams-bootstrap/pull/208) ([@JakobEdding](https://github.com/JakobEdding))
+
+## [2.17.0](https://github.com/bakdata/streams-bootstrap/tree/2.17.0) (2024-03-01)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.1...2.17.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.6 [\#206](https://github.com/bakdata/streams-bootstrap/pull/206) ([@philipp94831](https://github.com/philipp94831))
+- Migrate azure pipeline to GH\-action [\#191](https://github.com/bakdata/streams-bootstrap/pull/191) ([@MichaelKora](https://github.com/MichaelKora))
+- Improve CI caching [\#205](https://github.com/bakdata/streams-bootstrap/pull/205) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to Gradle 8.4 [\#204](https://github.com/bakdata/streams-bootstrap/pull/204) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.16.1](https://github.com/bakdata/streams-bootstrap/tree/2.16.1) (2024-02-02)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.0...2.16.1)
@@ -63,13 +92,13 @@
 ## [2.13.0](https://github.com/bakdata/streams-bootstrap/tree/2.13.0) (2023-09-21)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.1...2.13.0)
 
-**Fixed bugs:**
-
-- Cleanup job fails if topic doesn't have associated schema [\#186](https://github.com/bakdata/streams-bootstrap/issues/186)
-
 **Merged pull requests:**
 
 - Make Schema Registry URL optional [\#187](https://github.com/bakdata/streams-bootstrap/pull/187) ([@raminqaf](https://github.com/raminqaf))
+
+**Fixed bugs:**
+
+- Cleanup job fails if topic doesn't have associated schema [\#186](https://github.com/bakdata/streams-bootstrap/issues/186)
 
 ## [2.12.1](https://github.com/bakdata/streams-bootstrap/tree/2.12.1) (2023-08-15)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.0...2.12.1)
@@ -188,14 +217,14 @@
 ## [2.4.1](https://github.com/bakdata/streams-bootstrap/tree/2.4.1) (2022-11-29)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.4.0...2.4.1)
 
-**Fixed bugs:**
-
-- Chart should not set inputTopics to empty string if none are specified [\#149](https://github.com/bakdata/streams-bootstrap/issues/149)
-
 **Merged pull requests:**
 
 - Clean schema registry subjects of named foreign key joins [\#153](https://github.com/bakdata/streams-bootstrap/pull/153) ([@philipp94831](https://github.com/philipp94831))
 - Do not configure empty input topics [\#152](https://github.com/bakdata/streams-bootstrap/pull/152) ([@philipp94831](https://github.com/philipp94831))
+
+**Fixed bugs:**
+
+- Chart should not set inputTopics to empty string if none are specified [\#149](https://github.com/bakdata/streams-bootstrap/issues/149)
 
 ## [2.4.0](https://github.com/bakdata/streams-bootstrap/tree/2.4.0) (2022-11-16)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.3.1...2.4.0)
@@ -324,10 +353,6 @@
 - Clean schemas of pseudo topics created when performing a foreign key join [\#112](https://github.com/bakdata/streams-bootstrap/issues/112)
 - Extend the Readme [\#99](https://github.com/bakdata/streams-bootstrap/issues/99)
 
-**Fixed bugs:**
-
-- Add serviceName for StatefulSet [\#102](https://github.com/bakdata/streams-bootstrap/pull/102) ([@disrupted](https://github.com/disrupted))
-
 **Merged pull requests:**
 
 - Clean schemas of pseudo topics created when performing a foreign key join [\#113](https://github.com/bakdata/streams-bootstrap/pull/113) ([@philipp94831](https://github.com/philipp94831))
@@ -339,6 +364,10 @@
 - Add node affinity to helm chart [\#103](https://github.com/bakdata/streams-bootstrap/pull/103) ([@yannick-roeder](https://github.com/yannick-roeder))
 - Reset schema of internal topics when they are deleted  [\#104](https://github.com/bakdata/streams-bootstrap/pull/104) ([@torbsto](https://github.com/torbsto))
 - Extend the readme [\#100](https://github.com/bakdata/streams-bootstrap/pull/100) ([@VictorKuenstler](https://github.com/VictorKuenstler))
+
+**Fixed bugs:**
+
+- Add serviceName for StatefulSet [\#102](https://github.com/bakdata/streams-bootstrap/pull/102) ([@disrupted](https://github.com/disrupted))
 
 ## [1.7.0](https://github.com/bakdata/streams-bootstrap/tree/1.7.0) (2021-02-18)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0)
@@ -397,14 +426,14 @@
 ## [1.5.1](https://github.com/bakdata/streams-bootstrap/tree/1.5.1) (2020-11-03)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.0...1.5.1)
 
-**Fixed bugs:**
-
-- Container can not be launched if name exceeds 63 characters [\#69](https://github.com/bakdata/streams-bootstrap/issues/69)
-
 **Merged pull requests:**
 
 - Add extra input topics to streams app [\#81](https://github.com/bakdata/streams-bootstrap/pull/81) ([@philipp94831](https://github.com/philipp94831))
 - Remove container suffix from container name [\#73](https://github.com/bakdata/streams-bootstrap/pull/73) ([@yannick-roeder](https://github.com/yannick-roeder))
+
+**Fixed bugs:**
+
+- Container can not be launched if name exceeds 63 characters [\#69](https://github.com/bakdata/streams-bootstrap/issues/69)
 
 ## [1.5.0](https://github.com/bakdata/streams-bootstrap/tree/1.5.0) (2020-09-29)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.6...1.5.0)
@@ -549,7 +578,6 @@
 
 **Merged pull requests:**
 
-- Add S3 backed Serde [\#39](https://github.com/bakdata/streams-bootstrap/pull/39) ([@philipp94831](https://github.com/philipp94831))
 - Classify all Kafka errors as recoverable bar some exceptions [\#38](https://github.com/bakdata/streams-bootstrap/pull/38) ([@philipp94831](https://github.com/philipp94831))
 - Make PodAffinity rule configurable [\#37](https://github.com/bakdata/streams-bootstrap/pull/37) ([@SvenLehmann](https://github.com/SvenLehmann))
 - Add flat value transformers for error handling [\#36](https://github.com/bakdata/streams-bootstrap/pull/36) ([@philipp94831](https://github.com/philipp94831))
