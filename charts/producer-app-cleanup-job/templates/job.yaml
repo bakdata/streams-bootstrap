@@ -4,6 +4,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "producer-app-cleanup-job.fullname" . }}
+{{ - if .Values.annotations }}
+  annotations:
+  {{ - range $key, $value := .Values.annotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+  {{ - end }}
+{{ - end }}
   labels:
     app: {{ template "producer-app-cleanup-job.name" . }}
     chart: {{ template "producer-app-cleanup-job.chart" . }}
