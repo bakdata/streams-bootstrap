@@ -207,7 +207,7 @@ spec:
         {{- if or (.Values.log4jConfig) (and .Values.persistence.enabled .Values.statefulSet) }}
           volumeMounts:
             {{- if .Values.log4jConfig }}
-            - name: {{ template "streams-app.name" . }}-log4j-config-volume
+            - name: log4j-config
               mountPath: app/resources/log4j2.xml
               subPath: log4j2.xml
             {{- end }}
@@ -267,7 +267,7 @@ spec:
             name: {{ template "streams-app.name" . }}-jmx-configmap
         {{- end }}
         {{ if .Values.log4jConfig }}
-        - name: {{ template "streams-app.name" . }}-log4j-config-volume
+        - name: log4j-config
           configMap:
             name: {{ template "streams-app.name" . }}-log4j-configmap
             items:
