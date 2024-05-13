@@ -1,8 +1,15 @@
 # Change Log
 
-## [2.19.0](https://github.com/bakdata/streams-bootstrap/tree/2.19.0) (2024-05-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.0...2.19.0)
+## [2.19.1](https://github.com/bakdata/streams-bootstrap/tree/2.19.1) (2024-05-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.1...2.19.1)
 
+
+## [2.19.1](https://github.com/bakdata/streams-bootstrap/tree/2.19.1) (2024-05-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.0...2.19.1)
+
+**Merged pull requests:**
+
+- Fix default values for podLabels and podAnnotations [\#220](https://github.com/bakdata/streams-bootstrap/pull/220) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.19.0](https://github.com/bakdata/streams-bootstrap/tree/2.19.0) (2024-05-13)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.1...2.19.0)
