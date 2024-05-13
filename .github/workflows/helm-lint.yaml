@@ -12,4 +12,3 @@ jobs:
         with:
           lint-config-path: ".github/lint-config.yaml"
           ref: ${{ github.ref_name }}
-
