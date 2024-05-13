@@ -6,12 +6,12 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ template "rclone-copy.fullname" . }}
-{{ - if .Values.annotations }}
+{{- if .Values.annotations }}
   annotations:
-  {{ - range $key, $value := .Values.annotations }}
+  {{- range $key, $value := .Values.annotations }}
   {{ $key | quote }}: {{ $value | quote }}
-  {{ - end }}
-{{ - end }}
+  {{- end }}
+{{- end }}
   labels:
     app: {{ template "rclone-copy.name" . }}
     chart: {{ template "rclone-copy.chart" . }}
