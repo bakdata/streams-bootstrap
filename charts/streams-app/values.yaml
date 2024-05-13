@@ -204,3 +204,5 @@ persistence:
 podAnnotations: []
 
 podLabels: []
+
+terminationGracePeriodSeconds: 300
