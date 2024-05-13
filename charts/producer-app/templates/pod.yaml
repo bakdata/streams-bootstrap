@@ -1,11 +1,8 @@
 {{- define "producer-app.podTemplate" -}}
 {{- $root := . -}}
 metadata:
-{{- if or .Values.awsRole .Values.podAnnotations }}
+{{- if .Values.podAnnotations }}
   annotations:
-  {{- if .Values.awsRole }}
-    iam.amazonaws.com/role: {{ .Values.awsRole }}
-  {{- end }}
   {{- range $key, $value := .Values.podAnnotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}

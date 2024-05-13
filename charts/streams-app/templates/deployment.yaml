@@ -39,11 +39,8 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or .Values.awsRole .Values.prometheus.jmx.enabled .Values.podAnnotations }}
+    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations }}
       annotations:
-      {{- if .Values.awsRole }}
-        iam.amazonaws.com/role: {{ .Values.awsRole }}
-      {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
