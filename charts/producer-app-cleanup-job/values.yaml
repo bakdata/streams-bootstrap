@@ -86,6 +86,6 @@ javaOptions:
 
 backoffLimit: 6
 
-podAnnotations: []
+podAnnotations: { }
 
-podLabels: []
+podLabels: { }
