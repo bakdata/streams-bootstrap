@@ -9,7 +9,7 @@ metadata:
 {{- if .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
-  {{ $key | quote }}: {{ $value | quote }}
+    {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
 {{- end }}
   labels:
