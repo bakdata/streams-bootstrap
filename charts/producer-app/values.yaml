@@ -121,3 +121,7 @@ livenessProbe: {}
 
 # Arbitrary Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
 readinessProbe: {}
+
+podAnnotations: []
+
+podLabels: []

@@ -87,3 +87,7 @@ javaOptions:
 #   - "-XX:MinRAMPercentage=50.0"
 
 backoffLimit: 6
+
+podAnnotations: []
+
+podLabels: []
