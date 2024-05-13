@@ -1,8 +1,17 @@
 # Change Log
 
-## [2.18.1](https://github.com/bakdata/streams-bootstrap/tree/2.18.1) (2024-05-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.1...2.18.1)
+## [2.19.0](https://github.com/bakdata/streams-bootstrap/tree/2.19.0) (2024-05-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.0...2.19.0)
 
+
+## [2.19.0](https://github.com/bakdata/streams-bootstrap/tree/2.19.0) (2024-05-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.1...2.19.0)
+
+**Merged pull requests:**
+
+- Remove awsRole from helm charts [\#219](https://github.com/bakdata/streams-bootstrap/pull/219) ([@philipp94831](https://github.com/philipp94831))
+- Add Values.podLabels and Values.podAnnotations [\#217](https://github.com/bakdata/streams-bootstrap/pull/217) ([@vostres](https://github.com/vostres))
+- Fix naming of helm releases [\#216](https://github.com/bakdata/streams-bootstrap/pull/216) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.18.1](https://github.com/bakdata/streams-bootstrap/tree/2.18.1) (2024-05-08)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.0...2.18.1)
