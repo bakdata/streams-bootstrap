@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   producer-app:
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.187301543Z"
+    created: "2024-05-13T10:26:38.060631073Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 9802216d98d66b64a9c2a7368407bac85787a6fc233cfe71d356ba71f93232ce
@@ -15,7 +15,7 @@ entries:
     - producer-app/producer-app-2.18.2-SNAPSHOT.tgz
     version: 2.18.2-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.186954787Z"
+    created: "2024-05-13T10:26:38.060277323Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 4c1b7794f5bdeb9911e1c19445401974a82d1fbe09ad94b71edff5f459b4e11f
@@ -28,10 +28,10 @@ entries:
     - producer-app/producer-app-2.18.1.tgz
     version: 2.18.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.186585078Z"
+    created: "2024-05-13T10:26:38.059913204Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
-    digest: 8aebf365dbc485390381521a5ed90ec40353ff9f911326d98677870ffc5f2929
+    digest: e234df49ea1fa15e0781b2c84dc45c32ede19929e2bcd91f431f44d71ec83228
     maintainers:
     - email: opensource@bakdata.com
       name: bakdata
@@ -41,7 +41,7 @@ entries:
     - producer-app/producer-app-2.18.1-SNAPSHOT.tgz
     version: 2.18.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.186233354Z"
+    created: "2024-05-13T10:26:38.059534558Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 158cf21a6ebd65b99fa4b250ea1b97335ce8c0dfbc44c4504da77f59e588567a
@@ -54,7 +54,7 @@ entries:
     - producer-app/producer-app-2.18.0.tgz
     version: 2.18.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.185874385Z"
+    created: "2024-05-13T10:26:38.059176991Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: bf045442e867d3c779ff87df059454d7b17bd588127987584f36aa11ce31b2dc
@@ -67,7 +67,7 @@ entries:
     - producer-app/producer-app-2.17.1-SNAPSHOT.tgz
     version: 2.17.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.185507472Z"
+    created: "2024-05-13T10:26:38.05876891Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: ffa4a1ad58c10a1bed64dd69834ce92f61e9cc2fbef0cecce4e4735ee808cb1a
@@ -80,7 +80,7 @@ entries:
     - producer-app/producer-app-2.17.0.tgz
     version: 2.17.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.185131802Z"
+    created: "2024-05-13T10:26:38.057881895Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 08489d2e90828a9fb5cdb71d25c0f1700366bd1b296916d3e4d20fbfbe88a45b
@@ -93,7 +93,7 @@ entries:
     - producer-app/producer-app-2.16.1.tgz
     version: 2.16.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.184753357Z"
+    created: "2024-05-13T10:26:38.057340556Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 6768d3984131d685e4433ac97c2ac93273bbd677ff0eaad0d879759df615f8a5
@@ -106,7 +106,7 @@ entries:
     - producer-app/producer-app-2.16.0.tgz
     version: 2.16.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.184165939Z"
+    created: "2024-05-13T10:26:38.05694648Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 98dde2ce60e69fca65ee01bb45d4a8779c6fb113cd85aeccac441d0620b2d7be
@@ -119,7 +119,7 @@ entries:
     - producer-app/producer-app-2.15.3.tgz
     version: 2.15.3
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.183292943Z"
+    created: "2024-05-13T10:26:38.056483056Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: c51c918810c94f6d69f369c6e8efb2b8607045a217a029eef588a4dfccfdf4a6
@@ -132,7 +132,7 @@ entries:
     - producer-app/producer-app-2.15.2.tgz
     version: 2.15.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.182919618Z"
+    created: "2024-05-13T10:26:38.056092698Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 0e98b1ffb39d0e9385b88cab7f1a2b72e31d3d1416306b316f19c47c27ee8db3
@@ -145,7 +145,7 @@ entries:
     - producer-app/producer-app-2.15.1.tgz
     version: 2.15.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.182549458Z"
+    created: "2024-05-13T10:26:38.055732226Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 08ca0765204b9afc81fcb8ce2fd7c72c88f3a68709f48fc48a91ac6f1c8f9a62
@@ -158,7 +158,7 @@ entries:
     - producer-app/producer-app-2.15.0.tgz
     version: 2.15.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.182177446Z"
+    created: "2024-05-13T10:26:38.055385018Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: bc489be6f9ade4a4c2711ce78c308b4a660f9222b8056103480b66b71e9bc991
@@ -171,7 +171,7 @@ entries:
     - producer-app/producer-app-2.14.0.tgz
     version: 2.14.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.181813097Z"
+    created: "2024-05-13T10:26:38.055009458Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 5b2cb951d3e6105b2a414a9f3378a13a4f664f54bdaf2e4b7ce35fee53aeff7c
@@ -184,7 +184,7 @@ entries:
     - producer-app/producer-app-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.181446875Z"
+    created: "2024-05-13T10:26:38.054617867Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 05ead8577c9ce2db9903e3287a38e447fa4a8f0a1731eae2e18d325b09058344
@@ -197,7 +197,7 @@ entries:
     - producer-app/producer-app-2.12.1.tgz
     version: 2.12.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.181083619Z"
+    created: "2024-05-13T10:26:38.054244872Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 402de0544b319625b89c853a8338e9b2624c9b85ee3bbac3eb6a112550a912b3
@@ -210,7 +210,7 @@ entries:
     - producer-app/producer-app-2.12.0.tgz
     version: 2.12.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.180720713Z"
+    created: "2024-05-13T10:26:38.053872867Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 49e12c3fbf8b93979a957c76515bba5d5cfe7c4166fdd4de600dbe03f9916659
@@ -223,7 +223,7 @@ entries:
     - producer-app/producer-app-2.11.2.tgz
     version: 2.11.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.180319416Z"
+    created: "2024-05-13T10:26:38.053492298Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: e666239e8ca1e309e6bd6d8717e1e41cc2f3d284136156fe9b57791cda292036
@@ -236,7 +236,7 @@ entries:
     - producer-app/producer-app-2.11.1.tgz
     version: 2.11.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.179938046Z"
+    created: "2024-05-13T10:26:38.053096319Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: bc0047355976b5feea3eccd32867c291fa6d1d168cf6c95631fa954af82ffa82
@@ -249,7 +249,7 @@ entries:
     - producer-app/producer-app-2.11.0.tgz
     version: 2.11.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.17949975Z"
+    created: "2024-05-13T10:26:38.052668692Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 45407312dd7e088afddc9db891fe65803b6e0212c1575e1d0775e24ca56511d3
@@ -262,7 +262,7 @@ entries:
     - producer-app/producer-app-2.10.0.tgz
     version: 2.10.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.189066319Z"
+    created: "2024-05-13T10:26:38.062346563Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: cef17a6fb50680f3250aa5b73ca0291f63fb6b59546fd784ed5fdf355dd2de7f
@@ -275,7 +275,7 @@ entries:
     - producer-app/producer-app-2.9.0.tgz
     version: 2.9.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.188772943Z"
+    created: "2024-05-13T10:26:38.062038729Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 7446d30aa94a446cc676ed8d0409882c64dbb043eb7e6e854fa81cb5363d2e93
@@ -288,7 +288,7 @@ entries:
     - producer-app/producer-app-2.8.0.tgz
     version: 2.8.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.188473425Z"
+    created: "2024-05-13T10:26:38.061751653Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: a18a55b1e5653b601343b531a5e108612c8eb9b4519c373cb635aa8a6db61ee0
@@ -301,7 +301,7 @@ entries:
     - producer-app/producer-app-2.7.0.tgz
     version: 2.7.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.188179107Z"
+    created: "2024-05-13T10:26:38.061461222Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 494520ba316ddaa479b110ec8805680520c725650304d59834b3b69c427ad813
@@ -310,7 +310,7 @@ entries:
     - producer-app/producer-app-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.187869601Z"
+    created: "2024-05-13T10:26:38.061187381Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: 6f49c7d665dbbbc7a6583e655cdd1ea51c05c95f0c8abd91f30e700fdc5fe284
@@ -319,7 +319,7 @@ entries:
     - producer-app/producer-app-2.5.0.tgz
     version: 2.5.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.187588758Z"
+    created: "2024-05-13T10:26:38.060909492Z"
     description: A helm chart for deploying a Kafka producer application based on
       the bakdata KafkaProducerApplication template.
     digest: d31d9bc24ec4c22d12324e67f081de40979398a47d447f9bdc7546211c0fcd39
@@ -329,7 +329,7 @@ entries:
     version: 2.4.2
   producer-app-cleanup-job:
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.19486305Z"
+    created: "2024-05-13T10:26:38.06797906Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 812e29db61c56c39d89ca01dc6a7942f0912c9b699fc1b3f53e457f5f0b50f21
     maintainers:
@@ -341,7 +341,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.18.2-SNAPSHOT.tgz
     version: 2.18.2-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.194620458Z"
+    created: "2024-05-13T10:26:38.067736258Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: f9c163f64729876246bb0b4034e383a41ba0784139ed8c1181a890e69cbcb109
     maintainers:
@@ -353,9 +353,9 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.18.1.tgz
     version: 2.18.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.194376944Z"
+    created: "2024-05-13T10:26:38.06749616Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
-    digest: bcad3261fed5be75e4245dc745f07b8228aef75a356b9409aeea2a63be2961fb
+    digest: 50d10b95aaf33abee290ea8022cc9373b554e0eb3a74bcf47a47dff15221aac9
     maintainers:
     - email: opensource@bakdata.com
       name: bakdata
@@ -365,7 +365,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.18.1-SNAPSHOT.tgz
     version: 2.18.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.194126839Z"
+    created: "2024-05-13T10:26:38.067243348Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 54762686ff2401492c1682d4cbfaeb31d71753a1b7b35e903896503202697e33
     maintainers:
@@ -377,7 +377,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.18.0.tgz
     version: 2.18.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.193882784Z"
+    created: "2024-05-13T10:26:38.066996618Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 0c6b55bf87e0fdcf663d98de60334f5cb2773e69c88e2b68601905ad2565d0b7
     maintainers:
@@ -389,7 +389,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.17.1-SNAPSHOT.tgz
     version: 2.17.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.193638339Z"
+    created: "2024-05-13T10:26:38.066720914Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 767268333b94b42d5eecf822c70944ca624fce9f47e449b108e66c33c2717f44
     maintainers:
@@ -401,7 +401,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.17.0.tgz
     version: 2.17.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.193398282Z"
+    created: "2024-05-13T10:26:38.066478432Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 97585976b76bde62efe9daaac1fc330fed55244fbe0a73da951d80912d90e01e
     maintainers:
@@ -413,7 +413,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.16.1.tgz
     version: 2.16.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.193149469Z"
+    created: "2024-05-13T10:26:38.066240658Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: f23eba038a28551c272d04c11106319a235beed54871967ea6d10335fc4a8b05
     maintainers:
@@ -425,7 +425,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.16.0.tgz
     version: 2.16.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.192907057Z"
+    created: "2024-05-13T10:26:38.06600039Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 9256711f67ea1c31d8084e5185eff0e0be13be9ebbb5c4fb5f56f61182727564
     maintainers:
@@ -437,7 +437,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.15.3.tgz
     version: 2.15.3
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.192663433Z"
+    created: "2024-05-13T10:26:38.065762326Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: ee3b79fdbdb3fb02e761f5b5f3b1cee6b22ba4a580796602725c3a4e5bc82383
     maintainers:
@@ -449,7 +449,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.15.2.tgz
     version: 2.15.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.192413538Z"
+    created: "2024-05-13T10:26:38.065520455Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 904f4006b69571baca3525e2cc7e3459ca38d53c268a50386b8403ed7f04d084
     maintainers:
@@ -461,7 +461,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.15.1.tgz
     version: 2.15.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.192165977Z"
+    created: "2024-05-13T10:26:38.065274306Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: fdd02e086493a82d86a02133b70943ff01df9e275e2c2c10f5631b24b3c7970a
     maintainers:
@@ -473,7 +473,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.15.0.tgz
     version: 2.15.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.191875265Z"
+    created: "2024-05-13T10:26:38.065029449Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 0112436aa37ab89d0ea4626d587577d7174e4b437320abf7164adca07ec4acff
     maintainers:
@@ -485,7 +485,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.14.0.tgz
     version: 2.14.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.191628907Z"
+    created: "2024-05-13T10:26:38.06478328Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 901b3c750b14760dd5bd80f66b56ab56b5265091b1d2ac036ec6f455681aa3c0
     maintainers:
@@ -497,7 +497,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.191384431Z"
+    created: "2024-05-13T10:26:38.064525699Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 74e47b93db7f428ad3b6a759e721c23bf5858dbeefbb53ab99a0d627340bb8ea
     maintainers:
@@ -509,7 +509,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.12.1.tgz
     version: 2.12.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.191133424Z"
+    created: "2024-05-13T10:26:38.064069166Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 62f1f2a46d4eef08c94ff9760b751d37109de2640f6a134a86b82aa8e604013e
     maintainers:
@@ -521,7 +521,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.12.0.tgz
     version: 2.12.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.190879421Z"
+    created: "2024-05-13T10:26:38.063502399Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 725d497af4f8d51480b13ffc330610e55f3c177382a38171466dbf1c1fa1bf6f
     maintainers:
@@ -533,7 +533,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.11.2.tgz
     version: 2.11.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.190615359Z"
+    created: "2024-05-13T10:26:38.063116649Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 214c2fdd296cd117bf203a7880a3166a9013f8210c86bdbbf4a8eb3bd6022e24
     maintainers:
@@ -545,7 +545,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.11.1.tgz
     version: 2.11.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.190319138Z"
+    created: "2024-05-13T10:26:38.062835505Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 7fb9f1283fb3d16f2b39033ced8d9254f57b27f425f73b2148d010a6f52a8c37
     maintainers:
@@ -557,7 +557,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.11.0.tgz
     version: 2.11.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.189707403Z"
+    created: "2024-05-13T10:26:38.062591891Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: ae1d7223205c54847b6145395291619c209ca1d71b8c84aded4309432ff8029f
     maintainers:
@@ -569,7 +569,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.10.0.tgz
     version: 2.10.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.196998593Z"
+    created: "2024-05-13T10:26:38.070023502Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: c6f7fae763825e1ff2599eb9526add7589993b00dc8dd5298d77bf3f2a51586c
     maintainers:
@@ -581,7 +581,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.9.0.tgz
     version: 2.9.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.196757875Z"
+    created: "2024-05-13T10:26:38.069593823Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: fe7739d4fe0ac7ddfac267cf918441aba23a4fa0fd5d865c4176578134f1ef06
     maintainers:
@@ -593,7 +593,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.8.0.tgz
     version: 2.8.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.196494094Z"
+    created: "2024-05-13T10:26:38.06904546Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 9ba1a600c1f9d11cadaa12625fbb6cf0a08bdc013a6144b21e9738538d5d5597
     maintainers:
@@ -605,7 +605,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.7.0.tgz
     version: 2.7.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.196239911Z"
+    created: "2024-05-13T10:26:38.068658949Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: a2bac85992c4d5b4f208d2a283eca896e9c4b29e285d5364e31830ed93700612
     name: producer-app-cleanup-job
@@ -613,7 +613,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.195987841Z"
+    created: "2024-05-13T10:26:38.068436083Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: da7189a384455945ce0cf182ec79c7e90f6340b78596ae78e2710605c56a7483
     name: producer-app-cleanup-job
@@ -621,7 +621,7 @@ entries:
     - producer-app-cleanup-job/producer-app-cleanup-job-2.5.0.tgz
     version: 2.5.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.195509213Z"
+    created: "2024-05-13T10:26:38.068203138Z"
     description: A helm chart for deploying a clean up job for a Kafka producer application.
     digest: 24dec674fe1389c0ff89e840bc41300a8d81592bb9debbc2601c98925df46d5f
     name: producer-app-cleanup-job
@@ -630,7 +630,7 @@ entries:
     version: 2.4.2
   rclone-copy:
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.203049427Z"
+    created: "2024-05-13T10:26:38.07586319Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 7d3cf6716c0dc86124d9901fd2b5f444ed9a973738749662d6479a200d66aadb
     maintainers:
@@ -642,7 +642,7 @@ entries:
     - rclone-copy/rclone-copy-2.18.2-SNAPSHOT.tgz
     version: 2.18.2-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.202706458Z"
+    created: "2024-05-13T10:26:38.075391725Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 624a2ce4260de5bdd56c2e83f2e778ef5492894286eedc0e3a82f08f37917ac6
     maintainers:
@@ -654,9 +654,9 @@ entries:
     - rclone-copy/rclone-copy-2.18.1.tgz
     version: 2.18.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.202442146Z"
+    created: "2024-05-13T10:26:38.074675319Z"
     description: A helm chart for rclone copy on Kubernetes.
-    digest: 84c113e289792baade5eef620e08d6f528b0675bd60de754e320006c67986a34
+    digest: ed52a6560b611e9fea8c64a361df5a93322aa751c5aa7b7d2f13275ec42ebe4c
     maintainers:
     - email: opensource@bakdata.com
       name: bakdata
@@ -666,7 +666,7 @@ entries:
     - rclone-copy/rclone-copy-2.18.1-SNAPSHOT.tgz
     version: 2.18.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.202169288Z"
+    created: "2024-05-13T10:26:38.074415464Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 03c55876c7a54d4fbebe52e00caf60806297433f114c7c392d734a98d5b491f3
     maintainers:
@@ -678,7 +678,7 @@ entries:
     - rclone-copy/rclone-copy-2.18.0.tgz
     version: 2.18.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.201885169Z"
+    created: "2024-05-13T10:26:38.074162993Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 2341d25bc9481f97141787c912ab323138e285dd57f856940abc6f19681d1508
     maintainers:
@@ -690,7 +690,7 @@ entries:
     - rclone-copy/rclone-copy-2.17.1-SNAPSHOT.tgz
     version: 2.17.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.201383129Z"
+    created: "2024-05-13T10:26:38.073909571Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: e4ec74c6f0d710d4e7cc14b849901709e88f9ce42a8a002d1c51ca57165c5dbf
     maintainers:
@@ -702,7 +702,7 @@ entries:
     - rclone-copy/rclone-copy-2.17.0.tgz
     version: 2.17.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.200675892Z"
+    created: "2024-05-13T10:26:38.073659735Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 76fd5e7e5e539c67fe50e2395c9e4da1e7474710675a5dbde56c089439c12caf
     maintainers:
@@ -714,7 +714,7 @@ entries:
     - rclone-copy/rclone-copy-2.16.1.tgz
     version: 2.16.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.200413553Z"
+    created: "2024-05-13T10:26:38.07341073Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 4f8b9aea9a9e50f1a1dfcf309713e67f14972a510c897ada9b580f90bc780ab1
     maintainers:
@@ -726,7 +726,7 @@ entries:
     - rclone-copy/rclone-copy-2.16.0.tgz
     version: 2.16.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.200150884Z"
+    created: "2024-05-13T10:26:38.073162407Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: bc95c3c6620bdc4e4b539b55bc8876b76d9c412e85c4c886963ac8f6f4299623
     maintainers:
@@ -738,7 +738,7 @@ entries:
     - rclone-copy/rclone-copy-2.15.3.tgz
     version: 2.15.3
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.199849392Z"
+    created: "2024-05-13T10:26:38.072913623Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 929551d25fc863d93ed812cd3c55e64638d59380c4e5db28517701b13ff46aaf
     maintainers:
@@ -750,7 +750,7 @@ entries:
     - rclone-copy/rclone-copy-2.15.2.tgz
     version: 2.15.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.199587014Z"
+    created: "2024-05-13T10:26:38.07265972Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 90152a0e083b36a1d06b010ff8926b261e6a8cbe004df7233a3525dab774f09e
     maintainers:
@@ -762,7 +762,7 @@ entries:
     - rclone-copy/rclone-copy-2.15.1.tgz
     version: 2.15.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.199324445Z"
+    created: "2024-05-13T10:26:38.072408651Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 25d69098672077d7614343b199f157278af6268f46c42c86822750b2f4a1aa3b
     maintainers:
@@ -774,7 +774,7 @@ entries:
     - rclone-copy/rclone-copy-2.15.0.tgz
     version: 2.15.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.199070021Z"
+    created: "2024-05-13T10:26:38.072159046Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: a7799426d09306c287ebfdd2f68250cb18cc8f01747e39b38e0fe7d57b6f9a55
     maintainers:
@@ -786,7 +786,7 @@ entries:
     - rclone-copy/rclone-copy-2.14.0.tgz
     version: 2.14.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.198814114Z"
+    created: "2024-05-13T10:26:38.071905623Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: d03b92572ae77b5262e16f9e8675ae36c505d72a5b815cc6357b8170c2b959df
     maintainers:
@@ -798,7 +798,7 @@ entries:
     - rclone-copy/rclone-copy-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.198549051Z"
+    created: "2024-05-13T10:26:38.071652691Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: aac496ecc21cc50ddd3372b4606beb0faa50039ed9be1ffbe385285dd0da561f
     maintainers:
@@ -810,7 +810,7 @@ entries:
     - rclone-copy/rclone-copy-2.12.1.tgz
     version: 2.12.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.198294326Z"
+    created: "2024-05-13T10:26:38.071393117Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 9778ed3bee5d5ebee210d7e0ec17558ad3ff3e1405374a80f88f3440dcf9bfa0
     maintainers:
@@ -822,7 +822,7 @@ entries:
     - rclone-copy/rclone-copy-2.12.0.tgz
     version: 2.12.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.19803854Z"
+    created: "2024-05-13T10:26:38.071124757Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 47be066c08d91a5f623bcf1c8a0f488a1ba63f8ff4f6b3325afee423be92fef3
     maintainers:
@@ -834,7 +834,7 @@ entries:
     - rclone-copy/rclone-copy-2.11.2.tgz
     version: 2.11.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.197782072Z"
+    created: "2024-05-13T10:26:38.070828894Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 356922f8f4455f83061254bc3672ccbbea697edafb29ce77bc84097dbecc9a5b
     maintainers:
@@ -846,7 +846,7 @@ entries:
     - rclone-copy/rclone-copy-2.11.1.tgz
     version: 2.11.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.197525906Z"
+    created: "2024-05-13T10:26:38.07056898Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 9a83f1646e700fff419033e94642847045b9a9144c67edecfd85839e87d09644
     maintainers:
@@ -858,7 +858,7 @@ entries:
     - rclone-copy/rclone-copy-2.11.0.tgz
     version: 2.11.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.19726497Z"
+    created: "2024-05-13T10:26:38.070298625Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 5d668788476d86927a1affdf0a8bdf7b8e50963f4852854988afdc7d160d9c50
     maintainers:
@@ -870,7 +870,7 @@ entries:
     - rclone-copy/rclone-copy-2.10.0.tgz
     version: 2.10.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.204630922Z"
+    created: "2024-05-13T10:26:38.077418471Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: b36baf34cb19836a1b5b5d31cda42cfb0614f2d11d6201be4eaedd81f36d44e4
     maintainers:
@@ -882,7 +882,7 @@ entries:
     - rclone-copy/rclone-copy-2.9.0.tgz
     version: 2.9.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.204376859Z"
+    created: "2024-05-13T10:26:38.077161361Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 853cb039c2facd7525aaad67f8193a623b4e5f2ba52a934743fedfd9d31bbb1e
     maintainers:
@@ -894,7 +894,7 @@ entries:
     - rclone-copy/rclone-copy-2.8.0.tgz
     version: 2.8.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.204115993Z"
+    created: "2024-05-13T10:26:38.076904692Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: ab110e533ced4c64903409508c57f628238a62c5f038e7ee26e3ba8123275e82
     maintainers:
@@ -906,7 +906,7 @@ entries:
     - rclone-copy/rclone-copy-2.7.0.tgz
     version: 2.7.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.203819872Z"
+    created: "2024-05-13T10:26:38.076645018Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 4b544d5543212602e35394bd09f3d7cae8ed3cec431985679833c2464052d125
     name: rclone-copy
@@ -914,7 +914,7 @@ entries:
     - rclone-copy/rclone-copy-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.203568243Z"
+    created: "2024-05-13T10:26:38.076396274Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 791bc17f9721449cd8bc06db08b7e786ba3dd83c3af21bbe62c80662ff0cc5c2
     name: rclone-copy
@@ -922,7 +922,7 @@ entries:
     - rclone-copy/rclone-copy-2.5.0.tgz
     version: 2.5.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.203317647Z"
+    created: "2024-05-13T10:26:38.076140106Z"
     description: A helm chart for rclone copy on Kubernetes.
     digest: 6aed30e443203c640dfeef163ad2c09d6e91e2043bff45ed4e1f2276ff021017
     name: rclone-copy
@@ -931,7 +931,7 @@ entries:
     version: 2.4.2
   streams-app:
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.226372178Z"
+    created: "2024-05-13T10:26:38.095184815Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 775b874250753938a364d68d44880c2a81b5249653033233776c158690e43271
@@ -944,7 +944,7 @@ entries:
     - streams-app/streams-app-2.18.2-SNAPSHOT.tgz
     version: 2.18.2-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.225833765Z"
+    created: "2024-05-13T10:26:38.094639748Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 27a8b4bc454c38a154fcbd93df0949781efc1196e9bac9b6e690436d4ed2a5f6
@@ -957,10 +957,10 @@ entries:
     - streams-app/streams-app-2.18.1.tgz
     version: 2.18.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.225124586Z"
+    created: "2024-05-13T10:26:38.094136109Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 3349270d9f44d6ab7d6b27c0dadd373e0b426f8a96448e3655fc21287c00bb4a
+    digest: 1a23673797cd0d2e2e11f2abd9c84b1259a07af96e1cd58ca4af17d57d787287
     maintainers:
     - email: opensource@bakdata.com
       name: bakdata
@@ -970,7 +970,7 @@ entries:
     - streams-app/streams-app-2.18.1-SNAPSHOT.tgz
     version: 2.18.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.223872344Z"
+    created: "2024-05-13T10:26:38.093629444Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: cfe3f39bd92c49bc316da8ee4ec7aef73b35bc9ac956f6d121477c0ac3d2de7f
@@ -983,7 +983,7 @@ entries:
     - streams-app/streams-app-2.18.0.tgz
     version: 2.18.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.223319936Z"
+    created: "2024-05-13T10:26:38.093124573Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 5a6d1f9c36413eddabdcbda83e274d7cb28bc3ed4a5dc6c9bb01e0601ac202ae
@@ -996,7 +996,7 @@ entries:
     - streams-app/streams-app-2.17.1-SNAPSHOT.tgz
     version: 2.17.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.222757448Z"
+    created: "2024-05-13T10:26:38.092614852Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: a4d26ee3a0d40683afd78e1f14b9e7bf3f1bc8312402c8483fa73ed5ea6c5058
@@ -1009,7 +1009,7 @@ entries:
     - streams-app/streams-app-2.17.0.tgz
     version: 2.17.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.222249552Z"
+    created: "2024-05-13T10:26:38.092095373Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: b30768daea46664315c5331a9d07dd73e56c4c4def6f3bdbbb03c6d9b584e7a4
@@ -1022,7 +1022,7 @@ entries:
     - streams-app/streams-app-2.16.1.tgz
     version: 2.16.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.221746385Z"
+    created: "2024-05-13T10:26:38.091587766Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 9df07af8483c014292c9ed50ef96e917c53f3762510ff74ed6b25c7139759a44
@@ -1035,7 +1035,7 @@ entries:
     - streams-app/streams-app-2.16.0.tgz
     version: 2.16.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.221237998Z"
+    created: "2024-05-13T10:26:38.091064119Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: d8717f3244cb1e12fcad91c93198cddb8193788862342e56bfc456f5d47d4eee
@@ -1048,7 +1048,7 @@ entries:
     - streams-app/streams-app-2.15.3.tgz
     version: 2.15.3
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.220740933Z"
+    created: "2024-05-13T10:26:38.090518452Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: c3a3f1825574640d1e8634b032afa1744c44f4511156d915f46e417ef469150e
@@ -1061,7 +1061,7 @@ entries:
     - streams-app/streams-app-2.15.2.tgz
     version: 2.15.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.220232806Z"
+    created: "2024-05-13T10:26:38.090006506Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: a6449e14276c6ce1bfc7c94536db72b98381bfca16997b63947b83e76bf7e034
@@ -1074,7 +1074,7 @@ entries:
     - streams-app/streams-app-2.15.1.tgz
     version: 2.15.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.219699173Z"
+    created: "2024-05-13T10:26:38.089471208Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 5c82f844724fee8b2ad779a1f8d5e10e236f7d5f4f16c3e6468f39118ad09aac
@@ -1087,7 +1087,7 @@ entries:
     - streams-app/streams-app-2.15.0.tgz
     version: 2.15.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.219189072Z"
+    created: "2024-05-13T10:26:38.088270893Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 0ea4feea7e10b2869aef529efec5aa1e104ee3537f3536e01bfdf05f70907d3b
@@ -1100,7 +1100,7 @@ entries:
     - streams-app/streams-app-2.14.0.tgz
     version: 2.14.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.218671178Z"
+    created: "2024-05-13T10:26:38.087615771Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 50a6b34d544129717b901d60550757a4ee6fee602fbf5b1774bde6c3acacc6c1
@@ -1113,7 +1113,7 @@ entries:
     - streams-app/streams-app-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.21783986Z"
+    created: "2024-05-13T10:26:38.087115327Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: c9eb59f57b9addbdb1d4648d49d2a9aa64e76ee12601785db1c4bcbb3e4431c3
@@ -1126,7 +1126,7 @@ entries:
     - streams-app/streams-app-2.12.1.tgz
     version: 2.12.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.216924936Z"
+    created: "2024-05-13T10:26:38.086576813Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 4efcbc1d0d810ee806dc5050d6e4ba3de78165513e62e55fdf42c4f3154b229e
@@ -1139,7 +1139,7 @@ entries:
     - streams-app/streams-app-2.12.0.tgz
     version: 2.12.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.216410509Z"
+    created: "2024-05-13T10:26:38.086064598Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: a98924abbf7313fc4466503f45cc668ebfc39fa06d6c11f81a9ce5080c38477c
@@ -1152,7 +1152,7 @@ entries:
     - streams-app/streams-app-2.11.2.tgz
     version: 2.11.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.215870212Z"
+    created: "2024-05-13T10:26:38.085566609Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: b1c9468e042e52ac63d100ab2044799e85bc00063e315790e77082db70f6ca58
@@ -1165,7 +1165,7 @@ entries:
     - streams-app/streams-app-2.11.1.tgz
     version: 2.11.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.215356245Z"
+    created: "2024-05-13T10:26:38.084964536Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 4a1d05e03054a2fc7e3c58194eed429cd683944b9d7776054c6974c91ae0cdb1
@@ -1178,7 +1178,7 @@ entries:
     - streams-app/streams-app-2.11.0.tgz
     version: 2.11.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.214704241Z"
+    created: "2024-05-13T10:26:38.084350029Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 5fd512d2d1c56508045a845e0f3f519075927c34e2206c9e06b3e8f7ce371556
@@ -1191,7 +1191,7 @@ entries:
     - streams-app/streams-app-2.10.0.tgz
     version: 2.10.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.229073498Z"
+    created: "2024-05-13T10:26:38.09847448Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 244fc4ed7dae5276b00629373d993063a089fc4a9e2d90c182d2504c760c6c37
@@ -1204,7 +1204,7 @@ entries:
     - streams-app/streams-app-2.9.0.tgz
     version: 2.9.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.22862375Z"
+    created: "2024-05-13T10:26:38.098033878Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 2a1aae295efc117b036e027235d64bd995e8bf6c66df0b01c6d6c9c207bd3a1e
@@ -1217,7 +1217,7 @@ entries:
     - streams-app/streams-app-2.8.0.tgz
     version: 2.8.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.22817233Z"
+    created: "2024-05-13T10:26:38.097592454Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 87662f823bf0633b3788c04ca266da29a09f536a8f8219dacdd15fb200e5a511
@@ -1230,7 +1230,7 @@ entries:
     - streams-app/streams-app-2.7.0.tgz
     version: 2.7.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.227678089Z"
+    created: "2024-05-13T10:26:38.097141363Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 5913af406ad1f5f2750362685f1d7a25cd0283a6fa01b6dab513c6d0fbd55a21
@@ -1239,7 +1239,7 @@ entries:
     - streams-app/streams-app-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.227241937Z"
+    created: "2024-05-13T10:26:38.09671084Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: dff5b63dd9c65456bec214017020d3df60ffc4f3326098fde9ab9bc46fdc67a5
@@ -1248,7 +1248,7 @@ entries:
     - streams-app/streams-app-2.5.0.tgz
     version: 2.5.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.226811195Z"
+    created: "2024-05-13T10:26:38.096251303Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 2cb188da90fcba7d09588d240f7b485b5fbf86e32fd9b4e83390249a25683ef6
@@ -1258,7 +1258,7 @@ entries:
     version: 2.4.2
   streams-app-cleanup-job:
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.235347061Z"
+    created: "2024-05-13T10:26:38.105022307Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 7a142b3ca55c31c976eeb77cfa955864326f16cfbd87a5e74255117fe26e835c
@@ -1271,7 +1271,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.18.2-SNAPSHOT.tgz
     version: 2.18.2-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.235077249Z"
+    created: "2024-05-13T10:26:38.10469105Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 2d61c79c7201b140a1eccf36ad7a6d8ea3816954e1c07bde95e4aa5106c75083
@@ -1284,10 +1284,10 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.18.1.tgz
     version: 2.18.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.234811113Z"
+    created: "2024-05-13T10:26:38.104360523Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
-    digest: 6bf92af06d0fa466111e605dde13b06b5b76e1e25f38e85b713d176742d8f235
+    digest: b53e211933bcf19a2847c330d9b22b01107291dbb22432b3844dcb4c46879f29
     maintainers:
     - email: opensource@bakdata.com
       name: bakdata
@@ -1297,7 +1297,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.18.1-SNAPSHOT.tgz
     version: 2.18.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.234543715Z"
+    created: "2024-05-13T10:26:38.104018385Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 1b8388b464f07930e9a2ec1825184ddf012a71c06c8e17a2cfb276b2ace57124
@@ -1310,7 +1310,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.18.0.tgz
     version: 2.18.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.23427808Z"
+    created: "2024-05-13T10:26:38.103690474Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 7a88a48c778391472193cd7769753dde3bf8d29c2b5c182111ecf802520ab59e
@@ -1323,7 +1323,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.17.1-SNAPSHOT.tgz
     version: 2.17.1-SNAPSHOT
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.234008398Z"
+    created: "2024-05-13T10:26:38.103362582Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: faaad67fabe3d88399ceaa1903c73c19040bb6171ace2866d88693281865fbbc
@@ -1336,7 +1336,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.17.0.tgz
     version: 2.17.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.233740569Z"
+    created: "2024-05-13T10:26:38.103020874Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 662f1444b304563544cb0ff1f2640d8a8f2653977861fa32f5c8e23d2932dd59
@@ -1349,7 +1349,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.16.1.tgz
     version: 2.16.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.233468653Z"
+    created: "2024-05-13T10:26:38.102646155Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 44439ddc0ab320d71fa6180c5726084bbd925eae78859f7b0e61baffa9c8e3f7
@@ -1362,7 +1362,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.16.0.tgz
     version: 2.16.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.23312897Z"
+    created: "2024-05-13T10:26:38.101926699Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: bc6f95ad08176560a1cb814f50971eb3d28599860832fe4236e9ad62de9b8220
@@ -1375,7 +1375,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.15.3.tgz
     version: 2.15.3
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.23285509Z"
+    created: "2024-05-13T10:26:38.101379408Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: e204450a0cfe78aef17b0d9b6da6746bfc048cff5d5822c73212fd99ba3a1a3b
@@ -1388,7 +1388,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.15.2.tgz
     version: 2.15.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.232582012Z"
+    created: "2024-05-13T10:26:38.101124012Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: cd9152107a4c3874b4dcdd4ed80d63b97ddac3be981dd064b7b3b58281e0b289
@@ -1401,7 +1401,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.15.1.tgz
     version: 2.15.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.232297302Z"
+    created: "2024-05-13T10:26:38.100866161Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 13c83bf4c27de6c147f1fe7877e5d6344db6309d1b9b41246e8887d5fb7e392a
@@ -1414,7 +1414,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.15.0.tgz
     version: 2.15.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.231760782Z"
+    created: "2024-05-13T10:26:38.10060835Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: edcf01609a63384b2d2a610e0d3b6c3e9047bc1443a759f376dda1eb27fa05f6
@@ -1427,7 +1427,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.14.0.tgz
     version: 2.14.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.231017057Z"
+    created: "2024-05-13T10:26:38.100350749Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 7636a28c7a8945ee8190bd83412952bdc9611abcc9949e72c900e86a7f4bbff2
@@ -1440,7 +1440,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.230748678Z"
+    created: "2024-05-13T10:26:38.100092758Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 70c1133672d0035b3758113e3a8ec1ff91fc7157dbe8c15000c24d09d1e0ee57
@@ -1453,7 +1453,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.12.1.tgz
     version: 2.12.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.230477513Z"
+    created: "2024-05-13T10:26:38.099833785Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 8daf86104604168ac62e87fc4b48bbb37251640fe1b296e2c9b8f878ecdabbee
@@ -1466,7 +1466,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.12.0.tgz
     version: 2.12.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.230199966Z"
+    created: "2024-05-13T10:26:38.099572598Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: acdc1936d78147251434aece091e66d8bc2ae0252f0ff1d08dd15efa680d6b1e
@@ -1479,7 +1479,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.11.2.tgz
     version: 2.11.2
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.229894397Z"
+    created: "2024-05-13T10:26:38.099312272Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 6597e91f4f690ee7c0d87cb6cbf39aad67c7e4d7f96fcba3156c0a892427f4fa
@@ -1492,7 +1492,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.11.1.tgz
     version: 2.11.1
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.229618493Z"
+    created: "2024-05-13T10:26:38.099045505Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: f489329dc841795d03ba6cd0828706cdcbd447ceaa23417571e201d57cd69dd2
@@ -1505,7 +1505,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.11.0.tgz
     version: 2.11.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.229345324Z"
+    created: "2024-05-13T10:26:38.098739434Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 6872e8da009079b53986ea80b5508441a4fb599350f2f6180980afad4d6afb00
@@ -1518,7 +1518,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.10.0.tgz
     version: 2.10.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.236903249Z"
+    created: "2024-05-13T10:26:38.106870335Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 1cfb4af92f5b7221f02f5857ced61024d1ef97ccade448814995d7df8b0f5a3c
@@ -1531,7 +1531,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.9.0.tgz
     version: 2.9.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.236644828Z"
+    created: "2024-05-13T10:26:38.10656216Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: b410e45d0646e2ba01f06f1de7e60728e00d287b4f02527aec5c78f7a8cc249b
@@ -1544,7 +1544,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.8.0.tgz
     version: 2.8.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.236384413Z"
+    created: "2024-05-13T10:26:38.106242243Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: 9d9ef4350a0ced3aa345ec4ad03059dc0b288b2a05804edd85416d3aa6d97abf
@@ -1557,7 +1557,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.7.0.tgz
     version: 2.7.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.23611989Z"
+    created: "2024-05-13T10:26:38.105917768Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: cb7892f5b96e1f65a9b070bbc128cc55af9c5f5344f785c6ccfc97ed9983d083
@@ -1566,7 +1566,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.235837725Z"
+    created: "2024-05-13T10:26:38.10562391Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: a7eb544cd4d72fe03815c2dd6b9f0ba3aef868888cd36dc70d6debf3a0722c53
@@ -1575,7 +1575,7 @@ entries:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.5.0.tgz
     version: 2.5.0
   - apiVersion: v1
-    created: "2024-05-08T13:00:33.235595143Z"
+    created: "2024-05-13T10:26:38.10531825Z"
     description: A helm chart for deploying a kafka streams application based on the
       bakdata KafkaStreamsApplication template.
     digest: cdc2eb5ce949a5ef9f4b332f388366e762b9cc41674cff4e191bb86e2692d3dc
@@ -1583,4 +1583,4 @@ entries:
     urls:
     - streams-app-cleanup-job/streams-app-cleanup-job-2.4.2.tgz
     version: 2.4.2
-generated: "2024-05-08T13:00:33.178979791Z"
+generated: "2024-05-13T10:26:38.051233576Z"
