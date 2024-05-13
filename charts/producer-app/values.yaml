@@ -15,8 +15,6 @@ restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
-# awsRole: my-aws-role
-
 # Optional: Cron schedule for this producer job
 # schedule: "0 12 * * *"
 

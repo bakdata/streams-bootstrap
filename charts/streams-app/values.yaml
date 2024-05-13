@@ -10,8 +10,6 @@ imagePullSecrets: []
 
 configurationEnvPrefix: "APP"
 
-# awsRole: my-aws-role
-
 # log4jConfig:
 
 resources:

@@ -64,7 +64,6 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `env`                    | Custom environment variables                                                                                                                                                                                                                                                                                                      | `{}`    |
 | `secrets`                | Custom secret environment variables. Prefix with `configurationEnvPrefix` in order to pass secrets to command line or prefix with `STREAMS_` to pass secrets to Kafka Streams configuration. E.g., `APP_MY_PARAM` would be passed as `--my-param` and `STREAMS_MAX_POLL_TIMEOUT_MS` would be translated to `max.poll.timeout.ms`. | `{}`    |
 | `secretRefs`             | Inject existing secrets as environment variables. Map key is used as environment variable name. Value consists of secret `name` and `key`.                                                                                                                                                                                        | `{}`    |
-| `awsRole`                | AWS Role that is annotated to the pod in order to authorize AWS resources using [kube2iam](https://github.com/jtblin/kube2iam).                                                                                                                                                                                                   |         |
 
 ### JVM
 
