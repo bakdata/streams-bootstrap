@@ -4,12 +4,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "streams-app-cleanup-job.fullname" . }}
-{{ - if .Values.annotations }}
+  {{ - if .Values.annotations }}
   annotations:
   {{ - range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{ - end }}
-{{ - end }}
+  {{ - end }}
   labels:
     app: {{ template "streams-app-cleanup-job.name" . }}
     chart: {{ template "streams-app-cleanup-job.chart" . }}
