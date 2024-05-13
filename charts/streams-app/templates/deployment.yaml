@@ -51,7 +51,7 @@ spec:
       {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
-      {{- if and .Values.autoscaling.consumerGroup (not .Values.podAnnotations.consumerGroup) }}
+      {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
         consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
       {{- end }}
     {{- end }}
