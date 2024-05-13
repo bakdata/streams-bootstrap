@@ -89,3 +89,7 @@ resources:
 successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
 backoffLimit: 6
+
+podAnnotations: []
+
+podLabels: []
