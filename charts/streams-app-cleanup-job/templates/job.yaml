@@ -144,7 +144,7 @@ spec:
           volumeMounts:
             {{- range $key, $value := .Values.files }}
             - name: config
-              mountPath: {{ $value.mountPath | quote }}
+              mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
               subPath: {{ $key | quote }}
             {{- end }}
         {{- end }}
