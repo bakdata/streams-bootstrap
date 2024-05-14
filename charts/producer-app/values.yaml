@@ -17,7 +17,7 @@ configurationEnvPrefix: "APP"
 
 files: {}
 #  log4j2.xml:
-#    mountPath: app/resources/log4j2.xml
+#    mountPath: app/resources
 #    content: "foo bar"
 
 # Optional: Cron schedule for this producer job
