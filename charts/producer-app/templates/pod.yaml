@@ -115,10 +115,10 @@ spec:
         subPath: {{ $key | quote }}
       {{- end }}
   {{- end }}
-{{- if .Values.files }}
-volumes:
-  - name: config
-    configMap:
-      name: {{ template "producer-app.name" . }}
-{{- end }}
+  {{- if .Values.files }}
+  volumes:
+    - name: config
+      configMap:
+        name: {{ template "producer-app.name" . }}
+  {{- end }}
 {{- end -}}
