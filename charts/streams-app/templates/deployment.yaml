@@ -198,12 +198,12 @@ spec:
                 -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-        {{- if or (.Values.log4jConfig) (and .Values.persistence.enabled .Values.statefulSet) }}
+        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) }}
           volumeMounts:
-            {{- if .Values.log4jConfig }}
-            - name: log4j-config
-              mountPath: app/resources/log4j2.xml
-              subPath: log4j2.xml
+            {{- range $key, $value := .Values.files }}
+            - name: config
+              mountPath: {{ $value.mountPath | quote }}
+              subPath: {{ $key | quote }}
             {{- end }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
@@ -253,20 +253,17 @@ spec:
             - name: jmx-config
               mountPath: /etc/jmx-streams-app
       {{- end }}
-      {{- if or (.Values.prometheus.jmx.enabled) (.Values.log4jConfig) }}
+      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) }}
       volumes:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
             name: {{ template "streams-app.name" . }}-jmx-configmap
         {{- end }}
-        {{ if .Values.log4jConfig }}
-        - name: log4j-config
+        {{- if .Values.files }}
+        - name: config
           configMap:
-            name: {{ template "streams-app.name" . }}-log4j-configmap
-            items:
-              - key: log4j2.xml
-                path: log4j2.xml
+            name: {{ template "streams-app.name" . }}
         {{- end }}
       {{- end }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
