@@ -1,8 +1,16 @@
 # Change Log
 
-## [2.19.1](https://github.com/bakdata/streams-bootstrap/tree/2.19.1) (2024-05-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.1...2.19.1)
+## [2.19.2](https://github.com/bakdata/streams-bootstrap/tree/2.19.2) (2024-05-14)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.2...2.19.2)
 
+
+## [2.19.2](https://github.com/bakdata/streams-bootstrap/tree/2.19.2) (2024-05-14)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.1...2.19.2)
+
+**Merged pull requests:**
+
+- Fix indentation of Rclone annotations [\#222](https://github.com/bakdata/streams-bootstrap/pull/222) ([@philipp94831](https://github.com/philipp94831))
+- Bump CI template version to fix Helm lint [\#221](https://github.com/bakdata/streams-bootstrap/pull/221) ([@yannick-roeder](https://github.com/yannick-roeder))
 
 ## [2.19.1](https://github.com/bakdata/streams-bootstrap/tree/2.19.1) (2024-05-13)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.0...2.19.1)
