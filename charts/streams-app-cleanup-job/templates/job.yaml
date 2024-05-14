@@ -140,4 +140,18 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
+        {{- if .Values.files }}
+          volumeMounts:
+            {{- range $key, $value := .Values.files }}
+            - name: config
+              mountPath: {{ $value.mountPath | quote }}
+              subPath: {{ $key | quote }}
+            {{- end }}
+        {{- end }}
+      {{- if .Values.files }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "streams-app-cleanup-job.name" . }}
+      {{- end }}
   backoffLimit: {{ .Values.backoffLimit }}
