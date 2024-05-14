@@ -10,7 +10,10 @@ imagePullSecrets: []
 
 configurationEnvPrefix: "APP"
 
-# log4jConfig:
+files: {}
+#  log4j2.xml:
+#    mountPath: app/resources
+#    content: "foo bar"
 
 resources:
   requests:

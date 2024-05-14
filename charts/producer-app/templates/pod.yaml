@@ -107,4 +107,18 @@ spec:
     readinessProbe:
     {{- .Values.readinessProbe | toYaml | nindent 6 }}
     {{- end }}
+  {{- if .Values.files }}
+    volumeMounts:
+      {{- range $key, $value := .Values.files }}
+      - name: config
+        mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
+        subPath: {{ $key | quote }}
+      {{- end }}
+  {{- end }}
+  {{- if .Values.files }}
+  volumes:
+    - name: config
+      configMap:
+        name: {{ template "producer-app.name" . }}
+  {{- end }}
 {{- end -}}
