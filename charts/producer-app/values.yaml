@@ -15,7 +15,10 @@ restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
-# awsRole: my-aws-role
+files: {}
+#  log4j2.xml:
+#    mountPath: app/resources
+#    content: "foo bar"
 
 # Optional: Cron schedule for this producer job
 # schedule: "0 12 * * *"
@@ -121,3 +124,7 @@ livenessProbe: {}
 
 # Arbitrary Probe v1 definition for producer: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#probe-v1-core
 readinessProbe: {}
+
+podAnnotations: {}
+
+podLabels: {}

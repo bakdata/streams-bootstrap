@@ -1,19 +1,16 @@
 {{- define "producer-app.podTemplate" -}}
 {{- $root := . -}}
 metadata:
-{{- if or .Values.awsRole .Values.annotations }}
+{{- if .Values.podAnnotations }}
   annotations:
-  {{- if .Values.awsRole }}
-    iam.amazonaws.com/role: {{ .Values.awsRole }}
-  {{- end }}
-  {{- range $key, $value := .Values.annotations }}
+  {{- range $key, $value := .Values.podAnnotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
 {{- end }}
   labels:
     app: {{ template "producer-app.name" . }}
     release: {{ .Release.Name }}
-    {{- range $key, $value := .Values.labels }}
+    {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
@@ -110,4 +107,18 @@ spec:
     readinessProbe:
     {{- .Values.readinessProbe | toYaml | nindent 6 }}
     {{- end }}
+  {{- if .Values.files }}
+    volumeMounts:
+      {{- range $key, $value := .Values.files }}
+      - name: config
+        mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
+        subPath: {{ $key | quote }}
+      {{- end }}
+  {{- end }}
+  {{- if .Values.files }}
+  volumes:
+    - name: config
+      configMap:
+        name: {{ template "producer-app.name" . }}
+  {{- end }}
 {{- end -}}

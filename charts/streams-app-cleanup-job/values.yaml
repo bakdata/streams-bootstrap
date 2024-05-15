@@ -10,7 +10,10 @@ restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
-# awsRole: my-aws-role
+files: {}
+#  log4j2.xml:
+#    mountPath: app/resources
+#    content: "foo bar"
 
 streams:
 #  brokers: "test:9092"
@@ -99,3 +102,7 @@ javaOptions:
 #   - "-XX:MinRAMPercentage=50.0"
 
 backoffLimit: 6
+
+podAnnotations: {}
+
+podLabels: {}
