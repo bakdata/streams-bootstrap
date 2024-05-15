@@ -50,7 +50,7 @@ spec:
         - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-          resources: {{ toYaml .Values.resources | indent 12 }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
