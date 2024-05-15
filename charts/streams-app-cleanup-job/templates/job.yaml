@@ -1,5 +1,4 @@
 {{- $root := . -}}
-
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -39,24 +38,19 @@ spec:
       {{- end }}
       restartPolicy: {{ .Values.restartPolicy }}
       {{- if .Values.tolerations }}
-      tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
-      affinity:
-        {{- if .Values.nodeAffinity }}
-        nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 10 }}
-        {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-{{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
+          resources: {{ toYaml .Values.resources | indent 12 }}
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_

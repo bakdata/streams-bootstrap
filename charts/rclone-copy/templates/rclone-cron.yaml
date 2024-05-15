@@ -46,14 +46,11 @@ spec:
           serviceAccountName: {{ .Values.serviceAccountName }}
           {{- end }}
           {{- if .Values.tolerations }}
-          tolerations:
-{{ toYaml .Values.tolerations | indent 12 }}
+          tolerations: {{ toYaml .Values.tolerations | nindent 12 }}
           {{- end }}
-          affinity:
-            {{- if .Values.nodeAffinity }}
-            nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 14 }}
-            {{- end }}
+          {{- with .Values.affinity }}
+          affinity: {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
           - name: rclone-container
             image: rclone/rclone:{{ .Values.imageRelease }}
@@ -76,8 +73,7 @@ spec:
                 mountPath: "/root/include-pattern.conf"
                 subPath: "include-pattern.conf"
             
-            resources:
-{{ toYaml .Values.resources | indent 14 }}
+            resources: {{ toYaml .Values.resources | nindent 14 }}
           
           restartPolicy: {{ .Values.restartPolicy }}
           volumes:
