@@ -202,11 +202,11 @@ spec:
         {{- end }}
           {{- if .Values.livenessProbe }}
           livenessProbe:
-{{- .Values.livenessProbe | toYaml | nindent 12 }}
+          {{- .Values.livenessProbe | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.readinessProbe }}
           readinessProbe:
-{{- .Values.readinessProbe | toYaml | nindent 12 }}
+          {{- .Values.readinessProbe | toYaml | nindent 12 }}
           {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter

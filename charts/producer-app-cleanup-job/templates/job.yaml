@@ -38,7 +38,7 @@ spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       {{- end }}
       {{- if .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
@@ -46,7 +46,7 @@ spec:
       {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-{{- toYaml .Values.imagePullSecrets | indent 8 }}
+{{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ template "producer-app-cleanup-job.name" . }}
