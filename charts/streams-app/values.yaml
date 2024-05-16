@@ -62,6 +62,12 @@ secretRefs: {}
 #  MY_SECRET:
 #    name: secretName
 #    key: secretKey
+secretFilesRefs: []
+#  - name: my-secret
+#    volume: secret-volume
+#    mountPath: /etc/test
+#    readOnly: true
+#    subPath: optional-subpath
 
 # Additional ports
 ports: []

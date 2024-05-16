@@ -138,18 +138,35 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-        {{- if .Values.files }}
+         {{- if or (.Values.files) (.Values.secretFilesRefs)}}
           volumeMounts:
             {{- range $key, $value := .Values.files }}
             - name: config
               mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
               subPath: {{ $key | quote }}
             {{- end }}
+            {{- range .Values.secretFilesRefs }}
+            - name: {{ .volume }}
+              mountPath: {{ .mountPath }}
+              {{- if .readOnly }}
+              readOnly: true
+              {{- end }}
+              {{- if .subPath}}
+              subPath: {{.subPath }}
+              {{- end }}
+            {{- end}}
         {{- end }}
-      {{- if .Values.files }}
+      {{- if or (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
+      {{- if .Values.files }}
         - name: config
           configMap:
             name: {{ template "streams-app-cleanup-job.name" . }}
+      {{- end }}
+        {{- range .Values.secretFilesRefs }}
+        - name: {{ .volume }}
+          secret:
+            secretName: {{ .name }}
+        {{- end}}
       {{- end }}
   backoffLimit: {{ .Values.backoffLimit }}

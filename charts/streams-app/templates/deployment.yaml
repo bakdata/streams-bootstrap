@@ -185,6 +185,16 @@ spec:
               mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
               subPath: {{ $key | quote }}
             {{- end }}
+            {{- range .Values.secretFilesRefs }}
+            - name: {{ .volume }}
+              mountPath: {{ .mountPath }}
+              {{- if .readOnly }}
+              readOnly: true
+              {{- end }}
+              {{- if .subPath}}
+              subPath: {{.subPath }}
+              {{- end }}
+            {{- end}}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
               mountPath: /tmp/kafka-streams
@@ -233,7 +243,7 @@ spec:
             - name: jmx-config
               mountPath: /etc/jmx-streams-app
       {{- end }}
-      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) }}
+      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
@@ -245,6 +255,11 @@ spec:
           configMap:
             name: {{ template "streams-app.name" . }}
         {{- end }}
+        {{- range .Values.secretFilesRefs }}
+        - name: {{ .volume }}
+          secret:
+            secretName: {{ .name }}
+        {{- end}}
       {{- end }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
   volumeClaimTemplates:
