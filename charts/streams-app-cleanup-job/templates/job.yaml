@@ -38,19 +38,22 @@ spec:
       {{- end }}
       restartPolicy: {{ .Values.restartPolicy }}
       {{- if .Values.tolerations }}
-      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.imagePullSecrets }}
-      imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      imagePullSecrets:
+{{- toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
       containers:
         - name: {{ template "streams-app-cleanup-job.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-          resources: {{ toYaml .Values.resources | nindent 12 }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_

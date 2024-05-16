@@ -60,7 +60,8 @@ spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       {{- end }}
       {{- if .Values.tolerations }}
-      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity: {{- toYaml . | nindent 8 }}
@@ -70,13 +71,15 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.imagePullSecrets }}
-      imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      imagePullSecrets:
+{{- toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-          resources: {{ toYaml .Values.resources | nindent 12 }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
@@ -198,10 +201,12 @@ spec:
             {{- end }}
         {{- end }}
           {{- if .Values.livenessProbe }}
-          livenessProbe: {{- .Values.livenessProbe | toYaml | nindent 12 }}
+          livenessProbe:
+{{- .Values.livenessProbe | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.readinessProbe }}
-          readinessProbe: {{- .Values.readinessProbe | toYaml | nindent 12 }}
+          readinessProbe:
+{{- .Values.readinessProbe | toYaml | nindent 12 }}
           {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter
@@ -218,7 +223,8 @@ spec:
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
-          resources: {{ toYaml .Values.prometheus.jmx.resources | nindent 12 }}
+          resources:
+{{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
           volumeMounts:
             - name: jmx-config
               mountPath: /etc/jmx-streams-app

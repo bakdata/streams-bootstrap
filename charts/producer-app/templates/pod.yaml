@@ -21,19 +21,22 @@ spec:
   serviceAccountName: {{ .Values.serviceAccountName }}
   {{- end }}
   {{- if .Values.tolerations }}
-  tolerations: {{ toYaml .Values.tolerations | nindent 4 }}
+  tolerations:
+{{ toYaml .Values.tolerations | indent 4 }}
   {{- end }}
   {{- with .Values.affinity }}
   affinity: {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- if .Values.imagePullSecrets }}
-  imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 4 }}
+  imagePullSecrets:
+{{- toYaml .Values.imagePullSecrets | indent 8 }}
   {{- end }}
   containers:
   - name: {{ template "producer-app.name" . }}
     image: "{{ .Values.image }}:{{ .Values.imageTag }}"
     imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-    resources: {{ toYaml .Values.resources | nindent 6 }}
+    resources:
+{{ toYaml .Values.resources | indent 6 }}
     env:
       - name: ENV_PREFIX
         value: {{ .Values.configurationEnvPrefix }}_
