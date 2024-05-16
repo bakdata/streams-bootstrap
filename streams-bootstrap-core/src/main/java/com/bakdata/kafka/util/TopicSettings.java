@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,15 @@
 
 package com.bakdata.kafka.util;
 
-import java.util.Collection;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 
-@RequiredArgsConstructor
-class DirectTopicSubscription implements TopicSubscription {
-    private final @NonNull Collection<String> topics;
-
-    @Override
-    public Collection<String> resolveTopics(final Collection<String> allTopics) {
-        return this.topics;
-    }
+/**
+ * Contains information about a topic, including number of partitions and replication factor.
+ */
+@Value
+@Builder
+public class TopicSettings {
+    int partitions;
+    short replicationFactor;
 }

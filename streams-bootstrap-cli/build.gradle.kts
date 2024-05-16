@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":streams-bootstrap"))
+    api(project(":streams-bootstrap-core"))
     api(group = "info.picocli", name = "picocli", version = "4.7.5")
     val log4jVersion: String by project
     implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
