@@ -177,10 +177,10 @@ affinity:
           topologyKey: "kubernetes.io/hostname"
           labelSelector:
             matchExpressions:
-              - key: app
+              - key: release
                 operator: In
                 values:
-                  - '{{ template "streams-app.name" }}'
+                  - "{{ .Release.Name }}"
 
 persistence:
   enabled: false
