@@ -1,3 +1,4 @@
+{{- $root := . -}}
 {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1
 {{- else }}
@@ -50,7 +51,8 @@ spec:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
           {{- with .Values.affinity }}
-          affinity: {{- toYaml . | nindent 12 }}
+          affinity:
+            {{- tpl (toYaml .) $root | nindent 12 }}
           {{- end }}
           containers:
           - name: rclone-container

@@ -25,7 +25,8 @@ spec:
 {{ toYaml .Values.tolerations | indent 4 }}
   {{- end }}
   {{- with .Values.affinity }}
-  affinity: {{- toYaml . | nindent 4 }}
+  affinity:
+    {{- tpl (toYaml .) $root | nindent 4 }}
   {{- end }}
   {{- if .Values.imagePullSecrets }}
   imagePullSecrets:
