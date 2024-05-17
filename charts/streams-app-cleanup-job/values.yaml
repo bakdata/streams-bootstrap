@@ -85,7 +85,7 @@ affinity:
               - key: app
                 operator: In
                 values:
-                  - '{{ template "streams-app.name" $root }}'
+                  - '{{ template "streams-app.name" . }}'
 
 resources:
   requests:
