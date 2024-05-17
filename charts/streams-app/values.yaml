@@ -169,18 +169,7 @@ prometheus:
 ## Affinity for pod assignment (evaluated as template)
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ##
-affinity:
-  podAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        podAffinityTerm:
-          topologyKey: "kubernetes.io/hostname"
-          labelSelector:
-            matchExpressions:
-              - key: release
-                operator: In
-                values:
-                  - "{{ .Release.Name }}"
+affinity: {}
 
 persistence:
   enabled: false
