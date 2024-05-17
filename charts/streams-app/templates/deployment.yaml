@@ -73,7 +73,7 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-{{- toYaml .Values.imagePullSecrets | indent 8 }}
+{{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}
