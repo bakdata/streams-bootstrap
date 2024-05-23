@@ -1,8 +1,11 @@
 {{- define "producer-app.podTemplate" -}}
 {{- $root := . -}}
 metadata:
-{{- if .Values.podAnnotations }}
+{{- if or .Values.podAnnotations (and .Values.deployment .Values.files) }}
   annotations:
+  {{- if and .Values.deployment .Values.files }}
+    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+  {{- end }}
   {{- range $key, $value := .Values.podAnnotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
