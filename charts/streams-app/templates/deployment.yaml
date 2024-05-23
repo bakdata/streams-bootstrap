@@ -39,8 +39,11 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations }}
+    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations .Values.files }}
       annotations:
+      {{- if .Values.files }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
