@@ -1,8 +1,16 @@
 # Change Log
 
-## [2.20.0](https://github.com/bakdata/streams-bootstrap/tree/2.20.0) (2024-05-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.0...2.20.0)
+## [2.20.1](https://github.com/bakdata/streams-bootstrap/tree/2.20.1) (2024-05-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.1...2.20.1)
 
+
+## [2.20.1](https://github.com/bakdata/streams-bootstrap/tree/2.20.1) (2024-05-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.0...2.20.1)
+
+**Merged pull requests:**
+
+- Roll deployments on config map updates [\#227](https://github.com/bakdata/streams-bootstrap/pull/227) ([@philipp94831](https://github.com/philipp94831))
+- Fix content of config maps [\#226](https://github.com/bakdata/streams-bootstrap/pull/226) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.20.0](https://github.com/bakdata/streams-bootstrap/tree/2.20.0) (2024-05-23)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.2...2.20.0)
