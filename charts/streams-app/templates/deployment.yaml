@@ -66,33 +66,10 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
+      {{- with .Values.affinity }}
       affinity:
-        {{- if .Values.nodeAffinity }}
-        nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 10 }}
-        {{- end }}
-        podAntiAffinity:
-        {{- if .Values.requirePodAntiAffinity }}
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - {{ template "streams-app.name" . }}
-            topologyKey: "kubernetes.io/hostname"
-        {{- else }}
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: "kubernetes.io/hostname"
-              labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - {{ template "streams-app.name" . }}
-        {{- end }}
+        {{- tpl (toYaml .) $root | nindent 8 }}
+      {{- end }}
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}

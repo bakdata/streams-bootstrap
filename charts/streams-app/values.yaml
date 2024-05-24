@@ -166,26 +166,10 @@ prometheus:
 # priorityClass
 # priorityClassName: ""
 
-requirePodAntiAffinity: false
-
-nodeAffinity: {}
-#   requiredDuringSchedulingIgnoredDuringExecution:
-#     nodeSelectorTerms:
-#     - matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
-#   preferredDuringSchedulingIgnoredDuringExecution:
-#   - weight: 1
-#     preference:
-#       matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
+## Affinity for pod assignment (evaluated as template)
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
 
 persistence:
   enabled: false
