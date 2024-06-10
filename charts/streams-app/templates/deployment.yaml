@@ -178,7 +178,7 @@ spec:
                 -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) }}
+        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
           volumeMounts:
             {{- range $key, $value := .Values.files }}
             - name: config
