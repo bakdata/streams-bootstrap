@@ -178,12 +178,22 @@ spec:
                 -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) }}
+        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
           volumeMounts:
             {{- range $key, $value := .Values.files }}
             - name: config
               mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
               subPath: {{ $key | quote }}
+            {{- end }}
+            {{- range .Values.secretFilesRefs }}
+            - name: {{ .volume }}
+              mountPath: {{ .mountPath }}
+              {{- if .readOnly }}
+              readOnly: true
+              {{- end }}
+              {{- if .subPath}}
+              subPath: {{.subPath }}
+              {{- end }}
             {{- end }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
@@ -233,7 +243,7 @@ spec:
             - name: jmx-config
               mountPath: /etc/jmx-streams-app
       {{- end }}
-      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) }}
+      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
@@ -244,6 +254,11 @@ spec:
         - name: config
           configMap:
             name: {{ template "streams-app.name" . }}
+        {{- end }}
+        {{- range .Values.secretFilesRefs }}
+        - name: {{ .volume }}
+          secret:
+            secretName: {{ .name }}
         {{- end }}
       {{- end }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
