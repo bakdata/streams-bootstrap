@@ -1,8 +1,15 @@
 # Change Log
 
-## [2.21.0](https://github.com/bakdata/streams-bootstrap/tree/2.21.0) (2024-05-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.21.0...2.21.0)
+## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) (2024-06-10)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.0)
 
+
+## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) (2024-06-10)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.21.0...2.22.0)
+
+**Merged pull requests:**
+
+- Support mounting of external secrets [\#225](https://github.com/bakdata/streams-bootstrap/pull/225) ([@torbsto](https://github.com/torbsto))
 
 ## [2.21.0](https://github.com/bakdata/streams-bootstrap/tree/2.21.0) (2024-05-24)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.1...2.21.0)
