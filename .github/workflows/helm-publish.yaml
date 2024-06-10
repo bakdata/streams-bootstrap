@@ -31,7 +31,7 @@ jobs:
 
   call-workflow-passing-data:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.46.0
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.46.3
     needs: get-gradle-version
     with:
       charts-path: "./charts"

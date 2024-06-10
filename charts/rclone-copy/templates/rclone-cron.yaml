@@ -1,3 +1,4 @@
+{{- $root := . -}}
 {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1
 {{- else }}
@@ -6,6 +7,12 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ template "rclone-copy.fullname" . }}
+{{- if .Values.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.annotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
   labels:
     app: {{ template "rclone-copy.name" . }}
     chart: {{ template "rclone-copy.chart" . }}
@@ -23,19 +30,16 @@ spec:
     spec:
       template:
         metadata:
-        {{- if or .Values.awsRole .Values.annotations }}
+        {{- if .Values.podAnnotations }}
           annotations:
-          {{- if .Values.awsRole }}
-            iam.amazonaws.com/role: {{ .Values.awsRole }}
-          {{- end }}
-          {{- range $key, $value := .Values.annotations }}
+          {{- range $key, $value := .Values.podAnnotations }}
             {{ $key | quote }}: {{ $value | quote }}
           {{- end }}
         {{- end }}
           labels:
             app: {{ template "rclone-copy.name" . }}
             release: {{ .Release.Name }}
-            {{- range $key, $value := .Values.labels }}
+            {{- range $key, $value := .Values.podLabels }}
             {{ $key }}: {{ $value }}
             {{- end }}
         spec:
@@ -46,11 +50,10 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
+          {{- with .Values.affinity }}
           affinity:
-            {{- if .Values.nodeAffinity }}
-            nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 14 }}
-            {{- end }}
+            {{- tpl (toYaml .) $root | nindent 12 }}
+          {{- end }}
           containers:
           - name: rclone-container
             image: rclone/rclone:{{ .Values.imageRelease }}

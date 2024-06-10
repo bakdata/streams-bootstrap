@@ -40,9 +40,6 @@ suspend: false
 # Content of the rclone.conf file.
 rcloneConf: ""
 
-# AWS Role to be used in this Docker image.
-awsRole: ""
-
 # Release version for the openbridge/ob_bulkstash docker image.
 # You probably don't need to change this.
 imageRelease: 1.53.1
@@ -59,24 +56,10 @@ tolerations: []
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-nodeAffinity: {}
-#   requiredDuringSchedulingIgnoredDuringExecution:
-#     nodeSelectorTerms:
-#     - matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
-#   preferredDuringSchedulingIgnoredDuringExecution:
-#   - weight: 1
-#     preference:
-#       matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
+## Affinity for pod assignment (evaluated as template)
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
 
 resources:
   requests:
@@ -89,3 +72,7 @@ resources:
 successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
 backoffLimit: 6
+
+podAnnotations: {}
+
+podLabels: {}

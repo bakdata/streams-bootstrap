@@ -10,9 +10,10 @@ imagePullSecrets: []
 
 configurationEnvPrefix: "APP"
 
-# awsRole: my-aws-role
-
-# log4jConfig:
+files: {}
+#  log4j2.xml:
+#    mountPath: app/resources
+#    content: "foo bar"
 
 resources:
   requests:
@@ -61,6 +62,12 @@ secretRefs: {}
 #  MY_SECRET:
 #    name: secretName
 #    key: secretKey
+secretFilesRefs: []
+#  - name: my-secret
+#    volume: secret-volume
+#    mountPath: /etc/test
+#    readOnly: true
+#    subPath: optional-subpath
 
 # Additional ports
 ports: []
@@ -165,26 +172,10 @@ prometheus:
 # priorityClass
 # priorityClassName: ""
 
-requirePodAntiAffinity: false
-
-nodeAffinity: {}
-#   requiredDuringSchedulingIgnoredDuringExecution:
-#     nodeSelectorTerms:
-#     - matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
-#   preferredDuringSchedulingIgnoredDuringExecution:
-#   - weight: 1
-#     preference:
-#       matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
+## Affinity for pod assignment (evaluated as template)
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
 
 persistence:
   enabled: false
@@ -200,3 +191,9 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: ""
+
+podAnnotations: {}
+
+podLabels: {}
+
+terminationGracePeriodSeconds: 300

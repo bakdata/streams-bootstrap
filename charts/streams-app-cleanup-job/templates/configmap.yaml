@@ -1,0 +1,10 @@
+{{ if .Values.files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "streams-app-cleanup-job.name" . }}
+data:
+  {{- range $key, $value := .Values.files }}
+  {{ $key }}: {{ $value.content | quote }}
+  {{- end }}
+{{ end }}

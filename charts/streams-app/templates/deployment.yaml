@@ -39,26 +39,23 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or (or (or .Values.awsRole .Values.prometheus.jmx.enabled) .Values.autoscaling.consumerGroup) .Values.annotations }}
+    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations .Values.files }}
       annotations:
-      {{- if .Values.awsRole }}
-        iam.amazonaws.com/role: {{ .Values.awsRole }}
+      {{- if .Values.files }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
-      {{- range $key, $value := .Values.annotations }}
+      {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
-      {{- end }}
-      {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
-        consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
       {{- end }}
     {{- end }}
       labels:
         app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
-        {{- range $key, $value := .Values.labels }}
+        {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
     spec:
@@ -69,36 +66,14 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
+      {{- with .Values.affinity }}
       affinity:
-        {{- if .Values.nodeAffinity }}
-        nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 10 }}
-        {{- end }}
-        podAntiAffinity:
-        {{- if .Values.requirePodAntiAffinity }}
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - {{ template "streams-app.name" . }}
-            topologyKey: "kubernetes.io/hostname"
-        {{- else }}
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: "kubernetes.io/hostname"
-              labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - {{ template "streams-app.name" . }}
-        {{- end }}
+        {{- tpl (toYaml .) $root | nindent 8 }}
+      {{- end }}
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
@@ -213,12 +188,22 @@ spec:
                 -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-        {{- if or (.Values.log4jConfig) (and .Values.persistence.enabled .Values.statefulSet) }}
+        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
           volumeMounts:
-            {{- if .Values.log4jConfig }}
-            - name: {{ template "streams-app.name" . }}-log4j-config-volume
-              mountPath: app/resources/log4j2.xml
-              subPath: log4j2.xml
+            {{- range $key, $value := .Values.files }}
+            - name: config
+              mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
+              subPath: {{ $key | quote }}
+            {{- end }}
+            {{- range .Values.secretFilesRefs }}
+            - name: {{ .volume }}
+              mountPath: {{ .mountPath }}
+              {{- if .readOnly }}
+              readOnly: true
+              {{- end }}
+              {{- if .subPath}}
+              subPath: {{.subPath }}
+              {{- end }}
             {{- end }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
@@ -268,20 +253,22 @@ spec:
             - name: jmx-config
               mountPath: /etc/jmx-streams-app
       {{- end }}
-      {{- if or (.Values.prometheus.jmx.enabled) (.Values.log4jConfig) }}
+      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
             name: {{ template "streams-app.name" . }}-jmx-configmap
         {{- end }}
-        {{ if .Values.log4jConfig }}
-        - name: {{ template "streams-app.name" . }}-log4j-config-volume
+        {{- if .Values.files }}
+        - name: config
           configMap:
-            name: {{ template "streams-app.name" . }}-log4j-configmap
-            items:
-              - key: log4j2.xml
-                path: log4j2.xml
+            name: {{ template "streams-app.name" . }}
+        {{- end }}
+        {{- range .Values.secretFilesRefs }}
+        - name: {{ .volume }}
+          secret:
+            secretName: {{ .name }}
         {{- end }}
       {{- end }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
