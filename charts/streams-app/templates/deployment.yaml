@@ -194,7 +194,7 @@ spec:
               {{- if .subPath}}
               subPath: {{.subPath }}
               {{- end }}
-            {{- end}}
+            {{- end }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
               mountPath: /tmp/kafka-streams
@@ -259,7 +259,7 @@ spec:
         - name: {{ .volume }}
           secret:
             secretName: {{ .name }}
-        {{- end}}
+        {{- end }}
       {{- end }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
   volumeClaimTemplates:

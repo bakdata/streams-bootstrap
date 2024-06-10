@@ -109,13 +109,13 @@ spec:
     readinessProbe:
     {{- .Values.readinessProbe | toYaml | nindent 6 }}
     {{- end }}
-    {{- if or (.Values.files) (.Values.secretFilesRefs)}}
+    {{- if or (.Values.files) (.Values.secretFilesRefs) }}
     volumeMounts:
       {{- range $key, $value := .Values.files }}
       - name: config
         mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
         subPath: {{ $key | quote }}
-          {{- end }}
+      {{- end }}
       {{- range .Values.secretFilesRefs }}
       - name: {{ .volume }}
         mountPath: {{ .mountPath }}
@@ -125,7 +125,7 @@ spec:
         {{- if .subPath}}
         subPath: {{.subPath }}
         {{- end }}
-      {{- end}}
+      {{- end }}
     {{- end }}
   {{- if or (.Values.files) (.Values.secretFilesRefs) }}
   volumes:
@@ -138,6 +138,6 @@ spec:
     - name: {{ .volume }}
       secret:
         secretName: {{ .name }}
-    {{- end}}
+    {{- end }}
   {{- end }}
 {{- end -}}
