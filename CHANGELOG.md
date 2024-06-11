@@ -1,8 +1,15 @@
 # Change Log
 
-## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) (2024-06-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.0)
+## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) (2024-06-11)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.22.1)
 
+
+## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) (2024-06-11)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.1)
+
+**Merged pull requests:**
+
+- Use same variable names for clean up job as for main chart [\#228](https://github.com/bakdata/streams-bootstrap/pull/228) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) (2024-06-10)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.21.0...2.22.0)
