@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "producer-app-cleanup-job.fullname" . }}
+  name: {{ template "producer-app.fullname" . }}
 {{- if .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
@@ -10,8 +10,8 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    app: {{ template "producer-app-cleanup-job.name" . }}
-    chart: {{ template "producer-app-cleanup-job.chart" . }}
+    app: {{ template "producer-app.name" . }}
+    chart: {{ template "producer-app.chart" . }}
     release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
@@ -27,7 +27,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "producer-app-cleanup-job.name" . }}
+        app: {{ template "producer-app.name" . }}
         release: {{ .Release.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
@@ -50,7 +50,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "producer-app-cleanup-job.name" . }}
+        - name: {{ template "producer-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -88,7 +88,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "producer-app-cleanup-job.fullname" $ }}
+                  name: {{ template "producer-app.fullname" $ }}
                   key: "{{ $key }}"
             {{- end }}
             {{- range $key, $value := .Values.secretRefs }}
@@ -132,7 +132,7 @@ spec:
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "producer-app-cleanup-job.name" . }}
+            name: {{ template "producer-app.name" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
