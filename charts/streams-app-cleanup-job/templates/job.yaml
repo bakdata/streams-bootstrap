@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "streams-app-cleanup-job.fullname" . }}
+  name: {{ template "streams-app.fullname" . }}
 {{- if .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
@@ -10,8 +10,8 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    app: {{ template "streams-app-cleanup-job.name" . }}
-    chart: {{ template "streams-app-cleanup-job.chart" . }}
+    app: {{ template "streams-app.name" . }}
+    chart: {{ template "streams-app.chart" . }}
     release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
@@ -27,7 +27,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app-cleanup-job.name" . }}
+        app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
@@ -50,7 +50,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app-cleanup-job.name" . }}
+        - name: {{ template "streams-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -117,7 +117,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app-cleanup-job.fullname" $ }}
+                  name: {{ template "streams-app.fullname" $ }}
                   key: "{{ $key }}"
             {{- end }}
             {{- range $key, $value := .Values.secretRefs }}
@@ -161,7 +161,7 @@ spec:
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "streams-app-cleanup-job.name" . }}
+            name: {{ template "streams-app.name" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
