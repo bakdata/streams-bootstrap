@@ -27,7 +27,7 @@ package com.bakdata.kafka;
 import com.google.common.annotations.VisibleForTesting;
 import java.time.Duration;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.NonNull;
@@ -47,7 +47,7 @@ public class StreamsExecutionOptions {
      * Hook that is called after calling {@link KafkaStreams#start()}
      */
     @Builder.Default
-    private final @NonNull Consumer<KafkaStreams> onStart = streams -> {};
+    private final @NonNull BiConsumer<KafkaStreams, StreamsConfig> onStart = (streams, config) -> {};
     /**
      * Configures {@link KafkaStreams#setStateListener(StateListener)}
      */
@@ -86,8 +86,8 @@ public class StreamsExecutionOptions {
         return staticMembershipDisabled || this.volatileGroupInstanceId;
     }
 
-    void onStart(final KafkaStreams streams) {
-        this.onStart.accept(streams);
+    void onStart(final KafkaStreams streams, final StreamsConfig config) {
+        this.onStart.accept(streams, config);
     }
 
     StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {

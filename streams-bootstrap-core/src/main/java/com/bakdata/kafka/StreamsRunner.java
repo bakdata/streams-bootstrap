@@ -38,6 +38,7 @@ import org.apache.kafka.streams.Topology;
 @Slf4j
 public final class StreamsRunner implements Runner {
 
+    private final @NonNull StreamsConfig config;
     private final @NonNull KafkaStreams streams;
     private final @NonNull CapturingStreamsUncaughtExceptionHandler exceptionHandler;
     private final @NonNull StreamsShutdownStateListener shutdownListener;
@@ -61,6 +62,7 @@ public final class StreamsRunner implements Runner {
      */
     public StreamsRunner(final @NonNull Topology topology, final @NonNull StreamsConfig config,
             final @NonNull StreamsExecutionOptions options) {
+        this.config = config;
         this.streams = new KafkaStreams(topology, config);
         this.exceptionHandler = new CapturingStreamsUncaughtExceptionHandler(options.createUncaughtExceptionHandler());
         this.streams.setUncaughtExceptionHandler(this.exceptionHandler);
@@ -106,7 +108,7 @@ public final class StreamsRunner implements Runner {
         log.info("Starting Kafka Streams");
         this.streams.start();
         log.info("Calling start hook");
-        this.executionOptions.onStart(this.streams);
+        this.executionOptions.onStart(this.streams, this.config);
     }
 
     private void awaitStreamsShutdown() {

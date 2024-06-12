@@ -38,6 +38,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -159,8 +160,9 @@ public abstract class KafkaStreamsApplication extends
     /**
      * Called after starting Kafka Streams
      * @param streams running {@code KafkaStreams} instance
+     * @param config config of {@code KafkaStreams} instance
      */
-    protected void onStreamsStart(final KafkaStreams streams) {
+    protected void onStreamsStart(final KafkaStreams streams, final StreamsConfig config) {
         // do nothing by default
     }
 }
