@@ -1,9 +1,8 @@
 {{- $root := . -}}
-
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "streams-app-cleanup-job.fullname" . }}
+  name: {{ template "streams-app.fullname" . }}
 {{- if .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
@@ -11,8 +10,8 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    app: {{ template "streams-app-cleanup-job.name" . }}
-    chart: {{ template "streams-app-cleanup-job.chart" . }}
+    app: {{ template "streams-app.name" . }}
+    chart: {{ template "streams-app.chart" . }}
     release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
@@ -28,7 +27,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app-cleanup-job.name" . }}
+        app: {{ template "streams-app.name" . }}
         release: {{ .Release.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
@@ -42,17 +41,16 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
+      {{- with .Values.affinity }}
       affinity:
-        {{- if .Values.nodeAffinity }}
-        nodeAffinity:
-{{ toYaml .Values.nodeAffinity | indent 10 }}
-        {{- end }}
+        {{- tpl (toYaml .) $root | nindent 8 }}
+      {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app-cleanup-job.name" . }}
+        - name: {{ template "streams-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -115,7 +113,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app-cleanup-job.fullname" $ }}
+                  name: {{ template "streams-app.fullname" $ }}
                   key: "{{ $key }}"
             {{- end }}
             {{- range $key, $value := .Values.secretRefs }}
@@ -136,18 +134,35 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
-        {{- if .Values.files }}
+          {{- if or (.Values.files) (.Values.secretFilesRefs) }}
           volumeMounts:
             {{- range $key, $value := .Values.files }}
             - name: config
               mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
               subPath: {{ $key | quote }}
             {{- end }}
+            {{- range .Values.secretFilesRefs }}
+            - name: {{ .volume }}
+              mountPath: {{ .mountPath }}
+              {{- if .readOnly }}
+              readOnly: true
+              {{- end }}
+              {{- if .subPath}}
+              subPath: {{.subPath }}
+              {{- end }}
+            {{- end }}
         {{- end }}
-      {{- if .Values.files }}
+      {{- if or (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
+        {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "streams-app-cleanup-job.name" . }}
+            name: {{ template "streams-app.name" . }}
+        {{- end }}
+        {{- range .Values.secretFilesRefs }}
+        - name: {{ .volume }}
+          secret:
+            secretName: {{ .name }}
+        {{- end }}
       {{- end }}
   backoffLimit: {{ .Values.backoffLimit }}

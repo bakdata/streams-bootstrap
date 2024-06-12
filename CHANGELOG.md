@@ -1,8 +1,51 @@
 # Change Log
 
-## [2.19.2](https://github.com/bakdata/streams-bootstrap/tree/2.19.2) (2024-05-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.2...2.19.2)
+## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.23.0...2.23.0)
 
+
+## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.23.0)
+
+**Merged pull requests:**
+
+- Add dynamic application.server config to streams app chart [\#214](https://github.com/bakdata/streams-bootstrap/pull/214) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) (2024-06-11)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.1)
+
+**Merged pull requests:**
+
+- Use same variable names for clean up job as for main chart [\#228](https://github.com/bakdata/streams-bootstrap/pull/228) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) (2024-06-10)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.21.0...2.22.0)
+
+**Merged pull requests:**
+
+- Support mounting of external secrets [\#225](https://github.com/bakdata/streams-bootstrap/pull/225) ([@torbsto](https://github.com/torbsto))
+
+## [2.21.0](https://github.com/bakdata/streams-bootstrap/tree/2.21.0) (2024-05-24)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.1...2.21.0)
+
+**Merged pull requests:**
+
+- Make affinity in charts more generic [\#224](https://github.com/bakdata/streams-bootstrap/pull/224) ([@yannick-roeder](https://github.com/yannick-roeder))
+
+## [2.20.1](https://github.com/bakdata/streams-bootstrap/tree/2.20.1) (2024-05-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.0...2.20.1)
+
+**Merged pull requests:**
+
+- Roll deployments on config map updates [\#227](https://github.com/bakdata/streams-bootstrap/pull/227) ([@philipp94831](https://github.com/philipp94831))
+- Fix content of config maps [\#226](https://github.com/bakdata/streams-bootstrap/pull/226) ([@philipp94831](https://github.com/philipp94831))
+
+## [2.20.0](https://github.com/bakdata/streams-bootstrap/tree/2.20.0) (2024-05-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.2...2.20.0)
+
+**Merged pull requests:**
+
+- Mount arbitrary files to apps [\#223](https://github.com/bakdata/streams-bootstrap/pull/223) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.19.2](https://github.com/bakdata/streams-bootstrap/tree/2.19.2) (2024-05-14)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.1...2.19.2)

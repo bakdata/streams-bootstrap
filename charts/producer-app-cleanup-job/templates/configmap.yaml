@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "producer-app-cleanup-job.name" . }}
+  name: {{ template "producer-app.name" . }}
 data:
   {{- range $key, $value := .Values.files }}
-  {{ $key }}: {{ $value.content | nindent 4 }}
+  {{ $key }}: {{ $value.content | quote }}
   {{- end }}
 {{ end }}
