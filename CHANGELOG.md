@@ -1,8 +1,15 @@
 # Change Log
 
-## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) (2024-06-11)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.22.1)
+## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.23.0...2.23.0)
 
+
+## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.23.0)
+
+**Merged pull requests:**
+
+- Add dynamic application.server config to streams app chart [\#214](https://github.com/bakdata/streams-bootstrap/pull/214) ([@philipp94831](https://github.com/philipp94831))
 
 ## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) (2024-06-11)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.1)
