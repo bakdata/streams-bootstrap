@@ -159,10 +159,10 @@ public abstract class KafkaStreamsApplication extends
 
     /**
      * Called after starting Kafka Streams
-     * @param streams running {@code KafkaStreams} instance
-     * @param config config of {@code KafkaStreams} instance
+     * @param runningStreams running {@link KafkaStreams} instance along with its {@link StreamsConfig} and
+     * {@link org.apache.kafka.streams.Topology}
      */
-    protected void onStreamsStart(final KafkaStreams streams, final StreamsConfig config) {
+    protected void onStreamsStart(final RunningStreams runningStreams) {
         // do nothing by default
     }
 }
