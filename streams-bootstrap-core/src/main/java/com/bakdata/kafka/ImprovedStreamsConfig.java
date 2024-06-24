@@ -62,7 +62,7 @@ public class ImprovedStreamsConfig {
      * @return Kafka configs
      * @see StreamsConfig#originals()
      */
-    public Map<String, Object> getStreamsConfig() {
+    public Map<String, Object> getKafkaProperties() {
         return Collections.unmodifiableMap(this.streamsConfig.originals());
     }
 }
