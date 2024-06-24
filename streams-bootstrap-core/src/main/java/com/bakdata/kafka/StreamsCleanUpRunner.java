@@ -99,7 +99,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final Collection<String> allTopics, final ImprovedStreamsConfig streamsAppConfig) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final String appId = streamsAppConfig.getAppId();
-        final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
+        final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getStreamsConfig());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
                 .add("--bootstrap-server", streamsAppConfig.getBoostrapServers())
@@ -183,7 +183,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     }
 
     private Map<String, Object> getKafkaProperties() {
-        return this.config.getKafkaProperties();
+        return this.config.getStreamsConfig();
     }
 
     private ImprovedAdminClient createAdminClient() {

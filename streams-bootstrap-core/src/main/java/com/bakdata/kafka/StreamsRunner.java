@@ -113,7 +113,7 @@ public final class StreamsRunner implements Runner {
         log.info("Calling start hook");
         final RunningStreams runningStreams = RunningStreams.builder()
                 .streams(this.streams)
-                .config(this.config)
+                .config(new ImprovedStreamsConfig(this.config))
                 .topology(this.topology)
                 .build();
         this.executionOptions.onStart(runningStreams);
