@@ -264,6 +264,31 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
+     * Create a new {@code RunnableApp}
+     * @return {@code RunnableApp}
+     */
+    public final RunnableApp createRunnableApp() {
+        final ExecutableApp<R, ?, O> app = this.createExecutableApp(false);
+        final Optional<O> executionOptions = this.createExecutionOptions();
+        final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
+        final RunnableApp runnableApp = new RunnableApp(app, runner);
+        this.activeApps.add(runnableApp);
+        return runnableApp;
+    }
+
+    /**
+     * Create a new {@code CleanableApp}
+     * @return {@code CleanableApp}
+     */
+    public final CleanableApp createCleanableApp() {
+        final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp(true);
+        final CR cleanUpRunner = executableApp.createCleanUpRunner();
+        final CleanableApp cleanableApp = new CleanableApp(executableApp, cleanUpRunner);
+        this.activeApps.add(cleanableApp);
+        return cleanableApp;
+    }
+
+    /**
      * Create a new {@code ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
@@ -279,31 +304,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     protected void configureDebug() {
         Configurator.setLevel("com.bakdata", Level.DEBUG);
         Configurator.setLevel(this.getClass().getPackageName(), Level.DEBUG);
-    }
-
-    /**
-     * Create a new {@code CleanableApp}
-     * @return {@code CleanableApp}
-     */
-    protected final CleanableApp createCleanableApp() {
-        final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp(true);
-        final CR cleanUpRunner = executableApp.createCleanUpRunner();
-        final CleanableApp cleanableApp = new CleanableApp(executableApp, cleanUpRunner);
-        this.activeApps.add(cleanableApp);
-        return cleanableApp;
-    }
-
-    /**
-     * Create a new {@code RunnableApp}
-     * @return {@code RunnableApp}
-     */
-    protected final RunnableApp createRunnableApp() {
-        final ExecutableApp<R, ?, O> app = this.createExecutableApp(false);
-        final Optional<O> executionOptions = this.createExecutionOptions();
-        final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
-        final RunnableApp runnableApp = new RunnableApp(app, runner);
-        this.activeApps.add(runnableApp);
-        return runnableApp;
     }
 
     private void startApplication() {
@@ -328,7 +328,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     @RequiredArgsConstructor
-    protected class CleanableApp implements AutoCloseable, Stoppable {
+    public class CleanableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull CR cleanUpRunner;
@@ -346,7 +346,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     @RequiredArgsConstructor
-    protected class RunnableApp implements AutoCloseable, Stoppable {
+    public class RunnableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull R runner;
