@@ -36,7 +36,8 @@ import org.apache.kafka.streams.StreamsConfig;
 @Value
 public class ImprovedStreamsConfig {
 
-    @NonNull StreamsConfig kafkaProperties;
+    @NonNull
+    StreamsConfig streamsConfig;
 
     /**
      * Get the application id of the underlying {@link StreamsConfig}
@@ -44,7 +45,7 @@ public class ImprovedStreamsConfig {
      * @see StreamsConfig#APPLICATION_ID_CONFIG
      */
     public String getAppId() {
-        return this.kafkaProperties.getString(StreamsConfig.APPLICATION_ID_CONFIG);
+        return this.streamsConfig.getString(StreamsConfig.APPLICATION_ID_CONFIG);
     }
 
     /**
@@ -53,7 +54,7 @@ public class ImprovedStreamsConfig {
      * @see StreamsConfig#BOOTSTRAP_SERVERS_CONFIG
      */
     public String getBoostrapServers() {
-        return String.join(",", this.kafkaProperties.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+        return String.join(",", this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
     }
 
     /**
@@ -61,7 +62,7 @@ public class ImprovedStreamsConfig {
      * @return Kafka configs
      * @see StreamsConfig#originals()
      */
-    public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.kafkaProperties.originals());
+    public Map<String, Object> getStreamsConfig() {
+        return Collections.unmodifiableMap(this.streamsConfig.originals());
     }
 }
