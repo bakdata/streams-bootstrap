@@ -331,7 +331,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     /**
      * Provides access to a {@link CleanUpRunner} and closes the associated {@link ExecutableApp}
      */
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
     public static class CleanableApp<CR extends CleanUpRunner> implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
@@ -356,8 +356,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     /**
      * Provides access to a {@link Runner} and closes the associated {@link ExecutableApp}
      */
-    @RequiredArgsConstructor
-    public static class RunnableApp<R extends Runner> implements AutoCloseable, Stoppable {
+    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+    public static final class RunnableApp<R extends Runner> implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull R runner;
