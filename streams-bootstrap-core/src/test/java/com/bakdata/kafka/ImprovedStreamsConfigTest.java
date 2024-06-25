@@ -30,49 +30,72 @@ import java.util.List;
 import java.util.Map;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.state.HostInfo;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(SoftAssertionsExtension.class)
 class ImprovedStreamsConfigTest {
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
+
     @Test
     void shouldGetAppId() {
         final StreamsConfig config = new StreamsConfig(
-                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
-                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, List.of("broker1:9092", "broker2:9092", "broker3:9092")
+                Map.of(
+                        StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092"
                 )
         );
-        assertThat(new ImprovedStreamsConfig(config).getAppId())
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getAppId())
                 .isEqualTo("test-app");
     }
 
     @Test
-    void shouldGetBrokerAddress() {
+    void shouldGetBootstrapServersFromList() {
         final StreamsConfig config = new StreamsConfig(
-                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                Map.of(
+                        StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, List.of("broker1:9092", "broker2:9092", "broker3:9092")
                 )
         );
-        assertThat(new ImprovedStreamsConfig(config).getBoostrapServers())
-                .isEqualTo("broker1:9092,broker2:9092,broker3:9092");
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getBoostrapServers())
+                .isEqualTo(List.of("broker1:9092", "broker2:9092", "broker3:9092"));
+    }
+
+    @Test
+    void shouldGetBootstrapServersFromString() {
+        final StreamsConfig config = new StreamsConfig(
+                Map.of(
+                        StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092,broker2:9092,broker3:9092"
+                )
+        );
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getBoostrapServers())
+                .isEqualTo(List.of("broker1:9092", "broker2:9092", "broker3:9092"));
     }
 
     @Test
     void shouldGetOriginalKafkaProperties() {
         final StreamsConfig config = new StreamsConfig(
-                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                Map.of(
+                        StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092"
                 )
         );
-        assertThat(new ImprovedStreamsConfig(config).getStreamsConfig())
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getKafkaProperties())
                 .hasSize(2)
                 .anySatisfy((key, value) -> {
-                    assertThat(key).isEqualTo(StreamsConfig.APPLICATION_ID_CONFIG);
-                    assertThat(value).isEqualTo("test-app");
+                    this.softly.assertThat(key).isEqualTo(StreamsConfig.APPLICATION_ID_CONFIG);
+                    this.softly.assertThat(value).isEqualTo("test-app");
                 })
                 .anySatisfy((key, value) -> {
-                    assertThat(key).isEqualTo(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
-                    assertThat(value).isEqualTo("broker1:9092");
-                })
-        ;
+                    this.softly.assertThat(key).isEqualTo(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
+                    this.softly.assertThat(value).isEqualTo("broker1:9092");
+                });
     }
 
     @Test
@@ -81,7 +104,7 @@ class ImprovedStreamsConfigTest {
                 Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092",
                         StreamsConfig.APPLICATION_SERVER_CONFIG, "localhost:9090"));
-        assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
                 .hasValue(new HostInfo("localhost", 9090));
     }
 
@@ -90,7 +113,7 @@ class ImprovedStreamsConfigTest {
         final StreamsConfig config = new StreamsConfig(
                 Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
-        assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
                 .isEmpty();
     }
 

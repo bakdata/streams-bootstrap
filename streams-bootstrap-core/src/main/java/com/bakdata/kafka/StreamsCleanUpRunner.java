@@ -102,7 +102,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
         final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
                 .add("--application-id", appId)
-                .add("--bootstrap-server", streamsAppConfig.getBoostrapServers())
+                .add("--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()))
                 .add("--config-file", tempFile.toString());
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {

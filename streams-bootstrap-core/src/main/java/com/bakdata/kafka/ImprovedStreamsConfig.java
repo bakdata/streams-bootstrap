@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_SERVER_CONFIG;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.NonNull;
@@ -54,11 +55,11 @@ public class ImprovedStreamsConfig {
 
     /**
      * Get the bootstrap servers of the underlying {@link StreamsConfig}
-     * @return comma separated bootstrap servers config
+     * @return list of bootstrap servers
      * @see StreamsConfig#BOOTSTRAP_SERVERS_CONFIG
      */
-    public String getBoostrapServers() {
-        return String.join(",", this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+    public List<String> getBoostrapServers() {
+        return this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
     }
 
     /**
