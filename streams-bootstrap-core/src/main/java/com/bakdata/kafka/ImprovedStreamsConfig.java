@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.Value;
@@ -50,11 +51,11 @@ public class ImprovedStreamsConfig {
 
     /**
      * Get the bootstrap servers of the underlying {@link StreamsConfig}
-     * @return comma separated bootstrap servers config
+     * @return list of bootstrap servers
      * @see StreamsConfig#BOOTSTRAP_SERVERS_CONFIG
      */
-    public String getBoostrapServers() {
-        return String.join(",", this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+    public List<String> getBoostrapServers() {
+        return this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
     }
 
     /**
