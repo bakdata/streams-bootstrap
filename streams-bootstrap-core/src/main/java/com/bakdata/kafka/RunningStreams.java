@@ -24,10 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static org.apache.kafka.streams.StreamsConfig.APPLICATION_SERVER_CONFIG;
-
 import com.bakdata.kafka.StreamsExecutionOptions.StreamsExecutionOptionsBuilder;
-import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.Builder;
 import lombok.NonNull;
@@ -35,7 +32,6 @@ import lombok.Value;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.state.HostInfo;
 
 /**
  * A running {@link KafkaStreams} instance along with its {@link StreamsConfig} and
