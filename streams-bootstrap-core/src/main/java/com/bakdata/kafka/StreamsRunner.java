@@ -110,7 +110,7 @@ public final class StreamsRunner implements Runner {
         log.info("Starting Kafka Streams");
         log.debug("Streams topology:\n{}", this.topology.describe());
         this.streams.start();
-        log.info("Calling start hook");
+        log.debug("Calling start hook");
         final RunningStreams runningStreams = RunningStreams.builder()
                 .streams(this.streams)
                 .config(this.config)
