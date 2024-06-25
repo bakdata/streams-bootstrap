@@ -24,12 +24,16 @@
 
 package com.bakdata.kafka;
 
+import static org.apache.kafka.streams.StreamsConfig.APPLICATION_SERVER_CONFIG;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.Value;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.state.HostInfo;
 
 /**
  * Class for simplified access to configs provided by {@link StreamsConfig}
@@ -65,5 +69,22 @@ public class ImprovedStreamsConfig {
      */
     public Map<String, Object> getKafkaProperties() {
         return Collections.unmodifiableMap(this.streamsConfig.originals());
+    }
+
+    /**
+     * Retrieves the host information based on the application server configuration.
+     *
+     * @return an {@code Optional} containing the {@link HostInfo} if the
+     * {@link StreamsConfig#APPLICATION_SERVER_CONFIG} is set; otherwise, an empty {@code Optional}.
+     */
+    public Optional<HostInfo> getApplicationServer() {
+        final String applicationServerConfig = this.streamsConfig.getString(APPLICATION_SERVER_CONFIG);
+        return applicationServerConfig.isEmpty() ? Optional.empty()
+                : Optional.of(createHostInfo(applicationServerConfig));
+    }
+
+    private static HostInfo createHostInfo(final String applicationServerConfig) {
+        final String[] hostAndPort = applicationServerConfig.split(":");
+        return new HostInfo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
     }
 }
