@@ -47,7 +47,7 @@ public class StreamsExecutionOptions {
      * Hook that is called after calling {@link KafkaStreams#start()}
      */
     @Builder.Default
-    private final @NonNull Consumer<RunningStreams> onStart = (runningStreams) -> {};
+    private final @NonNull Consumer<RunningStreams> onStart = runningStreams -> {};
     /**
      * Configures {@link KafkaStreams#setStateListener(StateListener)}
      */

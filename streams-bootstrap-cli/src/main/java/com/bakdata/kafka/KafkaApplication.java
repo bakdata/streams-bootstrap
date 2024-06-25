@@ -327,6 +327,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
         void stop();
     }
 
+    /**
+     * Provides access to a {@link CleanUpRunner} and closes the associated {@link ExecutableApp}
+     */
     @RequiredArgsConstructor
     public class CleanableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
@@ -339,12 +342,18 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
             KafkaApplication.this.activeApps.remove(this);
         }
 
+        /**
+         * Close the app
+         */
         @Override
         public void stop() {
             this.app.close();
         }
     }
 
+    /**
+     * Provides access to a {@link Runner} and closes the associated {@link ExecutableApp}
+     */
     @RequiredArgsConstructor
     public class RunnableApp implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
@@ -357,6 +366,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
             KafkaApplication.this.activeApps.remove(this);
         }
 
+        /**
+         * Close the runner and app
+         */
         @Override
         public void stop() {
             this.runner.close();

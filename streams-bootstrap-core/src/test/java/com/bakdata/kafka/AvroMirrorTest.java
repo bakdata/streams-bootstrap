@@ -49,18 +49,18 @@ class AvroMirrorTest {
     void shouldMirror() {
         final Serde<TestRecord> keySerde = this.getKeySerde();
         final Serde<TestRecord> valueSerde = this.getValueSerde();
-        final TestRecord record = TestRecord.newBuilder()
+        final TestRecord testRecord = TestRecord.newBuilder()
                 .setContent("bar")
                 .build();
         this.testTopology.input()
                 .withKeySerde(keySerde)
                 .withValueSerde(valueSerde)
-                .add(record, record);
+                .add(testRecord, testRecord);
 
         this.testTopology.streamOutput()
                 .withKeySerde(keySerde)
                 .withValueSerde(valueSerde)
-                .expectNextRecord().hasKey(record).hasValue(record)
+                .expectNextRecord().hasKey(testRecord).hasValue(testRecord)
                 .expectNoMoreRecord();
     }
 
