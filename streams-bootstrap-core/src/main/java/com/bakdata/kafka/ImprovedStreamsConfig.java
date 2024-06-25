@@ -40,7 +40,8 @@ import org.apache.kafka.streams.state.HostInfo;
 @Value
 public class ImprovedStreamsConfig {
 
-    @NonNull StreamsConfig streamsConfig;
+    @NonNull
+    StreamsConfig streamsConfig;
 
     /**
      * Get the application id of the underlying {@link StreamsConfig}
@@ -65,7 +66,7 @@ public class ImprovedStreamsConfig {
      * @return Kafka configs
      * @see StreamsConfig#originals()
      */
-    public Map<String, Object> getStreamsConfig() {
+    public Map<String, Object> getKafkaProperties() {
         return Collections.unmodifiableMap(this.streamsConfig.originals());
     }
 
@@ -85,5 +86,4 @@ public class ImprovedStreamsConfig {
         final String[] hostAndPort = applicationServerConfig.split(":");
         return new HostInfo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
     }
-
 }
