@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -173,7 +174,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Clean all resources associated with this application
      */
     public void clean() {
-        try (final CleanableApp cleanableApp = this.createCleanableApp()) {
+        try (final CleanableApp<CR> cleanableApp = this.createCleanableApp()) {
             final CR cleanUpRunner = cleanableApp.getCleanUpRunner();
             cleanUpRunner.clean();
         }
@@ -199,7 +200,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     @Override
     public void run() {
-        try (final RunnableApp runnableApp = this.createRunnableApp()) {
+        try (final RunnableApp<R> runnableApp = this.createRunnableApp()) {
             final R runner = runnableApp.getRunner();
             runner.run();
         }
@@ -267,11 +268,11 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Create a new {@code RunnableApp}
      * @return {@code RunnableApp}
      */
-    public final RunnableApp createRunnableApp() {
+    public final RunnableApp<R> createRunnableApp() {
         final ExecutableApp<R, ?, O> app = this.createExecutableApp(false);
         final Optional<O> executionOptions = this.createExecutionOptions();
         final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
-        final RunnableApp runnableApp = new RunnableApp(app, runner);
+        final RunnableApp<R> runnableApp = new RunnableApp<>(app, runner, this.activeApps::remove);
         this.activeApps.add(runnableApp);
         return runnableApp;
     }
@@ -280,10 +281,10 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Create a new {@code CleanableApp}
      * @return {@code CleanableApp}
      */
-    public final CleanableApp createCleanableApp() {
+    public final CleanableApp<CR> createCleanableApp() {
         final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp(true);
         final CR cleanUpRunner = executableApp.createCleanUpRunner();
-        final CleanableApp cleanableApp = new CleanableApp(executableApp, cleanUpRunner);
+        final CleanableApp<CR> cleanableApp = new CleanableApp<>(executableApp, cleanUpRunner, this.activeApps::remove);
         this.activeApps.add(cleanableApp);
         return cleanableApp;
     }
@@ -331,15 +332,16 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Provides access to a {@link CleanUpRunner} and closes the associated {@link ExecutableApp}
      */
     @RequiredArgsConstructor
-    public class CleanableApp implements AutoCloseable, Stoppable {
+    public static class CleanableApp<CR extends CleanUpRunner> implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull CR cleanUpRunner;
+        private final @NonNull Consumer<Stoppable> onClose;
 
         @Override
         public void close() {
             this.stop();
-            KafkaApplication.this.activeApps.remove(this);
+            this.onClose.accept(this);
         }
 
         /**
@@ -355,15 +357,16 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Provides access to a {@link Runner} and closes the associated {@link ExecutableApp}
      */
     @RequiredArgsConstructor
-    public class RunnableApp implements AutoCloseable, Stoppable {
+    public static class RunnableApp<R extends Runner> implements AutoCloseable, Stoppable {
         private final @NonNull ExecutableApp<?, ?, ?> app;
         @Getter
         private final @NonNull R runner;
+        private final @NonNull Consumer<Stoppable> onClose;
 
         @Override
         public void close() {
             this.stop();
-            KafkaApplication.this.activeApps.remove(this);
+            this.onClose.accept(this);
         }
 
         /**
