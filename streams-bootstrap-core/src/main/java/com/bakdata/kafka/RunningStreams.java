@@ -44,7 +44,7 @@ import org.apache.kafka.streams.Topology;
 public class RunningStreams {
 
     @NonNull
-    StreamsConfig config;
+    ImprovedStreamsConfig config;
     @NonNull
     Topology topology;
     @NonNull

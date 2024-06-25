@@ -38,7 +38,7 @@ import org.apache.kafka.streams.Topology;
 @Slf4j
 public final class StreamsRunner implements Runner {
 
-    private final @NonNull StreamsConfig config;
+    private final @NonNull ImprovedStreamsConfig config;
     private final @NonNull Topology topology;
     private final @NonNull KafkaStreams streams;
     private final @NonNull CapturingStreamsUncaughtExceptionHandler exceptionHandler;
@@ -63,7 +63,7 @@ public final class StreamsRunner implements Runner {
      */
     public StreamsRunner(final @NonNull Topology topology, final @NonNull StreamsConfig config,
             final @NonNull StreamsExecutionOptions options) {
-        this.config = config;
+        this.config = new ImprovedStreamsConfig(config);
         this.topology = topology;
         this.streams = new KafkaStreams(topology, config);
         this.exceptionHandler = new CapturingStreamsUncaughtExceptionHandler(options.createUncaughtExceptionHandler());
