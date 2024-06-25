@@ -78,8 +78,8 @@ class RunProducerAppTest {
             public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
                 return () -> {
                     try (final Producer<String, TestRecord> producer = builder.createProducer()) {
-                        final TestRecord record = TestRecord.newBuilder().setContent("bar").build();
-                        producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", record));
+                        final TestRecord testRecord = TestRecord.newBuilder().setContent("bar").build();
+                        producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", testRecord));
                     }
                 };
             }
