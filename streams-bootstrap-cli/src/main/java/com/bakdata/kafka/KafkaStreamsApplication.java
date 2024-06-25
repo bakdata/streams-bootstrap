@@ -101,7 +101,7 @@ public abstract class KafkaStreamsApplication extends
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
                            + "Kafka Streams application.")
     public void reset() {
-        try (final CleanableApp app = this.createCleanableApp()) {
+        try (final CleanableApp<StreamsCleanUpRunner> app = this.createCleanableApp()) {
             final StreamsCleanUpRunner runner = app.getCleanUpRunner();
             runner.reset();
         }
