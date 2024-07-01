@@ -1,7 +1,7 @@
 description = "Utils for testing your Kafka Streams Application"
 
 dependencies {
-    api(project(":streams-bootstrap"))
+    api(project(":streams-bootstrap-core"))
     val fluentKafkaVersion: String by project
     api(
         group = "com.bakdata.fluent-kafka-streams-tests",
