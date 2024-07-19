@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,45 @@
 
 package com.bakdata.kafka;
 
-import java.util.function.Consumer;
+import com.bakdata.kafka.HasTopicHooks.TopicHook;
+import java.util.Map;
 import lombok.experimental.UtilityClass;
 
 /**
- * Utility class that provides helpers for using {@code LargeMessageSerde} with {@link KafkaApplication}
+ * Utility class that provides helpers for cleaning {@code LargeMessageSerde} artifacts
  */
 @UtilityClass
 public class LargeMessageKafkaApplicationUtils {
     /**
      * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
-     * properties to create a {@link AbstractLargeMessageConfig} are part of
-     * {@link KafkaApplication#getKafkaProperties()}.
+     * properties to create a {@link AbstractLargeMessageConfig} are part of {@code kafkaProperties}.
      *
-     * @param app {@code KafkaApplication} to create hook from
+     * @param kafkaProperties Kafka properties to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
-     * @see CleanUpRunner#registerTopicCleanUpHook(Consumer)
+     * @see HasTopicHooks#registerTopicHook(TopicHook)
      */
-    public static Consumer<String> createLargeMessageCleanUpHook(final KafkaApplication app) {
-        final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(app.getKafkaProperties());
+    public static TopicHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
+        final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
-        return storer::deleteAllFiles;
+        return new TopicHook() {
+            @Override
+            public void deleted(final String topic) {
+                storer.deleteAllFiles(topic);
+            }
+        };
     }
 
     /**
-     * Register a hook that cleans up LargeMessage files associated with a topic.
+     * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
+     * properties to create a {@link AbstractLargeMessageConfig} are part of
+     * {@link EffectiveAppConfiguration#getKafkaProperties()}.
      *
-     * @param app {@code KafkaApplication} to create hook from
-     * @param cleanUpRunner {@code CleanUpRunner} to register hook on
-     * @see #createLargeMessageCleanUpHook(KafkaApplication)
+     * @param configuration Configuration to create hook from
+     * @return hook that cleans up LargeMessage files associated with a topic
+     * @see #createLargeMessageCleanUpHook(Map)
      */
-    public static void registerLargeMessageCleanUpHook(final KafkaApplication app, final CleanUpRunner cleanUpRunner) {
-        final Consumer<String> deleteAllFiles = createLargeMessageCleanUpHook(app);
-        cleanUpRunner.registerTopicCleanUpHook(deleteAllFiles);
+    public static TopicHook createLargeMessageCleanUpHook(final EffectiveAppConfiguration<?> configuration) {
+        return createLargeMessageCleanUpHook(configuration.getKafkaProperties());
     }
+
 }
