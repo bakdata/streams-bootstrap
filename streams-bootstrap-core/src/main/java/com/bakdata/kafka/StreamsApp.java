@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
+
 /**
  * Application that defines a Kafka Streams {@link org.apache.kafka.streams.Topology} and necessary configurations
  */
@@ -54,5 +56,9 @@ public interface StreamsApp extends App<StreamsTopicConfig, StreamsCleanUpConfig
     default StreamsCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         return new StreamsCleanUpConfiguration();
+    }
+
+    default SerdeConfig defaultSerdeConfig() {
+        return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
 }

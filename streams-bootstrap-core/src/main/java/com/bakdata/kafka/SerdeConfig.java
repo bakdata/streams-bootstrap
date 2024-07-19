@@ -24,32 +24,17 @@
 
 package com.bakdata.kafka;
 
-import org.apache.kafka.common.serialization.StringSerializer;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.With;
+import org.apache.kafka.common.serialization.Serde;
 
-/**
- * Application that defines how to produce messages to Kafka and necessary configurations
- */
-@FunctionalInterface
-public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpConfiguration> {
+@Getter
+@RequiredArgsConstructor
+@With
+public class SerdeConfig {
 
-    /**
-     * Create a runnable that produces Kafka messages
-     * @param builder provides all runtime application configurations
-     * @return {@code ProducerRunnable}
-     */
-    ProducerRunnable buildRunnable(ProducerBuilder builder);
-
-    /**
-     * @return {@code ProducerCleanUpConfiguration}
-     * @see ProducerCleanUpRunner
-     */
-    @Override
-    default ProducerCleanUpConfiguration setupCleanUp(
-            final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
-        return new ProducerCleanUpConfiguration();
-    }
-
-    default SerializerConfig defaultSerializerConfig() {
-        return new SerializerConfig(StringSerializer.class, StringSerializer.class);
-    }
+    private final @NonNull Class<? extends Serde> keySerde;
+    private final @NonNull Class<? extends Serde> valueSerde;
 }

@@ -24,16 +24,12 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
  * A {@link ProducerApp} with a corresponding {@link AppConfiguration}
@@ -45,16 +41,8 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull AppConfiguration<ProducerTopicConfig> configuration;
 
-    private static Map<String, Object> createBaseConfig(final KafkaEndpointConfig endpointConfig) {
+    private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
-
-        if (endpointConfig.isSchemaRegistryConfigured()) {
-            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class);
-        } else {
-            kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-            kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        }
 
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         kafkaConfig.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -70,12 +58,6 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      * Configuration is created in the following order
      * <ul>
      *     <li>
-     *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
-     *         {@link ProducerConfig#VALUE_SERIALIZER_CLASS_CONFIG} are configured based on
-     *         {@link KafkaEndpointConfig#isSchemaRegistryConfigured()}.
-     *         If Schema Registry is configured, {@link SpecificAvroSerializer} is used, otherwise
-     *         {@link StringSerializer} is used.
-     *         Additionally, the following is configured:
      * <pre>
      * max.in.flight.requests.per.connection=1
      * acks=all
@@ -95,6 +77,11 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *     <li>
      *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
      *     </li>
+     *     <li>
+     *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
+     *         {@link ProducerConfig#VALUE_SERIALIZER_CLASS_CONFIG} is configured using
+     *         {@link ProducerApp#defaultSerializerConfig()}
+     *     </li>
      * </ul>
      *
      * @param endpointConfig endpoint to run app on
@@ -102,7 +89,11 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
-        return propertiesFactory.createKafkaProperties(emptyMap());
+        final SerializerConfig serializerConfig = this.app.defaultSerializerConfig();
+        return propertiesFactory.createKafkaProperties(Map.of(
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializerConfig.getKeySerializer(),
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializerConfig.getValueSerializer()
+        ));
     }
 
     /**
@@ -130,7 +121,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     }
 
     private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> baseConfig = createBaseConfig(endpointConfig);
+        final Map<String, Object> baseConfig = createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
