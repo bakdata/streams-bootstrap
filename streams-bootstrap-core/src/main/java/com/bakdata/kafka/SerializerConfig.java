@@ -31,6 +31,9 @@ import lombok.With;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
 
+/**
+ * Defines how to serialize the data in a Kafka producer
+ */
 @RequiredArgsConstructor
 @With
 public class SerializerConfig implements SerializationConfig {

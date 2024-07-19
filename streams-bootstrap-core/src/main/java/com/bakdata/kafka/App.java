@@ -63,5 +63,9 @@ public interface App<T, C> extends AutoCloseable {
         // do nothing by default
     }
 
+    /**
+     * Configure default serialization behavior
+     * @return {@code SerializationConfig}
+     */
     SerializationConfig defaultSerializationConfig();
 }

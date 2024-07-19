@@ -47,6 +47,5 @@ public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpCon
     }
 
     @Override
-    @Override
     SerializerConfig defaultSerializationConfig();
 }

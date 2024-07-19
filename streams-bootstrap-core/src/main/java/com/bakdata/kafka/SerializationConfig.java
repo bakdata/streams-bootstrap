@@ -26,8 +26,15 @@ package com.bakdata.kafka;
 
 import java.util.Map;
 
+/**
+ * Defines how to (de-)serialize the data in a Kafka client
+ */
 @FunctionalInterface
 public interface SerializationConfig {
 
+    /**
+     * Create properties from this {@code SerializationConfig}
+     * @return Map of serialization configurations
+     */
     Map<String, Object> createProperties();
 }

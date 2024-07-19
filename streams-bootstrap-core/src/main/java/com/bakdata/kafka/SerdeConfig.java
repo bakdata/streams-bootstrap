@@ -31,6 +31,9 @@ import lombok.With;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.StreamsConfig;
 
+/**
+ * Defines how to (de-)serialize the data in a Kafka Streams app
+ */
 @RequiredArgsConstructor
 @With
 public class SerdeConfig implements SerializationConfig {
