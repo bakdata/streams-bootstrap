@@ -38,6 +38,7 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
@@ -238,7 +239,7 @@ class CliTest {
 
                     @Override
                     public SerdeConfig defaultSerializationConfig() {
-                        throw new UnsupportedOperationException();
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
                     }
                 })) {
             kafkaCluster.start();
