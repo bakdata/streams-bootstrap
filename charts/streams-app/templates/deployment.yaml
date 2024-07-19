@@ -97,7 +97,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: STREAMS_APPLICATION_SERVER
+            - name: KAFKA_APPLICATION_SERVER
               value: "$(POD_IP):{{ .containerPort }}"
             {{- end }}
           {{- end }}
