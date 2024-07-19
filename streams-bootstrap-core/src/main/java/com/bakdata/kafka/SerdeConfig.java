@@ -24,17 +24,25 @@
 
 package com.bakdata.kafka;
 
-import lombok.Getter;
+import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.streams.StreamsConfig;
 
-@Getter
 @RequiredArgsConstructor
 @With
-public class SerdeConfig {
+public class SerdeConfig implements SerializationConfig {
 
     private final @NonNull Class<? extends Serde> keySerde;
     private final @NonNull Class<? extends Serde> valueSerde;
+
+    @Override
+    public Map<String, Object> createProperties() {
+        return Map.of(
+                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, this.keySerde,
+                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, this.valueSerde
+        );
+    }
 }

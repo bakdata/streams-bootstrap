@@ -86,6 +86,11 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
           return "streams-bootstrap-app-" + topics.getOutputTopic();
         }
 
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+          return new SerdeConfig(StringSerde.class, StringSerde.class);
+        }
+
         // Optionally you can define custom Kafka properties
         @Override
         public Map<String, Object> createKafkaProperties() {
@@ -160,6 +165,11 @@ public class StreamsBootstrapApplication extends KafkaProducerApplication {
               // your producer
             }
           };
+        }
+
+        @Override
+        public SerializerConfig defaultSerializationConfig() {
+          return new SerializerConfig(StringSerializer.class, StringSerializer.class);
         }
 
         // Optionally you can define custom Kafka properties

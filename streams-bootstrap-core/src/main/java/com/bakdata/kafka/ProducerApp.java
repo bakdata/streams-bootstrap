@@ -24,12 +24,9 @@
 
 package com.bakdata.kafka;
 
-import org.apache.kafka.common.serialization.StringSerializer;
-
 /**
  * Application that defines how to produce messages to Kafka and necessary configurations
  */
-@FunctionalInterface
 public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpConfiguration> {
 
     /**
@@ -49,7 +46,7 @@ public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpCon
         return new ProducerCleanUpConfiguration();
     }
 
-    default SerializerConfig defaultSerializerConfig() {
-        return new SerializerConfig(StringSerializer.class, StringSerializer.class);
-    }
+    @Override
+    @Override
+    SerializerConfig defaultSerializationConfig();
 }

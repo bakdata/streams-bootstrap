@@ -24,17 +24,25 @@
 
 package com.bakdata.kafka;
 
-import lombok.Getter;
+import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
 
-@Getter
 @RequiredArgsConstructor
 @With
-public class SerializerConfig {
+public class SerializerConfig implements SerializationConfig {
 
     private final @NonNull Class<? extends Serializer> keySerializer;
     private final @NonNull Class<? extends Serializer> valueSerializer;
+
+    @Override
+    public Map<String, Object> createProperties() {
+        return Map.of(
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, this.keySerializer,
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, this.valueSerializer
+        );
+    }
 }

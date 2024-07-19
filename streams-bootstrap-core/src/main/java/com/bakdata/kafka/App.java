@@ -33,7 +33,6 @@ import java.util.Map;
  * @param <T> type of topic config
  * @param <C> type of clean up config
  */
-@FunctionalInterface
 public interface App<T, C> extends AutoCloseable {
 
     /**
@@ -63,4 +62,6 @@ public interface App<T, C> extends AutoCloseable {
     default void setup(final EffectiveAppConfiguration<T> configuration) {
         // do nothing by default
     }
+
+    SerializationConfig defaultSerializationConfig();
 }

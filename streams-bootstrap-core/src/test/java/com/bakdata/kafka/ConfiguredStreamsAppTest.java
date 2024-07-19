@@ -24,13 +24,12 @@
 
 package com.bakdata.kafka;
 
-import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.Map;
+import org.apache.kafka.common.serialization.Serdes.LongSerde;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
@@ -77,7 +76,7 @@ class ConfiguredStreamsAppTest {
     }
 
     @Test
-    void shouldSetDefaultAvroSerdeWhenSchemaRegistryUrlIsSet() {
+    void shouldSetDefaultSerde() {
         final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
@@ -85,21 +84,8 @@ class ConfiguredStreamsAppTest {
                 .brokers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
-                .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class)
-                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class)
-                .containsEntry(SCHEMA_REGISTRY_URL_CONFIG, "fake");
-    }
-
-    @Test
-    void shouldSetDefaultStringSerdeWhenSchemaRegistryUrlIsNotSet() {
-        final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
-                .build()))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
-                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
+                .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, LongSerde.class);
     }
 
     private static class TestApplication implements StreamsApp {
@@ -120,6 +106,11 @@ class ConfiguredStreamsAppTest {
                     "foo", "bar",
                     "hello", "world"
             );
+        }
+
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+            return new SerdeConfig(StringSerde.class, LongSerde.class);
         }
     }
 }

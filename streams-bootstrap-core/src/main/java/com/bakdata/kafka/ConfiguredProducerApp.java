@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -80,7 +82,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *     <li>
      *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
      *         {@link ProducerConfig#VALUE_SERIALIZER_CLASS_CONFIG} is configured using
-     *         {@link ProducerApp#defaultSerializerConfig()}
+     *         {@link ProducerApp#defaultSerializationConfig()}
      *     </li>
      * </ul>
      *
@@ -89,11 +91,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
-        final SerializerConfig serializerConfig = this.app.defaultSerializerConfig();
-        return propertiesFactory.createKafkaProperties(Map.of(
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializerConfig.getKeySerializer(),
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializerConfig.getValueSerializer()
-        ));
+        return propertiesFactory.createKafkaProperties(emptyMap());
     }
 
     /**

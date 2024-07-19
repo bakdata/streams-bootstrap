@@ -40,9 +40,11 @@ class KafkaPropertiesFactory {
     Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
         final Map<String, Object> kafkaConfig = new HashMap<>(this.baseConfig);
         kafkaConfig.putAll(this.app.createKafkaProperties());
+        final SerializationConfig serializationConfig = this.app.defaultSerializationConfig();
         kafkaConfig.putAll(EnvironmentStreamsConfigParser.parseVariables(System.getenv()));
         kafkaConfig.putAll(this.configuration.getKafkaConfig());
         kafkaConfig.putAll(this.endpointConfig.createKafkaProperties());
+        kafkaConfig.putAll(serializationConfig.createProperties());
         kafkaConfig.putAll(configOverrides);
         return Collections.unmodifiableMap(kafkaConfig);
     }

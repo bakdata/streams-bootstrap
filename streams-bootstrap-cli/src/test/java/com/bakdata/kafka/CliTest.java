@@ -63,6 +63,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
 
@@ -91,6 +96,11 @@ class CliTest {
             public String getUniqueAppId(final StreamsTopicConfig topics) {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
         }), new String[]{
                 "--brokers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
@@ -113,6 +123,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -147,6 +162,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
 
@@ -179,6 +199,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 })) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
@@ -209,6 +234,11 @@ class CliTest {
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
                     }
                 })) {
             kafkaCluster.start();
@@ -249,6 +279,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
         }, new String[]{
@@ -273,6 +308,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };

@@ -86,13 +86,13 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
      *     </li>
      *     <li>
-     *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
-     *         {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
-     *     </li>
-     *     <li>
      *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
      *         {@link StreamsConfig#DEFAULT_VALUE_SERDE_CLASS_CONFIG} is configured using
-     *         {@link StreamsApp#defaultSerdeConfig()}
+     *         {@link StreamsApp#defaultSerializationConfig()}
+     *     </li>
+     *     <li>
+     *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
+     *         {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
      *     </li>
      * </ul>
      *
@@ -101,11 +101,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      */
     public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
         final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
-        final SerdeConfig serdeConfig = this.app.defaultSerdeConfig();
         return propertiesFactory.createKafkaProperties(Map.of(
-                StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId(),
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, serdeConfig.getKeySerde(),
-                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, serdeConfig.getValueSerde()
+                StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId()
         ));
     }
 
