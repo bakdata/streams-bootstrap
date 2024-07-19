@@ -123,10 +123,6 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
               value: {{ .Values.streams.schemaRegistryUrl | quote }}
           {{- end }}
-          {{- if hasKey .Values "debug" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-              value: {{ .Values.debug | quote }}
-          {{- end }}
           {{- if and (hasKey .Values.streams "inputTopics") (.Values.streams.inputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
               value: {{ .Values.streams.inputTopics | join "," | quote }}
