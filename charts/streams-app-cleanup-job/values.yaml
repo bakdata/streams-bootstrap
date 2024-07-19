@@ -10,7 +10,10 @@ restartPolicy: OnFailure
 
 configurationEnvPrefix: "APP"
 
-# awsRole: my-aws-role
+files: {}
+#  log4j2.xml:
+#    mountPath: app/resources
+#    content: "foo bar"
 
 streams:
 #  brokers: "test:9092"
@@ -49,6 +52,12 @@ secretRefs: {}
 #  MY_SECRET:
 #    name: secretName
 #    key: secretKey
+secretFilesRefs: []
+#  - name: my-secret
+#    volume: secret-volume
+#    mountPath: /etc/test
+#    readOnly: true
+#    subPath: optional-subpath
 
 annotations: {}
 #  MY_ANNOTATION: "foo-bar"
@@ -66,24 +75,11 @@ tolerations: []
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
-nodeAffinity: {}
-#   requiredDuringSchedulingIgnoredDuringExecution:
-#     nodeSelectorTerms:
-#     - matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
-#   preferredDuringSchedulingIgnoredDuringExecution:
-#   - weight: 1
-#     preference:
-#       matchExpressions:
-#       - key: foo
-#         operator: In
-#         values:
-#         - bar
-#         - baz
+
+## Affinity for pod assignment (evaluated as template)
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
 
 resources:
   requests:
@@ -99,3 +95,7 @@ javaOptions:
 #   - "-XX:MinRAMPercentage=50.0"
 
 backoffLimit: 6
+
+podAnnotations: {}
+
+podLabels: {}

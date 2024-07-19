@@ -1,4 +1,4 @@
-[![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.streams-bootstrap?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=5&branchName=master)
+[![Build Status](https://github.com/bakdata/streams-bootstrap/actions/workflows/build-and-publish.yaml/badge.svg?event=push)](https://github.com/bakdata/streams-bootstrap/actions/workflows/build-and-publish.yaml/badge.svg?event=push)
 [![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
 [![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=coverage)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
 [![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap&core=gav)
@@ -26,7 +26,13 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '2.1.1'
+implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '3.0.0'
+```
+
+With Kotlin DSL
+
+```gradle
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "3.0.0")
 ```
 
 #### Maven
@@ -35,8 +41,8 @@ compile group: 'com.bakdata.kafka', name: 'streams-bootstrap', version: '2.1.1'
 
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
-    <artifactId>streams-bootstrap</artifactId>
-    <version>2.1.1</version>
+  <artifactId>streams-bootstrap-cli</artifactId>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -52,8 +58,10 @@ and `getUniqueAppId()`. You can define the topology of your application in `buil
 
 ```java
 import com.bakdata.kafka.KafkaStreamsApplication;
-import java.util.Properties;
-import org.apache.kafka.streams.StreamsBuilder;
+import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsTopicConfig;
+import com.bakdata.kafka.TopologyBuilder;
+import java.util.Map;
 import org.apache.kafka.streams.kstream.KStream;
 
 public class StreamsBootstrapApplication extends KafkaStreamsApplication {
@@ -62,26 +70,30 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
     }
 
     @Override
-    public void buildTopology(final StreamsBuilder builder) {
-        final KStream<String, String> input =
-                builder.<String, String>stream(this.getInputTopics());
+    public StreamsApp createApp(final boolean cleanUp) {
+      return new StreamsApp() {
+        @Override
+        public void buildTopology(final TopologyBuilder builder) {
+          final KStream<String, String> input = builder.streamInput();
 
-        // your topology
+          // your topology
 
-        input.to(this.getOutputTopic());
-    }
+          input.to(builder.getTopics().getOutputTopic());
+        }
 
-    @Override
-    public String getUniqueAppId() {
-        return "streams-bootstrap-app";
-    }
+        @Override
+        public String getUniqueAppId(final StreamsTopicConfig topics) {
+          return "streams-bootstrap-app-" + topics.getOutputTopic();
+        }
 
-    // Optionally you can override the default streams bootstrap Kafka properties 
-    @Override
-    protected Properties createKafkaProperties() {
-        final Properties kafkaProperties = super.createKafkaProperties();
-
-        return kafkaProperties;
+        // Optionally you can define custom Kafka properties
+        @Override
+        public Map<String, Object> createKafkaProperties() {
+          return Map.of(
+                  // your config
+          );
+        }
+      };
     }
 }
 ```
@@ -92,6 +104,8 @@ The following configuration options are available:
 
 - `--schema-registry-url`: The URL of the Schema Registry
 
+- `--kafka-config`: Kafka Streams configuration (`<String=String>[,<String=String>...]`)
+
 - `--input-topics`: List of input topics (comma-separated)
 
 - `--input-pattern`: Pattern of input topics
@@ -99,8 +113,6 @@ The following configuration options are available:
 - `--output-topic`: The output topic
 
 - `--error-topic`: A topic to write errors to
-
-- `--streams-config`: Kafka Streams configuration (`<String=String>[,<String=String>...]`)
 
 - `--extra-input-topics`: Additional named input topics if you need to specify multiple topics with different message
   types (`<String=String>[,<String=String>...]`)
@@ -113,13 +125,15 @@ The following configuration options are available:
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
 
-- `--clean-up`: Whether the state of the Kafka Streams app, i.e., offsets and state stores and auto-created topics,
-  should be cleared instead of running the app
-
-- `--delete-output`: Whether the output topics with their associated schemas and the consumer group should be deleted
-  during the cleanup
-
 - `--debug`: Configure logging to debug
+
+Additionally, the following commands are available:
+
+- `clean`: Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
+  topics associated with the Kafka Streams application.
+
+- `reset`: Clear all state stores, consumer group offsets, and internal topics associated with the Kafka Streams
+  application.
 
 #### Kafka producer
 
@@ -127,8 +141,11 @@ Create a subclass of `KafkaProducerApplication`.
 
 ```java
 import com.bakdata.kafka.KafkaProducerApplication;
-import java.util.Properties;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import com.bakdata.kafka.ProducerApp;
+import com.bakdata.kafka.ProducerBuilder;
+import com.bakdata.kafka.ProducerRunnable;
+import java.util.Map;
+import org.apache.kafka.clients.producer.Producer;
 
 public class StreamsBootstrapApplication extends KafkaProducerApplication {
     public static void main(final String[] args) {
@@ -136,18 +153,25 @@ public class StreamsBootstrapApplication extends KafkaProducerApplication {
     }
 
     @Override
-    protected void runApplication() {
-        try (final KafkaProducer<Object, Object> producer = this.createProducer()) {
-            // your producer
+    public ProducerApp createApp(final boolean cleanUp) {
+      return new ProducerApp() {
+        @Override
+        public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+          return () -> {
+            try (final Producer<Object, Object> producer = builder.createProducer()) {
+              // your producer
+            }
+          };
         }
-    }
 
-    // Optionally you can override the default streams bootstrap Kafka properties 
-    @Override
-    protected Properties createKafkaProperties() {
-        final Properties kafkaProperties = super.createKafkaProperties();
-
-        return kafkaProperties;
+        // Optionally you can define custom Kafka properties
+        @Override
+        public Map<String, Object> createKafkaProperties() {
+          return Map.of(
+                  // your config
+          );
+        }
+      };
     }
 }
 ```
@@ -158,16 +182,17 @@ The following configuration options are available:
 
 - `--schema-registry-url`: The URL of the Schema Registry
 
-- `--output-topic`: The output topic
+- `--kafka-config`: Kafka producer configuration (`<String=String>[,<String=String>...]`)
 
-- `--streams-config`: Kafka producer configuration (`<String=String>[,<String=String>...]`)
+- `--output-topic`: The output topic
 
 - `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
 
-- `--clean-up`: Whether the output topics and associated schemas of the producer app should be deleted instead of
-  running the app
-
 - `--debug`: Configure logging to debug
+
+Additionally, the following commands are available:
+
+- `clean`: Delete all output topics associated with the Kafka Producer application.
 
 ### Helm Charts
 

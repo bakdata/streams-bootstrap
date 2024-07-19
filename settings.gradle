@@ -7,8 +7,8 @@ pluginManagement {
 rootProject.name = 'streams-bootstrap'
 
 include(
-        ":streams-bootstrap",
+        ":streams-bootstrap-core",
         ":streams-bootstrap-test",
         ":streams-bootstrap-large-messages",
-        ":streams-bootstrap-picocli",
+        ":streams-bootstrap-cli",
 )
