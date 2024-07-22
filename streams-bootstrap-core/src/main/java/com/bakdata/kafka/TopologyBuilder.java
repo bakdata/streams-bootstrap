@@ -71,7 +71,7 @@ public class TopologyBuilder {
 
     /**
      * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
-     * @param role role of extra input topics
+     * @param role role of named input topics
      * @param consumed define optional parameters for streaming topics
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
@@ -83,7 +83,7 @@ public class TopologyBuilder {
 
     /**
      * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
-     * @param role role of extra input topics
+     * @param role role of named input topics
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
@@ -115,7 +115,7 @@ public class TopologyBuilder {
 
     /**
      * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
-     * @param role role of extra input pattern
+     * @param role role of named input pattern
      * @param consumed define optional parameters for streaming topics
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
@@ -127,7 +127,7 @@ public class TopologyBuilder {
 
     /**
      * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
-     * @param role role of extra input pattern
+     * @param role role of named input pattern
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values

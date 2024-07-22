@@ -25,15 +25,15 @@ streams:
   inputTopics: []
 #  - input
 #  - input2
-  extraInputTopics: {}
+  namedInputTopics: {}
 #   role:
 #     - input
 #     - input2
 #  inputPattern: .*-input
-  extraInputPatterns: {}
+  namedInputPatterns: {}
 #   role: .*-input
 #  outputTopic: output
-  extraOutputTopics: {}
+  namedOutputTopics: {}
 #   role: output
 #  errorTopic: error
   deleteOutput: false

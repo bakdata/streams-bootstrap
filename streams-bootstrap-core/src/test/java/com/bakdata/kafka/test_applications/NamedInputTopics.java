@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
-public class ExtraInputTopics implements StreamsApp {
+public class NamedInputTopics implements StreamsApp {
     @Override
     public void buildTopology(final TopologyBuilder builder) {
         final KStream<String, String> input = builder.streamInput("role");

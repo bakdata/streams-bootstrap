@@ -36,8 +36,8 @@ import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
-import com.bakdata.kafka.test_applications.ExtraInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
+import com.bakdata.kafka.test_applications.NamedInputTopics;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 import java.util.Map;
@@ -105,9 +105,9 @@ class StreamsRunnerTest extends KafkaTest {
                 .build());
     }
 
-    private static ConfiguredStreamsApp<StreamsApp> createExtraInputTopicsApplication() {
-        return configureApp(new ExtraInputTopics(), StreamsTopicConfig.builder()
-                .extraInputTopics(Map.of("role", List.of("input1", "input2")))
+    private static ConfiguredStreamsApp<StreamsApp> createNamedInputTopicsApplication() {
+        return configureApp(new NamedInputTopics(), StreamsTopicConfig.builder()
+                .namedInputTopics(Map.of("role", List.of("input1", "input2")))
                 .outputTopic("output")
                 .build());
     }
@@ -145,11 +145,11 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldUseMultipleExtraInputTopics() throws InterruptedException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = createExtraInputTopicsApplication();
+    void shouldUseMultipleNamedInputTopics() throws InterruptedException {
+        try (final ConfiguredStreamsApp<StreamsApp> app = createNamedInputTopicsApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
                         .createRunner()) {
-            final List<String> inputTopics = app.getTopics().getExtraInputTopics().get("role");
+            final List<String> inputTopics = app.getTopics().getNamedInputTopics().get("role");
             final String inputTopic1 = inputTopics.get(0);
             final String inputTopic2 = inputTopics.get(1);
             final String outputTopic = app.getTopics().getOutputTopic();

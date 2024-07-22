@@ -107,7 +107,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
 
         private Iterable<String> getAllOutputTopics() {
             return Seq.of(ProducerCleanUpRunner.this.topics.getOutputTopic())
-                    .concat(ProducerCleanUpRunner.this.topics.getExtraOutputTopics().values());
+                    .concat(ProducerCleanUpRunner.this.topics.getNamedOutputTopics().values());
         }
     }
 

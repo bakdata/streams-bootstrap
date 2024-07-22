@@ -47,56 +47,59 @@ public class StreamsTopicConfig {
     @Builder.Default
     @NonNull List<String> inputTopics = emptyList();
     /**
-     * Extra input topics that are identified by a role
+     * Named input topics that are identified by a role
      */
     @Builder.Default
-    @NonNull Map<String, List<String>> extraInputTopics = emptyMap();
+    @NonNull
+    Map<String, List<String>> namedInputTopics = emptyMap();
     Pattern inputPattern;
     /**
-     * Extra input patterns that are identified by a role
+     * Named input patterns that are identified by a role
      */
     @Builder.Default
-    @NonNull Map<String, Pattern> extraInputPatterns = emptyMap();
+    @NonNull
+    Map<String, Pattern> namedInputPatterns = emptyMap();
     String outputTopic;
     /**
-     * Extra output topics that are identified by a role
+     * Named output topics that are identified by a role
      */
     @Builder.Default
-    @NonNull Map<String, String> extraOutputTopics = emptyMap();
+    @NonNull
+    Map<String, String> namedOutputTopics = emptyMap();
     String errorTopic;
 
     /**
-     * Get extra input topics for a specified role
+     * Get named input topics for a specified role
      *
-     * @param role role of extra input topics
+     * @param role role of named input topics
      * @return topic names
      */
     public List<String> getInputTopics(final String role) {
-        final List<String> topics = this.extraInputTopics.get(role);
+        final List<String> topics = this.namedInputTopics.get(role);
         Preconditions.checkNotNull(topics, "No input topics for role '%s' available", role);
         return topics;
     }
 
     /**
-     * Get extra input pattern for a specified role
+     * Get named input pattern for a specified role
      *
-     * @param role role of extra input pattern
+     * @param role role of named input pattern
      * @return topic pattern
      */
     public Pattern getInputPattern(final String role) {
-        final Pattern pattern = this.extraInputPatterns.get(role);
+        final Pattern pattern = this.namedInputPatterns.get(role);
         Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
         return pattern;
     }
 
     /**
-     * Get extra output topic for a specified role
+     * Get named output topic for a specified role
      *
-     * @param role role of extra output topic
+     * @param role role of named output topic
      * @return topic name
      */
     public String getOutputTopic(final String role) {
-        final String topic = this.extraOutputTopics.get(role);
+        final String topic = this.namedOutputTopics.get(role);
         Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
         return topic;
     }

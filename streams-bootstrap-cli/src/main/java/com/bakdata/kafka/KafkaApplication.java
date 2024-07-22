@@ -54,7 +54,7 @@ import picocli.CommandLine.ParseResult;
  * <ul>
  *     <li>{@link #brokers}</li>
  *     <li>{@link #outputTopic}</li>
- *     <li>{@link #extraOutputTopics}</li>
+ *     <li>{@link #namedOutputTopics}</li>
  *     <li>{@link #brokers}</li>
  *     <li>{@link #debug}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
@@ -88,8 +88,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
-    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
-    private Map<String, String> extraOutputTopics = emptyMap();
+    @CommandLine.Option(names = "--named-output-topics", split = ",", description = "Additional named output topics")
+    private Map<String, String> namedOutputTopics = emptyMap();
     @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
     private String brokers;
     @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")

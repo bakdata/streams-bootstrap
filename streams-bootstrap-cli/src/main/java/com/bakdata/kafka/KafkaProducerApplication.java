@@ -68,7 +68,7 @@ public abstract class KafkaProducerApplication extends
     public final ProducerTopicConfig createTopicConfig() {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())
-                .extraOutputTopics(this.getExtraOutputTopics())
+                .namedOutputTopics(this.getNamedOutputTopics())
                 .build();
     }
 
