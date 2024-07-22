@@ -82,6 +82,10 @@ public abstract class KafkaStreamsApplication extends
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
+    @CommandLine.Option(names = "--application-id",
+            description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
+                          + "StreamsApp#getUniqueAppId()")
+    private String uniqueAppId;
 
     /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
@@ -134,7 +138,14 @@ public abstract class KafkaStreamsApplication extends
     @Override
     public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final StreamsApp app,
             final AppConfiguration<StreamsTopicConfig> configuration) {
-        return new ConfiguredStreamsApp<>(app, configuration);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(app, configuration);
+        if (this.uniqueAppId != null) {
+            if (!configuredApp.getUniqueAppId().equals(this.uniqueAppId)) {
+                throw new IllegalArgumentException(
+                        "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
+            }
+        }
+        return configuredApp;
     }
 
     /**

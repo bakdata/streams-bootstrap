@@ -11,13 +11,13 @@ kind: Deployment
 {{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
-{{- if or .Values.autoscaling.consumerGroup .Values.annotations }}
+{{- if or .Values.streams.applicationId .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
-  {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
+  {{- if and .Values.streams.applicationId (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ .Values.streams.applicationId | quote }}
   {{- end }}
 {{- end }}
   labels:
@@ -155,6 +155,10 @@ spec:
           {{- if and (hasKey .Values.streams "extraInputPatterns") (.Values.streams.extraInputPatterns) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_PATTERNS"
               value: "{{- range $key, $value := .Values.streams.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
+          {{- end }}
+          {{- if hasKey .Values.streams "applicationId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
+              value: {{ .Values.streams.applicationId | quote }}
           {{- end }}
           {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

@@ -162,6 +162,33 @@ class CliTest {
     }
 
     @Test
+    @ExpectSystemExitWithStatus(2)
+    void shouldExitWithErrorCodeOnInconsistentAppId() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public StreamsApp createApp(final boolean cleanUp) {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder) {
+                        builder.streamInput().to(builder.getTopics().getOutputTopic());
+                    }
+
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        return "my-id";
+                    }
+                };
+            }
+        }, new String[]{
+                "--brokers", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
+                "--input-topics", "input",
+                "--output-topic", "output",
+                "--application-id", "my-other-id"
+        });
+    }
+
+    @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";

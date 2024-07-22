@@ -35,7 +35,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        consumerGroup: {{ $root.Values.streams.applicationId }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
@@ -44,8 +44,8 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
-        topic: {{ printf "%s-%s" $root.Values.autoscaling.consumerGroup . | quote }}
+        consumerGroup: {{ $root.Values.streams.applicationId }}
+        topic: {{ printf "%s-%s" $root.Values.streams.applicationId . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
@@ -53,7 +53,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        consumerGroup: {{ $root.Values.streams.applicationId }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
@@ -63,7 +63,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: {{ $root.Values.streams.brokers }}
-        consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
+        consumerGroup: {{ $root.Values.streams.applicationId }}
         topic: {{ $topic | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
