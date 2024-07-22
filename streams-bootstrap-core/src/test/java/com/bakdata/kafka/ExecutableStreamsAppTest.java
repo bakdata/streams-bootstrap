@@ -57,7 +57,7 @@ class ExecutableStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -75,7 +75,7 @@ class ExecutableStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -93,7 +93,7 @@ class ExecutableStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());

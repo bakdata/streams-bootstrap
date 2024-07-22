@@ -48,9 +48,9 @@ spec:
       - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
         value: {{ $value | quote }}
         {{- end }}
-        {{- if hasKey .Values.streams "brokers" }}
-      - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
-        value: {{ .Values.streams.brokers | quote }}
+        {{- if hasKey .Values.streams "bootstrapServers" }}
+      - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
+        value: {{ .Values.streams.bootstrapServers | quote }}
         {{- end }}
         {{- if hasKey .Values.streams "schemaRegistryUrl" }}
       - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"

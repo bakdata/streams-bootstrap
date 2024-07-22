@@ -24,7 +24,7 @@ resources:
     memory: 2G
 
 streams:
-  # brokers: "test:9092"
+  # bootstrapServers: "test:9092"
   # schemaRegistryUrl: "url:1234"
   staticMembership: false
   config: {}

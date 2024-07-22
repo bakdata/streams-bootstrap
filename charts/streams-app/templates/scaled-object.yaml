@@ -34,7 +34,7 @@ spec:
     {{- range .Values.streams.inputTopics }}
     - type: kafka
       metadata:
-        bootstrapServers: {{ $root.Values.streams.brokers }}
+        bootstrapServers: {{ $root.Values.streams.bootstrapServers }}
         consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
@@ -43,7 +43,7 @@ spec:
     {{- range .Values.autoscaling.internalTopics }}
     - type: kafka
       metadata:
-        bootstrapServers: {{ $root.Values.streams.brokers }}
+        bootstrapServers: {{ $root.Values.streams.bootstrapServers }}
         consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
         topic: {{ printf "%s-%s" $root.Values.autoscaling.consumerGroup . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
@@ -52,7 +52,7 @@ spec:
     {{- range .Values.autoscaling.topics }}
     - type: kafka
       metadata:
-        bootstrapServers: {{ $root.Values.streams.brokers }}
+        bootstrapServers: {{ $root.Values.streams.bootstrapServers }}
         consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
@@ -62,7 +62,7 @@ spec:
     {{- range $topic := $value }}
     - type: kafka
       metadata:
-        bootstrapServers: {{ $root.Values.streams.brokers }}
+        bootstrapServers: {{ $root.Values.streams.bootstrapServers }}
         consumerGroup: {{ $root.Values.autoscaling.consumerGroup }}
         topic: {{ $topic | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}

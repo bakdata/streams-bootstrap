@@ -54,7 +54,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -69,7 +69,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
                 .containsEntry("streams", "streams")
@@ -82,7 +82,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class)
@@ -96,7 +96,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
                 .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);

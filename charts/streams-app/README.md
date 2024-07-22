@@ -52,7 +52,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 | Parameter                    | Description                                                                                                                                                                      | Default |
 |------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `streams.brokers`            | Comma separated list of Kafka brokers to connect to.                                                                                                                             |         |
+| `streams.bootstrapServers`   | Comma separated list of Kafka bootstrap servers to connect to.                                                                                                                   |         |
 | `streams.schemaRegistryUrl`  | URL of Schema Registry to connect to.                                                                                                                                            | `null`  |
 | `streams.staticMembership`   | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
 | `streams.config`             | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |

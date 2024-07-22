@@ -91,7 +91,7 @@ class RunProducerAppTest {
                 );
             }
         })) {
-            app.setBrokers(this.kafkaCluster.getBrokerList());
+            app.setBootstrapServers(this.kafkaCluster.getBrokerList());
             app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
             app.setOutputTopic(output);
             app.setKafkaConfig(Map.of(

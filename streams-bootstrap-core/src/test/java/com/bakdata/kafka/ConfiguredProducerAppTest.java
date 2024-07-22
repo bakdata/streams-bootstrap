@@ -53,7 +53,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -68,7 +68,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
                 .containsEntry("streams", "streams")
@@ -81,7 +81,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
@@ -94,7 +94,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

@@ -55,7 +55,7 @@ class ExecutableProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -72,7 +72,7 @@ class ExecutableProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -89,7 +89,7 @@ class ExecutableProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
