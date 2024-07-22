@@ -56,58 +56,58 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           args:
-            {{- if hasKey .Values.streams "brokers" }}
+          {{- if hasKey .Values.streams "brokers" }}
             - --brokers
             - {{ .Values.streams.brokers | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "schemaRegistryUrl" }}
+          {{- end }}
+          {{- if hasKey .Values.streams "schemaRegistryUrl" }}
             - --schema-registry-url
             - {{ .Values.streams.schemaRegistryUrl | quote }}
-            {{- end }}
-            {{- if hasKey .Values "debug" }}
+          {{- end }}
+          {{- if hasKey .Values "debug" }}
             - --debug
             - {{ .Values.debug | quote }}
-            {{- end }}
-            {{- range .Values.streams.inputTopics }}
+          {{- end }}
+          {{- range .Values.streams.inputTopics }}
             - --input-topics
             - {{ . | quote  }}
-            {{- end }}
-            {{- if hasKey .Values.streams "inputPattern" }}
+          {{- end }}
+          {{- if hasKey .Values.streams "inputPattern" }}
             - --input-pattern
             - {{ .Values.streams.inputPattern | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "outputTopic" }}
+          {{- end }}
+          {{- if hasKey .Values.streams "outputTopic" }}
             - --output-topic
             - {{ .Values.streams.outputTopic | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "errorTopic" }}
+          {{- end }}
+          {{- if hasKey .Values.streams "errorTopic" }}
             - --error-topic
             - {{ .Values.streams.errorTopic | quote }}
-            {{- end }}
-            {{- range $key, $value := .Values.streams.extraOutputTopics }}
+          {{- end }}
+          {{- range $key, $value := .Values.streams.extraOutputTopics }}
             - --extra-output-topics
             - {{ $key }}={{ $value }}
-            {{- end }}
-            {{- range $key, $value := .Values.streams.extraInputTopics }}
+          {{- end }}
+          {{- range $key, $value := .Values.streams.extraInputTopics }}
             - --extra-input-topics
             - {{ $key }}={{ $value | join ";" }}
-            {{- end }}
-            {{- range $key, $value := .Values.streams.extraInputPatterns }}
+          {{- end }}
+          {{- range $key, $value := .Values.streams.extraInputPatterns }}
             - --extra-input-patterns
             - {{ $key }}={{ $value }}
-            {{- end }}
-            {{- range $key, $value := .Values.commandLine }}
+          {{- end }}
+          {{- range $key, $value := .Values.commandLine }}
             - {{ $key | quote  }}
             - {{ $value | quote }}
-            {{- end }}
-            {{- range .Values.commandLineList }}
+          {{- end }}
+          {{- range .Values.commandLineList }}
             - {{ . | quote  }}
-            {{- end }}
-            {{- if .Values.streams.deleteOutput }}
+          {{- end }}
+          {{- if .Values.streams.deleteOutput }}
             - clean
-            {{- else }}
+          {{- else }}
             - reset
-            {{- end }}
+          {{- end }}
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
