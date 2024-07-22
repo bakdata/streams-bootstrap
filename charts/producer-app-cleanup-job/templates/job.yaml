@@ -56,6 +56,33 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           args:
+          {{- if hasKey .Values.streams "brokers" }}
+            - --brokers
+            - {{ .Values.streams.brokers | quote }}
+          {{- end }}
+          {{- if hasKey .Values.streams "schemaRegistryUrl" }}
+            - --schema-registry-url
+            - {{ .Values.streams.schemaRegistryUrl | quote }}
+          {{- end }}
+          {{- if hasKey .Values "debug" }}
+            - --debug
+            - {{ .Values.debug | quote }}
+          {{- end }}
+          {{- if hasKey .Values.streams "outputTopic" }}
+            - --output-topic
+            - {{ .Values.streams.outputTopic | quote }}
+          {{- end }}
+          {{- range $key, $value := .Values.streams.extraOutputTopics }}
+            - --extra-output-topics
+            - {{ $key }}={{ $value }}
+          {{- end }}
+          {{- range $key, $value := .Values.commandLine }}
+            - {{ $key | quote  }}
+            - {{ $value | quote }}
+          {{- end }}
+          {{- range .Values.commandLineList }}
+            - {{ . | quote  }}
+          {{- end }}
             - clean
           env:
             - name: ENV_PREFIX
@@ -63,26 +90,6 @@ spec:
             {{- range $key, $value := .Values.streams.config }}
             - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "brokers" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
-              value: {{ .Values.streams.brokers | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "schemaRegistryUrl" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-              value: {{ .Values.streams.schemaRegistryUrl | quote }}
-            {{- end }}
-            {{- if hasKey .Values "debug" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-              value: {{ .Values.debug | quote }}
-            {{- end }}
-            {{- if hasKey .Values.streams "outputTopic" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-              value: {{ .Values.streams.outputTopic | quote }}
-            {{- end }}
-            {{- if and (hasKey .Values.streams "extraOutputTopics") (.Values.streams.extraOutputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

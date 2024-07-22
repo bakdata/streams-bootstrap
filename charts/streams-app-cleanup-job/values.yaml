@@ -39,7 +39,10 @@ streams:
   deleteOutput: false
 
 commandLine: {}
-#  MY_CLI_PARAM: "foo-bar"
+#  --my-cli-param: "foo-bar"
+commandLineList: []
+#  - --my-cli-param
+#  - foo-bar
 
 debug: false
 
