@@ -162,7 +162,7 @@ class CliTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(2)
+    @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnInconsistentAppId() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
