@@ -55,7 +55,6 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #bootstrapServers}</li>
  *     <li>{@link #outputTopic}</li>
  *     <li>{@link #extraOutputTopics}</li>
- *     <li>{@link #bootstrapServers}</li>
  *     <li>{@link #debug}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
