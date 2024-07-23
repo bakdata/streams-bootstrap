@@ -139,11 +139,9 @@ public abstract class KafkaStreamsApplication extends
     public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final StreamsApp app,
             final AppConfiguration<StreamsTopicConfig> configuration) {
         final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(app, configuration);
-        if (this.uniqueAppId != null) {
-            if (!configuredApp.getUniqueAppId().equals(this.uniqueAppId)) {
-                throw new IllegalArgumentException(
-                        "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
-            }
+        if (this.uniqueAppId != null && !configuredApp.getUniqueAppId().equals(this.uniqueAppId)) {
+            throw new IllegalArgumentException(
+                    "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
         }
         return configuredApp;
     }
