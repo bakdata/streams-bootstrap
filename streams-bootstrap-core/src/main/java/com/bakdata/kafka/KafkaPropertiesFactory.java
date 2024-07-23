@@ -52,7 +52,7 @@ class KafkaPropertiesFactory {
             this.putAll(EnvironmentStreamsConfigParser.parseVariables(System.getenv()));
             this.putAll(KafkaPropertiesFactory.this.configuration.getKafkaConfig());
             this.putAll(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
-            this.putAll(serializationConfig.createProperties());
+            this.putAllValidating(serializationConfig.createProperties());
             this.putAllValidating(configOverrides);
             return Collections.unmodifiableMap(this.kafkaConfig);
         }
@@ -72,7 +72,7 @@ class KafkaPropertiesFactory {
 
         private void validateNotSet(final String key) {
             if (this.kafkaConfig.containsKey(key)) {
-                throw new IllegalArgumentException(String.format("'%s' has been configured already", key));
+                throw new IllegalArgumentException(String.format("'%s' should not be configured already", key));
             }
         }
     }
