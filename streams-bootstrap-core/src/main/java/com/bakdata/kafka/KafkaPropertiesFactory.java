@@ -45,6 +45,7 @@ class KafkaPropertiesFactory {
         private final Map<String, Object> kafkaConfig = new HashMap<>();
 
         private Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
+            this.putAll(KafkaPropertiesFactory.this.baseConfig);
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
             final SerializationConfig serializationConfig =
                     KafkaPropertiesFactory.this.app.defaultSerializationConfig();
