@@ -38,14 +38,41 @@ class KafkaPropertiesFactory {
     private final @NonNull KafkaEndpointConfig endpointConfig;
 
     Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
-        final Map<String, Object> kafkaConfig = new HashMap<>(this.baseConfig);
-        kafkaConfig.putAll(this.app.createKafkaProperties());
-        final SerializationConfig serializationConfig = this.app.defaultSerializationConfig();
-        kafkaConfig.putAll(EnvironmentStreamsConfigParser.parseVariables(System.getenv()));
-        kafkaConfig.putAll(this.configuration.getKafkaConfig());
-        kafkaConfig.putAll(this.endpointConfig.createKafkaProperties());
-        kafkaConfig.putAll(serializationConfig.createProperties());
-        kafkaConfig.putAll(configOverrides);
-        return Collections.unmodifiableMap(kafkaConfig);
+        return new Task().createKafkaProperties(configOverrides);
+    }
+
+    private class Task {
+        private final Map<String, Object> kafkaConfig = new HashMap<>();
+
+        private Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
+            this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
+            final SerializationConfig serializationConfig =
+                    KafkaPropertiesFactory.this.app.defaultSerializationConfig();
+            this.putAll(EnvironmentStreamsConfigParser.parseVariables(System.getenv()));
+            this.putAll(KafkaPropertiesFactory.this.configuration.getKafkaConfig());
+            this.putAll(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
+            this.putAll(serializationConfig.createProperties());
+            this.putAllValidating(configOverrides);
+            return Collections.unmodifiableMap(this.kafkaConfig);
+        }
+
+        private void putAllValidating(final Map<String, ?> configs) {
+            this.validateNotSet(configs);
+            this.putAll(configs);
+        }
+
+        private void putAll(final Map<String, ?> configs) {
+            this.kafkaConfig.putAll(configs);
+        }
+
+        private void validateNotSet(final Map<String, ?> configs) {
+            configs.keySet().forEach(this::validateNotSet);
+        }
+
+        private void validateNotSet(final String key) {
+            if (this.kafkaConfig.containsKey(key)) {
+                throw new IllegalArgumentException(String.format("'%s' has been configured already", key));
+            }
+        }
     }
 }
