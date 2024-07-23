@@ -97,7 +97,7 @@ class ImprovedStreamsConfigTest {
     }
 
     @Test
-    void shouldHaveHostInfoIfApplicationServiceIsConfigure() {
+    void shouldHaveHostInfoIfApplicationServiceIsConfigured() {
         final StreamsConfig config = new StreamsConfig(
                 Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092",
@@ -107,12 +107,12 @@ class ImprovedStreamsConfigTest {
     }
 
     @Test
-    void shouldReturnEmptyHostInfoIfApplicationServiceIsNotConfigure() {
+    void shouldReturnEmptyHostInfoIfApplicationServiceIsNotConfigured() {
         final StreamsConfig config = new StreamsConfig(
                 Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
         this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
-                .isEmpty();
+                .isNotPresent();
     }
 
 }
