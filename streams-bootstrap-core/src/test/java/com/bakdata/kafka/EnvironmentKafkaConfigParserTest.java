@@ -29,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class EnvironmentStreamsConfigParserTest {
+class EnvironmentKafkaConfigParserTest {
 
     @Test
     void shouldParseStreamsConfig() {
-        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
-                "STREAMS_FOO", "bar",
-                "STREAMS_BAZ", "qux"
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO", "bar",
+                "KAFKA_BAZ", "qux"
         )))
                 .hasSize(2)
                 .containsEntry("foo", "bar")
@@ -44,15 +44,15 @@ class EnvironmentStreamsConfigParserTest {
 
     @Test
     void shouldIgnoreVariablesWithoutPrefix() {
-        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
                 "APP_FOO", "bar"
         ))).isEmpty();
     }
 
     @Test
     void shouldConvertUnderscores() {
-        assertThat(EnvironmentStreamsConfigParser.parseVariables(Map.of(
-                "STREAMS_FOO_BAR", "baz"
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO_BAR", "baz"
         )))
                 .hasSize(1)
                 .containsEntry("foo.bar", "baz");
