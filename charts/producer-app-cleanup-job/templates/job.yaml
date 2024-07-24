@@ -72,10 +72,6 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
               value: {{ .Values.kafka.schemaRegistryUrl | quote }}
             {{- end }}
-            {{- if hasKey .Values "debug" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-              value: {{ .Values.debug | quote }}
-            {{- end }}
             {{- if hasKey .Values.kafka "outputTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
               value: {{ .Values.kafka.outputTopic | quote }}

@@ -49,8 +49,6 @@ kafka:
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
 
-debug: false
-
 env: {}
 #  MY_ENV_VARIABLE: foo-bar
 
