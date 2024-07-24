@@ -130,8 +130,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
-        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),
-                "Prefix '" + EnvironmentStreamsConfigParser.PREFIX + "' is reserved for Streams config");
+        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentKafkaConfigParser.PREFIX),
+                "Prefix '" + EnvironmentKafkaConfigParser.PREFIX + "' is reserved for Kafka config");
         final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
                 .parseVariables(System.getenv());
         final Collection<String> allArgs = new ArrayList<>(environmentArguments);

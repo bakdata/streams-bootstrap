@@ -45,7 +45,7 @@ spec:
       - name: ENV_PREFIX
         value: {{ .Values.configurationEnvPrefix }}_
       {{- range $key, $value := .Values.kafka.config }}
-      - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+      - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
         value: {{ $value | quote }}
         {{- end }}
         {{- if hasKey .Values.kafka "brokers" }}
