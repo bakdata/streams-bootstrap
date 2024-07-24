@@ -104,7 +104,7 @@ class ConfiguredProducerAppTest {
                 .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("'default.key.serde' should not be configured already");
+                .hasMessage("'key.serializer' should not be configured already");
     }
 
     @Test
@@ -119,7 +119,7 @@ class ConfiguredProducerAppTest {
                 .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("'default.value.serde' should not be configured already");
+                .hasMessage("'value.serializer' should not be configured already");
     }
 
     @Test
