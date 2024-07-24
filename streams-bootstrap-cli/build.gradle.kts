@@ -7,9 +7,6 @@ plugins {
 dependencies {
     api(project(":streams-bootstrap-core"))
     api(group = "info.picocli", name = "picocli", version = "4.7.5")
-    val log4jVersion: String by project
-    implementation(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-    implementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
@@ -31,4 +28,6 @@ dependencies {
         name = "schema-registry-mock-junit5",
         version = fluentKafkaVersion
     )
+    val log4jVersion: String by project
+    testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }
