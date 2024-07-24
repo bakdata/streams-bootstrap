@@ -47,7 +47,7 @@ class KafkaPropertiesFactory {
         private Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
             this.putAll(KafkaPropertiesFactory.this.baseConfig);
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
-            this.putAll(EnvironmentStreamsConfigParser.parseVariables(System.getenv()));
+            this.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
             this.putAll(KafkaPropertiesFactory.this.configuration.getKafkaConfig());
             this.putAllValidating(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
             final SerializationConfig serializationConfig =

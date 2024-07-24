@@ -18,7 +18,6 @@ dependencies {
         name = "slf4j-api",
         version = "2.0.9"
     ) // required because other dependencies use Slf4j 1.x which is not properly resolved if this library is used in test scope
-    implementation(group = "com.google.guava", name = "guava", version = "33.0.0-jre")
     implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
     val junitVersion: String by project

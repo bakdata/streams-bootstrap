@@ -77,7 +77,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *     </li>
      *     <li>
      *         Configs provided via environment variables (see
-     *         {@link EnvironmentStreamsConfigParser#parseVariables(Map)})
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
      *         Configs provided by {@link AppConfiguration#getKafkaConfig()}

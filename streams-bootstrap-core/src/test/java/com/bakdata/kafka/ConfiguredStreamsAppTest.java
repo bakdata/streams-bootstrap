@@ -65,8 +65,8 @@ class ConfiguredStreamsAppTest {
     }
 
     @Test
-    @SetEnvironmentVariable(key = "STREAMS_FOO", value = "baz")
-    @SetEnvironmentVariable(key = "STREAMS_STREAMS", value = "streams")
+    @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
+    @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
         final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
@@ -75,7 +75,7 @@ class ConfiguredStreamsAppTest {
                 .brokers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
-                .containsEntry("streams", "streams")
+                .containsEntry("kafka", "streams")
                 .containsEntry("hello", "world");
     }
 
