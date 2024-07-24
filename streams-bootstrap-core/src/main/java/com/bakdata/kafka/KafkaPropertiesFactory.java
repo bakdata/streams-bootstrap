@@ -49,7 +49,7 @@ class KafkaPropertiesFactory {
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
             this.putAll(EnvironmentStreamsConfigParser.parseVariables(System.getenv()));
             this.putAll(KafkaPropertiesFactory.this.configuration.getKafkaConfig());
-            this.putAll(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
+            this.putAllValidating(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
             final SerializationConfig serializationConfig =
                     KafkaPropertiesFactory.this.app.defaultSerializationConfig();
             this.putAllValidating(serializationConfig.createProperties());

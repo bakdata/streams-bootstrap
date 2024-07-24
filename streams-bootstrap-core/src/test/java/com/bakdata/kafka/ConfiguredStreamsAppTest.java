@@ -29,6 +29,7 @@ import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_C
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.ByteArraySerde;
 import org.apache.kafka.common.serialization.Serdes.LongSerde;
@@ -134,6 +135,36 @@ class ConfiguredStreamsAppTest {
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'application.id' should not be configured already");
+    }
+
+    @Test
+    void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
+        ));
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .schemaRegistryUrl("fake")
+                .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("'bootstrap.servers' should not be configured already");
+    }
+
+    @Test
+    void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
+        ));
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .schemaRegistryUrl("fake")
+                .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("'schema.registry.url' should not be configured already");
     }
 
     private static class TestApplication implements StreamsApp {

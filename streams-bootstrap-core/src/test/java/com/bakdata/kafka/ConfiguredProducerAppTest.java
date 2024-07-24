@@ -27,8 +27,12 @@ package com.bakdata.kafka;
 import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -86,6 +90,66 @@ class ConfiguredProducerAppTest {
                 .build()))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
+    }
+
+    @Test
+    void shouldThrowIfKeySerializerHasBeenConfiguredDifferently() {
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
+        ));
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .schemaRegistryUrl("fake")
+                .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("'default.key.serde' should not be configured already");
+    }
+
+    @Test
+    void shouldThrowIfValueSerializerHasBeenConfiguredDifferently() {
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
+        ));
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .schemaRegistryUrl("fake")
+                .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("'default.value.serde' should not be configured already");
+    }
+
+    @Test
+    void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
+        ));
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .schemaRegistryUrl("fake")
+                .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("'bootstrap.servers' should not be configured already");
+    }
+
+    @Test
+    void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
+        ));
+        final ConfiguredProducerApp<ProducerApp> configuredApp =
+                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+                .brokers("fake")
+                .schemaRegistryUrl("fake")
+                .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("'schema.registry.url' should not be configured already");
     }
 
     private static class TestProducer implements ProducerApp {
