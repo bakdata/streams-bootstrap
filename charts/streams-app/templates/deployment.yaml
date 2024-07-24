@@ -88,7 +88,7 @@ spec:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
           {{- range $key, $value := .Values.streams.config }}
-            - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+            - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
           {{- end }}
           {{- range .Values.ports }}
@@ -97,12 +97,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: STREAMS_APPLICATION_SERVER
+            - name: KAFKA_APPLICATION_SERVER
               value: "$(POD_IP):{{ .containerPort }}"
             {{- end }}
           {{- end }}
           {{- if .Values.streams.staticMembership }}
-            - name: STREAMS_GROUP_INSTANCE_ID
+            - name: KAFKA_GROUP_INSTANCE_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
@@ -122,10 +122,6 @@ spec:
           {{- if hasKey .Values.streams "schemaRegistryUrl" }}
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
               value: {{ .Values.streams.schemaRegistryUrl | quote }}
-          {{- end }}
-          {{- if hasKey .Values "debug" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-              value: {{ .Values.debug | quote }}
           {{- end }}
           {{- if and (hasKey .Values.streams "inputTopics") (.Values.streams.inputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"

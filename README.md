@@ -125,8 +125,6 @@ The following configuration options are available:
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
 
-- `--debug`: Configure logging to debug
-
 Additionally, the following commands are available:
 
 - `clean`: Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
@@ -187,8 +185,6 @@ The following configuration options are available:
 - `--output-topic`: The output topic
 
 - `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
-
-- `--debug`: Configure logging to debug
 
 Additionally, the following commands are available:
 
