@@ -116,7 +116,7 @@ spec:
               value: "true"
           {{- end }}
           {{- if hasKey .Values.streams "bootstrapServers" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVER"
+            - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
               value: {{ .Values.streams.bootstrapServers | quote }}
           {{- end }}
           {{- if hasKey .Values.streams "schemaRegistryUrl" }}

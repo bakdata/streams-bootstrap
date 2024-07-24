@@ -89,7 +89,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private String outputTopic;
     @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
     private Map<String, String> extraOutputTopics = emptyMap();
-    @CommandLine.Option(names = "--bootstrap-server", required = true,
+    @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
             description = "Kafka bootstrap servers to connect to")
     private String bootstrapServers;
     @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
