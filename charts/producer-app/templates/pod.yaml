@@ -56,10 +56,6 @@ spec:
       - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
         value: {{ .Values.streams.schemaRegistryUrl | quote }}
         {{- end }}
-        {{- if hasKey .Values "debug" }}
-      - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-        value: {{ .Values.debug | quote }}
-        {{- end }}
         {{- if hasKey .Values.streams "outputTopic" }}
       - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
         value: {{ .Values.streams.outputTopic | quote }}
