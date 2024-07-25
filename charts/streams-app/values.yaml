@@ -45,7 +45,7 @@ kafka:
   extraOutputTopics: {}
   #   role: output
   # errorTopic: error
-  # applicationId: foo
+  # groupId: foo
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
