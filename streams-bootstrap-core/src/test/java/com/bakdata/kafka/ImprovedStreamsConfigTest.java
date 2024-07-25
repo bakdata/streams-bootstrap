@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import java.util.List;
 import java.util.Map;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.state.HostInfo;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -93,6 +94,25 @@ class ImprovedStreamsConfigTest {
                     this.softly.assertThat(key).isEqualTo(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
                     this.softly.assertThat(value).isEqualTo("broker1:9092");
                 });
+    }
+
+    @Test
+    void shouldHaveHostInfoIfApplicationServiceIsConfigured() {
+        final StreamsConfig config = new StreamsConfig(
+                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092",
+                        StreamsConfig.APPLICATION_SERVER_CONFIG, "localhost:9090"));
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
+                .hasValue(new HostInfo("localhost", 9090));
+    }
+
+    @Test
+    void shouldReturnEmptyHostInfoIfApplicationServiceIsNotConfigured() {
+        final StreamsConfig config = new StreamsConfig(
+                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
+        this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
+                .isNotPresent();
     }
 
 }

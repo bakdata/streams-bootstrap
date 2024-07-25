@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
@@ -32,6 +33,7 @@ import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -57,5 +59,10 @@ public class WordCountPattern implements StreamsApp {
     @Override
     public String getUniqueAppId(final StreamsTopicConfig topics) {
         return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    }
+
+    @Override
+    public SerdeConfig defaultSerializationConfig() {
+        return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
 }

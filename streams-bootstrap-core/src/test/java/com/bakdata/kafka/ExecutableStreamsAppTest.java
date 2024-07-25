@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -123,6 +124,11 @@ class ExecutableStreamsAppTest {
         @Override
         public String getUniqueAppId(final StreamsTopicConfig topics) {
             return "foo";
+        }
+
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+            return new SerdeConfig(StringSerde.class, StringSerde.class);
         }
     }
 }

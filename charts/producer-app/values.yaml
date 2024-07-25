@@ -48,7 +48,7 @@ resources:
     memory: 2G
     cpu: 500m
 
-streams:
+kafka:
 #  brokers: "test:9092"
 #  schemaRegistryUrl: "url:1234"
   config: {}
@@ -61,8 +61,6 @@ streams:
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
-
-debug: false
 
 env: {}
 #  MY_ENV_VARIABLE: foo-bar

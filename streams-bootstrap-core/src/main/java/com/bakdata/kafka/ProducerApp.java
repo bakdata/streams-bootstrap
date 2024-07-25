@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 /**
  * Application that defines how to produce messages to Kafka and necessary configurations
  */
-@FunctionalInterface
 public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpConfiguration> {
 
     /**
@@ -46,4 +45,7 @@ public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpCon
             final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
         return new ProducerCleanUpConfiguration();
     }
+
+    @Override
+    SerializerConfig defaultSerializationConfig();
 }

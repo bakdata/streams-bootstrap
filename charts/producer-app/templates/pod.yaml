@@ -44,29 +44,25 @@ spec:
     env:
       - name: ENV_PREFIX
         value: {{ .Values.configurationEnvPrefix }}_
-      {{- range $key, $value := .Values.streams.config }}
-      - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+      {{- range $key, $value := .Values.kafka.config }}
+      - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
         value: {{ $value | quote }}
         {{- end }}
-        {{- if hasKey .Values.streams "brokers" }}
+        {{- if hasKey .Values.kafka "brokers" }}
       - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
-        value: {{ .Values.streams.brokers | quote }}
+        value: {{ .Values.kafka.brokers | quote }}
         {{- end }}
-        {{- if hasKey .Values.streams "schemaRegistryUrl" }}
+        {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
       - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-        value: {{ .Values.streams.schemaRegistryUrl | quote }}
+        value: {{ .Values.kafka.schemaRegistryUrl | quote }}
         {{- end }}
-        {{- if hasKey .Values "debug" }}
-      - name: "{{ .Values.configurationEnvPrefix }}_DEBUG"
-        value: {{ .Values.debug | quote }}
-        {{- end }}
-        {{- if hasKey .Values.streams "outputTopic" }}
+        {{- if hasKey .Values.kafka "outputTopic" }}
       - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-        value: {{ .Values.streams.outputTopic | quote }}
+        value: {{ .Values.kafka.outputTopic | quote }}
         {{- end }}
-        {{- if and (hasKey .Values.streams "extraOutputTopics") (.Values.streams.extraOutputTopics) }}
+        {{- if and (hasKey .Values.kafka "extraOutputTopics") (.Values.kafka.extraOutputTopics) }}
       - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
-        value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+        value: "{{- range $key, $value := .Values.kafka.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
         {{- end }}
         {{- range $key, $value := .Values.secrets }}
       - name: "{{ $key }}"

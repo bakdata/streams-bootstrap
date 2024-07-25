@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +31,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
@@ -46,16 +44,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     private final @NonNull T app;
     private final @NonNull AppConfiguration<StreamsTopicConfig> configuration;
 
-    private static Map<String, Object> createBaseConfig(final KafkaEndpointConfig endpointConfig) {
+    private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
-
-        if (endpointConfig.isSchemaRegistryConfigured()) {
-            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
-        } else {
-            kafkaConfig.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class);
-            kafkaConfig.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class);
-        }
 
         // exactly once and order
         kafkaConfig.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
@@ -74,12 +64,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * Configuration is created in the following order
      * <ul>
      *     <li>
-     *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
-     *         {@link StreamsConfig#DEFAULT_VALUE_SERDE_CLASS_CONFIG} are configured based on
-     *         {@link KafkaEndpointConfig#isSchemaRegistryConfigured()}.
-     *         If Schema Registry is configured, {@link SpecificAvroSerde} is used, otherwise {@link StringSerde} is
-     *         used.
-     *         Additionally, exactly-once, in-order, and compression are configured:
+     *         Exactly-once, in-order, and compression are configured:
      * <pre>
      * processing.guarantee=exactly_once_v2
      * producer.max.in.flight.requests.per.connection=1
@@ -92,13 +77,18 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *     </li>
      *     <li>
      *         Configs provided via environment variables (see
-     *         {@link EnvironmentStreamsConfigParser#parseVariables(Map)})
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
      *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
      *     </li>
      *     <li>
      *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
+     *         {@link StreamsConfig#DEFAULT_VALUE_SERDE_CLASS_CONFIG} is configured using
+     *         {@link StreamsApp#defaultSerializationConfig()}
      *     </li>
      *     <li>
      *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
@@ -169,7 +159,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> baseConfig = createBaseConfig(endpointConfig);
+        final Map<String, Object> baseConfig = createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)

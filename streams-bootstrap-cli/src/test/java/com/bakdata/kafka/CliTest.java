@@ -38,6 +38,7 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +62,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -91,6 +97,11 @@ class CliTest {
             public String getUniqueAppId(final StreamsTopicConfig topics) {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
         }), new String[]{
                 "--brokers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
@@ -113,6 +124,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -145,6 +161,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -206,6 +227,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 })) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
@@ -236,6 +262,11 @@ class CliTest {
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
                     }
                 })) {
             kafkaCluster.start();
@@ -276,6 +307,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
         }, new String[]{
@@ -300,6 +336,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
