@@ -24,10 +24,12 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import lombok.NoArgsConstructor;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
@@ -41,5 +43,10 @@ public class ExtraInputTopics implements StreamsApp {
     @Override
     public String getUniqueAppId(final StreamsTopicConfig topics) {
         return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    }
+
+    @Override
+    public SerdeConfig defaultSerializationConfig() {
+        return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
 }

@@ -87,7 +87,7 @@ spec:
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
-          {{- range $key, $value := .Values.streams.config }}
+          {{- range $key, $value := .Values.kafka.config }}
             - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
           {{- end }}
@@ -101,7 +101,7 @@ spec:
               value: "$(POD_IP):{{ .containerPort }}"
             {{- end }}
           {{- end }}
-          {{- if .Values.streams.staticMembership }}
+          {{- if .Values.kafka.staticMembership }}
             - name: KAFKA_GROUP_INSTANCE_ID
               valueFrom:
                 fieldRef:
@@ -115,42 +115,42 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
               value: "true"
           {{- end }}
-          {{- if hasKey .Values.streams "bootstrapServers" }}
+          {{- if hasKey .Values.kafka "bootstrapServers" }}
             - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
-              value: {{ .Values.streams.bootstrapServers | quote }}
+              value: {{ .Values.kafka.bootstrapServers | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "schemaRegistryUrl" }}
+          {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
             - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-              value: {{ .Values.streams.schemaRegistryUrl | quote }}
+              value: {{ .Values.kafka.schemaRegistryUrl | quote }}
           {{- end }}
-          {{- if and (hasKey .Values.streams "inputTopics") (.Values.streams.inputTopics) }}
+          {{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
-              value: {{ .Values.streams.inputTopics | join "," | quote }}
+              value: {{ .Values.kafka.inputTopics | join "," | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "inputPattern" }}
+          {{- if hasKey .Values.kafka "inputPattern" }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_PATTERN"
-              value: {{ .Values.streams.inputPattern | quote }}
+              value: {{ .Values.kafka.inputPattern | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "outputTopic" }}
+          {{- if hasKey .Values.kafka "outputTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-              value: {{ .Values.streams.outputTopic | quote }}
+              value: {{ .Values.kafka.outputTopic | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "errorTopic" }}
+          {{- if hasKey .Values.kafka "errorTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
-              value: {{ .Values.streams.errorTopic | quote }}
+              value: {{ .Values.kafka.errorTopic | quote }}
           {{- end }}
-          {{- if and (hasKey .Values.streams "extraOutputTopics") (.Values.streams.extraOutputTopics) }}
+          {{- if and (hasKey .Values.kafka "extraOutputTopics") (.Values.kafka.extraOutputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.streams.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+              value: "{{- range $key, $value := .Values.kafka.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
           {{- end }}
           {{- $delimiter := ";" }}
-          {{- if and (hasKey .Values.streams "extraInputTopics") (.Values.streams.extraInputTopics) }}
+          {{- if and (hasKey .Values.kafka "extraInputTopics") (.Values.kafka.extraInputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.streams.extraInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
+              value: "{{- range $key, $value := .Values.kafka.extraInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
           {{- end }}
-          {{- if and (hasKey .Values.streams "extraInputPatterns") (.Values.streams.extraInputPatterns) }}
+          {{- if and (hasKey .Values.kafka "extraInputPatterns") (.Values.kafka.extraInputPatterns) }}
             - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_PATTERNS"
-              value: "{{- range $key, $value := .Values.streams.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
+              value: "{{- range $key, $value := .Values.kafka.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
           {{- end }}
           {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

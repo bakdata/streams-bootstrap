@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -113,6 +114,11 @@ class ExecutableProducerAppTest {
         @Override
         public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
             return () -> {};
+        }
+
+        @Override
+        public SerializerConfig defaultSerializationConfig() {
+            return new SerializerConfig(ByteArraySerializer.class, ByteArraySerializer.class);
         }
     }
 }

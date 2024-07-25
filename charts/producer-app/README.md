@@ -46,13 +46,13 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### Streams
 
-| Parameter                   | Description                                                                                                | Default |
-|-----------------------------|------------------------------------------------------------------------------------------------------------|---------|
-| `streams.bootstrapServers`  | Comma separated list of Kafka bootstrap servers to connect to.                                             |         |
-| `streams.schemaRegistryUrl` | URL of Schema Registry to connect to.                                                                      | `null`  |
-| `streams.config`            | Configurations for your [Kafka producer app](https://kafka.apache.org/documentation/#producerconfigs).     | `{}`    |
-| `streams.outputTopic`       | Output topic for your producer application.                                                                |         |
-| `streams.extraOutputTopics` | Map of additional named output topics if you need to specify multiple topics with different message types. | `{}`    |
+| Parameter                 | Description                                                                                                | Default |
+|---------------------------|------------------------------------------------------------------------------------------------------------|---------|
+| `kafka.bootstrapServers`  | Comma separated list of Kafka bootstrap servers to connect to.                                             |         |
+| `kafka.schemaRegistryUrl` | URL of Schema Registry to connect to.                                                                      | `null`  |
+| `kafka.config`            | Configurations for your [Kafka producer app](https://kafka.apache.org/documentation/#producerconfigs).     | `{}`    |
+| `kafka.outputTopic`       | Output topic for your producer application.                                                                |         |
+| `kafka.extraOutputTopics` | Map of additional named output topics if you need to specify multiple topics with different message types. | `{}`    |
 
 ### Other
 
