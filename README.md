@@ -58,15 +58,17 @@ and `getUniqueAppId()`. You can define the topology of your application in `buil
 
 ```java
 import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import java.util.Map;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
-public class StreamsBootstrapApplication extends KafkaStreamsApplication {
+public class MyStreamsApplication extends KafkaStreamsApplication {
     public static void main(final String[] args) {
-        startApplication(new StreamsBootstrapApplication(), args);
+      startApplication(new MyStreamsApplication(), args);
     }
 
     @Override
@@ -84,6 +86,11 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
         @Override
         public String getUniqueAppId(final StreamsTopicConfig topics) {
           return "streams-bootstrap-app-" + topics.getOutputTopic();
+        }
+
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+          return new SerdeConfig(StringSerde.class, StringSerde.class);
         }
 
         // Optionally you can define custom Kafka properties
@@ -125,8 +132,6 @@ The following configuration options are available:
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
 
-- `--debug`: Configure logging to debug
-
 Additionally, the following commands are available:
 
 - `clean`: Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
@@ -144,12 +149,14 @@ import com.bakdata.kafka.KafkaProducerApplication;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.SerializerConfig;
 import java.util.Map;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
-public class StreamsBootstrapApplication extends KafkaProducerApplication {
+public class MyProducerApplication extends KafkaProducerApplication {
     public static void main(final String[] args) {
-        startApplication(new StreamsBootstrapApplication(), args);
+      startApplication(new MyProducerApplication(), args);
     }
 
     @Override
@@ -162,6 +169,11 @@ public class StreamsBootstrapApplication extends KafkaProducerApplication {
               // your producer
             }
           };
+        }
+
+        @Override
+        public SerializerConfig defaultSerializationConfig() {
+          return new SerializerConfig(StringSerializer.class, StringSerializer.class);
         }
 
         // Optionally you can define custom Kafka properties
@@ -187,8 +199,6 @@ The following configuration options are available:
 - `--output-topic`: The output topic
 
 - `--named-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
-
-- `--debug`: Configure logging to debug
 
 Additionally, the following commands are available:
 

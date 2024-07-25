@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
@@ -49,6 +50,7 @@ import net.mguenther.kafka.junit.SendKeyValuesTransactional;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams.State;
@@ -92,8 +94,8 @@ class StreamsRunnerTest extends KafkaTest {
 
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics, Map.of(
-                        StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
-                        ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
+                StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
+                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         return new ConfiguredStreamsApp<>(app, configuration);
     }
@@ -249,6 +251,11 @@ class StreamsRunnerTest extends KafkaTest {
         @Override
         public String getUniqueAppId(final StreamsTopicConfig topics) {
             return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+        }
+
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+            return new SerdeConfig(StringSerde.class, StringSerde.class);
         }
     }
 }

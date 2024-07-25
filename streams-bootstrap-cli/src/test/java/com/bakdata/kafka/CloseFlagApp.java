@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
@@ -55,6 +56,11 @@ public class CloseFlagApp extends KafkaStreamsApplication {
             @Override
             public String getUniqueAppId(final StreamsTopicConfig topics) {
                 return CloseFlagApp.this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                return new SerdeConfig(StringSerde.class, StringSerde.class);
             }
 
             @Override

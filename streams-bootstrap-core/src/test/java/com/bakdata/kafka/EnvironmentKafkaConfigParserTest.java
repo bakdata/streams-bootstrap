@@ -22,31 +22,40 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.ProducerApp;
-import com.bakdata.kafka.ProducerBuilder;
-import com.bakdata.kafka.ProducerRunnable;
-import com.bakdata.kafka.SerializerConfig;
-import com.bakdata.kafka.TestRecord;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class AvroValueProducer implements ProducerApp {
-    @Override
-    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
-        return () -> {
-            try (final Producer<String, TestRecord> producer = builder.createProducer()) {
-                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "key",
-                        TestRecord.newBuilder().setContent("value").build()));
-            }
-        };
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+class EnvironmentKafkaConfigParserTest {
+
+    @Test
+    void shouldParseStreamsConfig() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO", "bar",
+                "KAFKA_BAZ", "qux"
+        )))
+                .hasSize(2)
+                .containsEntry("foo", "bar")
+                .containsEntry("baz", "qux");
     }
 
-    @Override
-    public SerializerConfig defaultSerializationConfig() {
-        return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
+    @Test
+    void shouldIgnoreVariablesWithoutPrefix() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "APP_FOO", "bar"
+        ))).isEmpty();
     }
+
+    @Test
+    void shouldConvertUnderscores() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO_BAR", "baz"
+        )))
+                .hasSize(1)
+                .containsEntry("foo.bar", "baz");
+    }
+
 }

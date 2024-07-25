@@ -27,8 +27,10 @@ package com.bakdata.kafka.test_applications;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.SerializerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 public class StringProducer implements ProducerApp {
     @Override
@@ -38,5 +40,10 @@ public class StringProducer implements ProducerApp {
                 producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", "bar"));
             }
         };
+    }
+
+    @Override
+    public SerializerConfig defaultSerializationConfig() {
+        return new SerializerConfig(StringSerializer.class, StringSerializer.class);
     }
 }

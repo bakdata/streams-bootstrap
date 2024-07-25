@@ -11,14 +11,13 @@ dependencies {
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
     api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
     val confluentVersion: String by project
-    implementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
+    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
     api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
     api(
         group = "org.slf4j",
         name = "slf4j-api",
         version = "2.0.9"
     ) // required because other dependencies use Slf4j 1.x which is not properly resolved if this library is used in test scope
-    implementation(group = "com.google.guava", name = "guava", version = "33.0.0-jre")
     implementation(group = "org.jooq", name = "jool", version = "0.9.14")
 
     val junitVersion: String by project
@@ -43,6 +42,7 @@ dependencies {
     testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaJunitVersion) {
         exclude(group = "org.slf4j", module = "slf4j-log4j12")
     }
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }

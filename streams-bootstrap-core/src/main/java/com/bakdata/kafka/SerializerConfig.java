@@ -22,31 +22,30 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.ProducerApp;
-import com.bakdata.kafka.ProducerBuilder;
-import com.bakdata.kafka.ProducerRunnable;
-import com.bakdata.kafka.SerializerConfig;
-import com.bakdata.kafka.TestRecord;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
+import java.util.Map;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.With;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.Serializer;
 
-public class AvroValueProducer implements ProducerApp {
-    @Override
-    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
-        return () -> {
-            try (final Producer<String, TestRecord> producer = builder.createProducer()) {
-                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "key",
-                        TestRecord.newBuilder().setContent("value").build()));
-            }
-        };
-    }
+/**
+ * Defines how to serialize the data in a Kafka producer
+ */
+@RequiredArgsConstructor
+@With
+public class SerializerConfig implements SerializationConfig {
+
+    private final @NonNull Class<? extends Serializer> keySerializer;
+    private final @NonNull Class<? extends Serializer> valueSerializer;
 
     @Override
-    public SerializerConfig defaultSerializationConfig() {
-        return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
+    public Map<String, Object> createProperties() {
+        return Map.of(
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, this.keySerializer,
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, this.valueSerializer
+        );
     }
 }

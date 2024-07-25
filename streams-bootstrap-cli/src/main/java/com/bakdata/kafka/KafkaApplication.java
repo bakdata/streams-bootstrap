@@ -42,8 +42,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ParseResult;
@@ -56,7 +54,6 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #outputTopic}</li>
  *     <li>{@link #namedOutputTopics}</li>
  *     <li>{@link #brokers}</li>
- *     <li>{@link #debug}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
@@ -92,8 +89,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> namedOutputTopics = emptyMap();
     @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
     private String brokers;
-    @CommandLine.Option(names = "--debug", arity = "0..1", description = "Configure logging to debug")
-    private boolean debug;
     @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
     private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
@@ -130,8 +125,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
-        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentStreamsConfigParser.PREFIX),
-                "Prefix '" + EnvironmentStreamsConfigParser.PREFIX + "' is reserved for Streams config");
+        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentKafkaConfigParser.PREFIX),
+                "Prefix '" + EnvironmentKafkaConfigParser.PREFIX + "' is reserved for Kafka config");
         final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
                 .parseVariables(System.getenv());
         final Collection<String> allArgs = new ArrayList<>(environmentArguments);
@@ -299,20 +294,16 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     protected abstract CA createConfiguredApp(final A app, AppConfiguration<T> configuration);
 
     /**
-     * Configure application when running in debug mode. By default, Log4j2 log level is configured to debug for
-     * {@code com.bakdata} and the applications package.
+     * Called before starting the application, e.g., invoking {@link #run()}
      */
-    protected void configureDebug() {
-        Configurator.setLevel("com.bakdata", Level.DEBUG);
-        Configurator.setLevel(this.getClass().getPackageName(), Level.DEBUG);
+    protected void onApplicationStart() {
+        // do nothing by default
     }
 
     private void startApplication() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        this.onApplicationStart();
         log.info("Starting application");
-        if (this.debug) {
-            this.configureDebug();
-        }
         log.debug("Starting application: {}", this);
     }
 

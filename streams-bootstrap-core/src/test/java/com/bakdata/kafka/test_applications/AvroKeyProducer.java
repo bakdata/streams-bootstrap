@@ -27,10 +27,10 @@ package com.bakdata.kafka.test_applications;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.TestRecord;
-import java.util.Map;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -46,9 +46,7 @@ public class AvroKeyProducer implements ProducerApp {
     }
 
     @Override
-    public Map<String, Object> createKafkaProperties() {
-        return Map.of(
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
-        );
+    public SerializerConfig defaultSerializationConfig() {
+        return new SerializerConfig(SpecificAvroSerializer.class, StringSerializer.class);
     }
 }
