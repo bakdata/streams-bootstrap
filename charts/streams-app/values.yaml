@@ -23,7 +23,7 @@ resources:
     cpu: 500m
     memory: 2G
 
-streams:
+kafka:
   # brokers: "test:9092"
   # schemaRegistryUrl: "url:1234"
   staticMembership: false
@@ -105,7 +105,7 @@ autoscaling:
   minReplicas: 0
   maxReplicas: 1
   # idleReplicas: 0
-  ## all topics from streams.inputTopics and streams.extraInputTopics are automatically taken
+  ## all topics from kafka.inputTopics and kafka.extraInputTopics are automatically taken
   ## only use the 'internalTopics' option for adding internal topics, i.e., auto-generated topics by Kafka Streams. Consumer group name will automatically be added as a prefix
   internalTopics: []
   #   - bar-repartition                       # results in foo-bar-repartition

@@ -15,7 +15,7 @@ files: {}
 #    mountPath: app/resources
 #    content: "foo bar"
 
-streams:
+kafka:
 #  brokers: "test:9092"
 #  schemaRegistryUrl: "url:1234"
   config: {}
