@@ -198,6 +198,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "my-id";
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
+                    }
                 };
             }
         }, new String[]{
