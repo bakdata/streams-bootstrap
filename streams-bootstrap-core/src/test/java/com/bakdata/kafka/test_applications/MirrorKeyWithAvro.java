@@ -24,15 +24,14 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import java.util.Map;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
@@ -49,10 +48,7 @@ public class MirrorKeyWithAvro implements StreamsApp {
     }
 
     @Override
-    public Map<String, Object> createKafkaProperties() {
-        return Map.of(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class,
-                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, StringSerde.class
-        );
+    public SerdeConfig defaultSerializationConfig() {
+        return new SerdeConfig(SpecificAvroSerde.class, StringSerde.class);
     }
 }
