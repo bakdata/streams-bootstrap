@@ -55,4 +55,7 @@ public interface StreamsApp extends App<StreamsTopicConfig, StreamsCleanUpConfig
             final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         return new StreamsCleanUpConfiguration();
     }
+
+    @Override
+    SerdeConfig defaultSerializationConfig();
 }

@@ -24,17 +24,16 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.time.Duration;
-import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -71,10 +70,7 @@ public class ComplexTopologyApplication implements StreamsApp {
     }
 
     @Override
-    public Map<String, Object> createKafkaProperties() {
-        return Map.of(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class,
-                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class
-        );
+    public SerdeConfig defaultSerializationConfig() {
+        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
     }
 }
