@@ -106,7 +106,7 @@ spec:
               value: "{{- range $key, $value := .Values.kafka.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- if hasKey .Values.kafka "groupId" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
+            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
               value: {{ .Values.kafka.groupId | quote }}
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
