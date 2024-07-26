@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.NonNull;
@@ -32,7 +33,7 @@ import lombok.NonNull;
  * Provides configuration options for {@link ProducerCleanUpRunner}
  */
 public class ProducerCleanUpConfiguration
-        implements HasTopicHooks<ProducerCleanUpConfiguration>, HasCleanHook<ProducerCleanUpConfiguration> {
+        implements HasTopicHooks<ProducerCleanUpConfiguration>, HasCleanHook<ProducerCleanUpConfiguration>, Closeable {
     private final @NonNull Collection<TopicHook> topicHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> cleanHooks = new ArrayList<>();
 
@@ -52,6 +53,11 @@ public class ProducerCleanUpConfiguration
     public ProducerCleanUpConfiguration registerCleanHook(final Runnable hook) {
         this.cleanHooks.add(hook);
         return this;
+    }
+
+    @Override
+    public void close() {
+        this.topicHooks.forEach(TopicHook::close);
     }
 
     void runCleanHooks() {

@@ -27,8 +27,11 @@ package com.bakdata.kafka;
 /**
  * Cleans all resources associated with an application
  */
-@FunctionalInterface
-public interface CleanUpRunner {
+public interface CleanUpRunner extends AutoCloseable {
+
+    @Override
+    void close();
+
     /**
      * Clean all resources associated with an application
      */

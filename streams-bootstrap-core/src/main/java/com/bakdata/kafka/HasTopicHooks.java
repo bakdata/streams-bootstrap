@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import java.io.Closeable;
+
 /**
  * Interface for performing actions on topics
  * @param <SELF> self for chaining
@@ -41,12 +43,17 @@ public interface HasTopicHooks<SELF> {
     /**
      * Hook for performing actions on topics
      */
-    interface TopicHook {
+    interface TopicHook extends Closeable {
         /**
          * Called when a topic is deleted
          * @param topic name of the topic
          */
         default void deleted(final String topic) {
+            // do nothing
+        }
+
+        @Override
+        default void close() {
             // do nothing
         }
     }
