@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka.util;
 
-import com.google.common.base.Verify;
-import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +47,7 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class TopicClient implements Closeable {
+public final class TopicClient implements AutoCloseable {
 
     private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
@@ -121,7 +119,9 @@ public final class TopicClient implements Closeable {
         } catch (final ExecutionException | TimeoutException ex) {
             throw failedToDeleteTopic(topicName, ex);
         }
-        Verify.verify(!this.exists(topicName), "Deletion of topic %s failed", topicName);
+        if (this.exists(topicName)) {
+            throw new IllegalStateException(String.format("Deletion of topic %s failed", topicName));
+        }
     }
 
     /**

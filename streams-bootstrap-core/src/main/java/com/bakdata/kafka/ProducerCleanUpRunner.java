@@ -69,6 +69,11 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
         return new ProducerCleanUpRunner(topics, kafkaProperties, configuration);
     }
 
+    @Override
+    public void close() {
+        this.cleanHooks.close();
+    }
+
     /**
      * Delete all output topics
      */

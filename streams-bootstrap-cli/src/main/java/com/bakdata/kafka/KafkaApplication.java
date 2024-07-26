@@ -26,7 +26,6 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -126,8 +125,10 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
-        Preconditions.checkArgument(!ENV_PREFIX.equals(EnvironmentKafkaConfigParser.PREFIX),
-                "Prefix '" + EnvironmentKafkaConfigParser.PREFIX + "' is reserved for Kafka config");
+        if (ENV_PREFIX.equals(EnvironmentKafkaConfigParser.PREFIX)) {
+            throw new IllegalArgumentException(
+                    String.format("Prefix '%s' is reserved for Kafka config", EnvironmentKafkaConfigParser.PREFIX));
+        }
         final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
                 .parseVariables(System.getenv());
         final Collection<String> allArgs = new ArrayList<>(environmentArguments);
@@ -341,6 +342,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
          */
         @Override
         public void stop() {
+            this.cleanUpRunner.close();
             this.app.close();
         }
     }

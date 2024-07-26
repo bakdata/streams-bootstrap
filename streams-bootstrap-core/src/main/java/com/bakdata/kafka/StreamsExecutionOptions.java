@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.time.Duration;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -80,7 +79,6 @@ public class StreamsExecutionOptions {
         return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
     }
 
-    @VisibleForTesting
     boolean shouldLeaveGroup(final Map<String, Object> originals) {
         final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
         return staticMembershipDisabled || this.volatileGroupInstanceId;
