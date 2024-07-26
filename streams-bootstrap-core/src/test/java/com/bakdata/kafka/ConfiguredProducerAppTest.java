@@ -57,7 +57,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -72,7 +72,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .build()))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -85,7 +85,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -100,7 +100,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -115,7 +115,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -130,7 +130,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -145,7 +145,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .brokers("fake")
+                .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)

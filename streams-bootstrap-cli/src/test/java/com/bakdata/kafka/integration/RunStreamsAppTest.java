@@ -71,7 +71,7 @@ class RunStreamsAppTest {
         this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         try (final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(Mirror::new)) {
-            app.setBrokers(this.kafkaCluster.getBrokerList());
+            app.setBootstrapServers(this.kafkaCluster.getBrokerList());
             app.setKafkaConfig(Map.of(
                     ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
             ));
