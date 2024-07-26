@@ -50,19 +50,19 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### Streams
 
-| Parameter                  | Description                                                                                                                                                                      | Default |
-|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `kafka.bootstrapServers`   | Comma separated list of Kafka bootstrap servers to connect to.                                                                                                                   |         |
-| `kafka.schemaRegistryUrl`  | URL of Schema Registry to connect to.                                                                                                                                            | `null`  |
-| `kafka.staticMembership`   | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
-| `kafka.config`             | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |
-| `kafka.inputTopics`        | List of input topics for your streams application.                                                                                                                               | `[]`    |
-| `kafka.extraInputTopics`   | Map of additional named input topics if you need to specify multiple topics with different message types.                                                                        | `{}`    |
-| `kafka.inputPattern`       | Input pattern of topics for your streams application.                                                                                                                            |         |
-| `kafka.extraInputPatterns` | Map of additional named input patterns if you need to specify multiple topics with different message types.                                                                      | `{}`    |
-| `kafka.outputTopic`        | Output topic for your streams application.                                                                                                                                       |         |
-| `kafka.extraOutputTopics`  | Map of additional named output topics if you need to specify multiple topics with different message types.                                                                       | `{}`    |
-| `kafka.errorTopic`         | Error topic for your streams application.                                                                                                                                        |         |
+| Parameter                    | Description                                                                                                                                                                      | Default |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `kafka.bootstrapServers`     | Comma separated list of Kafka bootstrap servers to connect to.                                                                                                                   |         |
+| `kafka.schemaRegistryUrl`    | URL of Schema Registry to connect to.                                                                                                                                            | `null`  |
+| `kafka.staticMembership`     | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
+| `kafka.config`               | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |
+| `kafka.inputTopics`          | List of input topics for your streams application.                                                                                                                               | `[]`    |
+| `kafka.labeledInputTopics`   | Map of additional labeled input topics if you need to specify multiple topics with different message types.                                                                      | `{}`    |
+| `kafka.inputPattern`         | Input pattern of topics for your streams application.                                                                                                                            |         |
+| `kafka.labeledInputPatterns` | Map of additional labeled input patterns if you need to specify multiple topics with different message types.                                                                    | `{}`    |
+| `kafka.outputTopic`          | Output topic for your streams application.                                                                                                                                       |         |
+| `kafka.labeledOutputTopics`  | Map of additional labeled output topics if you need to specify multiple topics with different message types.                                                                     | `{}`    |
+| `kafka.errorTopic`           | Error topic for your streams application.                                                                                                                                        |         |
 
 ### Other
 

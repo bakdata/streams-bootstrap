@@ -121,14 +121,14 @@ The following configuration options are available:
 
 - `--error-topic`: A topic to write errors to
 
-- `--extra-input-topics`: Additional named input topics if you need to specify multiple topics with different message
-  types (`<String=String>[,<String=String>...]`)
-
-- `--extra-input-patterns`: Additional named input patterns if you need to specify multiple topics with different
+- `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
   message types (`<String=String>[,<String=String>...]`)
 
-- `--extra-output-topics`: Additional named output topics if you need to specify multiple topics with different message
-  types (`String=String>[,<String=String>...]`)
+- `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-output-topics`: Additional labeled output topics if you need to specify multiple topics with different
+  message types (`String=String>[,<String=String>...]`)
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
 
@@ -198,7 +198,7 @@ The following configuration options are available:
 
 - `--output-topic`: The output topic
 
-- `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
+- `--labeled-output-topics`: Additional labeled output topics (`String=String>[,<String=String>...]`)
 
 Additionally, the following commands are available:
 
