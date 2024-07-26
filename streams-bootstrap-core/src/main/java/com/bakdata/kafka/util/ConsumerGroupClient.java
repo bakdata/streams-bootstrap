@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka.util;
 
-import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +43,7 @@ import org.apache.kafka.clients.admin.ConsumerGroupListing;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ConsumerGroupClient implements Closeable {
+public final class ConsumerGroupClient implements AutoCloseable {
 
     private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
