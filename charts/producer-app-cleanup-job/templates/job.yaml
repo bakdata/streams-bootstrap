@@ -68,10 +68,6 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
               value: {{ .Values.kafka.brokers | quote }}
             {{- end }}
-            {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
-            - name: "KAFKA_SCHEMA_REGISTRY_URL"
-              value: {{ .Values.kafka.schemaRegistryUrl | quote }}
-            {{- end }}
             {{- if hasKey .Values.kafka "outputTopic" }}
             - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
               value: {{ .Values.kafka.outputTopic | quote }}

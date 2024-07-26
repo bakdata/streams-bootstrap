@@ -49,7 +49,6 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | Parameter                 | Description                                                                                                | Default |
 |---------------------------|------------------------------------------------------------------------------------------------------------|---------|
 | `kafka.brokers`           | Comma separated list of Kafka brokers to connect to.                                                       |         |
-| `kafka.schemaRegistryUrl` | URL of Schema Registry to connect to.                                                                      | `null`  |
 | `kafka.config`            | Configurations for your [Kafka producer app](https://kafka.apache.org/documentation/#producerconfigs).     | `{}`    |
 | `kafka.outputTopic`       | Output topic for your producer application.                                                                |         |
 | `kafka.extraOutputTopics` | Map of additional named output topics if you need to specify multiple topics with different message types. | `{}`    |
