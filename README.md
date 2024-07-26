@@ -107,7 +107,7 @@ public class MyStreamsApplication extends KafkaStreamsApplication {
 
 The following configuration options are available:
 
-- `--brokers`: List of Kafka brokers (comma-separated) (**required**)
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
 
 - `--schema-registry-url`: The URL of the Schema Registry
 
@@ -190,7 +190,7 @@ public class MyProducerApplication extends KafkaProducerApplication {
 
 The following configuration options are available:
 
-- `--brokers`: List of Kafka brokers (comma-separated) (**required**)
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
 
 - `--schema-registry-url`: The URL of the Schema Registry
 

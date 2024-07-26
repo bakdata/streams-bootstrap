@@ -50,10 +50,9 @@ import picocli.CommandLine.ParseResult;
  * <p>The base class for creating Kafka applications.</p>
  * This class provides the following configuration options:
  * <ul>
- *     <li>{@link #brokers}</li>
+ *     <li>{@link #bootstrapServers}</li>
  *     <li>{@link #outputTopic}</li>
  *     <li>{@link #labeledOutputTopics}</li>
- *     <li>{@link #brokers}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
@@ -88,8 +87,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     @CommandLine.Option(names = "--labeled-output-topics", split = ",",
             description = "Additional labeled output topics")
     private Map<String, String> labeledOutputTopics = emptyMap();
-    @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
-    private String brokers;
+    @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
+            description = "Kafka bootstrap servers to connect to")
+    private String bootstrapServers;
     @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
     private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
@@ -204,7 +204,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     public KafkaEndpointConfig getEndpointConfig() {
         return KafkaEndpointConfig.builder()
-                .brokers(this.brokers)
+                .bootstrapServers(this.bootstrapServers)
                 .schemaRegistryUrl(this.schemaRegistryUrl)
                 .build();
     }

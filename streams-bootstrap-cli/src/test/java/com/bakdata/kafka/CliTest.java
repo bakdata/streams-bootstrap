@@ -77,7 +77,7 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -103,7 +103,7 @@ class CliTest {
                 throw new UnsupportedOperationException();
             }
         }), new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -139,7 +139,7 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -149,7 +149,7 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(2)
-    void shouldExitWithErrorCodeOnMissingBrokerParameter() {
+    void shouldExitWithErrorCodeOnMissingBootstrapServersParameter() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public StreamsApp createApp(final boolean cleanUp) {
@@ -210,7 +210,7 @@ class CliTest {
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
             runApp(app,
-                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBrokerList(),
                     "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input
             );
@@ -247,7 +247,7 @@ class CliTest {
             kafkaCluster.createTopic(TopicConfig.withName(output).build());
 
             runApp(app,
-                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBrokerList(),
                     "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input,
                     "--output-topic", output
@@ -288,7 +288,7 @@ class CliTest {
                 };
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -325,7 +325,7 @@ class CliTest {
             }
         }) {
             KafkaApplication.startApplicationWithoutExit(app, new String[]{
-                    "--brokers", "brokers",
+                    "--bootstrap-server", "bootstrap-servers",
                     "--schema-registry-url", "schema-registry",
                     "--input-topics", "input1,input2",
                     "--labeled-input-topics", "label1=input3,label2=input4;input5",
