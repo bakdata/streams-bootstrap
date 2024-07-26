@@ -91,9 +91,10 @@ class RunProducerAppTest {
             }
         })) {
             app.setBrokers(this.kafkaCluster.getBrokerList());
-            app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
             app.setOutputTopic(output);
             app.setKafkaConfig(Map.of(
+                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                    this.schemaRegistryMockExtension.getUrl(),
                     ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
             ));
             app.run();
