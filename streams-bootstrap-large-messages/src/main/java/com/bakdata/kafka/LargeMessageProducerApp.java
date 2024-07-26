@@ -33,7 +33,7 @@ public interface LargeMessageProducerApp extends ProducerApp {
     default ProducerCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
         final ProducerCleanUpConfiguration cleanUpConfiguration = ProducerApp.super.setupCleanUp(configuration);
-        return LargeMessageKafkaApplicationUtils.registerLargeMessageCleanUpHook(cleanUpConfiguration, configuration);
+        return LargeMessageAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
 
 }

@@ -33,7 +33,7 @@ public interface LargeMessageStreamsApp extends StreamsApp {
     default StreamsCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         final StreamsCleanUpConfiguration cleanUpConfiguration = StreamsApp.super.setupCleanUp(configuration);
-        return LargeMessageKafkaApplicationUtils.registerLargeMessageCleanUpHook(cleanUpConfiguration, configuration);
+        return LargeMessageAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
 
 }
