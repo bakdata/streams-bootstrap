@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.NonNull;
@@ -33,7 +32,8 @@ import lombok.NonNull;
  * Provides configuration options for {@link StreamsCleanUpRunner}
  */
 public class StreamsCleanUpConfiguration
-        implements HasTopicHooks<StreamsCleanUpConfiguration>, HasCleanHook<StreamsCleanUpConfiguration>, Closeable {
+        implements HasTopicHooks<StreamsCleanUpConfiguration>, HasCleanHook<StreamsCleanUpConfiguration>,
+        AutoCloseable {
     private final @NonNull Collection<TopicHook> topicHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> cleanHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> resetHooks = new ArrayList<>();

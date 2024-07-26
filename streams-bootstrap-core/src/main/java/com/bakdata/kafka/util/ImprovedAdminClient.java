@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka.util;
 
-import java.io.Closeable;
 import java.time.Duration;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -40,7 +39,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
  * Provide methods for common operations when performing administrative actions on a Kafka cluster
  */
 @Builder(access = AccessLevel.PRIVATE)
-public final class ImprovedAdminClient implements Closeable {
+public final class ImprovedAdminClient implements AutoCloseable {
 
     private static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private final @NonNull Admin adminClient;
