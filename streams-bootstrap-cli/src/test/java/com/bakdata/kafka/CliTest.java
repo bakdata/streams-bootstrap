@@ -210,7 +210,7 @@ class CliTest {
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
-                "--group-id", "my-other-id"
+                "--application-id", "my-other-id"
         });
     }
 

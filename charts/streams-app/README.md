@@ -63,7 +63,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `kafka.outputTopic`          | Output topic for your streams application.                                                                                                                                       |         |
 | `kafka.labeledOutputTopics`  | Map of additional labeled output topics if you need to specify multiple topics with different message types.                                                                     | `{}`    |
 | `kafka.errorTopic`           | Error topic for your streams application.                                                                                                                                        |         |
-| `kafka.groupId`              | Unique application ID for Kafka Streams. Required for auto-scaling                                                                                                               |         |
+| `kafka.applicationId`        | Unique application ID for Kafka Streams. Required for auto-scaling                                                                                                               |         |
 
 ### Other
 

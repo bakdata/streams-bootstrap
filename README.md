@@ -130,7 +130,7 @@ The following configuration options are available:
 - `--labeled-output-topics`: Additional labeled output topics if you need to specify multiple topics with different
   message types (`String=String>[,<String=String>...]`)
 
-- `--group-id`: Unique application ID to use for Kafka Streams. Can also be provided by
+- `--application-id`: Unique application ID to use for Kafka Streams. Can also be provided by
   implementing `StreamsApp#getUniqueAppId()`
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.

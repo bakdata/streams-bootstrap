@@ -45,7 +45,7 @@ kafka:
   labeledOutputTopics: {}
   #   label: output
   # errorTopic: error
-  # groupId: foo
+  # applicationId: foo
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"

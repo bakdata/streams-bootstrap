@@ -105,9 +105,9 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
               value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
-            {{- if hasKey .Values.kafka "groupId" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
-              value: {{ .Values.kafka.groupId | quote }}
+            {{- if hasKey .Values.kafka "applicationId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
+              value: {{ .Values.kafka.applicationId | quote }}
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
