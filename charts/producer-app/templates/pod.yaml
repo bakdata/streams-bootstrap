@@ -48,9 +48,9 @@ spec:
       - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
         value: {{ $value | quote }}
         {{- end }}
-        {{- if hasKey .Values.kafka "brokers" }}
-      - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
-        value: {{ .Values.kafka.brokers | quote }}
+        {{- if hasKey .Values.kafka "bootstrapServers" }}
+      - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
+        value: {{ .Values.kafka.bootstrapServers | quote }}
         {{- end }}
         {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
       - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
