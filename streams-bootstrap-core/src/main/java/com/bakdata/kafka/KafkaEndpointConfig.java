@@ -32,7 +32,7 @@ import lombok.NonNull;
 import org.apache.kafka.streams.StreamsConfig;
 
 /**
- * Configuration to connect to Kafka infrastructure, i.e., brokers and optionally schema registry.
+ * Configuration to connect to Kafka infrastructure, i.e., brokers and additional properties such as credentials.
  */
 @Builder
 public class KafkaEndpointConfig {
@@ -45,13 +45,12 @@ public class KafkaEndpointConfig {
      * The following properties are configured:
      * <ul>
      *     <li>{@code bootstrap.servers}</li>
-     *     <li>{@code schema.registry.url}</li>
+     *     <li>all properties specified via {@link #properties}</li>
      * </ul>
      * @return properties used for connecting to Kafka
      */
     public Map<String, Object> createKafkaProperties() {
-        final Map<String, Object> kafkaConfig = new HashMap<>();
-        kafkaConfig.putAll(this.properties);
+        final Map<String, Object> kafkaConfig = new HashMap<>(this.properties);
         kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
         return Collections.unmodifiableMap(kafkaConfig);
     }

@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +54,7 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #outputTopic}</li>
  *     <li>{@link #extraOutputTopics}</li>
  *     <li>{@link #brokers}</li>
+ *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
  * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
@@ -87,6 +89,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> extraOutputTopics = emptyMap();
     @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
     private String brokers;
+    @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
+    private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = emptyMap();
 
@@ -202,6 +206,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public KafkaEndpointConfig getEndpointConfig() {
         return KafkaEndpointConfig.builder()
                 .brokers(this.brokers)
+                .properties(this.getEndpointProperties())
                 .build();
     }
 
@@ -295,6 +300,12 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     protected void onApplicationStart() {
         // do nothing by default
+    }
+
+    private Map<String, Object> getEndpointProperties() {
+        return this.schemaRegistryUrl == null ? emptyMap() : Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl
+        );
     }
 
     private void startApplication() {

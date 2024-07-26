@@ -39,7 +39,7 @@ public class StringListConverter implements ITypeConverter<List<String>> {
         final String[] split = value.split(";");
         return Arrays.stream(split)
                 .map(String::trim)
-                .filter(String::isEmpty)
+                .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
     }
 }

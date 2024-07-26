@@ -58,8 +58,10 @@ abstract class KafkaTest {
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
                 .brokers(this.kafkaCluster.getBrokerList())
-                .properties(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                        this.schemaRegistryMockExtension.getUrl()))
+                .properties(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl()
+                ))
                 .build();
     }
 }

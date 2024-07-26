@@ -109,6 +109,8 @@ The following configuration options are available:
 
 - `--brokers`: List of Kafka brokers (comma-separated) (**required**)
 
+- `--schema-registry-url`: The URL of the Schema Registry
+
 - `--kafka-config`: Kafka Streams configuration (`<String=String>[,<String=String>...]`)
 
 - `--input-topics`: List of input topics (comma-separated)
@@ -189,6 +191,8 @@ public class MyProducerApplication extends KafkaProducerApplication {
 The following configuration options are available:
 
 - `--brokers`: List of Kafka brokers (comma-separated) (**required**)
+
+- `--schema-registry-url`: The URL of the Schema Registry
 
 - `--kafka-config`: Kafka producer configuration (`<String=String>[,<String=String>...]`)
 
