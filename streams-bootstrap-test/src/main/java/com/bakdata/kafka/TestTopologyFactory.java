@@ -35,7 +35,7 @@ import lombok.experimental.UtilityClass;
  * Utility class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
 @UtilityClass
-public class StreamsBootstrapTopologyFactory {
+public class TestTopologyFactory {
 
     /**
      * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects are {@link KafkaEndpointConfig}
