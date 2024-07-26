@@ -47,60 +47,60 @@ public class StreamsTopicConfig {
     @Builder.Default
     @NonNull List<String> inputTopics = emptyList();
     /**
-     * Named input topics that are identified by a role
+     * Input topics that are identified by a label
      */
     @Builder.Default
     @NonNull
-    Map<String, List<String>> namedInputTopics = emptyMap();
+    Map<String, List<String>> labeledInputTopics = emptyMap();
     Pattern inputPattern;
     /**
-     * Named input patterns that are identified by a role
+     * Input patterns that are identified by a label
      */
     @Builder.Default
     @NonNull
-    Map<String, Pattern> namedInputPatterns = emptyMap();
+    Map<String, Pattern> labeledInputPatterns = emptyMap();
     String outputTopic;
     /**
-     * Named output topics that are identified by a role
+     * Output topics that are identified by a label
      */
     @Builder.Default
     @NonNull
-    Map<String, String> namedOutputTopics = emptyMap();
+    Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
 
     /**
-     * Get named input topics for a specified role
+     * Get input topics for a specified label
      *
-     * @param role role of named input topics
+     * @param label label of input topics
      * @return topic names
      */
-    public List<String> getInputTopics(final String role) {
-        final List<String> topics = this.namedInputTopics.get(role);
-        Preconditions.checkNotNull(topics, "No input topics for role '%s' available", role);
+    public List<String> getInputTopics(final String label) {
+        final List<String> topics = this.labeledInputTopics.get(label);
+        Preconditions.checkNotNull(topics, "No input topics for label '%s' available", label);
         return topics;
     }
 
     /**
-     * Get named input pattern for a specified role
+     * Get input pattern for a specified label
      *
-     * @param role role of named input pattern
+     * @param label label of input pattern
      * @return topic pattern
      */
-    public Pattern getInputPattern(final String role) {
-        final Pattern pattern = this.namedInputPatterns.get(role);
-        Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
+    public Pattern getInputPattern(final String label) {
+        final Pattern pattern = this.labeledInputPatterns.get(label);
+        Preconditions.checkNotNull(pattern, "No input pattern for label '%s' available", label);
         return pattern;
     }
 
     /**
-     * Get named output topic for a specified role
+     * Get output topic for a specified label
      *
-     * @param role role of named output topic
+     * @param label label of output topic
      * @return topic name
      */
-    public String getOutputTopic(final String role) {
-        final String topic = this.namedOutputTopics.get(role);
-        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+    public String getOutputTopic(final String label) {
+        final String topic = this.labeledOutputTopics.get(label);
+        Preconditions.checkNotNull(topic, "No output topic for label '%s' available", label);
         return topic;
     }
 }

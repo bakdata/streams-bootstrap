@@ -71,25 +71,25 @@ public class TopologyBuilder {
 
     /**
      * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
-     * @param role role of named input topics
+     * @param label label of input topics
      * @param consumed define optional parameters for streaming topics
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
      */
-    public <K, V> KStream<K, V> streamInput(final String role, final Consumed<K, V> consumed) {
-        return this.streamsBuilder.stream(this.topics.getInputTopics(role), consumed);
+    public <K, V> KStream<K, V> streamInput(final String label, final Consumed<K, V> consumed) {
+        return this.streamsBuilder.stream(this.topics.getInputTopics(label), consumed);
     }
 
     /**
      * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
-     * @param role role of named input topics
+     * @param label label of input topics
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
      */
-    public <K, V> KStream<K, V> streamInput(final String role) {
-        return this.streamsBuilder.stream(this.topics.getInputTopics(role));
+    public <K, V> KStream<K, V> streamInput(final String label) {
+        return this.streamsBuilder.stream(this.topics.getInputTopics(label));
     }
 
     /**
@@ -115,25 +115,25 @@ public class TopologyBuilder {
 
     /**
      * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
-     * @param role role of named input pattern
+     * @param label label of input pattern
      * @param consumed define optional parameters for streaming topics
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
      */
-    public <K, V> KStream<K, V> streamInputPattern(final String role, final Consumed<K, V> consumed) {
-        return this.streamsBuilder.stream(this.topics.getInputPattern(role), consumed);
+    public <K, V> KStream<K, V> streamInputPattern(final String label, final Consumed<K, V> consumed) {
+        return this.streamsBuilder.stream(this.topics.getInputPattern(label), consumed);
     }
 
     /**
      * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
-     * @param role role of named input pattern
+     * @param label label of input pattern
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
      */
-    public <K, V> KStream<K, V> streamInputPattern(final String role) {
-        return this.streamsBuilder.stream(this.topics.getInputPattern(role));
+    public <K, V> KStream<K, V> streamInputPattern(final String label) {
+        return this.streamsBuilder.stream(this.topics.getInputPattern(label));
     }
 
     /**

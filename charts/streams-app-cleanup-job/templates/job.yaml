@@ -92,18 +92,18 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.kafka.errorTopic | quote }}
             {{- end }}
-            {{- if and (hasKey .Values.kafka "namedOutputTopics") (.Values.kafka.namedOutputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_NAMED_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.namedOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+            {{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- $delimiter := ";" }}
-            {{- if and (hasKey .Values.kafka "namedInputTopics") (.Values.kafka.namedInputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_NAMED_INPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.namedInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
+            {{- if and (hasKey .Values.kafka "labeledInputTopics") (.Values.kafka.labeledInputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.kafka.labeledInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
             {{- end }}
-            {{- if and (hasKey .Values.kafka "namedInputPatterns") (.Values.kafka.namedInputPatterns) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_NAMED_INPUT_PATTERNS"
-              value: "{{- range $key, $value := .Values.kafka.namedInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
+            {{- if and (hasKey .Values.kafka "labeledInputPatterns") (.Values.kafka.labeledInputPatterns) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
+              value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

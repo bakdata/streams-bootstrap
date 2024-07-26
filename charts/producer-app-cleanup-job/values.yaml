@@ -23,8 +23,8 @@ kafka:
 #    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
 #    max.request.size: "1000000"
 #  outputTopic: output
-  namedOutputTopics: {}
-#   role: output
+  labeledOutputTopics: {}
+#   label: output
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"

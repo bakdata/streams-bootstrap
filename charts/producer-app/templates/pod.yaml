@@ -60,9 +60,9 @@ spec:
       - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
         value: {{ .Values.kafka.outputTopic | quote }}
         {{- end }}
-        {{- if and (hasKey .Values.kafka "namedOutputTopics") (.Values.kafka.namedOutputTopics) }}
-      - name: "{{ .Values.configurationEnvPrefix }}_NAMED_OUTPUT_TOPICS"
-        value: "{{- range $key, $value := .Values.kafka.namedOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+        {{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
+      - name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
+        value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
         {{- end }}
         {{- range $key, $value := .Values.secrets }}
       - name: "{{ $key }}"

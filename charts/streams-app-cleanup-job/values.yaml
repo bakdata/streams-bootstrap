@@ -25,16 +25,16 @@ kafka:
   inputTopics: []
 #  - input
 #  - input2
-  namedInputTopics: {}
-#   role:
+  labeledInputTopics: {}
+  #   label:
 #     - input
 #     - input2
 #  inputPattern: .*-input
-  namedInputPatterns: {}
-#   role: .*-input
+  labeledInputPatterns: {}
+  #   label: .*-input
 #  outputTopic: output
-  namedOutputTopics: {}
-#   role: output
+  labeledOutputTopics: {}
+  #   label: output
 #  errorTopic: error
   deleteOutput: false
 

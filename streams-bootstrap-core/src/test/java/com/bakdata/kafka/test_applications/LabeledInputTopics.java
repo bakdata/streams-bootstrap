@@ -33,10 +33,10 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
-public class NamedInputTopics implements StreamsApp {
+public class LabeledInputTopics implements StreamsApp {
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final KStream<String, String> input = builder.streamInput("role");
+        final KStream<String, String> input = builder.streamInput("label");
         input.to(builder.getTopics().getOutputTopic());
     }
 

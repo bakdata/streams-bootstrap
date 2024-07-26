@@ -43,21 +43,21 @@ public class ProducerTopicConfig {
 
     String outputTopic;
     /**
-     * Named output topics that are identified by a role
+     * Output topics that are identified by a label
      */
     @Builder.Default
     @NonNull
-    Map<String, String> namedOutputTopics = emptyMap();
+    Map<String, String> labeledOutputTopics = emptyMap();
 
     /**
-     * Get named output topic for a specified role
+     * Get output topic for a specified label
      *
-     * @param role role of named output topic
+     * @param label label of output topic
      * @return topic name
      */
-    public String getOutputTopic(final String role) {
-        final String topic = this.namedOutputTopics.get(role);
-        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+    public String getOutputTopic(final String label) {
+        final String topic = this.labeledOutputTopics.get(label);
+        Preconditions.checkNotNull(topic, "No output topic for label '%s' available", label);
         return topic;
     }
 }

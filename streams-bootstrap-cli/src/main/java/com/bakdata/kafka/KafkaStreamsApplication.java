@@ -52,8 +52,8 @@ import picocli.CommandLine.UseDefaultConverter;
  *     <li>{@link #inputTopics}</li>
  *     <li>{@link #inputPattern}</li>
  *     <li>{@link #errorTopic}</li>
- *     <li>{@link #namedInputTopics}</li>
- *     <li>{@link #namedInputPatterns}</li>
+ *     <li>{@link #labeledInputTopics}</li>
+ *     <li>{@link #labeledInputPatterns}</li>
  *     <li>{@link #volatileGroupInstanceId}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options. Run it by calling
@@ -74,11 +74,12 @@ public abstract class KafkaStreamsApplication extends
     private Pattern inputPattern;
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     private String errorTopic;
-    @CommandLine.Option(names = "--named-input-topics", split = ",", description = "Additional named input topics",
+    @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",
             converter = {UseDefaultConverter.class, StringListConverter.class})
-    private Map<String, List<String>> namedInputTopics = emptyMap();
-    @CommandLine.Option(names = "--named-input-patterns", split = ",", description = "Additional named input patterns")
-    private Map<String, Pattern> namedInputPatterns = emptyMap();
+    private Map<String, List<String>> labeledInputTopics = emptyMap();
+    @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
+            description = "Additional labeled input patterns")
+    private Map<String, Pattern> labeledInputPatterns = emptyMap();
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
@@ -122,11 +123,11 @@ public abstract class KafkaStreamsApplication extends
     public final StreamsTopicConfig createTopicConfig() {
         return StreamsTopicConfig.builder()
                 .inputTopics(this.inputTopics)
-                .namedInputTopics(this.namedInputTopics)
+                .labeledInputTopics(this.labeledInputTopics)
                 .inputPattern(this.inputPattern)
-                .namedInputPatterns(this.namedInputPatterns)
+                .labeledInputPatterns(this.labeledInputPatterns)
                 .outputTopic(this.getOutputTopic())
-                .namedOutputTopics(this.getNamedOutputTopics())
+                .labeledOutputTopics(this.getLabeledOutputTopics())
                 .errorTopic(this.errorTopic)
                 .build();
     }
