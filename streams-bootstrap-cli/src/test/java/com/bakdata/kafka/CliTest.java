@@ -206,7 +206,7 @@ class CliTest {
                 };
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-servers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
