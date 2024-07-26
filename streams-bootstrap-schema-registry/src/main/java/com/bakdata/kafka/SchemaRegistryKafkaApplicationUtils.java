@@ -47,12 +47,32 @@ public class SchemaRegistryKafkaApplicationUtils {
     private static final int CACHE_CAPACITY = 100;
 
     /**
-     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
+     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
+     *
+     * @param kafkaProperties properties for creating {@code SchemaRegistryClient}. Must include
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
+     * @return {@code SchemaRegistryClient}
+     * @see #createSchemaRegistryClient(Map, String)
+     */
+    public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
+        final String schemaRegistryUrl =
+                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        if (schemaRegistryUrl == null) {
+            throw new IllegalArgumentException(String.format("%s must be specified in properties",
+                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
+        }
+        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
+        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        return createSchemaRegistryClient(properties, schemaRegistryUrl);
+    }
+
+    /**
+     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
      * {@link SchemaRegistryClientFactory#newClient(List, int, List, Map, Map)}
      * @param schemaRegistryUrl URL of schema registry
-     * @return {@link SchemaRegistryClient}
+     * @return {@code SchemaRegistryClient}
      */
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
@@ -107,14 +127,6 @@ public class SchemaRegistryKafkaApplicationUtils {
      */
     public static TopicHook createSchemaRegistryCleanUpHook(final EffectiveAppConfiguration<?> configuration) {
         return createSchemaRegistryCleanUpHook(configuration.getKafkaProperties());
-    }
-
-    private static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
-        final String schemaRegistryUrl =
-                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
-        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        return createSchemaRegistryClient(properties, schemaRegistryUrl);
     }
 
 }
