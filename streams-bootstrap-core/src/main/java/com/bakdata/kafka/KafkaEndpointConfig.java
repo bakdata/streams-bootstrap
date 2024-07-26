@@ -32,11 +32,11 @@ import lombok.NonNull;
 import org.apache.kafka.streams.StreamsConfig;
 
 /**
- * Configuration to connect to Kafka infrastructure, i.e., brokers and additional properties such as credentials.
+ * Configuration to connect to Kafka infrastructure, i.e., bootstrap servers and additional properties such as credentials.
  */
 @Builder
 public class KafkaEndpointConfig {
-    private final @NonNull String brokers;
+    private final @NonNull String bootstrapServers;
     @Builder.Default
     private final Map<String, Object> properties = new HashMap<>();
 
@@ -51,7 +51,7 @@ public class KafkaEndpointConfig {
      */
     public Map<String, Object> createKafkaProperties() {
         final Map<String, Object> kafkaConfig = new HashMap<>(this.properties);
-        kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
+        kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
         return Collections.unmodifiableMap(kafkaConfig);
     }
 

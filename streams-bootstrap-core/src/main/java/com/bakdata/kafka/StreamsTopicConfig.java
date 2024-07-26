@@ -46,62 +46,65 @@ public class StreamsTopicConfig {
     @Builder.Default
     @NonNull List<String> inputTopics = emptyList();
     /**
-     * Extra input topics that are identified by a role
+     * Input topics that are identified by a label
      */
     @Builder.Default
-    @NonNull Map<String, List<String>> extraInputTopics = emptyMap();
+    @NonNull
+    Map<String, List<String>> labeledInputTopics = emptyMap();
     Pattern inputPattern;
     /**
-     * Extra input patterns that are identified by a role
+     * Input patterns that are identified by a label
      */
     @Builder.Default
-    @NonNull Map<String, Pattern> extraInputPatterns = emptyMap();
+    @NonNull
+    Map<String, Pattern> labeledInputPatterns = emptyMap();
     String outputTopic;
     /**
-     * Extra output topics that are identified by a role
+     * Output topics that are identified by a label
      */
     @Builder.Default
-    @NonNull Map<String, String> extraOutputTopics = emptyMap();
+    @NonNull
+    Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
 
     /**
-     * Get extra input topics for a specified role
+     * Get input topics for a specified label
      *
-     * @param role role of extra input topics
+     * @param label label of input topics
      * @return topic names
      */
-    public List<String> getInputTopics(final String role) {
-        final List<String> topics = this.extraInputTopics.get(role);
+    public List<String> getInputTopics(final String label) {
+        final List<String> topics = this.labeledInputTopics.get(label);
         if (topics == null) {
-            throw new IllegalArgumentException(String.format("No input topics for role '%s' available", role));
+            throw new IllegalArgumentException(String.format("No input topics for label '%s' available", label));
         }
         return topics;
     }
 
     /**
-     * Get extra input pattern for a specified role
+     * Get input pattern for a specified label
      *
-     * @param role role of extra input pattern
+     * @param label label of input pattern
      * @return topic pattern
      */
-    public Pattern getInputPattern(final String role) {
-        final Pattern pattern = this.extraInputPatterns.get(role);
+    public Pattern getInputPattern(final String label) {
+        final Pattern pattern = this.labeledInputPatterns.get(label);
         if (pattern == null) {
-            throw new IllegalArgumentException(String.format("No input pattern for role '%s' available", role));
+            throw new IllegalArgumentException(String.format("No input pattern for label '%s' available", label));
         }
         return pattern;
     }
 
     /**
-     * Get extra output topic for a specified role
+     * Get output topic for a specified label
      *
-     * @param role role of extra output topic
+     * @param label label of output topic
      * @return topic name
      */
-    public String getOutputTopic(final String role) {
-        final String topic = this.extraOutputTopics.get(role);
+    public String getOutputTopic(final String label) {
+        final String topic = this.labeledOutputTopics.get(label);
         if (topic == null) {
-            throw new IllegalArgumentException(String.format("No output topic for role '%s' available", role));
+            throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
         }
         return topic;
     }

@@ -77,7 +77,7 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -102,7 +102,7 @@ class CliTest {
                 throw new UnsupportedOperationException();
             }
         }), new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -137,7 +137,7 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -146,7 +146,7 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(2)
-    void shouldExitWithErrorCodeOnMissingBrokerParameter() {
+    void shouldExitWithErrorCodeOnMissingBootstrapServersParameter() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
             public StreamsApp createApp(final boolean cleanUp) {
@@ -206,7 +206,7 @@ class CliTest {
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
             runApp(app,
-                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBrokerList(),
                     "--input-topics", input
             );
             kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
@@ -242,7 +242,7 @@ class CliTest {
             kafkaCluster.createTopic(TopicConfig.withName(output).build());
 
             runApp(app,
-                    "--brokers", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBrokerList(),
                     "--input-topics", input,
                     "--output-topic", output
             );
@@ -282,7 +282,7 @@ class CliTest {
                 };
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -318,33 +318,33 @@ class CliTest {
             }
         }) {
             KafkaApplication.startApplicationWithoutExit(app, new String[]{
-                    "--brokers", "brokers",
+                    "--bootstrap-server", "bootstrap-servers",
                     "--input-topics", "input1,input2",
-                    "--extra-input-topics", "role1=input3,role2=input4;input5",
+                    "--labeled-input-topics", "label1=input3,label2=input4;input5",
                     "--input-pattern", ".*",
-                    "--extra-input-patterns", "role1=.+,role2=\\d+",
+                    "--labeled-input-patterns", "label1=.+,label2=\\d+",
                     "--output-topic", "output1",
-                    "--extra-output-topics", "role1=output2,role2=output3",
+                    "--labeled-output-topics", "label1=output2,label2=output3",
                     "--kafka-config", "foo=1,bar=2",
             });
             assertThat(app.getInputTopics()).containsExactly("input1", "input2");
-            assertThat(app.getExtraInputTopics())
+            assertThat(app.getLabeledInputTopics())
                     .hasSize(2)
-                    .containsEntry("role1", List.of("input3"))
-                    .containsEntry("role2", List.of("input4", "input5"));
+                    .containsEntry("label1", List.of("input3"))
+                    .containsEntry("label2", List.of("input4", "input5"));
             assertThat(app.getInputPattern())
                     .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
-            assertThat(app.getExtraInputPatterns())
+            assertThat(app.getLabeledInputPatterns())
                     .hasSize(2)
-                    .hasEntrySatisfying("role1",
+                    .hasEntrySatisfying("label1",
                             pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
-                    .hasEntrySatisfying("role2",
+                    .hasEntrySatisfying("label2",
                             pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
             assertThat(app.getOutputTopic()).isEqualTo("output1");
-            assertThat(app.getExtraOutputTopics())
+            assertThat(app.getLabeledOutputTopics())
                     .hasSize(2)
-                    .containsEntry("role1", "output2")
-                    .containsEntry("role2", "output3");
+                    .containsEntry("label1", "output2")
+                    .containsEntry("label2", "output3");
             assertThat(app.getKafkaConfig())
                     .hasSize(2)
                     .containsEntry("foo", "1")

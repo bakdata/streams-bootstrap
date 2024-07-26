@@ -146,6 +146,6 @@ public class StreamsBootstrapTopologyFactory {
 
     private static KafkaEndpointConfigBuilder newEndpointConfig() {
         return KafkaEndpointConfig.builder()
-                .brokers("localhost:9092");
+                .bootstrapServers("localhost:9092");
     }
 }

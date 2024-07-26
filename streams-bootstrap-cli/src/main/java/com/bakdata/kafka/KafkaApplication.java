@@ -49,10 +49,9 @@ import picocli.CommandLine.ParseResult;
  * <p>The base class for creating Kafka applications.</p>
  * This class provides the following configuration options:
  * <ul>
- *     <li>{@link #brokers}</li>
+ *     <li>{@link #bootstrapServers}</li>
  *     <li>{@link #outputTopic}</li>
- *     <li>{@link #extraOutputTopics}</li>
- *     <li>{@link #brokers}</li>
+ *     <li>{@link #labeledOutputTopics}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
  * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
@@ -83,10 +82,12 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;
-    @CommandLine.Option(names = "--extra-output-topics", split = ",", description = "Additional named output topics")
-    private Map<String, String> extraOutputTopics = emptyMap();
-    @CommandLine.Option(names = "--brokers", required = true, description = "Broker addresses to connect to")
-    private String brokers;
+    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
+            description = "Additional labeled output topics")
+    private Map<String, String> labeledOutputTopics = emptyMap();
+    @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
+            description = "Kafka bootstrap servers to connect to")
+    private String bootstrapServers;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = emptyMap();
 
@@ -202,7 +203,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public KafkaEndpointConfig getEndpointConfig() {
         // We do not specify endpoint properties, those are passed via kafkaConfig
         return KafkaEndpointConfig.builder()
-                .brokers(this.brokers)
+                .bootstrapServers(this.bootstrapServers)
                 .build();
     }
 

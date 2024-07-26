@@ -16,25 +16,25 @@ files: {}
 #    content: "foo bar"
 
 kafka:
-#  brokers: "test:9092"
+  # bootstrapServers: "test:9092"
   config: {}
-#    max.poll.records: 500
-#    Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
-#    max.request.size: "1000000"
+  #   max.poll.records: 500
+  #   Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+  #   max.request.size: "1000000"
   inputTopics: []
-#  - input
-#  - input2
-  extraInputTopics: {}
-#   role:
-#     - input
-#     - input2
-#  inputPattern: .*-input
-  extraInputPatterns: {}
-#   role: .*-input
-#  outputTopic: output
-  extraOutputTopics: {}
-#   role: output
-#  errorTopic: error
+  # - input
+  # - input2
+  labeledInputTopics: {}
+  #   label:
+  #     - input
+  #     - input2
+  # inputPattern: .*-input
+  labeledInputPatterns: {}
+  #   label: .*-input
+  # outputTopic: output
+  labeledOutputTopics: {}
+  #   label: output
+  # errorTopic: error
   deleteOutput: false
 
 commandLine: {}

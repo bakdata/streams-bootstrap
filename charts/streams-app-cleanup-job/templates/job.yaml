@@ -68,9 +68,9 @@ spec:
             - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- if hasKey .Values.kafka "brokers" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_BROKERS"
-              value: {{ .Values.kafka.brokers | quote }}
+            {{- if hasKey .Values.kafka "bootstrapServers" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
+              value: {{ .Values.kafka.bootstrapServers | quote }}
             {{- end }}
             {{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
@@ -88,18 +88,18 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
               value: {{ .Values.kafka.errorTopic | quote }}
             {{- end }}
-            {{- if and (hasKey .Values.kafka "extraOutputTopics") (.Values.kafka.extraOutputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.extraOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+            {{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- $delimiter := ";" }}
-            {{- if and (hasKey .Values.kafka "extraInputTopics") (.Values.kafka.extraInputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.extraInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
+            {{- if and (hasKey .Values.kafka "labeledInputTopics") (.Values.kafka.labeledInputTopics) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_TOPICS"
+              value: "{{- range $key, $value := .Values.kafka.labeledInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
             {{- end }}
-            {{- if and (hasKey .Values.kafka "extraInputPatterns") (.Values.kafka.extraInputPatterns) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_EXTRA_INPUT_PATTERNS"
-              value: "{{- range $key, $value := .Values.kafka.extraInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
+            {{- if and (hasKey .Values.kafka "labeledInputPatterns") (.Values.kafka.labeledInputPatterns) }}
+            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
+              value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
