@@ -147,7 +147,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldUseMultiplelabeledInputTopics() throws InterruptedException {
+    void shouldUseMultipleLabeledInputTopics() throws InterruptedException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createLabeledInputTopicsApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
                         .createRunner()) {

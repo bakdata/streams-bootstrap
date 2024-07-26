@@ -122,15 +122,13 @@ The following configuration options are available:
 - `--error-topic`: A topic to write errors to
 
 - `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
-  message
-  types (`<String=String>[,<String=String>...]`)
+  message types (`<String=String>[,<String=String>...]`)
 
 - `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
   message types (`<String=String>[,<String=String>...]`)
 
 - `--labeled-output-topics`: Additional labeled output topics if you need to specify multiple topics with different
-  message
-  types (`String=String>[,<String=String>...]`)
+  message types (`String=String>[,<String=String>...]`)
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
 
