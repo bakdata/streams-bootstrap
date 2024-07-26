@@ -78,7 +78,6 @@ class CliTest {
             }
         }, new String[]{
                 "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -104,7 +103,6 @@ class CliTest {
             }
         }), new String[]{
                 "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -140,7 +138,6 @@ class CliTest {
             }
         }, new String[]{
                 "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -176,7 +173,6 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -211,7 +207,6 @@ class CliTest {
 
             runApp(app,
                     "--brokers", kafkaCluster.getBrokerList(),
-                    "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input
             );
             kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
@@ -248,7 +243,6 @@ class CliTest {
 
             runApp(app,
                     "--brokers", kafkaCluster.getBrokerList(),
-                    "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input,
                     "--output-topic", output
             );
@@ -289,7 +283,6 @@ class CliTest {
             }
         }, new String[]{
                 "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -326,7 +319,6 @@ class CliTest {
         }) {
             KafkaApplication.startApplicationWithoutExit(app, new String[]{
                     "--brokers", "brokers",
-                    "--schema-registry-url", "schema-registry",
                     "--input-topics", "input1,input2",
                     "--extra-input-topics", "role1=input3,role2=input4;input5",
                     "--input-pattern", ".*",
