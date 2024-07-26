@@ -78,6 +78,7 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-server", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -103,6 +104,7 @@ class CliTest {
             }
         }), new String[]{
                 "--bootstrap-server", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -138,6 +140,7 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-server", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -173,6 +176,7 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -207,6 +211,7 @@ class CliTest {
 
             runApp(app,
                     "--bootstrap-server", kafkaCluster.getBrokerList(),
+                    "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input
             );
             kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
@@ -243,6 +248,7 @@ class CliTest {
 
             runApp(app,
                     "--bootstrap-server", kafkaCluster.getBrokerList(),
+                    "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input,
                     "--output-topic", output
             );
@@ -283,6 +289,7 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-server", "localhost:9092",
+                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -328,8 +335,6 @@ class CliTest {
                     "--labeled-output-topics", "label1=output2,label2=output3",
                     "--kafka-config", "foo=1,bar=2",
             });
-            assertThat(app.getBootstrapServers()).isEqualTo("bootstrap-servers");
-            assertThat(app.getSchemaRegistryUrl()).isEqualTo("schema-registry");
             assertThat(app.getInputTopics()).containsExactly("input1", "input2");
             assertThat(app.getLabeledInputTopics())
                     .hasSize(2)

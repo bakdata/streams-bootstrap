@@ -86,6 +86,7 @@ class ConfiguredProducerAppTest {
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
+                .schemaRegistryUrl("fake")
                 .build()))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
@@ -100,6 +101,7 @@ class ConfiguredProducerAppTest {
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
+                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'key.serializer' should not be configured already");
@@ -114,6 +116,7 @@ class ConfiguredProducerAppTest {
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
+                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'value.serializer' should not be configured already");
@@ -128,6 +131,7 @@ class ConfiguredProducerAppTest {
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
+                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");

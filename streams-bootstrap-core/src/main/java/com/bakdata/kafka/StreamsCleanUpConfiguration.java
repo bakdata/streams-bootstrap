@@ -32,8 +32,7 @@ import lombok.NonNull;
  * Provides configuration options for {@link StreamsCleanUpRunner}
  */
 public class StreamsCleanUpConfiguration
-        implements HasTopicHooks<StreamsCleanUpConfiguration>, HasCleanHook<StreamsCleanUpConfiguration>,
-        AutoCloseable {
+        implements HasTopicHooks<StreamsCleanUpConfiguration>, HasCleanHook<StreamsCleanUpConfiguration> {
     private final @NonNull Collection<TopicHook> topicHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> cleanHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> resetHooks = new ArrayList<>();
@@ -64,11 +63,6 @@ public class StreamsCleanUpConfiguration
     public StreamsCleanUpConfiguration registerResetHook(final Runnable hook) {
         this.resetHooks.add(hook);
         return this;
-    }
-
-    @Override
-    public void close() {
-        this.topicHooks.forEach(TopicHook::close);
     }
 
     void runCleanHooks() {

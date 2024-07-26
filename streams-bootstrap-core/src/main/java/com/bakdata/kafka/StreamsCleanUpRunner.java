@@ -159,11 +159,6 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void close() {
-        this.cleanHooks.close();
-    }
-
     /**
      * Clean up your Streams app by resetting the app and deleting the output topics
      * and consumer group.

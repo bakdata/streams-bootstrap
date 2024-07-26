@@ -342,7 +342,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
          */
         @Override
         public void stop() {
-            this.cleanUpRunner.close();
             this.app.close();
         }
     }

@@ -28,6 +28,7 @@ import com.bakdata.kafka.CleanUpException;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -44,7 +45,7 @@ import org.apache.kafka.clients.admin.AdminClient;
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class SchemaTopicClient implements AutoCloseable {
+public final class SchemaTopicClient implements Closeable {
     private static final int CACHE_CAPACITY = 100;
     private final @NonNull TopicClient topicClient;
     private final SchemaRegistryClient schemaRegistryClient;
