@@ -26,8 +26,8 @@ spec:
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
   {{- end }}
   triggers:
-    {{- if not (or .Values.kafka.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.kafka.extraInputTopics .Values.autoscaling.additionalTriggers) }}
-    {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.extraInputTopics or .Values.autoscaling.additionalTriggers" }}
+    {{- if not (or .Values.kafka.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.kafka.labeledInputTopics .Values.autoscaling.additionalTriggers) }}
+    {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.labeledInputTopics or .Values.autoscaling.additionalTriggers" }}
     {{- end}}
     # todo: concat .Values.kafka.inputTopics and .Values.autoscaling.topics to
     # minimize number of loops when we don't need to support helm 2 anymore
@@ -58,7 +58,7 @@ spec:
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
-    {{- range $key, $value := .Values.kafka.extraInputTopics }}
+    {{- range $key, $value := .Values.kafka.labeledInputTopics }}
     {{- range $topic := $value }}
     - type: kafka
       metadata:
