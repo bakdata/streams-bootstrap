@@ -242,7 +242,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
         private void deleteTopic(final String topic) {
             this.adminClient.getTopicClient()
-                    .deleteTopic(topic);
+                    .deleteTopicIfExists(topic);
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
