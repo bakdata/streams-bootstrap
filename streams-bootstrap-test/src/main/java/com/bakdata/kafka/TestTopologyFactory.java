@@ -112,12 +112,7 @@ public class TestTopologyFactory {
      */
     public static Function<String, Map<String, Object>> getKafkaPropertiesWithSchemaRegistryUrl(
             final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        return schemaRegistryUrl -> {
-            final KafkaEndpointConfig endpointConfig = newEndpointConfig()
-                    .schemaRegistryUrl(schemaRegistryUrl)
-                    .build();
-            return app.getKafkaProperties(endpointConfig);
-        };
+        return schemaRegistryUrl -> getKafkaProperties(app, schemaRegistryUrl);
     }
 
     /**
@@ -131,14 +126,18 @@ public class TestTopologyFactory {
         return new Configurator(testTopology.getProperties());
     }
 
-    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final KafkaEndpointConfig endpointConfig = createEndpointConfig();
+    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app,
+            final String schemaRegistryUrl) {
+        final KafkaEndpointConfig endpointConfig = newEndpointConfig()
+                .schemaRegistryUrl(schemaRegistryUrl)
+                .build();
         return app.getKafkaProperties(endpointConfig);
     }
 
-    private static KafkaEndpointConfig createEndpointConfig() {
-        return newEndpointConfig()
+    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
+        final KafkaEndpointConfig endpointConfig = newEndpointConfig()
                 .build();
+        return app.getKafkaProperties(endpointConfig);
     }
 
     private static KafkaEndpointConfigBuilder newEndpointConfig() {
