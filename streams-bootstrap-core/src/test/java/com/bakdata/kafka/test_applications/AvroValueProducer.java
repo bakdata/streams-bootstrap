@@ -24,9 +24,9 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.SchemaRegistryProducerApp;
 import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -34,7 +34,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-public class AvroValueProducer implements ProducerApp {
+public class AvroValueProducer implements SchemaRegistryProducerApp {
     @Override
     public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
         return () -> {

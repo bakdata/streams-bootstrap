@@ -26,7 +26,6 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import com.google.common.base.Preconditions;
 import java.util.Map;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -46,7 +45,8 @@ public class ProducerTopicConfig {
      * Extra output topics that are identified by a role
      */
     @Builder.Default
-    @NonNull Map<String, String> extraOutputTopics = emptyMap();
+    @NonNull
+    Map<String, String> extraOutputTopics = emptyMap();
 
     /**
      * Get extra output topic for a specified role
@@ -56,7 +56,9 @@ public class ProducerTopicConfig {
      */
     public String getOutputTopic(final String role) {
         final String topic = this.extraOutputTopics.get(role);
-        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+        if (topic == null) {
+            throw new IllegalArgumentException(String.format("No output topic for role '%s' available", role));
+        }
         return topic;
     }
 }

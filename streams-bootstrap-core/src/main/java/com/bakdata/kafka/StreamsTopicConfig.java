@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -73,7 +72,9 @@ public class StreamsTopicConfig {
      */
     public List<String> getInputTopics(final String role) {
         final List<String> topics = this.extraInputTopics.get(role);
-        Preconditions.checkNotNull(topics, "No input topics for role '%s' available", role);
+        if (topics == null) {
+            throw new IllegalArgumentException(String.format("No input topics for role '%s' available", role));
+        }
         return topics;
     }
 
@@ -85,7 +86,9 @@ public class StreamsTopicConfig {
      */
     public Pattern getInputPattern(final String role) {
         final Pattern pattern = this.extraInputPatterns.get(role);
-        Preconditions.checkNotNull(pattern, "No input pattern for role '%s' available", role);
+        if (pattern == null) {
+            throw new IllegalArgumentException(String.format("No input pattern for role '%s' available", role));
+        }
         return pattern;
     }
 
@@ -97,7 +100,9 @@ public class StreamsTopicConfig {
      */
     public String getOutputTopic(final String role) {
         final String topic = this.extraOutputTopics.get(role);
-        Preconditions.checkNotNull(topic, "No output topic for role '%s' available", role);
+        if (topic == null) {
+            throw new IllegalArgumentException(String.format("No output topic for role '%s' available", role));
+        }
         return topic;
     }
 }

@@ -10,9 +10,6 @@ dependencies {
 
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
     api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
-    val confluentVersion: String by project
-    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
-    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
     api(
         group = "org.slf4j",
         name = "slf4j-api",
@@ -33,6 +30,7 @@ dependencies {
 
     val fluentKafkaVersion: String by project
     testImplementation(project(":streams-bootstrap-test"))
+    testImplementation(project(":streams-bootstrap-schema-registry"))
     testImplementation(
         group = "com.bakdata.fluent-kafka-streams-tests",
         name = "schema-registry-mock-junit5",
@@ -42,7 +40,6 @@ dependencies {
     testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaJunitVersion) {
         exclude(group = "org.slf4j", module = "slf4j-log4j12")
     }
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }

@@ -86,7 +86,6 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
-                .schemaRegistryUrl("fake")
                 .build()))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
                 .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, LongSerde.class);
@@ -101,7 +100,6 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
-                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'default.key.serde' should not be configured already");
@@ -116,7 +114,6 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
-                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'default.value.serde' should not be configured already");
@@ -131,7 +128,6 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
-                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'application.id' should not be configured already");
@@ -146,7 +142,6 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
-                .schemaRegistryUrl("fake")
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");
@@ -161,7 +156,7 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .brokers("fake")
-                .schemaRegistryUrl("fake")
+                .properties(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "fake"))
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");

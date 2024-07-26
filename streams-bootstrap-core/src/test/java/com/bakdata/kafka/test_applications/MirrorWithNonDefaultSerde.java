@@ -25,8 +25,8 @@
 package com.bakdata.kafka.test_applications;
 
 import com.bakdata.kafka.Configurator;
+import com.bakdata.kafka.SchemaRegistryStreamsApp;
 import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
@@ -39,7 +39,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
-public class MirrorWithNonDefaultSerde implements StreamsApp {
+public class MirrorWithNonDefaultSerde implements SchemaRegistryStreamsApp {
 
     public static Serde<TestRecord> newKeySerde() {
         return new SpecificAvroSerde<>();

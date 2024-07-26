@@ -27,6 +27,8 @@ package com.bakdata.kafka.integration;
 import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.TestUtil;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import java.util.Map;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +58,8 @@ abstract class KafkaTest {
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
                 .brokers(this.kafkaCluster.getBrokerList())
-                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
+                .properties(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                        this.schemaRegistryMockExtension.getUrl()))
                 .build();
     }
 }

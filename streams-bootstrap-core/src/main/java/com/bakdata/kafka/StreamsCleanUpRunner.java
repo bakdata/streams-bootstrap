@@ -27,11 +27,11 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
-import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -100,19 +100,20 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final String appId = streamsAppConfig.getAppId();
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
-        final ImmutableList.Builder<String> argList = ImmutableList.<String>builder()
-                .add("--application-id", appId)
-                .add("--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()))
-                .add("--config-file", tempFile.toString());
+        final Collection<String> argList = new ArrayList<>(List.of(
+                "--application-id", appId,
+                "--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()),
+                "--config-file", tempFile.toString()
+        ));
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
-            argList.add("--input-topics", String.join(",", existingInputTopics));
+            argList.addAll(List.of("--input-topics", String.join(",", existingInputTopics)));
         }
         final Collection<String> existingIntermediateTopics = filterExistingTopics(intermediateTopics, allTopics);
         if (!existingIntermediateTopics.isEmpty()) {
-            argList.add("--intermediate-topics", String.join(",", existingIntermediateTopics));
+            argList.addAll(List.of("--intermediate-topics", String.join(",", existingIntermediateTopics)));
         }
-        final String[] args = argList.build().toArray(String[]::new);
+        final String[] args = argList.toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
         final int returnCode = resetter.execute(args);
         try {
@@ -236,14 +237,12 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void resetInternalTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .resetSchemaRegistry(topic);
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .deleteTopicAndResetSchemaRegistry(topic);
+            this.adminClient.getTopicClient()
+                    .deleteTopic(topic);
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 

@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,8 @@ import org.apache.kafka.streams.StreamsConfig;
 @Builder
 public class KafkaEndpointConfig {
     private final @NonNull String brokers;
-    private final String schemaRegistryUrl;
+    @Builder.Default
+    private final Map<String, Object> properties = new HashMap<>();
 
     /**
      * Create Kafka properties to connect to infrastructure.
@@ -50,11 +50,9 @@ public class KafkaEndpointConfig {
      * @return properties used for connecting to Kafka
      */
     public Map<String, Object> createKafkaProperties() {
-        final Map<String, String> kafkaConfig = new HashMap<>();
+        final Map<String, Object> kafkaConfig = new HashMap<>();
+        kafkaConfig.putAll(this.properties);
         kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
-        if (this.schemaRegistryUrl != null) {
-            kafkaConfig.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
-        }
         return Collections.unmodifiableMap(kafkaConfig);
     }
 
