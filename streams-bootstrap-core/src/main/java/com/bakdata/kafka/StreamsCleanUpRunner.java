@@ -83,11 +83,9 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
-        try (final ImprovedAdminClient adminClient = ImprovedAdminClient.create(config.getKafkaProperties())) {
-            adminClient.getSchemaRegistryClient()
-                    .map(SchemaRegistryTopicHook::new)
-                    .ifPresent(configuration::registerTopicHook);
-        }
+        SchemaRegistryTopicHook.createSchemaRegistryClient(config.getKafkaProperties())
+                .map(SchemaRegistryTopicHook::new)
+                .ifPresent(configuration::registerTopicHook);
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
 

@@ -27,7 +27,6 @@ package com.bakdata.kafka.util;
 import static com.bakdata.kafka.SchemaRegistryTopicHook.createSchemaRegistryClient;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -75,10 +74,7 @@ public final class ImprovedAdminClient implements AutoCloseable {
                     String.format("%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         }
         final Admin adminClient = AdminClient.create(properties);
-        final String schemaRegistryUrl =
-                (String) properties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        final SchemaRegistryClient schemaRegistryClient =
-                schemaRegistryUrl == null ? null : createSchemaRegistryClient(properties, schemaRegistryUrl);
+        final SchemaRegistryClient schemaRegistryClient = createSchemaRegistryClient(properties).orElse(null);
         return builder()
                 .adminClient(adminClient)
                 .schemaRegistryClient(schemaRegistryClient)
