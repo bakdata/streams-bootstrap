@@ -26,7 +26,6 @@ package com.bakdata.kafka.util;
 
 import static com.bakdata.kafka.util.SchemaTopicClient.createSchemaRegistryClient;
 
-import com.google.common.base.Preconditions;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.io.IOException;
@@ -71,8 +70,10 @@ public final class ImprovedAdminClient implements AutoCloseable {
      */
     public static ImprovedAdminClient create(@NonNull final Map<String, Object> properties,
             @NonNull final Duration timeout) {
-        Preconditions.checkNotNull(properties.get(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG),
-                "%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG);
+        if (!properties.containsKey(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG)) {
+            throw new IllegalArgumentException(
+                    String.format("%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
+        }
         final Admin adminClient = AdminClient.create(properties);
         final String schemaRegistryUrl =
                 (String) properties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);

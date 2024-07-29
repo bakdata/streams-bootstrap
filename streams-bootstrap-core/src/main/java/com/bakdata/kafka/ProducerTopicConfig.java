@@ -26,7 +26,6 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import com.google.common.base.Preconditions;
 import java.util.Map;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -57,7 +56,9 @@ public class ProducerTopicConfig {
      */
     public String getOutputTopic(final String label) {
         final String topic = this.labeledOutputTopics.get(label);
-        Preconditions.checkNotNull(topic, "No output topic for label '%s' available", label);
+        if (topic == null) {
+            throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
+        }
         return topic;
     }
 }

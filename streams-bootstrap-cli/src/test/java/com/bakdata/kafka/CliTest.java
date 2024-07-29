@@ -78,7 +78,6 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-server", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -104,7 +103,6 @@ class CliTest {
             }
         }), new String[]{
                 "--bootstrap-server", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -140,7 +138,6 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-server", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -176,9 +173,40 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
+                "--input-topics", "input",
+                "--output-topic", "output",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithErrorCodeOnInconsistentAppId() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public StreamsApp createApp(final boolean cleanUp) {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder) {
+                        builder.streamInput().to(builder.getTopics().getOutputTopic());
+                    }
+
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        return "my-id";
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
+                    }
+                };
+            }
+        }, new String[]{
+                "--bootstrap-servers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
+                "--application-id", "my-other-id"
         });
     }
 
@@ -211,7 +239,6 @@ class CliTest {
 
             runApp(app,
                     "--bootstrap-server", kafkaCluster.getBrokerList(),
-                    "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input
             );
             kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
@@ -248,7 +275,6 @@ class CliTest {
 
             runApp(app,
                     "--bootstrap-server", kafkaCluster.getBrokerList(),
-                    "--schema-registry-url", "http://localhost:8081",
                     "--input-topics", input,
                     "--output-topic", output
             );
@@ -289,7 +315,6 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-server", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -335,6 +360,8 @@ class CliTest {
                     "--labeled-output-topics", "label1=output2,label2=output3",
                     "--kafka-config", "foo=1,bar=2",
             });
+            assertThat(app.getBootstrapServers()).isEqualTo("bootstrap-servers");
+            assertThat(app.getSchemaRegistryUrl()).isEqualTo("schema-registry");
             assertThat(app.getInputTopics()).containsExactly("input1", "input2");
             assertThat(app.getLabeledInputTopics())
                     .hasSize(2)
