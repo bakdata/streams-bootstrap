@@ -203,7 +203,6 @@ class CliTest {
             }
         }, new String[]{
                 "--bootstrap-servers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "--application-id", "my-other-id"
