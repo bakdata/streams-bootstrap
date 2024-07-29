@@ -360,7 +360,6 @@ class CliTest {
                     "--kafka-config", "foo=1,bar=2",
             });
             assertThat(app.getBootstrapServers()).isEqualTo("bootstrap-servers");
-            assertThat(app.getSchemaRegistryUrl()).isEqualTo("schema-registry");
             assertThat(app.getInputTopics()).containsExactly("input1", "input2");
             assertThat(app.getLabeledInputTopics())
                     .hasSize(2)

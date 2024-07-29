@@ -29,24 +29,11 @@ package com.bakdata.kafka;
  */
 public interface SchemaRegistryProducerApp extends ProducerApp {
 
-    /**
-     * Register a hook that cleans up schemas associated with a topic
-     * @param cleanUpConfiguration Configuration to register hook on
-     * @param configuration Configuration to create hook from
-     * @return {@code ProducerCleanUpConfiguration} with registered topic hook
-     * @see SchemaRegistryKafkaApplicationUtils#createSchemaRegistryCleanUpHook(EffectiveAppConfiguration)
-     */
-    static ProducerCleanUpConfiguration registerSchemaRegistryCleanUpHook(
-            final ProducerCleanUpConfiguration cleanUpConfiguration, final EffectiveAppConfiguration<?> configuration) {
-        return cleanUpConfiguration.registerTopicHook(
-                SchemaRegistryKafkaApplicationUtils.createSchemaRegistryCleanUpHook(configuration));
-    }
-
     @Override
     default ProducerCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
         final ProducerCleanUpConfiguration cleanUpConfiguration = ProducerApp.super.setupCleanUp(configuration);
-        return registerSchemaRegistryCleanUpHook(cleanUpConfiguration, configuration);
+        return SchemaRegistryAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
 
 }

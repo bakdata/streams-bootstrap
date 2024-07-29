@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @UtilityClass
 @Slf4j
-public class SchemaRegistryKafkaApplicationUtils {
+public class SchemaRegistryAppUtils {
     private static final int CACHE_CAPACITY = 100;
 
     /**
@@ -89,7 +89,7 @@ public class SchemaRegistryKafkaApplicationUtils {
      * @return hook that cleans up schemas associated with a topic
      * @see HasTopicHooks#registerTopicHook(TopicHook)
      */
-    public static TopicHook createSchemaRegistryCleanUpHook(final Map<String, Object> kafkaProperties) {
+    public static TopicHook createTopicHook(final Map<String, Object> kafkaProperties) {
         final SchemaRegistryClient schemaRegistryClient = createSchemaRegistryClient(kafkaProperties);
         return new SchemaRegistryTopicHook(schemaRegistryClient);
     }
@@ -101,10 +101,23 @@ public class SchemaRegistryKafkaApplicationUtils {
      *
      * @param configuration Configuration to create hook from
      * @return hook that cleans up schemas associated with a topic
-     * @see #createSchemaRegistryCleanUpHook(Map)
+     * @see #createTopicHook(Map)
      */
-    public static TopicHook createSchemaRegistryCleanUpHook(final EffectiveAppConfiguration<?> configuration) {
-        return createSchemaRegistryCleanUpHook(configuration.getKafkaProperties());
+    public static TopicHook createTopicHook(final EffectiveAppConfiguration<?> configuration) {
+        return createTopicHook(configuration.getKafkaProperties());
+    }
+
+    /**
+     * Register a hook that cleans up schemas associated with a topic
+     * @param cleanUpConfiguration Configuration to register hook on
+     * @param configuration Configuration to create hook from
+     * @return {@code StreamsCleanUpConfiguration} with registered topic hook
+     * @see SchemaRegistryAppUtils#createTopicHook(EffectiveAppConfiguration)
+     */
+    public static <T> T registerTopicHook(
+            final HasTopicHooks<T> cleanUpConfiguration, final EffectiveAppConfiguration<?> configuration) {
+        return cleanUpConfiguration.registerTopicHook(
+                createTopicHook(configuration));
     }
 
     @RequiredArgsConstructor
