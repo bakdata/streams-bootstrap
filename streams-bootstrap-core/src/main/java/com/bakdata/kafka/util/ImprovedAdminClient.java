@@ -28,7 +28,6 @@ import static com.bakdata.kafka.util.SchemaTopicClient.createSchemaRegistryClien
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -47,7 +46,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
  * Provide methods for common operations when performing administrative actions on a Kafka cluster
  */
 @Builder(access = AccessLevel.PRIVATE)
-public final class ImprovedAdminClient implements Closeable {
+public final class ImprovedAdminClient implements AutoCloseable {
 
     private static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private final @NonNull Admin adminClient;
@@ -138,7 +137,7 @@ public final class ImprovedAdminClient implements Closeable {
 
     @RequiredArgsConstructor
     private static class PooledSchemaRegistryClient implements SchemaRegistryClient {
-        @Delegate(excludes = Closeable.class)
+        @Delegate(excludes = AutoCloseable.class)
         private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
         @Override
