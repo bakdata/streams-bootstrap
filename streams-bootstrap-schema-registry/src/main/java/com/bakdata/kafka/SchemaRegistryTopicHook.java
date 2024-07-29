@@ -28,11 +28,14 @@ import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +45,26 @@ import lombok.extern.slf4j.Slf4j;
 public class SchemaRegistryTopicHook implements TopicHook {
     private static final int CACHE_CAPACITY = 100;
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
+
+    /**
+     * Creates a new {@code SchemaRegistryClient} using the specified configuration if
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is configured.
+     *
+     * @param kafkaProperties properties for creating {@code SchemaRegistryClient}
+     * @return {@code SchemaRegistryClient} if {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is
+     * configured
+     * @see SchemaRegistryTopicHook#createSchemaRegistryClient(Map, String)
+     */
+    public static Optional<SchemaRegistryClient> createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
+        final String schemaRegistryUrl =
+                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        if (schemaRegistryUrl == null) {
+            return Optional.empty();
+        }
+        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
+        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        return Optional.of(createSchemaRegistryClient(properties, schemaRegistryUrl));
+    }
 
     /**
      * Creates a new {@code SchemaRegistryClient} using the specified configuration.
