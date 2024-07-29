@@ -26,12 +26,9 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 @Slf4j
 public class SchemaRegistryAppUtils {
-    private static final int CACHE_CAPACITY = 100;
 
     /**
      * Creates a new {@code SchemaRegistryClient} using the specified configuration.
@@ -49,7 +45,7 @@ public class SchemaRegistryAppUtils {
      * @param kafkaProperties properties for creating {@code SchemaRegistryClient}. Must include
      * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
      * @return {@code SchemaRegistryClient}
-     * @see #createSchemaRegistryClient(Map, String)
+     * @see SchemaRegistryTopicHook#createSchemaRegistryClient(Map, String)
      */
     public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
         final String schemaRegistryUrl =
@@ -60,20 +56,7 @@ public class SchemaRegistryAppUtils {
         }
         final Map<String, Object> properties = new HashMap<>(kafkaProperties);
         properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        return createSchemaRegistryClient(properties, schemaRegistryUrl);
-    }
-
-    /**
-     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
-     *
-     * @param configs properties passed to
-     * {@link SchemaRegistryClientFactory#newClient(List, int, List, Map, Map)}
-     * @param schemaRegistryUrl URL of schema registry
-     * @return {@code SchemaRegistryClient}
-     */
-    public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
-            @NonNull final String schemaRegistryUrl) {
-        return SchemaRegistryClientFactory.newClient(List.of(schemaRegistryUrl), CACHE_CAPACITY, null, configs, null);
+        return SchemaRegistryTopicHook.createSchemaRegistryClient(properties, schemaRegistryUrl);
     }
 
     /**
