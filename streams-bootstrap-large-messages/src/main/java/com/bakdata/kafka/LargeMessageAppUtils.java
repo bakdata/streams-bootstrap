@@ -32,7 +32,7 @@ import lombok.experimental.UtilityClass;
  * Utility class that provides helpers for cleaning {@code LargeMessageSerde} artifacts
  */
 @UtilityClass
-public class LargeMessageKafkaApplicationUtils {
+public class LargeMessageAppUtils {
     /**
      * Create a hook that cleans up LargeMessage files associated with a topic. It is expected that all necessary
      * properties to create a {@link AbstractLargeMessageConfig} are part of {@code kafkaProperties}.
@@ -41,9 +41,10 @@ public class LargeMessageKafkaApplicationUtils {
      * @return hook that cleans up LargeMessage files associated with a topic
      * @see HasTopicHooks#registerTopicHook(TopicHook)
      */
-    public static TopicHook createLargeMessageCleanUpHook(final Map<String, Object> kafkaProperties) {
+    public static TopicHook createTopicHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
+        //TODO: close storer once it implements AutoCloseable
         return new TopicHook() {
             @Override
             public void deleted(final String topic) {
@@ -59,10 +60,22 @@ public class LargeMessageKafkaApplicationUtils {
      *
      * @param configuration Configuration to create hook from
      * @return hook that cleans up LargeMessage files associated with a topic
-     * @see #createLargeMessageCleanUpHook(Map)
+     * @see #createTopicHook(Map)
      */
-    public static TopicHook createLargeMessageCleanUpHook(final EffectiveAppConfiguration<?> configuration) {
-        return createLargeMessageCleanUpHook(configuration.getKafkaProperties());
+    public static TopicHook createTopicHook(final EffectiveAppConfiguration<?> configuration) {
+        return createTopicHook(configuration.getKafkaProperties());
     }
 
+    /**
+     * Register a hook that cleans up LargeMessage files associated with a topic
+     * @param cleanUpConfiguration Configuration to register hook on
+     * @param configuration Configuration to create hook from
+     * @param <T> type of configuration
+     * @return Configuration with registered topic hook
+     * @see LargeMessageAppUtils#createTopicHook(EffectiveAppConfiguration)
+     */
+    public static <T> T registerTopicHook(
+            final HasTopicHooks<T> cleanUpConfiguration, final EffectiveAppConfiguration<?> configuration) {
+        return cleanUpConfiguration.registerTopicHook(createTopicHook(configuration));
+    }
 }
