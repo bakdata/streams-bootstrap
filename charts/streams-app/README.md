@@ -63,6 +63,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `kafka.outputTopic`          | Output topic for your streams application.                                                                                                                                       |         |
 | `kafka.labeledOutputTopics`  | Map of additional labeled output topics if you need to specify multiple topics with different message types.                                                                     | `{}`    |
 | `kafka.errorTopic`           | Error topic for your streams application.                                                                                                                                        |         |
+| `kafka.applicationId`        | Unique application ID for Kafka Streams. Required for auto-scaling                                                                                                               |         |
 
 ### Other
 
@@ -99,7 +100,6 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | Parameter                        | Description                                                                                                        | Default    |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------- |
 | `autoscaling.enabled`            | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                    | `false`    |
-| `autoscaling.consumerGroup`      | Name of the consumer group used for checking the offset on the topic and processing the related lag.               |            |
 | `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                                   |            |
 | `autoscaling.pollingInterval`    | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                            | `30`       |
 | `autoscaling.cooldownPeriod`     | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                             | `300`      |
