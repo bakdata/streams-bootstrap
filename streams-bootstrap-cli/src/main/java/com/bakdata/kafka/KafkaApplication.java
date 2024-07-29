@@ -52,7 +52,6 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #bootstrapServers}</li>
  *     <li>{@link #outputTopic}</li>
  *     <li>{@link #labeledOutputTopics}</li>
- *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
  * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
@@ -89,8 +88,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
             description = "Kafka bootstrap servers to connect to")
     private String bootstrapServers;
-    @CommandLine.Option(names = "--schema-registry-url", description = "URL of Schema Registry")
-    private String schemaRegistryUrl;
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = emptyMap();
 
@@ -204,9 +201,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     public KafkaEndpointConfig getEndpointConfig() {
+        // We do not specify endpoint properties, those are passed via kafkaConfig
         return KafkaEndpointConfig.builder()
                 .bootstrapServers(this.bootstrapServers)
-                .schemaRegistryUrl(this.schemaRegistryUrl)
                 .build();
     }
 

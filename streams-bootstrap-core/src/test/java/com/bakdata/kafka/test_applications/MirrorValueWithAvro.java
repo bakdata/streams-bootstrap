@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.SchemaRegistryStreamsApp;
 import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
@@ -35,7 +35,7 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
+public class MirrorValueWithAvro implements SchemaRegistryStreamsApp {
     @Override
     public void buildTopology(final TopologyBuilder builder) {
         final KStream<String, TestRecord> input = builder.streamInput();

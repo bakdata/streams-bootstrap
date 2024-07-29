@@ -83,9 +83,6 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
-        SchemaRegistryTopicHook.createSchemaRegistryClient(config.getKafkaProperties())
-                .map(SchemaRegistryTopicHook::new)
-                .ifPresent(configuration::registerTopicHook);
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
 

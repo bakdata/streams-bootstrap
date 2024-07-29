@@ -142,7 +142,7 @@ class ConfiguredProducerAppTest {
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
-                .schemaRegistryUrl("fake")
+                .properties(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "fake"))
                 .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");

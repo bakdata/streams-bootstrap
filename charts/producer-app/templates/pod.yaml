@@ -52,10 +52,6 @@ spec:
       - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
         value: {{ .Values.kafka.bootstrapServers | quote }}
         {{- end }}
-        {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
-      - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-        value: {{ .Values.kafka.schemaRegistryUrl | quote }}
-        {{- end }}
         {{- if hasKey .Values.kafka "outputTopic" }}
       - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
         value: {{ .Values.kafka.outputTopic | quote }}

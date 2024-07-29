@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.KafkaEndpointConfig.KafkaEndpointConfigBuilder;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.experimental.UtilityClass;
@@ -129,7 +130,9 @@ public class TestTopologyFactory {
     private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app,
             final String schemaRegistryUrl) {
         final KafkaEndpointConfig endpointConfig = newEndpointConfig()
-                .schemaRegistryUrl(schemaRegistryUrl)
+                .properties(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl
+                ))
                 .build();
         return app.getKafkaProperties(endpointConfig);
     }

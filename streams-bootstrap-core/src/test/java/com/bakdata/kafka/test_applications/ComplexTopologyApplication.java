@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.SchemaRegistryStreamsApp;
 import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.TopologyBuilder;
@@ -41,7 +41,7 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.kstream.Windowed;
 
-public class ComplexTopologyApplication implements StreamsApp {
+public class ComplexTopologyApplication implements SchemaRegistryStreamsApp {
 
     public static final String THROUGH_TOPIC = "through-topic";
 

@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,28 +32,26 @@ import lombok.NonNull;
 import org.apache.kafka.streams.StreamsConfig;
 
 /**
- * Configuration to connect to Kafka infrastructure, i.e., bootstrap servers and optionally schema registry.
+ * Configuration to connect to Kafka infrastructure, i.e., bootstrap servers and additional properties such as credentials.
  */
 @Builder
 public class KafkaEndpointConfig {
     private final @NonNull String bootstrapServers;
-    private final String schemaRegistryUrl;
+    @Builder.Default
+    private final Map<String, Object> properties = new HashMap<>();
 
     /**
      * Create Kafka properties to connect to infrastructure.
      * The following properties are configured:
      * <ul>
      *     <li>{@code bootstrap.servers}</li>
-     *     <li>{@code schema.registry.url}</li>
+     *     <li>all properties specified via {@link #properties}</li>
      * </ul>
      * @return properties used for connecting to Kafka
      */
     public Map<String, Object> createKafkaProperties() {
-        final Map<String, String> kafkaConfig = new HashMap<>();
+        final Map<String, Object> kafkaConfig = new HashMap<>(this.properties);
         kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-        if (this.schemaRegistryUrl != null) {
-            kafkaConfig.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
-        }
         return Collections.unmodifiableMap(kafkaConfig);
     }
 
