@@ -27,16 +27,11 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -120,41 +115,4 @@ public class SchemaRegistryAppUtils {
                 createTopicHook(configuration));
     }
 
-    @RequiredArgsConstructor
-    private static class SchemaRegistryTopicHook implements TopicHook {
-        private final @NonNull SchemaRegistryClient schemaRegistryClient;
-
-        @Override
-        public void deleted(final String topic) {
-            log.info("Resetting Schema Registry for topic '{}'", topic);
-            try {
-                final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
-                final String keySubject = topic + "-key";
-                if (allSubjects.contains(keySubject)) {
-                    this.schemaRegistryClient.deleteSubject(keySubject);
-                    log.info("Cleaned key schema of topic {}", topic);
-                } else {
-                    log.info("No key schema for topic {} available", topic);
-                }
-                final String valueSubject = topic + "-value";
-                if (allSubjects.contains(valueSubject)) {
-                    this.schemaRegistryClient.deleteSubject(valueSubject);
-                    log.info("Cleaned value schema of topic {}", topic);
-                } else {
-                    log.info("No value schema for topic {} available", topic);
-                }
-            } catch (final IOException | RestClientException e) {
-                throw new CleanUpException("Could not reset schema registry for topic " + topic, e);
-            }
-        }
-
-        @Override
-        public void close() {
-            try {
-                this.schemaRegistryClient.close();
-            } catch (final IOException e) {
-                throw new UncheckedIOException("Error closing schema registry client", e);
-            }
-        }
-    }
 }
