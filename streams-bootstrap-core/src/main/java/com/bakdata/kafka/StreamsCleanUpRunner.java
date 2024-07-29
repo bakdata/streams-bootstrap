@@ -83,6 +83,11 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
+        try (final ImprovedAdminClient adminClient = ImprovedAdminClient.create(config.getKafkaProperties())) {
+            adminClient.getSchemaRegistryClient()
+                    .map(SchemaRegistryTopicHook::new)
+                    .ifPresent(configuration::registerTopicHook);
+        }
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
 
@@ -242,14 +247,12 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void resetInternalTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .resetSchemaRegistry(topic);
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .deleteTopicAndResetSchemaRegistry(topic);
+            this.adminClient.getTopicClient()
+                    .deleteTopicIfExists(topic);
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 

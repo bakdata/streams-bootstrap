@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.util.SchemaTopicClient.createSchemaRegistryClient;
+import static com.bakdata.kafka.SchemaRegistryTopicHook.createSchemaRegistryClient;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -93,10 +93,6 @@ public final class ImprovedAdminClient implements AutoCloseable {
     public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
         return Optional.ofNullable(this.schemaRegistryClient)
                 .map(PooledSchemaRegistryClient::new);
-    }
-
-    public SchemaTopicClient getSchemaTopicClient() {
-        return new SchemaTopicClient(this.getTopicClient(), this.getSchemaRegistryClient().orElse(null));
     }
 
     public TopicClient getTopicClient() {
