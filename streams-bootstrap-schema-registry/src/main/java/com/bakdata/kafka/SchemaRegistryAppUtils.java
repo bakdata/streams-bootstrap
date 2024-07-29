@@ -26,8 +26,6 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -40,26 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 public class SchemaRegistryAppUtils {
 
     /**
-     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
-     *
-     * @param kafkaProperties properties for creating {@code SchemaRegistryClient}. Must include
-     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
-     * @return {@code SchemaRegistryClient}
-     * @see SchemaRegistryTopicHook#createSchemaRegistryClient(Map, String)
-     */
-    public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
-        final String schemaRegistryUrl =
-                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        if (schemaRegistryUrl == null) {
-            throw new IllegalArgumentException(String.format("%s must be specified in properties",
-                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
-        }
-        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
-        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        return SchemaRegistryTopicHook.createSchemaRegistryClient(properties, schemaRegistryUrl);
-    }
-
-    /**
      * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary
      * properties to create a {@link SchemaRegistryClient} are part of {@code kafkaProperties}.
      *
@@ -68,7 +46,8 @@ public class SchemaRegistryAppUtils {
      * @see HasTopicHooks#registerTopicHook(TopicHook)
      */
     public static TopicHook createTopicHook(final Map<String, Object> kafkaProperties) {
-        final SchemaRegistryClient schemaRegistryClient = createSchemaRegistryClient(kafkaProperties);
+        final SchemaRegistryClient schemaRegistryClient =
+                SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties);
         return new SchemaRegistryTopicHook(schemaRegistryClient);
     }
 
