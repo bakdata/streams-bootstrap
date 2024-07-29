@@ -11,13 +11,13 @@ kind: Deployment
 {{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
-{{- if or .Values.autoscaling.consumerGroup .Values.annotations }}
+{{- if or .Values.kafka.applicationId .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
-  {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
+  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ .Values.kafka.applicationId | quote }}
   {{- end }}
 {{- end }}
   labels:
@@ -147,6 +147,10 @@ spec:
           {{- if and (hasKey .Values.kafka "labeledInputPatterns") (.Values.kafka.labeledInputPatterns) }}
             - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
               value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
+          {{- end }}
+          {{- if hasKey .Values.kafka "applicationId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
+              value: {{ .Values.kafka.applicationId | quote }}
           {{- end }}
           {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"

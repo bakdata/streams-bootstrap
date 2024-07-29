@@ -35,7 +35,7 @@ class AvroMirrorTest {
     private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
     @RegisterExtension
     final TestTopologyExtension<TestRecord, TestRecord> testTopology =
-            StreamsBootstrapTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
+            TestTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
 
     private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(StreamsTopicConfig.builder()
@@ -69,7 +69,7 @@ class AvroMirrorTest {
     }
 
     private Configurator createSerdeFactory() {
-        return StreamsBootstrapTopologyFactory.createConfigurator(this.testTopology);
+        return TestTopologyFactory.createConfigurator(this.testTopology);
     }
 
     private Serde<TestRecord> getKeySerde() {

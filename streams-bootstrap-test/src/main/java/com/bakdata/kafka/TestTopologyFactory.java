@@ -36,7 +36,7 @@ import lombok.experimental.UtilityClass;
  * Utility class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
 @UtilityClass
-public class StreamsBootstrapTopologyFactory {
+public class TestTopologyFactory {
 
     /**
      * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects are {@link KafkaEndpointConfig}
@@ -113,14 +113,7 @@ public class StreamsBootstrapTopologyFactory {
      */
     public static Function<String, Map<String, Object>> getKafkaPropertiesWithSchemaRegistryUrl(
             final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        return schemaRegistryUrl -> {
-            final KafkaEndpointConfig endpointConfig = newEndpointConfig()
-                    .properties(Map.of(
-                            AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl
-                    ))
-                    .build();
-            return app.getKafkaProperties(endpointConfig);
-        };
+        return schemaRegistryUrl -> getKafkaProperties(app, schemaRegistryUrl);
     }
 
     /**
@@ -134,14 +127,20 @@ public class StreamsBootstrapTopologyFactory {
         return new Configurator(testTopology.getProperties());
     }
 
-    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final KafkaEndpointConfig endpointConfig = createEndpointConfig();
+    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app,
+            final String schemaRegistryUrl) {
+        final KafkaEndpointConfig endpointConfig = newEndpointConfig()
+                .properties(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl
+                ))
+                .build();
         return app.getKafkaProperties(endpointConfig);
     }
 
-    private static KafkaEndpointConfig createEndpointConfig() {
-        return newEndpointConfig()
+    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
+        final KafkaEndpointConfig endpointConfig = newEndpointConfig()
                 .build();
+        return app.getKafkaProperties(endpointConfig);
     }
 
     private static KafkaEndpointConfigBuilder newEndpointConfig() {

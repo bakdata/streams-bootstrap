@@ -44,6 +44,7 @@ kafka:
   labeledOutputTopics: {}
   #   label: output
   # errorTopic: error
+  # applicationId: foo
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
@@ -96,7 +97,6 @@ jmx:
 
 autoscaling:
   enabled: false
-  # consumerGroup: foo
   # lagThreshold: "1000"
   pollingInterval: 30
   cooldownPeriod: 300
