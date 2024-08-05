@@ -44,7 +44,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `imagePullPolicy`  | Docker image pull policy.                   | `Always`      |
 | `imagePullSecrets` | Secrets to be used for private registries.  |               |
 
-### Streams
+### Kafka
 
 | Parameter                   | Description                                                                                                  | Default |
 |-----------------------------|--------------------------------------------------------------------------------------------------------------|---------|
