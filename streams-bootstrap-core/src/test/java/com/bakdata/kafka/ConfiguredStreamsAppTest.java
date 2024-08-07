@@ -98,9 +98,10 @@ class ConfiguredStreamsAppTest {
         ));
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
-                .build()))
+                .build();
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'default.key.serde' should not be configured already");
     }
@@ -112,9 +113,10 @@ class ConfiguredStreamsAppTest {
         ));
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
-                .build()))
+                .build();
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'default.value.serde' should not be configured already");
     }
@@ -126,9 +128,10 @@ class ConfiguredStreamsAppTest {
         ));
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
-                .build()))
+                .build();
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'application.id' should not be configured already");
     }
@@ -140,9 +143,10 @@ class ConfiguredStreamsAppTest {
         ));
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
-                .build()))
+                .build();
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");
     }
@@ -154,10 +158,11 @@ class ConfiguredStreamsAppTest {
         ));
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        assertThatThrownBy(() -> configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("fake")
                 .schemaRegistryUrl("fake")
-                .build()))
+                .build();
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");
     }
