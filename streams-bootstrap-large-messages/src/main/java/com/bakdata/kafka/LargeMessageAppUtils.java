@@ -26,6 +26,8 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import java.util.Map;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -44,13 +46,7 @@ public class LargeMessageAppUtils {
     public static TopicHook createTopicHook(final Map<String, Object> kafkaProperties) {
         final AbstractLargeMessageConfig largeMessageConfig = new AbstractLargeMessageConfig(kafkaProperties);
         final LargeMessageStoringClient storer = largeMessageConfig.getStorer();
-        //TODO: close storer once it implements AutoCloseable
-        return new TopicHook() {
-            @Override
-            public void deleted(final String topic) {
-                storer.deleteAllFiles(topic);
-            }
-        };
+        return new LargeMessageTopicHook(storer);
     }
 
     /**
@@ -77,5 +73,16 @@ public class LargeMessageAppUtils {
     public static <T> T registerTopicHook(
             final HasTopicHooks<T> cleanUpConfiguration, final EffectiveAppConfiguration<?> configuration) {
         return cleanUpConfiguration.registerTopicHook(createTopicHook(configuration));
+    }
+
+    @RequiredArgsConstructor
+    private static class LargeMessageTopicHook implements TopicHook {
+        //TODO: close storer once it implements AutoCloseable
+        private final @NonNull LargeMessageStoringClient storer;
+
+        @Override
+        public void deleted(final String topic) {
+            this.storer.deleteAllFiles(topic);
+        }
     }
 }
