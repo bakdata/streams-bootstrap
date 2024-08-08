@@ -1,4 +1,8 @@
 {{- $root := . -}}
+{{- if and .Values.persistence.enabled (not .Values.persistence.size) }}
+{{- fail "When persistence is enabled, you must set .Values.persistence.size" }}
+{{- end }}
+
 {{- if .Capabilities.APIVersions.Has "apps/v1" }}
 apiVersion: apps/v1
 {{- else }}
