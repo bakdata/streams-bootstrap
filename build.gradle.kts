@@ -1,7 +1,7 @@
 plugins {
     id("com.bakdata.release") version "1.4.0"
     id("com.bakdata.sonar") version "1.4.0"
-    id("com.bakdata.sonatype") version "1.4.0"
+    id("com.bakdata.sonatype") version "1.4.1"
     id("io.freefair.lombok") version "8.4"
 }
 
@@ -16,6 +16,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://packages.confluent.io/maven/")
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
     }
 }
 
