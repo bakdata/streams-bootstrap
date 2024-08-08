@@ -1,5 +1,8 @@
 {{ if .Values.autoscaling.enabled }}
-{{- $root := . -}}
+  {{- if not (and .Values.kafka.applicationId .Values.autoscaling.lagThreshold) }}
+  {{- fail "When autoscaling is enabled, you must set both .Values.kafka.applicationId and .Values.autoscaling.lagThreshold" }}
+  {{- end }}
+  {{- $root := . -}}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -72,4 +75,4 @@ spec:
   {{- if .Values.autoscaling.additionalTriggers }}
   {{- .Values.autoscaling.additionalTriggers | toYaml | nindent 4 }}
   {{- end }}
-{{ end }}
+  {{ end }}
