@@ -75,4 +75,4 @@ spec:
   {{- if .Values.autoscaling.additionalTriggers }}
   {{- .Values.autoscaling.additionalTriggers | toYaml | nindent 4 }}
   {{- end }}
-  {{ end }}
+{{ end }}
