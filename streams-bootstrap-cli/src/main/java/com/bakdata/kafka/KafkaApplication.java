@@ -259,13 +259,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Called before running the application, i.e., invoking {@link #run()}
-     */
-    public void prepareRun() {
-        // do nothing by default
-    }
-
-    /**
      * Create a new {@code ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
@@ -278,6 +271,13 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Called before starting the application, e.g., invoking {@link #run()}
      */
     protected void onApplicationStart() {
+        // do nothing by default
+    }
+
+    /**
+     * Called before running the application, i.e., invoking {@link #run()}
+     */
+    public void prepareRun() {
         // do nothing by default
     }
 
