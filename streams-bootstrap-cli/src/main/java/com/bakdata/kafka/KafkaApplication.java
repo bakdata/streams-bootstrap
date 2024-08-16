@@ -277,7 +277,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     /**
      * Called before running the application, i.e., invoking {@link #run()}
      */
-    public void prepareRun() {
+    protected void prepareRun() {
         // do nothing by default
     }
 
