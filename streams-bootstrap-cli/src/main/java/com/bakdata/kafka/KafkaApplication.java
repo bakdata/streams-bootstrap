@@ -154,9 +154,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      *
      * @return app
      */
-    public A createApp() {
-        return this.createApp();
-    }
+    public abstract A createApp();
 
     /**
      * Clean all resources associated with this application
