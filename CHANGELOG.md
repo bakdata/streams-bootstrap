@@ -1,8 +1,51 @@
 # Change Log
 
-## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.23.0...2.23.0)
+## [3.0.1](https://github.com/bakdata/streams-bootstrap/tree/3.0.1) (2024-08-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.1...3.0.1)
 
+
+## [3.0.1](https://github.com/bakdata/streams-bootstrap/tree/3.0.1) (2024-08-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.23.0...3.0.1)
+
+**Closed issues:**
+
+- Change default productive  to false [\#151](https://github.com/bakdata/streams-bootstrap/issues/151)
+- CloseOptions supports timeout [\#189](https://github.com/bakdata/streams-bootstrap/issues/189)
+- Rename `\-\-brokers` to `\-\-bootstrap\-server` [\#232](https://github.com/bakdata/streams-bootstrap/issues/232)
+- Remove avro dependency [\#235](https://github.com/bakdata/streams-bootstrap/issues/235)
+- Rename extra\-input/output topic to named\-input/output topic [\#231](https://github.com/bakdata/streams-bootstrap/issues/231)
+- Remove guava dependency [\#236](https://github.com/bakdata/streams-bootstrap/issues/236)
+- Remove dependency on log4j [\#162](https://github.com/bakdata/streams-bootstrap/issues/162)
+- Separate rclone chart from streams\-bootstrap [\#229](https://github.com/bakdata/streams-bootstrap/issues/229)
+- Investigate the necessity of `nameOverride` [\#185](https://github.com/bakdata/streams-bootstrap/issues/185)
+- Distinguish pod and deployment annotations in Helm charts [\#171](https://github.com/bakdata/streams-bootstrap/issues/171)
+- Migrate from Azure Pipelines to GitHub Actions [\#139](https://github.com/bakdata/streams-bootstrap/issues/139)
+
+**Merged pull requests:**
+
+- Create v3 [\#250](https://github.com/bakdata/streams-bootstrap/pull/250) ([@philipp94831](https://github.com/philipp94831))
+- Pre\-bump version to 3.0.1\-SNAPSHOT [\#257](https://github.com/bakdata/streams-bootstrap/pull/257) ([@philipp94831](https://github.com/philipp94831))
+- Add hook to prepare running of app [\#256](https://github.com/bakdata/streams-bootstrap/pull/256) ([@philipp94831](https://github.com/philipp94831))
+- Validate persistence mandatory chart values \(persistence.size\) [\#255](https://github.com/bakdata/streams-bootstrap/pull/255) ([@raminqaf](https://github.com/raminqaf))
+- Validate autoscaling mandatory fields when it is enabled [\#254](https://github.com/bakdata/streams-bootstrap/pull/254) ([@raminqaf](https://github.com/raminqaf))
+- Fix Sonarqube issues [\#253](https://github.com/bakdata/streams-bootstrap/pull/253) ([@philipp94831](https://github.com/philipp94831))
+- Rename Streams section in Helm chart docs [\#252](https://github.com/bakdata/streams-bootstrap/pull/252) ([@philipp94831](https://github.com/philipp94831))
+- Make CleanUpRunner closeable [\#247](https://github.com/bakdata/streams-bootstrap/pull/247) ([@philipp94831](https://github.com/philipp94831))
+- Rename TestTopologyFactory [\#249](https://github.com/bakdata/streams-bootstrap/pull/249) ([@philipp94831](https://github.com/philipp94831))
+- Replace Guava usages [\#246](https://github.com/bakdata/streams-bootstrap/pull/246) ([@philipp94831](https://github.com/philipp94831))
+- Remove unnecessary schema registry configurations in tests [\#248](https://github.com/bakdata/streams-bootstrap/pull/248) ([@philipp94831](https://github.com/philipp94831))
+- Add CLI parameter to specify streams application ID [\#243](https://github.com/bakdata/streams-bootstrap/pull/243) ([@philipp94831](https://github.com/philipp94831))
+- Rename `\-\-brokers` to `\-\-bootstrap\-servers` [\#242](https://github.com/bakdata/streams-bootstrap/pull/242) ([@philipp94831](https://github.com/philipp94831))
+- Rename extra topics to labeled topics [\#240](https://github.com/bakdata/streams-bootstrap/pull/240) ([@philipp94831](https://github.com/philipp94831))
+- Rename streams section to kafka in Helm charts [\#241](https://github.com/bakdata/streams-bootstrap/pull/241) ([@philipp94831](https://github.com/philipp94831))
+- Add default serialization config to apps [\#239](https://github.com/bakdata/streams-bootstrap/pull/239) ([@philipp94831](https://github.com/philipp94831))
+- Remove log4j dependency and debug parameter [\#238](https://github.com/bakdata/streams-bootstrap/pull/238) ([@philipp94831](https://github.com/philipp94831))
+- Add HostInfo to ImprovedStreamsConfig [\#230](https://github.com/bakdata/streams-bootstrap/pull/230) ([@raminqaf](https://github.com/raminqaf))
+- Use KAFKA\_ as prefix for environment Kafka config [\#209](https://github.com/bakdata/streams-bootstrap/pull/209) ([@philipp94831](https://github.com/philipp94831))
+- Remove guava dependency [\#237](https://github.com/bakdata/streams-bootstrap/pull/237) ([@philipp94831](https://github.com/philipp94831))
+- Separate CLI and application [\#207](https://github.com/bakdata/streams-bootstrap/pull/207) ([@philipp94831](https://github.com/philipp94831))
+- feat: remove rclone [\#234](https://github.com/bakdata/streams-bootstrap/pull/234) ([@DerTiedemann](https://github.com/DerTiedemann))
+- fix: add gh actions badge [\#233](https://github.com/bakdata/streams-bootstrap/pull/233) ([@DerTiedemann](https://github.com/DerTiedemann))
 
 ## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.23.0)
