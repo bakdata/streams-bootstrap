@@ -160,6 +160,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Clean all resources associated with this application
      */
     public void clean() {
+        this.prepareClean();
         try (final CleanableApp<CR> cleanableApp = this.createCleanableApp()) {
             final CR cleanUpRunner = cleanableApp.getCleanUpRunner();
             cleanUpRunner.clean();
@@ -276,6 +277,13 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Called before running the application, i.e., invoking {@link #run()}
      */
     protected void prepareRun() {
+        // do nothing by default
+    }
+
+    /**
+     * Called before cleaning the application, i.e., invoking {@link #clean()}
+     */
+    protected void prepareClean() {
         // do nothing by default
     }
 
