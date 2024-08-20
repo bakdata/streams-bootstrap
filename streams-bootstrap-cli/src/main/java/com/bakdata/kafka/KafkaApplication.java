@@ -152,25 +152,15 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     /**
      * Create a new app that will be configured and executed according to this application.
      *
-     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
      * @return app
      */
-    public abstract A createApp(boolean cleanUp);
-
-    /**
-     * Create a new app that will be configured and executed according to this application.
-     *
-     * @return app
-     */
-    public A createApp() {
-        return this.createApp(false);
-    }
+    public abstract A createApp();
 
     /**
      * Clean all resources associated with this application
      */
     public void clean() {
+        this.prepareClean();
         try (final CleanableApp<CR> cleanableApp = this.createCleanableApp()) {
             final CR cleanUpRunner = cleanableApp.getCleanUpRunner();
             cleanUpRunner.clean();
@@ -197,6 +187,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     @Override
     public void run() {
+        this.prepareRun();
         try (final RunnableApp<R> runnableApp = this.createRunnableApp()) {
             final R runner = runnableApp.getRunner();
             runner.run();
@@ -212,43 +203,23 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create a new {@code ExecutableApp} that will be executed according to the requested command.
+     *
      * @return {@code ExecutableApp}
      */
     public final E createExecutableApp() {
-        return this.createExecutableApp(false);
-    }
-
-    /**
-     * Create a new {@code ExecutableApp} that will be executed according to the requested command.
-     *
-     * @param cleanUp whether app is created for clean up purposes. In that case, the user might want to skip
-     * initialization of expensive resources.
-     * @return {@code ExecutableApp}
-     */
-    public final E createExecutableApp(final boolean cleanUp) {
-        final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp(cleanUp);
+        final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
         final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
         return configuredStreamsApp.withEndpoint(endpointConfig);
     }
 
     /**
      * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     *
      * @return {@code ConfiguredApp}
      */
     public final CA createConfiguredApp() {
-        return this.createConfiguredApp(false);
-    }
-
-    /**
-     * Create a new {@code ConfiguredApp} that will be executed according to this application.
-     *
-     * @param cleanUp whether {@code ConfiguredApp} is created for clean up purposes. In that case, the user might want
-     * to skip initialization of expensive resources.
-     * @return {@code ConfiguredApp}
-     */
-    public final CA createConfiguredApp(final boolean cleanUp) {
         final AppConfiguration<T> configuration = this.createConfiguration();
-        final A app = this.createApp(cleanUp);
+        final A app = this.createApp();
         return this.createConfiguredApp(app, configuration);
     }
 
@@ -266,7 +237,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@code RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
-        final ExecutableApp<R, ?, O> app = this.createExecutableApp(false);
+        final ExecutableApp<R, ?, O> app = this.createExecutableApp();
         final Optional<O> executionOptions = this.createExecutionOptions();
         final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
         final RunnableApp<R> runnableApp = new RunnableApp<>(app, runner, this.activeApps::remove);
@@ -279,7 +250,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@code CleanableApp}
      */
     public final CleanableApp<CR> createCleanableApp() {
-        final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp(true);
+        final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp();
         final CR cleanUpRunner = executableApp.createCleanUpRunner();
         final CleanableApp<CR> cleanableApp = new CleanableApp<>(executableApp, cleanUpRunner, this.activeApps::remove);
         this.activeApps.add(cleanableApp);
@@ -299,6 +270,20 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Called before starting the application, e.g., invoking {@link #run()}
      */
     protected void onApplicationStart() {
+        // do nothing by default
+    }
+
+    /**
+     * Called before running the application, i.e., invoking {@link #run()}
+     */
+    protected void prepareRun() {
+        // do nothing by default
+    }
+
+    /**
+     * Called before cleaning the application, i.e., invoking {@link #clean()}
+     */
+    protected void prepareClean() {
         // do nothing by default
     }
 

@@ -72,7 +72,7 @@ public class MyStreamsApplication extends KafkaStreamsApplication {
     }
 
     @Override
-    public StreamsApp createApp(final boolean cleanUp) {
+    public StreamsApp createApp() {
       return new StreamsApp() {
         @Override
         public void buildTopology(final TopologyBuilder builder) {
@@ -163,7 +163,7 @@ public class MyProducerApplication extends KafkaProducerApplication {
     }
 
     @Override
-    public ProducerApp createApp(final boolean cleanUp) {
+    public ProducerApp createApp() {
       return new ProducerApp() {
         @Override
         public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
