@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "streams-app.name" . }}
+  {{- include "streams-app.annotations" . | nindent 2 }}
 data:
   {{- range $key, $value := .Values.files }}
   {{ $key }}: {{ $value.content | quote }}

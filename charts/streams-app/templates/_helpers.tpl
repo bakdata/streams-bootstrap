@@ -27,3 +27,20 @@ Create chart name and version as used by the chart label.
 {{- define "streams-app.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Helper function to add annotations to resources
+*/}}
+{{- define "streams-app.annotations" -}}
+{{- if or .Values.kafka.applicationId .Values.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.annotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+  {{- end }}
+
+  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ .Values.kafka.applicationId | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
+

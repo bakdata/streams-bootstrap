@@ -13,12 +13,7 @@ kind: Job
   {{- end }}
 metadata:
   name: {{ template "producer-app.fullname" . }}
-{{- if .Values.annotations }}
-  annotations:
-  {{- range $key, $value := .Values.annotations }}
-    {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
-{{- end }}
+  {{- include "producer-app.annotations" . | nindent 2 }}
   labels:
     app: {{ template "producer-app.name" . }}
     chart: {{ template "producer-app.chart" . }}

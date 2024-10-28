@@ -7,6 +7,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ template "streams-app.fullname" . }}-so
+  {{- include "streams-app.annotations" . | nindent 2 }}
 spec:
   scaleTargetRef:
     {{- if .Capabilities.APIVersions.Has "apps/v1" }}
