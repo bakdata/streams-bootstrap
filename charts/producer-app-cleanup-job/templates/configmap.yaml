@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "producer-app.name" . }}
+  {{- include "producer-app.annotations" . }}
 data:
   {{- range $key, $value := .Values.files }}
   {{ $key }}: {{ $value.content | quote }}

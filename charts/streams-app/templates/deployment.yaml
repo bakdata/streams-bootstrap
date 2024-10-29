@@ -15,15 +15,7 @@ kind: Deployment
 {{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
-{{- if or .Values.kafka.applicationId .Values.annotations }}
-  annotations:
-  {{- range $key, $value := .Values.annotations }}
-    {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
-  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.kafka.applicationId | quote }}
-  {{- end }}
-{{- end }}
+  {{- include "streams-app.deployment-annotations" . }}
   labels:
     app: {{ template "streams-app.name" . }}
     chart: {{ template "streams-app.chart" . }}
