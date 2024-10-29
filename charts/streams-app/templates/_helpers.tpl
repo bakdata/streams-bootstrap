@@ -43,12 +43,16 @@ This will be used across resources.
 
 {{/*
 Define annotations helper for Deployment.
-Includes default annotations and conditionally adds consumerGroup.
-Only includes annotations if there is content.
+Includes default annotations and conditionally adds consumerGroup if applicable.
 */}}
 {{- define "streams-app.deployment-annotations" -}}
-{{- include "streams-app.annotations" . }}
-{{- if .Values.kafka.applicationId }}
+{{- if or .Values.annotations .Values.kafka.applicationId }}
+  annotations:
+{{- range $key, $value := .Values.annotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+{{- end }}
+
+  {{- /* Conditionally add the consumerGroup annotation if needed */ -}}
   {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
     consumerGroup: {{ .Values.kafka.applicationId | quote }}
   {{- end }}
