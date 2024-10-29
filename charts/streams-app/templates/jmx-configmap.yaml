@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "streams-app.name" . }}-jmx-configmap
-  {{- include "streams-app.default-annotations" . }}
+  {{- include "streams-app.annotations" . }}
   labels:
     app: {{ template "streams-app.name" . }}
     chart: {{ template "streams-app.chart" . }}

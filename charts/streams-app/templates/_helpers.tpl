@@ -32,7 +32,7 @@ Create chart name and version as used by the chart label.
 Define default annotations from .Values.annotations.
 This will be used across resources.
 */}}
-{{- define "streams-app.default-annotations" -}}
+{{- define "streams-app.annotations" -}}
 {{- if or .Values.annotations }}
   annotations:
 {{- range $key, $value := .Values.annotations }}
@@ -47,7 +47,7 @@ Includes default annotations and conditionally adds consumerGroup.
 Only includes annotations if there is content.
 */}}
 {{- define "streams-app.deployment-annotations" -}}
-{{- include "streams-app.default-annotations" . }}
+{{- include "streams-app.annotations" . }}
 {{- if .Values.kafka.applicationId }}
   {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
     consumerGroup: {{ .Values.kafka.applicationId | quote }}

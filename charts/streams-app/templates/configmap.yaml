@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "streams-app.name" . }}
-  {{- include "streams-app.default-annotations" . }}
+  {{- include "streams-app.annotations" . }}
 data:
   {{- range $key, $value := .Values.files }}
   {{ $key }}: {{ $value.content | quote }}
