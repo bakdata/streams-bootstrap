@@ -3,7 +3,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "streams-app.fullname" . }}
-  {{- include "streams-app.annotations" . | nindent 2 }}
+  {{- include "streams-app.annotations" . }}
   labels:
     app: {{ template "streams-app.name" . }}
     chart: {{ template "streams-app.chart" . }}

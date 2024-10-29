@@ -8,8 +8,7 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: {{ template "producer-app.fullname" . }}
-  {{- include "producer-app.annotations" . | nindent 2 }}
-
+  {{- include "producer-app.annotations" . }}
   labels:
     app: {{ template "producer-app.name" . }}
     chart: {{ template "producer-app.chart" . }}

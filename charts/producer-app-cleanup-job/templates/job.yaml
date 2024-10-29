@@ -3,7 +3,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "producer-app.fullname" . }}
-  {{- include "producer-app.annotations" . | nindent 2 }}
+  {{- include "producer-app.annotations" . }}
   labels:
     app: {{ template "producer-app.name" . }}
     chart: {{ template "producer-app.chart" . }}
