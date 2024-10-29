@@ -15,7 +15,7 @@ kind: Deployment
 {{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
-  {{- include "streams-app.annotations" . | nindent 2 }}
+  {{- include "streams-app.deployment-annotations" . }}
   labels:
     app: {{ template "streams-app.name" . }}
     chart: {{ template "streams-app.chart" . }}

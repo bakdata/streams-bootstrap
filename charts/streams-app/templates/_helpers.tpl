@@ -29,15 +29,26 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Helper function to add annotations to resources
+Define default annotations from .Values.annotations.
+This will be used across resources.
 */}}
-{{- define "streams-app.annotations" -}}
-{{- if or .Values.kafka.applicationId .Values.annotations }}
+{{- define "streams-app.default-annotations" -}}
+{{- if or .Values.annotations }}
   annotations:
-  {{- range $key, $value := .Values.annotations }}
+{{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
 
+{{/*
+Define annotations helper for Deployment.
+Includes default annotations and conditionally adds consumerGroup.
+Only includes annotations if there is content.
+*/}}
+{{- define "streams-app.deployment-annotations" -}}
+{{- include "streams-app.default-annotations" . }}
+{{- if .Values.kafka.applicationId }}
   {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
     consumerGroup: {{ .Values.kafka.applicationId | quote }}
   {{- end }}
