@@ -1,8 +1,15 @@
 # Change Log
 
-## [3.0.1](https://github.com/bakdata/streams-bootstrap/tree/3.0.1) (2024-08-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.1...3.0.1)
+## [3.0.2](https://github.com/bakdata/streams-bootstrap/tree/3.0.2) (2024-10-29)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.2...3.0.2)
 
+
+## [3.0.2](https://github.com/bakdata/streams-bootstrap/tree/3.0.2) (2024-10-29)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.1...3.0.2)
+
+**Merged pull requests:**
+
+- Add annotations to all Kubernetes resources [\#258](https://github.com/bakdata/streams-bootstrap/pull/258) ([@raminqaf](https://github.com/raminqaf))
 
 ## [3.0.1](https://github.com/bakdata/streams-bootstrap/tree/3.0.1) (2024-08-20)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.23.0...3.0.1)
