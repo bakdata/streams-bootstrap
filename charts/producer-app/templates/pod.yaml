@@ -128,7 +128,7 @@ spec:
     {{- if .Values.files }}
     - name: config
       configMap:
-        name: {{ template "producer-app.chart.name" . }}
+        name: {{ template "producer-app.name" . }}
     {{- end }}
     {{- range .Values.secretFilesRefs }}
     - name: {{ .volume }}
