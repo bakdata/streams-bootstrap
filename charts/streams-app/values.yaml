@@ -101,6 +101,7 @@ autoscaling:
   # lagThreshold: "1000"
   pollingInterval: 30
   cooldownPeriod: 300
+  initialCooldownPeriod: 0
   offsetResetPolicy: earliest
   minReplicas: 0
   maxReplicas: 1

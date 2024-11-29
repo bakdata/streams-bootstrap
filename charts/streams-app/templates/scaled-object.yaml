@@ -23,6 +23,7 @@ spec:
     name: {{ template "streams-app.fullname" . }}
   pollingInterval: {{ .Values.autoscaling.pollingInterval }}
   cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
+  initialCooldownPeriod: {{ .Values.autoscaling.initialCooldownPeriod }}
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
   {{- if hasKey .Values.autoscaling "idleReplicas" }}

@@ -103,6 +103,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                                   |            |
 | `autoscaling.pollingInterval`    | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                            | `30`       |
 | `autoscaling.cooldownPeriod`     | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                             | `300`      |
+<!-- initialCooldownPeriod -->
 | `autoscaling.offsetResetPolicy`  | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition.           | `earliest` |
 | `autoscaling.minReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                            | `0`        |
 | `autoscaling.maxReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                            | `1`        |
