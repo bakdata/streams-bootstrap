@@ -1,8 +1,15 @@
 # Change Log
 
-## [3.0.2](https://github.com/bakdata/streams-bootstrap/tree/3.0.2) (2024-10-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.2...3.0.2)
+## [3.0.3](https://github.com/bakdata/streams-bootstrap/tree/3.0.3) (2024-11-29)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.3...3.0.3)
 
+
+## [3.0.3](https://github.com/bakdata/streams-bootstrap/tree/3.0.3) (2024-11-29)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.2...3.0.3)
+
+**Merged pull requests:**
+
+- Fix producer app name template [\#259](https://github.com/bakdata/streams-bootstrap/pull/259) ([@raminqaf](https://github.com/raminqaf))
 
 ## [3.0.2](https://github.com/bakdata/streams-bootstrap/tree/3.0.2) (2024-10-29)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.1...3.0.2)
