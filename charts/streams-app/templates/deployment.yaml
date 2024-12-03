@@ -28,7 +28,7 @@ spec:
   serviceName: {{ template "streams-app.name" . }}
   podManagementPolicy: Parallel
   {{- end }}
-  {{- if .Values.replicaCount }}
+  {{- if (not .Values.autoscaling.enabled) }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
