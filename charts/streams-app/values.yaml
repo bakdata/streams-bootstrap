@@ -1,6 +1,6 @@
 nameOverride: bakdata-streams-app
 
-replicaCount: 1
+# replicaCount: 1
 
 image: streamsApp
 imageTag: latest

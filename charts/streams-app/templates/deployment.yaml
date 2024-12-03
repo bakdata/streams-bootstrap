@@ -28,7 +28,9 @@ spec:
   serviceName: {{ template "streams-app.name" . }}
   podManagementPolicy: Parallel
   {{- end }}
+  {{- if .Values.replicaCount }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ template "streams-app.name" . }}
