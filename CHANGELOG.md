@@ -1,8 +1,15 @@
 # Change Log
 
-## [3.0.3](https://github.com/bakdata/streams-bootstrap/tree/3.0.3) (2024-11-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.3...3.0.3)
+## [3.0.4](https://github.com/bakdata/streams-bootstrap/tree/3.0.4) (2024-12-03)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.0.4)
 
+
+## [3.0.4](https://github.com/bakdata/streams-bootstrap/tree/3.0.4) (2024-12-03)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.3...3.0.4)
+
+**Merged pull requests:**
+
+- Do not configure replicas if autoscaling is enabled [\#260](https://github.com/bakdata/streams-bootstrap/pull/260) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.0.3](https://github.com/bakdata/streams-bootstrap/tree/3.0.3) (2024-11-29)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.2...3.0.3)
