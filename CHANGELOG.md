@@ -1,8 +1,15 @@
 # Change Log
 
-## [3.0.4](https://github.com/bakdata/streams-bootstrap/tree/3.0.4) (2024-12-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.0.4)
+## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.1.0)
 
+
+## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.1.0)
+
+**Merged pull requests:**
+
+- Retain type of Streams/ProducerApp in CLI module [\#261](https://github.com/bakdata/streams-bootstrap/pull/261) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.0.4](https://github.com/bakdata/streams-bootstrap/tree/3.0.4) (2024-12-03)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.3...3.0.4)
