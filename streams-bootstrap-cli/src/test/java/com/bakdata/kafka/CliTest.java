@@ -44,14 +44,14 @@ import org.junit.jupiter.api.Test;
 
 class CliTest {
 
-    private static void runApp(final KafkaStreamsApplication app, final String... args) {
+    private static void runApp(final KafkaStreamsApplication<?> app, final String... args) {
         new Thread(() -> KafkaApplication.startApplication(app, args)).start();
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -86,7 +86,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnRunError() {
-        KafkaApplication.startApplication(new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
+        KafkaApplication.startApplication(new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 throw new UnsupportedOperationException();
@@ -111,7 +111,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnCleanupError() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -147,7 +147,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(2)
     void shouldExitWithErrorCodeOnMissingBootstrapServersParameter() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -181,7 +181,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnInconsistentAppId() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -215,7 +215,7 @@ class CliTest {
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
         try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
-                final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
+                final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
@@ -252,7 +252,7 @@ class CliTest {
         final String input = "input";
         final String output = "output";
         try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
-                final KafkaStreamsApplication app = new SimpleKafkaStreamsApplication(() -> new StreamsApp() {
+                final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
@@ -293,7 +293,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorOnCleanupError() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -323,7 +323,7 @@ class CliTest {
 
     @Test
     void shouldParseArguments() {
-        try (final KafkaStreamsApplication app = new KafkaStreamsApplication() {
+        try (final KafkaStreamsApplication<?> app = new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
