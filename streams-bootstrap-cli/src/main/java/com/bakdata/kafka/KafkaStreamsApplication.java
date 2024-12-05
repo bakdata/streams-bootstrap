@@ -57,7 +57,9 @@ import picocli.CommandLine.UseDefaultConverter;
  *     <li>{@link #volatileGroupInstanceId}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options. Run it by calling
- * {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
+ * {@link #startApplication(KafkaApplication, String[])} with an instance of your class from your main.
+ *
+ * @param <T> type of {@link StreamsApp} created by this application
  */
 @ToString(callSuper = true)
 @Getter
@@ -65,9 +67,9 @@ import picocli.CommandLine.UseDefaultConverter;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Streams application.")
-public abstract class KafkaStreamsApplication extends
+public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
         KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions,
-                ExecutableStreamsApp<StreamsApp>, ConfiguredStreamsApp<StreamsApp>, StreamsTopicConfig, StreamsApp> {
+                ExecutableStreamsApp<T>, ConfiguredStreamsApp<T>, StreamsTopicConfig, T> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -138,9 +140,9 @@ public abstract class KafkaStreamsApplication extends
     }
 
     @Override
-    public final ConfiguredStreamsApp<StreamsApp> createConfiguredApp(final StreamsApp app,
+    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app,
             final AppConfiguration<StreamsTopicConfig> configuration) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(app, configuration);
+        final ConfiguredStreamsApp<T> configuredApp = new ConfiguredStreamsApp<>(app, configuration);
         if (this.applicationId != null && !configuredApp.getUniqueAppId().equals(this.applicationId)) {
             throw new IllegalArgumentException(
                     "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");

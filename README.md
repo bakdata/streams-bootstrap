@@ -66,7 +66,7 @@ import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
-public class MyStreamsApplication extends KafkaStreamsApplication {
+public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
     public static void main(final String[] args) {
       startApplication(new MyStreamsApplication(), args);
     }
@@ -157,7 +157,7 @@ import java.util.Map;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-public class MyProducerApplication extends KafkaProducerApplication {
+public class MyProducerApplication extends KafkaProducerApplication<ProducerApp> {
     public static void main(final String[] args) {
       startApplication(new MyProducerApplication(), args);
     }

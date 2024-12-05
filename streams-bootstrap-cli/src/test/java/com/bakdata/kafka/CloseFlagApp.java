@@ -33,7 +33,7 @@ import org.apache.kafka.streams.kstream.KStream;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CloseFlagApp extends KafkaStreamsApplication {
+public class CloseFlagApp extends KafkaStreamsApplication<StreamsApp> {
 
     private boolean closed = false;
     private boolean appClosed = false;

@@ -30,13 +30,15 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * {@code KafkaStreamsApplication} without any additional configuration options.
+ *
+ * @param <T> type of {@link StreamsApp} created by this application
  */
 @RequiredArgsConstructor
-public final class SimpleKafkaStreamsApplication extends KafkaStreamsApplication {
-    private final @NonNull Supplier<StreamsApp> appFactory;
+public final class SimpleKafkaStreamsApplication<T extends StreamsApp> extends KafkaStreamsApplication<T> {
+    private final @NonNull Supplier<T> appFactory;
 
     @Override
-    public StreamsApp createApp() {
+    public T createApp() {
         return this.appFactory.get();
     }
 }

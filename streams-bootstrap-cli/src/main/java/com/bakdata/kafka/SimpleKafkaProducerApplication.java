@@ -30,13 +30,15 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * {@code KafkaProducerApplication} without any additional configuration options.
+ *
+ * @param <T> type of {@link ProducerApp} created by this application
  */
 @RequiredArgsConstructor
-public final class SimpleKafkaProducerApplication extends KafkaProducerApplication {
-    private final @NonNull Supplier<ProducerApp> appFactory;
+public final class SimpleKafkaProducerApplication<T extends ProducerApp> extends KafkaProducerApplication<T> {
+    private final @NonNull Supplier<T> appFactory;
 
     @Override
-    public ProducerApp createApp() {
+    public T createApp() {
         return this.appFactory.get();
     }
 }

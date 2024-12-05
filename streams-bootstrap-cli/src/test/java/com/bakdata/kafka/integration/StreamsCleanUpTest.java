@@ -67,12 +67,12 @@ class StreamsCleanUpTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    private static void runAppAndClose(final KafkaStreamsApplication app) throws InterruptedException {
+    private static void runAppAndClose(final KafkaStreamsApplication<?> app) throws InterruptedException {
         runApp(app);
         app.stop();
     }
 
-    private static void runApp(final KafkaStreamsApplication app) throws InterruptedException {
+    private static void runApp(final KafkaStreamsApplication<?> app) throws InterruptedException {
         // run in Thread because the application blocks indefinitely
         new Thread(app).start();
         // Wait until stream application has consumed all data
@@ -93,7 +93,7 @@ class StreamsCleanUpTest {
 
     @Test
     void shouldClean() throws InterruptedException {
-        try (final KafkaStreamsApplication app = this.createWordCountApplication()) {
+        try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
             final SendValuesTransactional<String> sendRequest =
                     SendValuesTransactional.inTransaction(app.getInputTopics().get(0),
                             List.of("blub", "bla", "blub")).useDefaults();
@@ -120,7 +120,7 @@ class StreamsCleanUpTest {
 
     @Test
     void shouldReset() throws InterruptedException {
-        try (final KafkaStreamsApplication app = this.createWordCountApplication()) {
+        try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
             final SendValuesTransactional<String> sendRequest =
                     SendValuesTransactional.inTransaction(app.getInputTopics().get(0),
                             List.of("blub", "bla", "blub")).useDefaults();
@@ -179,7 +179,7 @@ class StreamsCleanUpTest {
     }
 
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
-            final String description, final KafkaStreamsApplication app)
+            final String description, final KafkaStreamsApplication<?> app)
             throws InterruptedException {
         runAppAndClose(app);
 
@@ -189,14 +189,14 @@ class StreamsCleanUpTest {
                 .containsExactlyInAnyOrderElementsOf(expectedValues);
     }
 
-    private KafkaStreamsApplication createWordCountApplication() {
-        final KafkaStreamsApplication application = new SimpleKafkaStreamsApplication(WordCount::new);
+    private KafkaStreamsApplication<?> createWordCountApplication() {
+        final KafkaStreamsApplication<?> application = new SimpleKafkaStreamsApplication<>(WordCount::new);
         application.setOutputTopic("word_output");
         application.setInputTopics(List.of("word_input"));
         return this.configure(application);
     }
 
-    private <T extends KafkaStreamsApplication> T configure(final T application) {
+    private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
         application.setBootstrapServers(this.kafkaCluster.getBrokerList());
         application.setKafkaConfig(Map.of(
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",

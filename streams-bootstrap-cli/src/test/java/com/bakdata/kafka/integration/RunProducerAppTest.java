@@ -74,7 +74,7 @@ class RunProducerAppTest {
     void shouldRunApp() throws InterruptedException {
         final String output = "output";
         this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
-        try (final KafkaProducerApplication app = new SimpleKafkaProducerApplication(() -> new ProducerApp() {
+        try (final KafkaProducerApplication<?> app = new SimpleKafkaProducerApplication<>(() -> new ProducerApp() {
             @Override
             public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
                 return () -> {

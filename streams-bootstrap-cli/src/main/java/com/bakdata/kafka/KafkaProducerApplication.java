@@ -37,7 +37,9 @@ import picocli.CommandLine.Command;
  * <p>The base class for creating Kafka Producer applications.</p>
  * This class provides all configuration options provided by {@link KafkaApplication}.
  * To implement your Kafka Producer application inherit from this class and add your custom options. Run it by
- * calling {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
+ * calling {@link #startApplication(KafkaApplication, String[])} with an instance of your class from your main.
+ *
+ * @param <T> type of {@link ProducerApp} created by this application
  */
 @ToString(callSuper = true)
 @Getter
@@ -45,10 +47,9 @@ import picocli.CommandLine.Command;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Producer application")
-public abstract class KafkaProducerApplication extends
-        KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions,
-                ExecutableProducerApp<ProducerApp>, ConfiguredProducerApp<ProducerApp>, ProducerTopicConfig,
-                ProducerApp> {
+public abstract class KafkaProducerApplication<T extends ProducerApp> extends
+        KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ExecutableProducerApp<T>,
+                ConfiguredProducerApp<T>, ProducerTopicConfig, T> {
 
     /**
      * Delete all output topics associated with the Kafka Producer application.
@@ -73,7 +74,7 @@ public abstract class KafkaProducerApplication extends
     }
 
     @Override
-    public final ConfiguredProducerApp<ProducerApp> createConfiguredApp(final ProducerApp app,
+    public final ConfiguredProducerApp<T> createConfiguredApp(final T app,
             final AppConfiguration<ProducerTopicConfig> configuration) {
         return new ConfiguredProducerApp<>(app, configuration);
     }
