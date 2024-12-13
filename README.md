@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/bakdata/streams-bootstrap/actions/workflows/build-and-publish.yaml/badge.svg?event=push)](https://github.com/bakdata/streams-bootstrap/actions/workflows/build-and-publish.yaml/badge.svg?event=push)
 [![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
 [![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=coverage)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
-[![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap&core=gav)
+[![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap-cli.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap-cli&core=gav)
 
 # streams-bootstrap
 
@@ -26,13 +26,13 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '3.0.0'
+implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '3.1.0'
 ```
 
 With Kotlin DSL
 
 ```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "3.0.0")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "3.1.0")
 ```
 
 #### Maven
@@ -42,7 +42,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 
