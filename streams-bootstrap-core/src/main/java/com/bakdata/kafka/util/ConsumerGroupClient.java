@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +93,9 @@ public final class ConsumerGroupClient implements AutoCloseable {
      */
     public boolean exists(final String groupName) {
         final Collection<ConsumerGroupListing> consumerGroups = this.listGroups();
+        log.info("Found consumer groups: {}", consumerGroups.stream()
+                .map(ConsumerGroupListing::groupId)
+                .collect(Collectors.joining(", ")));
         return consumerGroups.stream()
                 .anyMatch(c -> c.groupId().equals(groupName));
     }
