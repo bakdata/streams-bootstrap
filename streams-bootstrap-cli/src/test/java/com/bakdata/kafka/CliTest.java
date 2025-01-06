@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,23 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
 import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static net.mguenther.kafka.junit.Wait.delay;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.SendKeyValues;
-import net.mguenther.kafka.junit.TopicConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 class CliTest {
 
@@ -214,7 +214,7 @@ class CliTest {
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
-        try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
+        try (final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -235,23 +235,24 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-            kafkaCluster.createTopic(TopicConfig.withName(input).build());
+//            kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
             runApp(app,
-                    "--bootstrap-server", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
-            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
-            delay(10, TimeUnit.SECONDS);
+            new KafkaContainerHelper(kafkaCluster).send()
+                    .to(input, List.of(new KeyValue<>("foo", "bar")));
+            Thread.sleep(Duration.ofSeconds(10).toMillis());
         }
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
-    void shouldExitWithSuccessCodeOnShutdown() throws InterruptedException {
+    void shouldExitWithSuccessCodeOnShutdown() {
         final String input = "input";
         final String output = "output";
-        try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
+        try (final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -270,22 +271,25 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-            kafkaCluster.createTopic(TopicConfig.withName(input).build());
-            kafkaCluster.createTopic(TopicConfig.withName(output).build());
+            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(kafkaCluster);
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                admin.getTopicClient().createTopic(output, DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
 
             runApp(app,
-                    "--bootstrap-server", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input,
                     "--output-topic", output
             );
-            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
-            delay(10, TimeUnit.SECONDS);
-            final List<KeyValue<String, String>> keyValues = kafkaCluster.read(ReadKeyValues.from(output));
+            kafkaContainerHelper.send()
+                    .to(input, List.of(new KeyValue<>("foo", "bar")));
+            final List<ConsumerRecord<String, String>> keyValues = kafkaContainerHelper.read()
+                    .from(output, Duration.ofSeconds(10));
             assertThat(keyValues)
                     .hasSize(1)
                     .anySatisfy(kv -> {
-                        assertThat(kv.getKey()).isEqualTo("foo");
-                        assertThat(kv.getValue()).isEqualTo("bar");
+                        assertThat(kv.key()).isEqualTo("foo");
+                        assertThat(kv.value()).isEqualTo("bar");
                     });
         }
     }

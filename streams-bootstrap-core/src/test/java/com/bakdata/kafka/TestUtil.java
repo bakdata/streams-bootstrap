@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,13 @@
 
 package com.bakdata.kafka;
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.newClusterConfig;
-import static net.mguenther.kafka.junit.EmbeddedKafkaConfig.brokers;
-
 import lombok.experimental.UtilityClass;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.EmbeddedKafkaConfig.EmbeddedKafkaConfigBuilder;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @UtilityClass
 public class TestUtil {
-    public static EmbeddedKafkaCluster newKafkaCluster() {
-        return provisionWith(newClusterConfig()
-                .configure(newKafkaConfig()
-                        .build())
-                .build());
-    }
-
-    public static EmbeddedKafkaConfigBuilder newKafkaConfig() {
-        return brokers()
-                .with("transaction.state.log.num.partitions", 10)
-                .with("offsets.topic.num.partitions", 10);
+    public static ConfluentKafkaContainer newKafkaCluster() {
+        return new ConfluentKafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.0"));
     }
 }

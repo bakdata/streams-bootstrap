@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,15 @@
 
 package com.bakdata.kafka.integration;
 
-import static net.mguenther.kafka.junit.Wait.delay;
+import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
+import static java.util.Collections.emptyMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
+import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsExecutionOptions;
@@ -39,15 +41,12 @@ import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.SendKeyValuesTransactional;
-import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -55,6 +54,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.MissingSourceTopicException;
 import org.apache.kafka.streams.errors.StreamsException;
@@ -75,7 +75,7 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsRunnerTest extends KafkaTest {
-    private static final int TIMEOUT_SECONDS = 10;
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @Mock
     private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
     @Mock
@@ -122,32 +122,31 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldRunApp() throws InterruptedException {
+    void shouldRunApp() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
                         .createRunner()) {
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic).useDefaults());
             final String outputTopic = app.getTopics().getOutputTopic();
-            this.kafkaCluster.createTopic(TopicConfig.withName(outputTopic).useDefaults());
+            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                admin.getTopicClient().createTopic(outputTopic, DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
             run(runner);
-            final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                    SendKeyValuesTransactional.inTransaction(inputTopic, List.of(new KeyValue<>("foo", "bar")))
-                            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .build();
-            this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(outputTopic, String.class, String.class)
+            kafkaContainerHelper.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(inputTopic, List.of(new KeyValue<>("foo", "bar")));
+            this.softly.assertThat(kafkaContainerHelper.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                            .build()))
+                            .from(outputTopic, TIMEOUT))
                     .hasSize(1);
         }
     }
 
     @Test
-    void shouldUseMultipleLabeledInputTopics() throws InterruptedException {
+    void shouldUseMultipleLabeledInputTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createLabeledInputTopicsApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
                         .createRunner()) {
@@ -155,25 +154,25 @@ class StreamsRunnerTest extends KafkaTest {
             final String inputTopic1 = inputTopics.get(0);
             final String inputTopic2 = inputTopics.get(1);
             final String outputTopic = app.getTopics().getOutputTopic();
-            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic1).useDefaults());
-            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic2).useDefaults());
-            this.kafkaCluster.createTopic(TopicConfig.withName(outputTopic).useDefaults());
+            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                admin.getTopicClient().createTopic(inputTopic1, DEFAULT_TOPIC_SETTINGS, emptyMap());
+                admin.getTopicClient().createTopic(inputTopic2, DEFAULT_TOPIC_SETTINGS, emptyMap());
+                admin.getTopicClient().createTopic(outputTopic, DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
             run(runner);
-            this.kafkaCluster.send(
-                    SendKeyValuesTransactional.inTransaction(inputTopic1, List.of(new KeyValue<>("foo", "bar")))
-                            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .build());
-            this.kafkaCluster.send(
-                    SendKeyValuesTransactional.inTransaction(inputTopic2, List.of(new KeyValue<>("foo", "baz")))
-                            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .build());
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            this.softly.assertThat(this.kafkaCluster.read(ReadKeyValues.from(outputTopic, String.class, String.class)
+            kafkaContainerHelper.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(inputTopic1, List.of(new KeyValue<>("foo", "bar")));
+            kafkaContainerHelper.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(inputTopic2, List.of(new KeyValue<>("foo", "baz")));
+            this.softly.assertThat(kafkaContainerHelper.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                            .build()))
+                            .from(outputTopic, TIMEOUT))
                     .hasSize(2);
         }
     }
@@ -190,7 +189,7 @@ class StreamsRunnerTest extends KafkaTest {
             final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(thread.isAlive()).isFalse();
             this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
@@ -208,19 +207,19 @@ class StreamsRunnerTest extends KafkaTest {
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            this.kafkaCluster.createTopic(TopicConfig.withName(inputTopic).useDefaults());
             final String outputTopic = app.getTopics().getOutputTopic();
-            this.kafkaCluster.createTopic(TopicConfig.withName(outputTopic).useDefaults());
+            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                admin.getTopicClient().createTopic(outputTopic, DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
             final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                    SendKeyValuesTransactional.inTransaction(inputTopic, List.of(new KeyValue<>("foo", "bar")))
-                            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .build();
-            this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            kafkaContainerHelper.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(inputTopic, List.of(new KeyValue<>("foo", "bar")));
+            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(thread.isAlive()).isFalse();
             this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));

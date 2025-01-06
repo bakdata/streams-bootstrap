@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,11 @@ import com.bakdata.kafka.ConfiguredProducerApp;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerRunner;
 import com.bakdata.kafka.ProducerTopicConfig;
+import java.time.Duration;
 import java.util.List;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
+import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -56,7 +58,7 @@ class ProducerRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldRunApp() throws InterruptedException {
+    void shouldRunApp() {
         try (final ConfiguredProducerApp<ProducerApp> app = createStringApplication();
                 final ProducerRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
                         .createRunner()) {
@@ -68,9 +70,12 @@ class ProducerRunnerTest extends KafkaTest {
         }
     }
 
-    private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) throws InterruptedException {
-        final ReadKeyValues<String, String> readRequest = ReadKeyValues.from(outputTopic).build();
-        return this.kafkaCluster.read(readRequest);
+    private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
+        final List<ConsumerRecord<String, String>> records =
+                this.newContainerHelper().read().from(outputTopic, Duration.ofSeconds(1L));
+        return records.stream()
+                .map(record -> new KeyValue<>(record.key(), record.value()))
+                .collect(Collectors.toList());
     }
 
 }
