@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,7 @@ public class ComplexTopologyApplication implements StreamsApp {
 
     @Override
     public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return ComplexTopologyApplication.class.getSimpleName() + "-" + topics.getOutputTopic();
+        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
     }
 
     @Override
