@@ -37,8 +37,8 @@ public class ConfiguredProduced<K, V> {
 
     private final Preconfigured<Serde<K>> keySerde;
     private final Preconfigured<Serde<V>> valueSerde;
-    private final StreamPartitioner<? super K, ? super V> partitioner;
-    private final String processorName;
+    private final StreamPartitioner<? super K, ? super V> streamPartitioner;
+    private final String name;
 
     public static <K, V> ConfiguredProduced<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, null);
@@ -58,9 +58,9 @@ public class ConfiguredProduced<K, V> {
     }
 
     Produced<K, V> configure(final Configurator configurator) {
-        return Produced.<K, V>as(this.processorName)
+        return Produced.<K, V>as(this.name)
                 .withKeySerde(configurator.configureForKeys(this.keySerde))
                 .withValueSerde(configurator.configureForValues(this.valueSerde))
-                .withStreamPartitioner(this.partitioner);
+                .withStreamPartitioner(this.streamPartitioner);
     }
 }

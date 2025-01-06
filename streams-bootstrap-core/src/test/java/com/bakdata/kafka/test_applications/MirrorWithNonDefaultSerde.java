@@ -41,18 +41,18 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 @NoArgsConstructor
 public class MirrorWithNonDefaultSerde implements StreamsApp {
 
-    public static Serde<TestRecord> newKeySerde() {
-        return new SpecificAvroSerde<>();
+    public static Preconfigured<Serde<TestRecord>> newKeySerde() {
+        return Preconfigured.create(new SpecificAvroSerde<>());
     }
 
-    public static Serde<TestRecord> newValueSerde() {
-        return new SpecificAvroSerde<>();
+    public static Preconfigured<Serde<TestRecord>> newValueSerde() {
+        return Preconfigured.create(new SpecificAvroSerde<>());
     }
 
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final Preconfigured<Serde<TestRecord>> valueSerde = Preconfigured.create(newValueSerde());
-        final Preconfigured<Serde<TestRecord>> keySerde = Preconfigured.create(newKeySerde());
+        final Preconfigured<Serde<TestRecord>> valueSerde = newValueSerde();
+        final Preconfigured<Serde<TestRecord>> keySerde = newKeySerde();
         final ImprovedKStream<TestRecord, TestRecord> input =
                 builder.streamInput(ConfiguredConsumed.with(keySerde, valueSerde));
         input.toOutputTopic(ConfiguredProduced.with(keySerde, valueSerde));
