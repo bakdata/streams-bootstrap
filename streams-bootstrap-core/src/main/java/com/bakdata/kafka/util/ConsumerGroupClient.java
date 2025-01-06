@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,9 +92,6 @@ public final class ConsumerGroupClient implements AutoCloseable {
      */
     public boolean exists(final String groupName) {
         final Collection<ConsumerGroupListing> consumerGroups = this.listGroups();
-        log.info("Found consumer groups: {}", consumerGroups.stream()
-                .map(ConsumerGroupListing::groupId)
-                .collect(Collectors.joining(", ")));
         return consumerGroups.stream()
                 .anyMatch(c -> c.groupId().equals(groupName));
     }
