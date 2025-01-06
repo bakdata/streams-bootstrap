@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -92,6 +92,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
      */
     public boolean exists(final String groupName) {
         final Collection<ConsumerGroupListing> consumerGroups = this.listGroups();
+        log.trace("Found {} consumer groups", consumerGroups.size());
         return consumerGroups.stream()
                 .anyMatch(c -> c.groupId().equals(groupName));
     }
