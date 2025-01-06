@@ -67,6 +67,7 @@ configure<com.bakdata.gradle.SonatypeSettings> {
 
 subprojects {
     apply(plugin = "java-library")
+    apply(plugin = "java-test-fixtures")
     apply(plugin = "io.freefair.lombok")
 
     configure<JavaPluginExtension> {

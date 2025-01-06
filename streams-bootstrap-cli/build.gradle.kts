@@ -17,9 +17,7 @@ dependencies {
     val mockitoVersion: String by project
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
-    val testContainersVersion: String by project
-    testImplementation(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
-    testImplementation(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
+    testImplementation(testFixtures(project(":streams-bootstrap-core")))
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
     val fluentKafkaVersion: String by project
     testImplementation(

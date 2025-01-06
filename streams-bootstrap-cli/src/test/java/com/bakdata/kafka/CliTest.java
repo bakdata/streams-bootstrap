@@ -235,7 +235,6 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-//            kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
             runApp(app,
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
