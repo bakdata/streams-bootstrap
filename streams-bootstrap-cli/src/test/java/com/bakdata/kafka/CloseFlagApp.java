@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
-import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
 @Getter
@@ -49,8 +48,8 @@ public class CloseFlagApp extends KafkaStreamsApplication<StreamsApp> {
         return new StreamsApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStream<String, String> input = builder.streamInput();
-                input.to(builder.getTopics().getOutputTopic());
+                final ImprovedKStream<String, String> input = builder.streamInput();
+                input.toOutputTopic();
             }
 
             @Override

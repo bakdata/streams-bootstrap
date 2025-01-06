@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,20 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.ImprovedKStream;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
-import org.apache.kafka.streams.kstream.KStream;
 
 @NoArgsConstructor
 public class LabeledInputTopics implements StreamsApp {
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final KStream<String, String> input = builder.streamInput("label");
-        input.to(builder.getTopics().getOutputTopic());
+        final ImprovedKStream<String, String> input = builder.streamInput("label");
+        input.toOutputTopic();
     }
 
     @Override

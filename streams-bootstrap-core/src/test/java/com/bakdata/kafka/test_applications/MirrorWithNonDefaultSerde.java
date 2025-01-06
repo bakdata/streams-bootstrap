@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,10 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.Configurator;
+import com.bakdata.kafka.ConfiguredConsumed;
+import com.bakdata.kafka.ConfiguredProduced;
+import com.bakdata.kafka.ImprovedKStream;
+import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -34,9 +37,6 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
 public class MirrorWithNonDefaultSerde implements StreamsApp {
@@ -51,12 +51,11 @@ public class MirrorWithNonDefaultSerde implements StreamsApp {
 
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final Configurator configurator = builder.createConfigurator();
-        final Serde<TestRecord> valueSerde = configurator.configureForValues(newValueSerde());
-        final Serde<TestRecord> keySerde = configurator.configureForKeys(newKeySerde());
-        final KStream<TestRecord, TestRecord> input =
-                builder.streamInput(Consumed.with(keySerde, valueSerde));
-        input.to(builder.getTopics().getOutputTopic(), Produced.with(keySerde, valueSerde));
+        final Preconfigured<Serde<TestRecord>> valueSerde = Preconfigured.create(newValueSerde());
+        final Preconfigured<Serde<TestRecord>> keySerde = Preconfigured.create(newKeySerde());
+        final ImprovedKStream<TestRecord, TestRecord> input =
+                builder.streamInput(ConfiguredConsumed.with(keySerde, valueSerde));
+        input.toOutputTopic(ConfiguredProduced.with(keySerde, valueSerde));
     }
 
     @Override

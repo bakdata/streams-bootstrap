@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -187,7 +187,7 @@ class CliTest {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
-                        builder.streamInput().to(builder.getTopics().getOutputTopic());
+                        builder.streamInput().toOutputTopic();
                     }
 
                     @Override
@@ -256,7 +256,7 @@ class CliTest {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
-                                .to(builder.getTopics().getOutputTopic());
+                                .toOutputTopic();
                     }
 
                     @Override

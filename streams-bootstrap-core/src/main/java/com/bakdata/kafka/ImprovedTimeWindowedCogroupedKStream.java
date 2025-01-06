@@ -22,33 +22,29 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.ImprovedKStream;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.streams.kstream.Initializer;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.TimeWindowedCogroupedKStream;
+import org.apache.kafka.streams.kstream.Windowed;
+import org.apache.kafka.streams.state.WindowStore;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
-    @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final ImprovedKStream<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
-    }
+public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindowedCogroupedKStream<K, VOut> {
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
-    }
+    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer);
 
     @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
-    }
+    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named);
+
+    @Override
+    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
+            Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+
+    @Override
+    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
+            Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 }

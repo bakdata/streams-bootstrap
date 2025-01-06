@@ -57,6 +57,7 @@ Create a subclass of `KafkaStreamsApplication` and implement the abstract method
 and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`.
 
 ```java
+import com.bakdata.kafka.ImprovedKStream;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
@@ -64,7 +65,6 @@ import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
-import org.apache.kafka.streams.kstream.KStream;
 
 public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
     public static void main(final String[] args) {
@@ -76,11 +76,11 @@ public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
       return new StreamsApp() {
         @Override
         public void buildTopology(final TopologyBuilder builder) {
-          final KStream<String, String> input = builder.streamInput();
+          final ImprovedKStream<String, String> input = builder.streamInput();
 
           // your topology
 
-          input.to(builder.getTopics().getOutputTopic());
+          input.toOutput();
         }
 
         @Override
