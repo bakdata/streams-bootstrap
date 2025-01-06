@@ -71,7 +71,6 @@ import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -135,11 +134,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             // Wait until stream application has consumed all data
             Thread.sleep(TIMEOUT.toMillis());
         }
-    }
-
-    @BeforeEach
-    void setup() throws InterruptedException {
-        Thread.sleep(TIMEOUT.toMillis());
     }
 
     @Test
