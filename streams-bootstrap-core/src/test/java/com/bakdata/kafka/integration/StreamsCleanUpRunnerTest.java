@@ -705,7 +705,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, Long>> records = this.newContainerHelper().read()
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
-                .from(outputTopic, Duration.ofSeconds(1L));
+                .from(outputTopic, TIMEOUT);
         return records.stream()
                 .map(record -> new KeyValue<>(record.key(), record.value()))
                 .collect(Collectors.toList());
