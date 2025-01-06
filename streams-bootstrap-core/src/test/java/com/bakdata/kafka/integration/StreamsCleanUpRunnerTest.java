@@ -117,11 +117,15 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     private static void reset(final ExecutableApp<?, StreamsCleanUpRunner, ?> app) {
-        app.createCleanUpRunner().reset();
+        try (final StreamsCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
+            cleanUpRunner.reset();
+        }
     }
 
     private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
-        app.createCleanUpRunner().clean();
+        try (final CleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
+            cleanUpRunner.clean();
+        }
     }
 
     private static void run(final ExecutableApp<StreamsRunner, ?, ?> app) throws InterruptedException {
