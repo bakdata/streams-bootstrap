@@ -71,6 +71,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -134,6 +135,11 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             // Wait until stream application has consumed all data
             Thread.sleep(TIMEOUT.toMillis());
         }
+    }
+
+    @BeforeEach
+    void setup() throws InterruptedException {
+        Thread.sleep(TIMEOUT.toMillis());
     }
 
     @Test
@@ -201,8 +207,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
-                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
+            try (final ImprovedAdminClient adminClient = this.createAdminClient();
+                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
+                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
                         .isTrue();
             }
@@ -210,8 +217,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             Thread.sleep(TIMEOUT.toMillis());
             clean(executableApp);
 
-            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
-                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
+            try (final ImprovedAdminClient adminClient = this.createAdminClient();
+                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
+                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group is deleted")
                         .isFalse();
             }
@@ -245,17 +253,19 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
-                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
+            try (final ImprovedAdminClient adminClient = this.createAdminClient();
+                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
+                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
                         .isTrue();
             }
 
             Thread.sleep(TIMEOUT.toMillis());
 
-            try (final ConsumerGroupClient adminClient = this.createAdminClient().getConsumerGroupClient()) {
-                adminClient.deleteConsumerGroup(app.getUniqueAppId());
-                this.softly.assertThat(adminClient.exists(app.getUniqueAppId()))
+            try (final ImprovedAdminClient adminClient = this.createAdminClient();
+                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
+                consumerGroupClient.deleteConsumerGroup(app.getUniqueAppId());
+                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group is deleted")
                         .isFalse();
             }
@@ -591,6 +601,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
+            verify(this.topicHook).close();
             verifyNoMoreInteractions(this.topicHook);
         }
     }
@@ -606,6 +617,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
             verify(this.topicHook).deleted(ComplexTopologyApplication.THROUGH_TOPIC);
             verify(this.topicHook).deleted(app.getTopics().getOutputTopic());
+            verify(this.topicHook).close();
             verifyNoMoreInteractions(this.topicHook);
         }
     }
