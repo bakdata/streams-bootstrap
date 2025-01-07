@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,45 +25,48 @@
 package com.bakdata.kafka.integration;
 
 
+import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
 import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static net.mguenther.kafka.junit.Wait.delay;
+import static java.util.Collections.emptyMap;
 
 import com.bakdata.kafka.CloseFlagApp;
+import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.WordCount;
+import com.bakdata.kafka.util.ImprovedAdminClient;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.SendValuesTransactional;
-import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
+@Testcontainers
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsCleanUpTest {
-    private static final int TIMEOUT_SECONDS = 10;
-    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    @Container
+    private final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
     @InjectSoftAssertions
     private SoftAssertions softly;
 
@@ -76,28 +79,22 @@ class StreamsCleanUpTest {
         // run in Thread because the application blocks indefinitely
         new Thread(app).start();
         // Wait until stream application has consumed all data
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-    }
-
-    @BeforeEach
-    void setup() throws InterruptedException {
-        this.kafkaCluster.start();
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    void tearDown() throws InterruptedException {
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        this.kafkaCluster.stop();
+        Thread.sleep(TIMEOUT.toMillis());
     }
 
     @Test
     void shouldClean() throws InterruptedException {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
-            final SendValuesTransactional<String> sendRequest =
-                    SendValuesTransactional.inTransaction(app.getInputTopics().get(0),
-                            List.of("blub", "bla", "blub")).useDefaults();
-            this.kafkaCluster.send(sendRequest);
+            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
+            kafkaContainerHelper.send()
+                    .to(app.getInputTopics().get(0), List.of(
+                            new KeyValue<>(null, "blub"),
+                            new KeyValue<>(null, "bla"),
+                            new KeyValue<>(null, "blub")
+                    ));
 
             final List<KeyValue<String, Long>> expectedValues = List.of(
                     new KeyValue<>("blub", 1L),
@@ -107,13 +104,18 @@ class StreamsCleanUpTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream application are completely stopped before triggering cleanup
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Thread.sleep(TIMEOUT.toMillis());
             app.clean();
 
-            this.softly.assertThat(this.kafkaCluster.exists(app.getOutputTopic()))
-                    .as("Output topic is deleted")
-                    .isFalse();
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
+                        .as("Output topic is deleted")
+                        .isFalse();
+            }
 
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 2nd run", app);
         }
     }
@@ -121,10 +123,16 @@ class StreamsCleanUpTest {
     @Test
     void shouldReset() throws InterruptedException {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
-            final SendValuesTransactional<String> sendRequest =
-                    SendValuesTransactional.inTransaction(app.getInputTopics().get(0),
-                            List.of("blub", "bla", "blub")).useDefaults();
-            this.kafkaCluster.send(sendRequest);
+            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
+            kafkaContainerHelper.send()
+                    .to(app.getInputTopics().get(0), List.of(
+                            new KeyValue<>(null, "blub"),
+                            new KeyValue<>(null, "bla"),
+                            new KeyValue<>(null, "blub")
+                    ));
 
             final List<KeyValue<String, Long>> expectedValues = List.of(
                     new KeyValue<>("blub", 1L),
@@ -134,8 +142,14 @@ class StreamsCleanUpTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream application are completely stopped before triggering cleanup
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Thread.sleep(TIMEOUT.toMillis());
             app.reset();
+
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
+                        .as("Output topic exists")
+                        .isTrue();
+            }
 
             final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
@@ -147,19 +161,16 @@ class StreamsCleanUpTest {
     @Test
     void shouldCallClose() throws InterruptedException {
         try (final CloseFlagApp app = this.createCloseFlagApplication()) {
-            this.kafkaCluster.createTopic(TopicConfig.withName(app.getInputTopics().get(0)).useDefaults());
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getInputTopics().get(0), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
+            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
-            // if we don't run the app, the coordinator will be unavailable
-            runAppAndClose(app);
-            this.softly.assertThat(app.isAppClosed()).isTrue();
-            app.setAppClosed(false);
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             app.clean();
             this.softly.assertThat(app.isAppClosed()).isTrue();
             app.setAppClosed(false);
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Thread.sleep(TIMEOUT.toMillis());
             app.reset();
             this.softly.assertThat(app.isAppClosed()).isTrue();
         }
@@ -172,10 +183,13 @@ class StreamsCleanUpTest {
         return this.configure(app);
     }
 
-    private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) throws InterruptedException {
-        final ReadKeyValues<String, Long> readRequest = ReadKeyValues.from(outputTopic, Long.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class).build();
-        return this.kafkaCluster.read(readRequest);
+    private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
+        final List<ConsumerRecord<String, Long>> records = new KafkaContainerHelper(this.kafkaCluster).read()
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
+                .from(outputTopic, TIMEOUT);
+        return records.stream()
+                .map(record -> new KeyValue<>(record.key(), record.value()))
+                .collect(Collectors.toList());
     }
 
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
@@ -197,7 +211,7 @@ class StreamsCleanUpTest {
     }
 
     private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
-        application.setBootstrapServers(this.kafkaCluster.getBrokerList());
+        application.setBootstrapServers(this.kafkaCluster.getBootstrapServers());
         application.setKafkaConfig(Map.of(
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

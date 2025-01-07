@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
+import org.apache.kafka.common.errors.GroupIdNotFoundException;
 
 /**
  * This class offers helpers to interact with Kafka consumer groups.
@@ -74,7 +75,12 @@ public final class ConsumerGroupClient implements AutoCloseable {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
-        } catch (final ExecutionException | TimeoutException ex) {
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) ex.getCause();
+            }
+            throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
+        } catch (final TimeoutException ex) {
             throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
         }
     }
@@ -110,7 +116,12 @@ public final class ConsumerGroupClient implements AutoCloseable {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to list consumer groups", ex);
-        } catch (final ExecutionException | TimeoutException ex) {
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) ex.getCause();
+            }
+            throw new KafkaAdminException("Failed to list consumer groups", ex);
+        } catch (final TimeoutException ex) {
             throw new KafkaAdminException("Failed to list consumer groups", ex);
         }
     }
@@ -122,7 +133,11 @@ public final class ConsumerGroupClient implements AutoCloseable {
      */
     public void deleteGroupIfExists(final String groupName) {
         if (this.exists(groupName)) {
-            this.deleteConsumerGroup(groupName);
+            try {
+                this.deleteConsumerGroup(groupName);
+            } catch (final GroupIdNotFoundException e) {
+                // do nothing
+            }
         }
     }
 }

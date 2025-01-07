@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,36 @@
 
 package com.bakdata.kafka.integration;
 
+import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.TestUtil;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
+@Testcontainers
 abstract class KafkaTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    final EmbeddedKafkaCluster kafkaCluster = TestUtil.newKafkaCluster();
-
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster.start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        this.kafkaCluster.stop();
-    }
+    @Container
+    private final ConfluentKafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
 
     KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.kafkaCluster.getBrokerList())
+                .bootstrapServers(this.kafkaCluster.getBootstrapServers())
                 .build();
     }
 
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.kafkaCluster.getBrokerList())
+                .bootstrapServers(this.kafkaCluster.getBootstrapServers())
                 .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
                 .build();
+    }
+
+    KafkaContainerHelper newContainerHelper() {
+        return new KafkaContainerHelper(this.kafkaCluster);
     }
 }

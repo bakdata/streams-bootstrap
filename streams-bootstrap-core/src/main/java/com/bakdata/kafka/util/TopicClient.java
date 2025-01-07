@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -116,7 +116,12 @@ public final class TopicClient implements AutoCloseable {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw failedToDeleteTopic(topicName, ex);
-        } catch (final ExecutionException | TimeoutException ex) {
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) ex.getCause();
+            }
+            throw failedToDeleteTopic(topicName, ex);
+        } catch (final TimeoutException ex) {
             throw failedToDeleteTopic(topicName, ex);
         }
         if (this.exists(topicName)) {
@@ -149,7 +154,12 @@ public final class TopicClient implements AutoCloseable {
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw failedToRetrieveTopicDescription(topicName, e);
-        } catch (final ExecutionException | TimeoutException e) {
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw failedToRetrieveTopicDescription(topicName, e);
+        } catch (final TimeoutException e) {
             throw failedToRetrieveTopicDescription(topicName, e);
         }
     }
@@ -174,9 +184,11 @@ public final class TopicClient implements AutoCloseable {
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
                 return false;
-            } else {
-                throw failedToCheckIfTopicExists(topicName, e);
             }
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw failedToCheckIfTopicExists(topicName, e);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw failedToCheckIfTopicExists(topicName, e);
@@ -203,7 +215,12 @@ public final class TopicClient implements AutoCloseable {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw failedToCreateTopic(topicName, ex);
-        } catch (final ExecutionException | TimeoutException ex) {
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) ex.getCause();
+            }
+            throw failedToCreateTopic(topicName, ex);
+        } catch (final TimeoutException ex) {
             throw failedToCreateTopic(topicName, ex);
         }
     }
@@ -222,7 +239,12 @@ public final class TopicClient implements AutoCloseable {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw failedToListTopics(ex);
-        } catch (final ExecutionException | TimeoutException ex) {
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) ex.getCause();
+            }
+            throw failedToListTopics(ex);
+        } catch (final TimeoutException ex) {
             throw failedToListTopics(ex);
         }
     }
