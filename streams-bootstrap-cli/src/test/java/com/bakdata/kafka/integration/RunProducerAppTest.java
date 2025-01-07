@@ -52,7 +52,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 class RunProducerAppTest {
@@ -60,7 +60,7 @@ class RunProducerAppTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     @Container
-    private final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @BeforeEach
     void setup() {

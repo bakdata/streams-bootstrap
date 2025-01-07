@@ -52,7 +52,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 @Slf4j
@@ -63,7 +63,7 @@ class SchemaTopicClientTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     @Container
-    private final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @InjectSoftAssertions
     SoftAssertions softly;

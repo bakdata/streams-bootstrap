@@ -47,14 +47,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 @ExtendWith(MockitoExtension.class)
 class RunStreamsAppTest {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @Container
-    private final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @Test
     void shouldRunApp() {

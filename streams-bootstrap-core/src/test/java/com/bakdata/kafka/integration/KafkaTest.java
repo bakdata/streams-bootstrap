@@ -31,14 +31,14 @@ import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 abstract class KafkaTest {
     @RegisterExtension
     final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     @Container
-    private final ConfluentKafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
+    private final KafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
 
     KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()

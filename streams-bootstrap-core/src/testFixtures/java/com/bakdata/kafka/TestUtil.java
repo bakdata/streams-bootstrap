@@ -25,12 +25,12 @@
 package com.bakdata.kafka;
 
 import lombok.experimental.UtilityClass;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @UtilityClass
 public class TestUtil {
-    public static ConfluentKafkaContainer newKafkaCluster() {
-        return new ConfluentKafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.0"));
+    public static KafkaContainer newKafkaCluster() {
+        return new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.1"));
     }
 }
