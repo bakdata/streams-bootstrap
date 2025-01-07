@@ -13,11 +13,11 @@ dependencies {
     val confluentVersion: String by project
     implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
     api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-    api(
+    implementation(
         group = "org.slf4j",
         name = "slf4j-api",
         version = "2.0.16"
-    ) // required because other dependencies use Slf4j 1.x which is not properly resolved if this library is used in test scope
+    )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
 
     val junitVersion: String by project
