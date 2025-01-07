@@ -56,7 +56,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 @Slf4j
@@ -66,7 +66,7 @@ import org.testcontainers.kafka.ConfluentKafkaContainer;
 class StreamsCleanUpTest {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @Container
-    private final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
     @InjectSoftAssertions
     private SoftAssertions softly;
 

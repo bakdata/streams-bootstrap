@@ -40,7 +40,7 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 class CliTest {
 
@@ -214,7 +214,7 @@ class CliTest {
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
-        try (final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+        try (final KafkaContainer kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -251,7 +251,7 @@ class CliTest {
     void shouldExitWithSuccessCodeOnShutdown() {
         final String input = "input";
         final String output = "output";
-        try (final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+        try (final KafkaContainer kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {

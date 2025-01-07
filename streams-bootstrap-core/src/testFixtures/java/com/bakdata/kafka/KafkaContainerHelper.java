@@ -49,7 +49,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @RequiredArgsConstructor
 public class KafkaContainerHelper {
@@ -58,7 +58,7 @@ public class KafkaContainerHelper {
             .partitions(1)
             .replicationFactor((short) 1)
             .build();
-    private final @NonNull ConfluentKafkaContainer kafkaCluster;
+    private final @NonNull KafkaContainer kafkaCluster;
 
     private static <K, V> List<ConsumerRecord<K, V>> pollAll(final Consumer<K, V> consumer, final Duration timeout) {
         final List<ConsumerRecord<K, V>> records = new ArrayList<>();

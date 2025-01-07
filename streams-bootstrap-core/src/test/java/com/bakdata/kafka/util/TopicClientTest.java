@@ -35,14 +35,14 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 class TopicClientTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
     @Container
-    private final ConfluentKafkaContainer kafkaCluster = newKafkaCluster();
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @Test
     void shouldNotFindTopic() {
