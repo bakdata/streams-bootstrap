@@ -94,7 +94,7 @@ class StreamsRunnerTest extends KafkaTest {
 
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics, Map.of(
-                StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
+                StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         return new ConfiguredStreamsApp<>(app, configuration);

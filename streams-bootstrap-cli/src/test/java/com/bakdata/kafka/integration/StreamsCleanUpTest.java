@@ -188,7 +188,7 @@ class StreamsCleanUpTest {
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
                 .from(outputTopic, TIMEOUT);
         return records.stream()
-                .map(record -> new KeyValue<>(record.key(), record.value()))
+                .map(consumerRecord -> new KeyValue<>(consumerRecord.key(), consumerRecord.value()))
                 .collect(Collectors.toList());
     }
 
@@ -213,7 +213,7 @@ class StreamsCleanUpTest {
     private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
         application.setBootstrapServers(this.kafkaCluster.getBootstrapServers());
         application.setKafkaConfig(Map.of(
-                StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
+                StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
         ));
         return application;
