@@ -1,8 +1,17 @@
 # Change Log
 
-## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.1.0)
+## [3.2.0](https://github.com/bakdata/streams-bootstrap/tree/3.2.0) (2025-01-07)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.2.0...3.2.0)
 
+
+## [3.2.0](https://github.com/bakdata/streams-bootstrap/tree/3.2.0) (2025-01-07)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.2.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.7 [\#266](https://github.com/bakdata/streams-bootstrap/pull/266) ([@philipp94831](https://github.com/philipp94831))
+- Replace kafka\-junit with testcontainers [\#264](https://github.com/bakdata/streams-bootstrap/pull/264) ([@philipp94831](https://github.com/philipp94831))
+- Fix version in README [\#262](https://github.com/bakdata/streams-bootstrap/pull/262) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.1.0)
