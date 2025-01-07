@@ -31,6 +31,6 @@ import org.testcontainers.utility.DockerImageName;
 @UtilityClass
 public class TestUtil {
     public static KafkaContainer newKafkaCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
     }
 }

@@ -16,15 +16,15 @@ dependencies {
     api(
         group = "org.slf4j",
         name = "slf4j-api",
-        version = "2.0.9"
+        version = "2.0.16"
     ) // required because other dependencies use Slf4j 1.x which is not properly resolved if this library is used in test scope
-    implementation(group = "org.jooq", name = "jool", version = "0.9.14")
+    implementation(group = "org.jooq", name = "jool", version = "0.9.15")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
-    testImplementation(group = "org.junit-pioneer", name = "junit-pioneer", version = "2.2.0")
+    testImplementation(group = "org.junit-pioneer", name = "junit-pioneer", version = "2.3.0")
     val assertJVersion: String by project
     testImplementation(group = "org.assertj", name = "assertj-core", version = assertJVersion)
     val mockitoVersion: String by project
