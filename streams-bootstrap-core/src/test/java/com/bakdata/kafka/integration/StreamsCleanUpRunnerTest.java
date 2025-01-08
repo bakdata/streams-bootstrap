@@ -88,6 +88,10 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     @Mock
     private TopicHook topicHook;
 
+    static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<K, V> consumerRecord) {
+        return new KeyValue<>(consumerRecord.key(), consumerRecord.value());
+    }
+
     private static ConfiguredStreamsApp<StreamsApp> createWordCountPatternApplication() {
         return configureApp(new WordCountPattern(), StreamsTopicConfig.builder()
                 .inputPattern(Pattern.compile(".*_topic"))
@@ -547,7 +551,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         }
     }
 
-
     @Test
     void shouldDeleteSchemaOfIntermediateTopics()
             throws InterruptedException, IOException, RestClientException {
@@ -717,7 +720,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
                 .from(outputTopic, TIMEOUT);
         return records.stream()
-                .map(record -> new KeyValue<>(record.key(), record.value()))
+                .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());
     }
 

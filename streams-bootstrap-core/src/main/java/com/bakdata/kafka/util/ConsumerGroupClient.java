@@ -60,6 +60,14 @@ public final class ConsumerGroupClient implements AutoCloseable {
         return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 
+    private static KafkaAdminException failedToDeleteGroup(final String groupName, final Throwable ex) {
+        return new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
+    }
+
+    private static KafkaAdminException failedToListGroups(final Throwable ex) {
+        return new KafkaAdminException("Failed to list consumer groups", ex);
+    }
+
     /**
      * Delete a consumer group.
      *
@@ -74,14 +82,14 @@ public final class ConsumerGroupClient implements AutoCloseable {
             log.info("Deleted consumer group '{}'", groupName);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
+            throw failedToDeleteGroup(groupName, ex);
         } catch (final ExecutionException ex) {
             if (ex.getCause() instanceof RuntimeException) {
                 throw (RuntimeException) ex.getCause();
             }
-            throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
+            throw failedToDeleteGroup(groupName, ex);
         } catch (final TimeoutException ex) {
-            throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
+            throw failedToDeleteGroup(groupName, ex);
         }
     }
 
@@ -115,14 +123,14 @@ public final class ConsumerGroupClient implements AutoCloseable {
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new KafkaAdminException("Failed to list consumer groups", ex);
+            throw failedToListGroups(ex);
         } catch (final ExecutionException ex) {
             if (ex.getCause() instanceof RuntimeException) {
                 throw (RuntimeException) ex.getCause();
             }
-            throw new KafkaAdminException("Failed to list consumer groups", ex);
+            throw failedToListGroups(ex);
         } catch (final TimeoutException ex) {
-            throw new KafkaAdminException("Failed to list consumer groups", ex);
+            throw failedToListGroups(ex);
         }
     }
 

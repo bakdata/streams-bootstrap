@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api(project(":streams-bootstrap-core"))
-    api(group = "info.picocli", name = "picocli", version = "4.7.5")
+    api(group = "info.picocli", name = "picocli", version = "4.7.6")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)

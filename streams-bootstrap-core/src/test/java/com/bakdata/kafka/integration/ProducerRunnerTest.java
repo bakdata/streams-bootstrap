@@ -74,7 +74,7 @@ class ProducerRunnerTest extends KafkaTest {
         final List<ConsumerRecord<String, String>> records =
                 this.newContainerHelper().read().from(outputTopic, Duration.ofSeconds(1L));
         return records.stream()
-                .map(record -> new KeyValue<>(record.key(), record.value()))
+                .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());
     }
 
