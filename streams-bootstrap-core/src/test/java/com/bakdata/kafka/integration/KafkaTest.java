@@ -24,21 +24,27 @@
 
 package com.bakdata.kafka.integration;
 
+import static java.util.Collections.emptyMap;
+
 import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.TestUtil;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
+import java.util.List;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 abstract class KafkaTest {
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
+    static final String SCHEMA_REGISTRY_URL = "mock://";
     @Container
     private final KafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
+
+    static SchemaRegistryClient getSchemaRegistryClient() {
+        return SchemaRegistryClientFactory.newClient(List.of(SCHEMA_REGISTRY_URL), 0, null, emptyMap(), null);
+    }
 
     KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()
@@ -49,7 +55,7 @@ abstract class KafkaTest {
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
                 .bootstrapServers(this.kafkaCluster.getBootstrapServers())
-                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
+                .schemaRegistryUrl(SCHEMA_REGISTRY_URL)
                 .build();
     }
 

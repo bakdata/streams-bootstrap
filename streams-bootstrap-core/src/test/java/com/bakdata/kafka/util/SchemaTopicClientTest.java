@@ -31,8 +31,8 @@ import static java.util.Collections.emptyMap;
 
 import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -49,7 +49,6 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -58,15 +57,18 @@ import org.testcontainers.kafka.KafkaContainer;
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class SchemaTopicClientTest {
+    private static final String SCHEMA_REGISTRY_URL = "mock://";
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
     private static final String TOPIC = "topic";
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
     @Container
     private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @InjectSoftAssertions
     SoftAssertions softly;
+
+    private static SchemaRegistryClient getSchemaRegistryClient() {
+        return SchemaRegistryClientFactory.newClient(List.of(SCHEMA_REGISTRY_URL), 0, null, emptyMap(), null);
+    }
 
     @Test
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
@@ -81,13 +83,12 @@ class SchemaTopicClientTest {
 
             kafkaContainerHelper.send()
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                            this.schemaRegistryMockExtension.getUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
                     .to(TOPIC, List.of(
                             new KeyValue<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
 
-            final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+            final SchemaRegistryClient client = getSchemaRegistryClient();
             this.softly.assertThat(client.getAllSubjects())
                     .contains(TOPIC + "-value");
 
@@ -116,13 +117,12 @@ class SchemaTopicClientTest {
 
             kafkaContainerHelper.send()
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                            this.schemaRegistryMockExtension.getUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
                     .to(TOPIC, List.of(
                             new KeyValue<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
 
-            final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+            final SchemaRegistryClient client = getSchemaRegistryClient();
             this.softly.assertThat(client.getAllSubjects())
                     .contains(TOPIC + "-value");
 
@@ -152,13 +152,12 @@ class SchemaTopicClientTest {
 
             kafkaContainerHelper.send()
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                            this.schemaRegistryMockExtension.getUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
                     .to(TOPIC, List.of(
                             new KeyValue<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
 
-            final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
+            final SchemaRegistryClient client = getSchemaRegistryClient();
             this.softly.assertThat(client.getAllSubjects())
                     .contains(TOPIC + "-value");
 
@@ -178,8 +177,7 @@ class SchemaTopicClientTest {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
-                TIMEOUT);
+        return SchemaTopicClient.create(kafkaProperties, SCHEMA_REGISTRY_URL, TIMEOUT);
     }
 
     private SchemaTopicClient createClientWithNoSchemaRegistry() {

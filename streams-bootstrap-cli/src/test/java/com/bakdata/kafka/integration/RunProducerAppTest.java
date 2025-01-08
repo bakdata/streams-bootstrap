@@ -36,7 +36,6 @@ import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -49,7 +48,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -57,8 +55,7 @@ import org.testcontainers.kafka.KafkaContainer;
 @Testcontainers
 class RunProducerAppTest {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
+    private static final String SCHEMA_REGISTRY_URL = "mock://";
     @Container
     private final KafkaContainer kafkaCluster = newKafkaCluster();
 
@@ -92,15 +89,14 @@ class RunProducerAppTest {
             }
         })) {
             app.setBootstrapServers(this.kafkaCluster.getBootstrapServers());
-            app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+            app.setSchemaRegistryUrl(SCHEMA_REGISTRY_URL);
             app.setOutputTopic(output);
             app.run();
             final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
             assertThat(kafkaContainerHelper.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                            this.schemaRegistryMockExtension.getUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
                     .<String, TestRecord>from(output, TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {
