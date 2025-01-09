@@ -26,13 +26,14 @@ package com.bakdata.kafka.util;
 
 
 import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
+import static com.bakdata.kafka.TestTopologyFactory.SCHEMA_REGISTRY_URL;
+import static com.bakdata.kafka.TestTopologyFactory.getSchemaRegistryClient;
 import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static java.util.Collections.emptyMap;
 
 import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -57,7 +58,6 @@ import org.testcontainers.kafka.KafkaContainer;
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class SchemaTopicClientTest {
-    private static final String SCHEMA_REGISTRY_URL = "mock://";
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
     private static final String TOPIC = "topic";
     @Container
@@ -65,10 +65,6 @@ class SchemaTopicClientTest {
 
     @InjectSoftAssertions
     SoftAssertions softly;
-
-    private static SchemaRegistryClient getSchemaRegistryClient() {
-        return SchemaRegistryClientFactory.newClient(List.of(SCHEMA_REGISTRY_URL), 0, null, emptyMap(), null);
-    }
 
     @Test
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()

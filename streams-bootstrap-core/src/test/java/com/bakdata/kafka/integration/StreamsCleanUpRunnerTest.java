@@ -26,6 +26,8 @@ package com.bakdata.kafka.integration;
 
 
 import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
+import static com.bakdata.kafka.TestTopologyFactory.SCHEMA_REGISTRY_URL;
+import static com.bakdata.kafka.TestTopologyFactory.getSchemaRegistryClient;
 import static com.bakdata.kafka.integration.StreamsRunnerTest.configureApp;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.verify;
@@ -474,33 +476,34 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteKeySchema()
             throws InterruptedException, IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorKeyApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+                final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
+            try (final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+                final String inputTopic = app.getTopics().getInputTopics().get(0);
+                final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
+                try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                    admin.getTopicClient()
+                            .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+                }
+                kafkaContainerHelper.send()
+                        .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                        .to(app.getTopics().getInputTopics().get(0), List.of(
+                                new KeyValue<>(testRecord, "val")
+                        ));
+
+                run(executableApp);
+
+                // Wait until all stream application are completely stopped before triggering cleanup
+                Thread.sleep(TIMEOUT.toMillis());
+                final String outputTopic = app.getTopics().getOutputTopic();
+                this.softly.assertThat(client.getAllSubjects())
+                        .contains(outputTopic + "-key", inputTopic + "-key");
+                clean(executableApp);
+                this.softly.assertThat(client.getAllSubjects())
+                        .doesNotContain(outputTopic + "-key")
+                        .contains(inputTopic + "-key");
             }
-            kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(testRecord, "val")
-                    ));
-
-            run(executableApp);
-
-            // Wait until all stream application are completely stopped before triggering cleanup
-            Thread.sleep(TIMEOUT.toMillis());
-            final String outputTopic = app.getTopics().getOutputTopic();
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(outputTopic + "-key", inputTopic + "-key");
-            clean(executableApp);
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(outputTopic + "-key")
-                    .contains(inputTopic + "-key");
         }
     }
 
