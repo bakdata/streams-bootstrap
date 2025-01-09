@@ -25,7 +25,6 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.TestTopologyFactory.getSchemaRegistryClient;
 import static com.bakdata.kafka.integration.ProducerRunnerTest.configureApp;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;

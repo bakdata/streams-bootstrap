@@ -26,8 +26,6 @@ package com.bakdata.kafka.integration;
 
 
 import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
-import static com.bakdata.kafka.TestTopologyFactory.SCHEMA_REGISTRY_URL;
-import static com.bakdata.kafka.TestTopologyFactory.getSchemaRegistryClient;
 import static com.bakdata.kafka.integration.StreamsRunnerTest.configureApp;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.verify;
@@ -285,7 +283,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
@@ -337,7 +335,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
@@ -452,7 +450,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new KeyValue<>(null, testRecord)
@@ -486,7 +484,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new KeyValue<>(testRecord, "val")
@@ -520,7 +518,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
@@ -562,7 +560,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(

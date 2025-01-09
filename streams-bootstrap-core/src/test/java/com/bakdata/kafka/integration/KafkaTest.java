@@ -28,14 +28,24 @@ import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.TestUtil;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 abstract class KafkaTest {
+    private static final TestTopologyFactory TEST_TOPOLOGY_FACTORY = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
+
+    static String getSchemaRegistryUrl() {
+        return TEST_TOPOLOGY_FACTORY.getSchemaRegistryUrl();
+    }
+
+    static SchemaRegistryClient getSchemaRegistryClient() {
+        return TEST_TOPOLOGY_FACTORY.getSchemaRegistryClient();
+    }
 
     KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()
@@ -46,7 +56,7 @@ abstract class KafkaTest {
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
                 .bootstrapServers(this.kafkaCluster.getBootstrapServers())
-                .schemaRegistryUrl(TestTopologyFactory.SCHEMA_REGISTRY_URL)
+                .schemaRegistryUrl(getSchemaRegistryUrl())
                 .build();
     }
 

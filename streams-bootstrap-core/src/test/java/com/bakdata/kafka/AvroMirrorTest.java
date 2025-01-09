@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ class AvroMirrorTest {
     private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
     @RegisterExtension
     final TestTopologyExtension<TestRecord, TestRecord> testTopology =
-            TestTopologyFactory.createTopologyExtensionWithSchemaRegistry(this.app);
+            TestTopologyFactory.withSchemaRegistry().createTopologyExtension(this.app);
 
     private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(StreamsTopicConfig.builder()
