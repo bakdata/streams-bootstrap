@@ -26,17 +26,16 @@ package com.bakdata.kafka.integration;
 
 import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaEndpointConfig;
+import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.TestUtil;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
 abstract class KafkaTest {
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
+    private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
 
@@ -49,11 +48,19 @@ abstract class KafkaTest {
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
                 .bootstrapServers(this.kafkaCluster.getBootstrapServers())
-                .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
+                .schemaRegistryUrl(this.getSchemaRegistryUrl())
                 .build();
     }
 
     KafkaContainerHelper newContainerHelper() {
         return new KafkaContainerHelper(this.kafkaCluster);
+    }
+
+    String getSchemaRegistryUrl() {
+        return this.testTopologyFactory.getSchemaRegistryUrl();
+    }
+
+    SchemaRegistryClient getSchemaRegistryClient() {
+        return this.testTopologyFactory.getSchemaRegistryClient();
     }
 }
