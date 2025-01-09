@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,15 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.KafkaEndpointConfig.KafkaEndpointConfigBuilder;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -36,6 +40,12 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class TestTopologyFactory {
+
+    public static final String SCHEMA_REGISTRY_URL = "mock://";
+
+    public static SchemaRegistryClient getSchemaRegistryClient() {
+        return SchemaRegistryClientFactory.newClient(List.of(SCHEMA_REGISTRY_URL), 0, null, emptyMap(), null);
+    }
 
     /**
      * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects are {@link KafkaEndpointConfig}
@@ -110,9 +120,12 @@ public class TestTopologyFactory {
      * @return Kafka properties
      * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
      */
-    public static Function<String, Map<String, Object>> getKafkaPropertiesWithSchemaRegistryUrl(
+    public static Map<String, Object> getKafkaPropertiesWithSchemaRegistryUrl(
             final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        return schemaRegistryUrl -> getKafkaProperties(app, schemaRegistryUrl);
+        final KafkaEndpointConfig endpointConfig = newEndpointConfig()
+                .schemaRegistryUrl(SCHEMA_REGISTRY_URL)
+                .build();
+        return app.getKafkaProperties(endpointConfig);
     }
 
     /**
@@ -124,14 +137,6 @@ public class TestTopologyFactory {
      */
     public static Configurator createConfigurator(final TestTopology<?, ?> testTopology) {
         return new Configurator(testTopology.getProperties());
-    }
-
-    private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app,
-            final String schemaRegistryUrl) {
-        final KafkaEndpointConfig endpointConfig = newEndpointConfig()
-                .schemaRegistryUrl(schemaRegistryUrl)
-                .build();
-        return app.getKafkaProperties(endpointConfig);
     }
 
     private static Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
