@@ -283,7 +283,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
@@ -335,7 +335,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
@@ -441,7 +441,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws InterruptedException, IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorValueApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
@@ -450,7 +450,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new KeyValue<>(null, testRecord)
@@ -475,7 +475,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws InterruptedException, IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorKeyApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
@@ -484,7 +484,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new KeyValue<>(testRecord, "val")
@@ -509,7 +509,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws InterruptedException, IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
@@ -518,7 +518,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
@@ -551,7 +551,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws InterruptedException, IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
@@ -560,7 +560,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
             }
             kafkaContainerHelper.send()
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getSchemaRegistryUrl())
+                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(

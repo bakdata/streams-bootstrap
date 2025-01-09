@@ -121,7 +121,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteValueSchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroValueApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             run(executableApp);
 
             final String outputTopic = app.getTopics().getOutputTopic();
@@ -137,7 +137,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteKeySchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroKeyApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             run(executableApp);
 
             final String outputTopic = app.getTopics().getOutputTopic();

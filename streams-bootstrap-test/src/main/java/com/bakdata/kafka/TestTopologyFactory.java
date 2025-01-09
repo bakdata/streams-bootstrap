@@ -34,6 +34,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -43,17 +44,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestTopologyFactory {
 
-    private static final String DEFAULT_SCHEMA_REGISTRY_URL = "mock://";
+    private static final String MOCK_URL_PREFIX = "mock://";
     private final String schemaRegistryUrl;
 
+    /**
+     * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
+     * @return {@code TestTopologyFactory} with no configured Schema Registry
+     */
     public static TestTopologyFactory withoutSchemaRegistry() {
         return withSchemaRegistry(null);
     }
 
+    /**
+     * Create a new {@code TestTopologyFactory} with configured
+     * {@link io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry}. The scope is random in order to avoid
+     * collisions between different test instances as scopes are retained globally.
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     */
     public static TestTopologyFactory withSchemaRegistry() {
-        return withSchemaRegistry(DEFAULT_SCHEMA_REGISTRY_URL);
+        return withSchemaRegistry(MOCK_URL_PREFIX + UUID.randomUUID());
     }
 
+    /**
+     * Create a new {@code TestTopologyFactory} with configured Schema Registry.
+     * @param schemaRegistryUrl Schema Registry URL to use
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     */
     public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
         return new TestTopologyFactory(schemaRegistryUrl);
     }
@@ -69,16 +85,33 @@ public final class TestTopologyFactory {
         return new Configurator(testTopology.getProperties());
     }
 
+    /**
+     * Get Schema Registry URL if configured
+     * @return Schema Registry URL
+     * @throws NullPointerException if Schema Registry is not configured
+     */
     public String getSchemaRegistryUrl() {
-        return Objects.requireNonNull(this.schemaRegistryUrl);
+        return Objects.requireNonNull(this.schemaRegistryUrl, "Schema Registry is not configured");
     }
 
+    /**
+     * Get {@code SchemaRegistryClient} for configured URL with default providers
+     * @return {@code SchemaRegistryClient}
+     * @throws NullPointerException if Schema Registry is not configured
+     */
     public SchemaRegistryClient getSchemaRegistryClient() {
         return this.getSchemaRegistryClient(null);
     }
 
+    /**
+     * Get {@code SchemaRegistryClient} for configured URL
+     * @param providers list of {@code SchemaProvider} to use for {@code SchemaRegistryClient}
+     * @return {@code SchemaRegistryClient}
+     * @throws NullPointerException if Schema Registry is not configured
+     */
     public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        return SchemaRegistryClientFactory.newClient(List.of(this.schemaRegistryUrl), 0, providers, emptyMap(), null);
+        return SchemaRegistryClientFactory.newClient(List.of(this.getSchemaRegistryUrl()), 0, providers, emptyMap(),
+                null);
     }
 
     /**
