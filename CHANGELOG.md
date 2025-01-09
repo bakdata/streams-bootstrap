@@ -1,8 +1,16 @@
 # Change Log
 
-## [3.3.0](https://github.com/bakdata/streams-bootstrap/tree/3.3.0) (2025-01-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.3.0...3.3.0)
+## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) (2025-01-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.4.0)
 
+
+## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) (2025-01-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.3.0...3.4.0)
+
+**Merged pull requests:**
+
+- Use Confluent MockSchemaRegistry [\#269](https://github.com/bakdata/streams-bootstrap/pull/269) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade large\-message to 2.9 [\#268](https://github.com/bakdata/streams-bootstrap/pull/268) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.3.0](https://github.com/bakdata/streams-bootstrap/tree/3.3.0) (2025-01-08)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.2.0...3.3.0)
