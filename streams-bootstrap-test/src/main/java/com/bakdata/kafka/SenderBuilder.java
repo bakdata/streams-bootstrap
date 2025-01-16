@@ -77,7 +77,8 @@ public class SenderBuilder {
         }
 
         private ProducerRecord<K, V> toProducerRecord(final String topic) {
-            return new ProducerRecord<>(topic, null, this.timestamp.toEpochMilli(), this.key, this.value, this.headers);
+            final Long millis = this.timestamp == null ? null : this.timestamp.toEpochMilli();
+            return new ProducerRecord<>(topic, null, millis, this.key, this.value, this.headers);
         }
     }
 
