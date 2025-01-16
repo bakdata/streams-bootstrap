@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import org.apache.kafka.common.utils.AppInfoParser;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -37,7 +38,8 @@ public abstract class KafkaTest {
     private final KafkaContainer kafkaCluster = newCluster();
 
     public static KafkaContainer newCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
+                .withTag(AppInfoParser.getVersion()));
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {

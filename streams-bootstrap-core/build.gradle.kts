@@ -11,8 +11,12 @@ dependencies {
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
     api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
     val confluentVersion: String by project
-    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
-    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
+    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients")
+    }
+    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients")
+    }
     implementation(
         group = "org.slf4j",
         name = "slf4j-api",
@@ -35,7 +39,9 @@ dependencies {
     val testContainersVersion: String by project
     testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
     testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients")
+    }
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }
