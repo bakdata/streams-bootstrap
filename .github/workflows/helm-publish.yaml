@@ -29,7 +29,6 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
         shell: bash
 
-
   helm-publish:
     name: Publish Helm chart
     uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@fix/helm-multi-release
