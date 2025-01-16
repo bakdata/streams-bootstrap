@@ -35,6 +35,7 @@ import com.bakdata.kafka.EffectiveAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableProducerApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
+import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.ProducerTopicConfig;
@@ -109,7 +110,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = this.newContainerHelper().admin()) {
+            try (final ImprovedAdminClient admin = this.newTestClient().admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();
@@ -174,7 +175,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, String>> records =
-                this.newContainerHelper().read().from(outputTopic, Duration.ofSeconds(1L));
+                this.newTestClient().read().from(outputTopic, Duration.ofSeconds(1L));
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());

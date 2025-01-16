@@ -25,9 +25,7 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
 import static com.bakdata.kafka.integration.StreamsRunnerTest.configureApp;
-import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -38,7 +36,9 @@ import com.bakdata.kafka.EffectiveAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
-import com.bakdata.kafka.KafkaContainerHelper;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.StreamsCleanUpRunner;
@@ -52,6 +52,7 @@ import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.test_applications.WordCountPattern;
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.TopicClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -145,16 +146,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(null, "blub"),
-                            new KeyValue<>(null, "bla"),
-                            new KeyValue<>(null, "blub")
+                            new SimpleProducerRecord<>(null, "blub"),
+                            new SimpleProducerRecord<>(null, "bla"),
+                            new SimpleProducerRecord<>(null, "blub")
                     ));
 
             final List<KeyValue<String, Long>> expectedValues =
@@ -170,8 +168,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             Thread.sleep(TIMEOUT.toMillis());
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
+            try (final ImprovedAdminClient admin = testClient.admin();
+                    final TopicClient topicClient = admin.getTopicClient()) {
+                this.softly.assertThat(topicClient.exists(app.getTopics().getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();
             }
@@ -183,16 +182,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(null, "blub"),
-                            new KeyValue<>(null, "bla"),
-                            new KeyValue<>(null, "blub")
+                            new SimpleProducerRecord<>(null, "blub"),
+                            new SimpleProducerRecord<>(null, "bla"),
+                            new SimpleProducerRecord<>(null, "blub")
                     ));
 
             final List<KeyValue<String, Long>> expectedValues =
@@ -229,16 +225,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(null, "blub"),
-                            new KeyValue<>(null, "bla"),
-                            new KeyValue<>(null, "blub")
+                            new SimpleProducerRecord<>(null, "blub"),
+                            new SimpleProducerRecord<>(null, "bla"),
+                            new SimpleProducerRecord<>(null, "blub")
                     ));
 
             final List<KeyValue<String, Long>> expectedValues =
@@ -277,17 +270,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
 
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>("key 1", testRecord)
+                            new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
             run(executableApp);
@@ -300,25 +290,27 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                     uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
             final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+            try (final ImprovedAdminClient admin = testClient.admin();
+                    final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(admin.getTopicClient().exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
                 }
-                this.softly.assertThat(admin.getTopicClient().exists(internalTopic)).isTrue();
-                this.softly.assertThat(admin.getTopicClient().exists(backingTopic)).isTrue();
-                this.softly.assertThat(admin.getTopicClient().exists(manualTopic)).isTrue();
+                this.softly.assertThat(topicClient.exists(internalTopic)).isTrue();
+                this.softly.assertThat(topicClient.exists(backingTopic)).isTrue();
+                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
 
             Thread.sleep(TIMEOUT.toMillis());
             reset(executableApp);
 
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+            try (final ImprovedAdminClient admin = testClient.admin();
+                    final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(admin.getTopicClient().exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
                 }
-                this.softly.assertThat(admin.getTopicClient().exists(internalTopic)).isFalse();
-                this.softly.assertThat(admin.getTopicClient().exists(backingTopic)).isFalse();
-                this.softly.assertThat(admin.getTopicClient().exists(manualTopic)).isTrue();
+                this.softly.assertThat(topicClient.exists(internalTopic)).isFalse();
+                this.softly.assertThat(topicClient.exists(backingTopic)).isFalse();
+                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
         }
     }
@@ -329,17 +321,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
 
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>("key 1", testRecord)
+                            new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
             run(executableApp);
@@ -347,21 +336,23 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final List<String> inputTopics = app.getTopics().getInputTopics();
             final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+            try (final ImprovedAdminClient admin = testClient.admin();
+                    final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(admin.getTopicClient().exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
                 }
-                this.softly.assertThat(admin.getTopicClient().exists(manualTopic)).isTrue();
+                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
 
             Thread.sleep(TIMEOUT.toMillis());
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+            try (final ImprovedAdminClient admin = testClient.admin();
+                    final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(admin.getTopicClient().exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
                 }
-                this.softly.assertThat(admin.getTopicClient().exists(manualTopic)).isFalse();
+                this.softly.assertThat(topicClient.exists(manualTopic)).isFalse();
             }
         }
     }
@@ -371,16 +362,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(null, "blub"),
-                            new KeyValue<>(null, "bla"),
-                            new KeyValue<>(null, "blub")
+                            new SimpleProducerRecord<>(null, "blub"),
+                            new SimpleProducerRecord<>(null, "bla"),
+                            new SimpleProducerRecord<>(null, "blub")
                     ));
 
             final List<KeyValue<String, Long>> expectedValues =
@@ -410,16 +398,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(null, "a"),
-                            new KeyValue<>(null, "b"),
-                            new KeyValue<>(null, "c")
+                            new SimpleProducerRecord<>(null, "a"),
+                            new SimpleProducerRecord<>(null, "b"),
+                            new SimpleProducerRecord<>(null, "c")
                     ));
 
             run(executableApp);
@@ -444,16 +429,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(null, testRecord)
+                            new SimpleProducerRecord<>(null, testRecord)
                     ));
 
             run(executableApp);
@@ -478,16 +460,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>(testRecord, "val")
+                            new SimpleProducerRecord<>(testRecord, "val")
                     ));
 
             run(executableApp);
@@ -512,17 +491,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>("key 1", testRecord)
+                            new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
             run(executableApp);
@@ -554,17 +530,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new KeyValue<>("key 1", testRecord)
+                            new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
             run(executableApp);
@@ -627,11 +600,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpoint());
                 final StreamsRunner runner = executableApp.createRunner()) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getInputTopics().get(0), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getInputTopics().get(0));
             StreamsRunnerTest.run(runner);
             // Wait until stream application has consumed all data
             Thread.sleep(TIMEOUT.toMillis());
@@ -647,19 +617,16 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountPatternApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient()
-                        .createTopic(app.getTopics().getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
-            kafkaContainerHelper.send()
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
                     .to("input_topic", List.of(
-                            new KeyValue<>(null, "a"),
-                            new KeyValue<>(null, "b")
+                            new SimpleProducerRecord<>(null, "a"),
+                            new SimpleProducerRecord<>(null, "b")
                     ));
-            kafkaContainerHelper.send()
+            testClient.send()
                     .to("another_topic", List.of(
-                            new KeyValue<>(null, "c")
+                            new SimpleProducerRecord<>(null, "c")
                     ));
 
             run(executableApp);
@@ -677,10 +644,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     private ConfiguredStreamsApp<StreamsApp> createComplexApplication() {
-        try (final ImprovedAdminClient admin = this.newContainerHelper().admin()) {
-            admin.getTopicClient()
-                    .createTopic(ComplexTopologyApplication.THROUGH_TOPIC, DEFAULT_TOPIC_SETTINGS, emptyMap());
-        }
+        this.newTestClient().createTopic(ComplexTopologyApplication.THROUGH_TOPIC);
         return configureApp(new ComplexTopologyApplication(), StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
@@ -688,10 +652,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     private ConfiguredStreamsApp<StreamsApp> createComplexCleanUpHookApplication() {
-        try (final ImprovedAdminClient admin = this.newContainerHelper().admin()) {
-            admin.getTopicClient()
-                    .createTopic(ComplexTopologyApplication.THROUGH_TOPIC, DEFAULT_TOPIC_SETTINGS, emptyMap());
-        }
+        this.newTestClient().createTopic(ComplexTopologyApplication.THROUGH_TOPIC);
         return configureApp(new ComplexTopologyApplication() {
             @Override
             public StreamsCleanUpConfiguration setupCleanUp(
@@ -710,7 +671,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, Long>> records = this.newContainerHelper().read()
+        final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
                 .from(outputTopic, TIMEOUT);
         return records.stream()

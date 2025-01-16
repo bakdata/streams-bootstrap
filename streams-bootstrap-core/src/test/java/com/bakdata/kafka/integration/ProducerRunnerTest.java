@@ -28,6 +28,7 @@ import static com.bakdata.kafka.integration.ProducerCleanUpRunnerTest.createStri
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredProducerApp;
+import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerRunner;
 import com.bakdata.kafka.ProducerTopicConfig;
@@ -72,7 +73,7 @@ class ProducerRunnerTest extends KafkaTest {
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, String>> records =
-                this.newContainerHelper().read().from(outputTopic, Duration.ofSeconds(1L));
+                this.newTestClient().read().from(outputTopic, Duration.ofSeconds(1L));
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());

@@ -24,15 +24,16 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
-import static java.util.Collections.emptyMap;
+import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
-import com.bakdata.kafka.KafkaContainerHelper;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsExecutionOptions;
@@ -42,6 +43,7 @@ import com.bakdata.kafka.TopologyBuilder;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.TopicClient;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.List;
@@ -54,7 +56,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.MissingSourceTopicException;
 import org.apache.kafka.streams.errors.StreamsException;
@@ -128,16 +129,14 @@ class StreamsRunnerTest extends KafkaTest {
                         .createRunner()) {
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final String outputTopic = app.getTopics().getOutputTopic();
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient().createTopic(outputTopic, DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(outputTopic);
             run(runner);
-            kafkaContainerHelper.send()
+            testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .to(inputTopic, List.of(new KeyValue<>("foo", "bar")));
-            this.softly.assertThat(kafkaContainerHelper.read()
+                    .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            this.softly.assertThat(testClient.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .from(outputTopic, TIMEOUT))
@@ -154,22 +153,24 @@ class StreamsRunnerTest extends KafkaTest {
             final String inputTopic1 = inputTopics.get(0);
             final String inputTopic2 = inputTopics.get(1);
             final String outputTopic = app.getTopics().getOutputTopic();
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient().createTopic(inputTopic1, DEFAULT_TOPIC_SETTINGS, emptyMap());
-                admin.getTopicClient().createTopic(inputTopic2, DEFAULT_TOPIC_SETTINGS, emptyMap());
-                admin.getTopicClient().createTopic(outputTopic, DEFAULT_TOPIC_SETTINGS, emptyMap());
+            final KafkaTestClient testClient = this.newTestClient();
+            try (final ImprovedAdminClient admin = testClient.admin()) {
+                try (final TopicClient topicClient = admin.getTopicClient()) {
+                    topicClient.createTopic(inputTopic1, defaultTopicSettings());
+                    topicClient.createTopic(inputTopic2, defaultTopicSettings());
+                    topicClient.createTopic(outputTopic, defaultTopicSettings());
+                }
             }
             run(runner);
-            kafkaContainerHelper.send()
+            testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .to(inputTopic1, List.of(new KeyValue<>("foo", "bar")));
-            kafkaContainerHelper.send()
+                    .to(inputTopic1, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .to(inputTopic2, List.of(new KeyValue<>("foo", "baz")));
-            this.softly.assertThat(kafkaContainerHelper.read()
+                    .to(inputTopic2, List.of(new SimpleProducerRecord<>("foo", "baz")));
+            this.softly.assertThat(testClient.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .from(outputTopic, TIMEOUT))
@@ -208,17 +209,15 @@ class StreamsRunnerTest extends KafkaTest {
                                 .build())) {
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final String outputTopic = app.getTopics().getOutputTopic();
-            final KafkaContainerHelper kafkaContainerHelper = this.newContainerHelper();
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-                admin.getTopicClient().createTopic(outputTopic, DEFAULT_TOPIC_SETTINGS, emptyMap());
-            }
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(outputTopic);
             final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            kafkaContainerHelper.send()
+            testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .to(inputTopic, List.of(new KeyValue<>("foo", "bar")));
+                    .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
             Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(thread.isAlive()).isFalse();
             this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)

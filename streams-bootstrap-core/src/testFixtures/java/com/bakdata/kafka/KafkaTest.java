@@ -22,45 +22,54 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.integration;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.KafkaContainerHelper;
-import com.bakdata.kafka.KafkaEndpointConfig;
-import com.bakdata.kafka.TestTopologyFactory;
-import com.bakdata.kafka.TestUtil;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
-abstract class KafkaTest {
+public abstract class KafkaTest {
     private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
-    private final KafkaContainer kafkaCluster = TestUtil.newKafkaCluster();
+    private final KafkaContainer kafkaCluster = newCluster();
 
-    KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
+    public static KafkaContainer newCluster() {
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
+    }
+
+    public static KafkaTestClient newTestClient(final KafkaContainer kafkaContainer) {
+        return new KafkaTestClient(kafkaContainer.getBootstrapServers());
+    }
+
+    protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.kafkaCluster.getBootstrapServers())
+                .bootstrapServers(this.getBootstrapServers())
                 .build();
     }
 
-    KafkaEndpointConfig createEndpoint() {
+    protected KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.kafkaCluster.getBootstrapServers())
+                .bootstrapServers(this.getBootstrapServers())
                 .schemaRegistryUrl(this.getSchemaRegistryUrl())
                 .build();
     }
 
-    KafkaContainerHelper newContainerHelper() {
-        return new KafkaContainerHelper(this.kafkaCluster);
+    protected String getBootstrapServers() {
+        return this.kafkaCluster.getBootstrapServers();
     }
 
-    String getSchemaRegistryUrl() {
+    protected KafkaTestClient newTestClient() {
+        return newTestClient(this.kafkaCluster);
+    }
+
+    protected String getSchemaRegistryUrl() {
         return this.testTopologyFactory.getSchemaRegistryUrl();
     }
 
-    SchemaRegistryClient getSchemaRegistryClient() {
+    protected SchemaRegistryClient getSchemaRegistryClient() {
         return this.testTopologyFactory.getSchemaRegistryClient();
     }
 }
