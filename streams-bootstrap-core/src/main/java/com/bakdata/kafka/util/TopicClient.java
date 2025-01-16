@@ -246,7 +246,7 @@ public final class TopicClient implements AutoCloseable {
      * @param settings settings for number of partitions and replicationFactor
      */
     public void createTopic(final String topicName, final TopicSettings settings) {
-        this.createTopic(topicName, settings);
+        this.createTopic(topicName, settings, emptyMap());
     }
 
     /**
