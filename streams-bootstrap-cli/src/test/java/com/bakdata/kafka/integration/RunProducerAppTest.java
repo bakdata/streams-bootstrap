@@ -36,7 +36,6 @@ import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.time.Duration;
@@ -78,7 +77,6 @@ class RunProducerAppTest extends KafkaTest {
             assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl)
                     .<String, TestRecord>from(output, TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {

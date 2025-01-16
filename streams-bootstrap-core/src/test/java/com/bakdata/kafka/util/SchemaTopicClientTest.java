@@ -33,7 +33,6 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.time.Duration;
@@ -70,7 +69,6 @@ class SchemaTopicClientTest extends KafkaTest {
 
             testClient.send()
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
@@ -104,7 +102,6 @@ class SchemaTopicClientTest extends KafkaTest {
 
             testClient.send()
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
@@ -139,7 +136,6 @@ class SchemaTopicClientTest extends KafkaTest {
 
             testClient.send()
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));

@@ -25,7 +25,6 @@
 package com.bakdata.kafka;
 
 import static com.bakdata.kafka.KafkaTest.newCluster;
-import static com.bakdata.kafka.KafkaTest.newTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -238,7 +237,9 @@ class CliTest {
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
-            newTestClient(kafkaCluster).send()
+            new KafkaTestClient(KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build()).send()
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
             Thread.sleep(Duration.ofSeconds(10).toMillis());
         }
@@ -268,7 +269,9 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-            final KafkaTestClient testClient = newTestClient(kafkaCluster);
+            final KafkaTestClient testClient = new KafkaTestClient(KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build());
             testClient.createTopic(output);
 
             runApp(app,

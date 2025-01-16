@@ -44,10 +44,6 @@ public class ReaderBuilder {
 
     private final @NonNull Map<String, Object> properties;
 
-    public ReaderBuilder() {
-        this(new HashMap<>());
-    }
-
     private static <K, V> List<ConsumerRecord<K, V>> pollAll(final Consumer<K, V> consumer, final Duration timeout) {
         final List<ConsumerRecord<K, V>> records = new ArrayList<>();
         ConsumerRecords<K, V> poll;

@@ -40,10 +40,6 @@ public abstract class KafkaTest {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
     }
 
-    public static KafkaTestClient newTestClient(final KafkaContainer kafkaContainer) {
-        return new KafkaTestClient(kafkaContainer.getBootstrapServers());
-    }
-
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()
                 .bootstrapServers(this.getBootstrapServers())
@@ -62,7 +58,7 @@ public abstract class KafkaTest {
     }
 
     protected KafkaTestClient newTestClient() {
-        return newTestClient(this.kafkaCluster);
+        return new KafkaTestClient(this.createEndpoint());
     }
 
     protected String getSchemaRegistryUrl() {

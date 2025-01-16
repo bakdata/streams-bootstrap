@@ -27,10 +27,8 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopicSettings;
-import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -43,30 +41,26 @@ public class KafkaTestClient {
             .partitions(1)
             .replicationFactor((short) 1)
             .build();
-    private final @NonNull String bootstrapServers;
+    private final @NonNull KafkaEndpointConfig endpointConfig;
 
     public static TopicSettings defaultTopicSettings() {
         return DEFAULT_TOPIC_SETTINGS;
     }
 
     public SenderBuilder send() {
-        return new SenderBuilder()
-                .with(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers)
+        return new SenderBuilder(this.endpointConfig.createKafkaProperties())
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     }
 
     public ReaderBuilder read() {
-        return new ReaderBuilder()
-                .with(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers)
+        return new ReaderBuilder(this.endpointConfig.createKafkaProperties())
                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     }
 
     public ImprovedAdminClient admin() {
-        return ImprovedAdminClient.create(Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestClient.this.bootstrapServers
-        ));
+        return ImprovedAdminClient.create(this.endpointConfig.createKafkaProperties());
     }
 
     public void createTopic(final String topicName, final TopicSettings settings) {

@@ -40,10 +40,6 @@ public class SenderBuilder {
 
     private final @NonNull Map<String, Object> properties;
 
-    public SenderBuilder() {
-        this(new HashMap<>());
-    }
-
     public SenderBuilder with(final String key, final Object value) {
         final Map<String, Object> newProperties = new HashMap<>(this.properties);
         newProperties.put(key, value);
@@ -77,8 +73,8 @@ public class SenderBuilder {
         }
 
         private ProducerRecord<K, V> toProducerRecord(final String topic) {
-            final Long millis = this.timestamp == null ? null : this.timestamp.toEpochMilli();
-            return new ProducerRecord<>(topic, null, millis, this.key, this.value, this.headers);
+            final Long timestampMillis = this.timestamp == null ? null : this.timestamp.toEpochMilli();
+            return new ProducerRecord<>(topic, null, timestampMillis, this.key, this.value, this.headers);
         }
     }
 
