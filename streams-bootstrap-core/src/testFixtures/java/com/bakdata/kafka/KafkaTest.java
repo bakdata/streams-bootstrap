@@ -36,8 +36,6 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 public abstract class KafkaTest {
-    private static final Duration POLL_INTERVAL = Duration.ofSeconds(1L);
-    private static final Duration POLL_DELAY = Duration.ofSeconds(1L);
     private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
@@ -48,8 +46,7 @@ public abstract class KafkaTest {
 
     public static ConditionFactory awaitAtMost(final Duration timeout) {
         return await()
-                .pollInterval(POLL_INTERVAL)
-                .pollDelay(POLL_DELAY)
+                .pollInterval(Duration.ofSeconds(2L))
                 .atMost(timeout);
     }
 
