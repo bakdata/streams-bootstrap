@@ -74,10 +74,10 @@ public class KafkaTestClient {
         this.createTopic(topicName, defaultTopicSettings());
     }
 
-    public void existsTopic(final String topicName) {
+    public boolean existsTopic(final String topicName) {
         try (final ImprovedAdminClient admin = this.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.exists(topicName);
+            return topicClient.exists(topicName);
         }
     }
 }
