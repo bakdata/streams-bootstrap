@@ -24,11 +24,11 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -48,7 +48,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldFindTopic() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("exists", defaultTopicSettings());
+            client.createTopic("exists", KafkaTestClient.defaultTopicSettings().build());
         }
         Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {
@@ -59,8 +59,8 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldListTopics() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings());
-            client.createTopic("bar", defaultTopicSettings());
+            client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
+            client.createTopic("bar", KafkaTestClient.defaultTopicSettings().build());
         }
         Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {
@@ -73,7 +73,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldDeleteTopic() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings());
+            client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
         }
         Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {

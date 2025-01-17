@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopicSettings;
+import com.bakdata.kafka.util.TopicSettings.TopicSettingsBuilder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -37,13 +38,12 @@ import org.apache.kafka.common.serialization.StringSerializer;
 @RequiredArgsConstructor
 public class KafkaTestClient {
 
-    private static final TopicSettings DEFAULT_TOPIC_SETTINGS = TopicSettings.builder()
+    private static final TopicSettingsBuilder DEFAULT_TOPIC_SETTINGS = TopicSettings.builder()
             .partitions(1)
-            .replicationFactor((short) 1)
-            .build();
+            .replicationFactor((short) 1);
     private final @NonNull KafkaEndpointConfig endpointConfig;
 
-    public static TopicSettings defaultTopicSettings() {
+    public static TopicSettingsBuilder defaultTopicSettings() {
         return DEFAULT_TOPIC_SETTINGS;
     }
 
@@ -71,7 +71,7 @@ public class KafkaTestClient {
     }
 
     public void createTopic(final String topicName) {
-        this.createTopic(topicName, defaultTopicSettings());
+        this.createTopic(topicName, defaultTopicSettings().build());
     }
 
     public boolean existsTopic(final String topicName) {

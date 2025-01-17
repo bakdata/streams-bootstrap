@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,8 +41,6 @@ import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import com.bakdata.kafka.util.TopicClient;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.List;
@@ -154,13 +151,9 @@ class StreamsRunnerTest extends KafkaTest {
             final String inputTopic2 = inputTopics.get(1);
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
-            try (final ImprovedAdminClient admin = testClient.admin()) {
-                try (final TopicClient topicClient = admin.getTopicClient()) {
-                    topicClient.createTopic(inputTopic1, defaultTopicSettings());
-                    topicClient.createTopic(inputTopic2, defaultTopicSettings());
-                    topicClient.createTopic(outputTopic, defaultTopicSettings());
-                }
-            }
+            testClient.createTopic(inputTopic1);
+            testClient.createTopic(inputTopic2);
+            testClient.createTopic(outputTopic);
             run(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

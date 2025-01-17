@@ -25,8 +25,6 @@
 package com.bakdata.kafka.util;
 
 
-import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
-
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -62,7 +60,7 @@ class SchemaTopicClientTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(TOPIC, defaultTopicSettings());
+            topicClient.createTopic(TOPIC, KafkaTestClient.defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
                     .as("Topic is created")
                     .isTrue();
@@ -95,7 +93,7 @@ class SchemaTopicClientTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(TOPIC, defaultTopicSettings());
+            topicClient.createTopic(TOPIC, KafkaTestClient.defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
                     .as("Topic is created")
                     .isTrue();
@@ -129,7 +127,7 @@ class SchemaTopicClientTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(TOPIC, defaultTopicSettings());
+            topicClient.createTopic(TOPIC, KafkaTestClient.defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
                     .as("Topic is created")
                     .isTrue();
