@@ -37,7 +37,8 @@ public abstract class KafkaTest {
     private final KafkaContainer kafkaCluster = newCluster();
 
     public static KafkaContainer newCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
+                .withTag("3.8.1"));
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
