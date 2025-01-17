@@ -79,36 +79,40 @@ public abstract class KafkaTest {
         return this.testTopologyFactory.getSchemaRegistryClient();
     }
 
-    protected void awaitProcessing(final String group, final Duration timeout) {
-        this.awaitActive(group, timeout);
-        awaitAtMost(timeout)
-                .until(() -> this.hasFinishedProcessing(group));
+    private static String getUniqueAppId(final ExecutableStreamsApp<?> app) {
+        return new ImprovedStreamsConfig(app.getConfig()).getAppId();
     }
 
-    protected void awaitActive(final String group, final Duration timeout) {
+    protected void awaitProcessing(final ExecutableStreamsApp<?> app, final Duration timeout) {
+        this.awaitActive(app, timeout);
         awaitAtMost(timeout)
-                .until(() -> this.isActive(group));
+                .until(() -> this.hasFinishedProcessing(app));
     }
 
-    protected void awaitClosed(final String group, final Duration timeout) {
+    protected void awaitActive(final ExecutableStreamsApp<?> app, final Duration timeout) {
         awaitAtMost(timeout)
-                .until(() -> this.isClosed(group));
+                .until(() -> this.isActive(app));
     }
 
     private ProgressVerifier verifier() {
         return new ProgressVerifier(this.newTestClient());
     }
 
-    private boolean hasFinishedProcessing(final String group) {
-        return this.verifier().hasFinishedProcessing(group);
+    protected void awaitClosed(final ExecutableStreamsApp<?> app, final Duration timeout) {
+        awaitAtMost(timeout)
+                .until(() -> this.isClosed(app));
     }
 
-    private boolean isClosed(final String group) {
-        return this.verifier().isClosed(group);
+    private boolean hasFinishedProcessing(final ExecutableStreamsApp<?> app) {
+        return this.verifier().hasFinishedProcessing(getUniqueAppId(app));
     }
 
-    private boolean isActive(final String group) {
-        return this.verifier().isActive(group);
+    private boolean isClosed(final ExecutableStreamsApp<?> app) {
+        return this.verifier().isClosed(getUniqueAppId(app));
+    }
+
+    private boolean isActive(final ExecutableStreamsApp<?> app) {
+        return this.verifier().isActive(getUniqueAppId(app));
     }
 
 }
