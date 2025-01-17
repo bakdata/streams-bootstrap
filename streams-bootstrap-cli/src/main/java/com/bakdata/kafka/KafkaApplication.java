@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> kafkaConfig = emptyMap();
 
     /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
+     * <p>This method needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>
      * <p>This method calls System exit</p>
      *
@@ -109,7 +109,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
+     * <p>This method needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>
      *
      * @param app An instance of the custom application class.
@@ -119,9 +119,18 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app,
             final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = new CommandLine(app)
-                .setExecutionStrategy(app::execute);
+        final CommandLine commandLine = createCommandLine(app);
         return commandLine.execute(populatedArgs);
+    }
+
+    /**
+     * Create {@code CommandLine} for executing application
+     * @param app An instance of the custom application class.
+     * @return {@code CommandLine}
+     */
+    public static CommandLine createCommandLine(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+        return new CommandLine(app)
+                .setExecutionStrategy(app::execute);
     }
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {

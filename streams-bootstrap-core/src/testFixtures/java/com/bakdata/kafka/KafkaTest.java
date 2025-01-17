@@ -95,13 +95,13 @@ public abstract class KafkaTest {
                 .until(() -> this.isActive(app));
     }
 
-    private ProgressVerifier verifier() {
-        return new ProgressVerifier(this.newTestClient());
-    }
-
     protected void awaitClosed(final ExecutableStreamsApp<?> app, final Duration timeout) {
         awaitAtMost(timeout)
                 .until(() -> this.isClosed(app));
+    }
+
+    private ProgressVerifier verifier() {
+        return new ProgressVerifier(this.newTestClient());
     }
 
     private boolean hasFinishedProcessing(final ExecutableStreamsApp<?> app) {
