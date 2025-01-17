@@ -49,8 +49,7 @@ class TopicClientTest extends KafkaTest {
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", KafkaTestClient.defaultTopicSettings().build());
-            awaitAtMost(CLIENT_TIMEOUT)
-                    .untilAsserted(() -> assertThat(client.exists("exists")).isTrue());
+            assertThat(client.exists("exists")).isTrue();
         }
     }
 
@@ -59,10 +58,9 @@ class TopicClientTest extends KafkaTest {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
             client.createTopic("bar", KafkaTestClient.defaultTopicSettings().build());
-            awaitAtMost(CLIENT_TIMEOUT)
-                    .untilAsserted(() -> assertThat(client.listTopics())
+            assertThat(client.listTopics())
                             .hasSize(2)
-                            .containsExactlyInAnyOrder("foo", "bar"));
+                    .containsExactlyInAnyOrder("foo", "bar");
         }
     }
 
@@ -70,8 +68,7 @@ class TopicClientTest extends KafkaTest {
     void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
-            awaitAtMost(CLIENT_TIMEOUT)
-                    .until(() -> client.exists("foo"));
+            assertThat(client.exists("foo")).isTrue();
             client.deleteTopic("foo");
             assertThat(client.listTopics())
                     .isEmpty();
@@ -88,8 +85,7 @@ class TopicClientTest extends KafkaTest {
                     .replicationFactor((short) 1)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            awaitAtMost(CLIENT_TIMEOUT)
-                    .until(() -> client.exists("foo"));
+            assertThat(client.exists("foo")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
