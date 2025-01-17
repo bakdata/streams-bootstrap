@@ -85,7 +85,7 @@ class TopicClientTest extends KafkaTest {
                     .replicationFactor((short) 1)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            assertThat(client.exists("foo")).isTrue();
+            assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
