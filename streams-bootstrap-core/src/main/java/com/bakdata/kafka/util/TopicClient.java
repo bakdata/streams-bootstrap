@@ -46,7 +46,6 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
-import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.jooq.lambda.Seq;
 
 /**
@@ -180,12 +179,9 @@ public final class TopicClient implements AutoCloseable {
      * @return whether a Kafka topic with the specified name exists or not
      */
     public boolean exists(final String topicName) {
-        try {
-            this.getDescription(topicName);
-            return true;
-        } catch (final UnknownTopicOrPartitionException e) {
-            return false;
-        }
+        final Collection<String> topics = this.listTopics();
+        return topics.stream()
+                .anyMatch(t -> t.equals(topicName));
     }
 
     /**

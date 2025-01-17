@@ -45,10 +45,14 @@ public abstract class KafkaTest {
                 .withTag("3.8.1"));
     }
 
-    public static ConditionFactory awaitAtMost(final Duration timeout) {
+    private static ConditionFactory awaitAtMost(final Duration timeout) {
         return await()
                 .pollInterval(Duration.ofSeconds(2L))
                 .atMost(timeout);
+    }
+
+    private static String getUniqueAppId(final ExecutableStreamsApp<?> app) {
+        return new ImprovedStreamsConfig(app.getConfig()).getAppId();
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
@@ -78,10 +82,6 @@ public abstract class KafkaTest {
 
     protected SchemaRegistryClient getSchemaRegistryClient() {
         return this.testTopologyFactory.getSchemaRegistryClient();
-    }
-
-    private static String getUniqueAppId(final ExecutableStreamsApp<?> app) {
-        return new ImprovedStreamsConfig(app.getConfig()).getAppId();
     }
 
     protected void awaitProcessing(final ExecutableStreamsApp<?> app, final Duration timeout) {
