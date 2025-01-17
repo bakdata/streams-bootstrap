@@ -81,7 +81,7 @@ class StreamsCleanUpTest extends KafkaTest {
             );
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
-            // Wait until all stream application are completely stopped before triggering cleanup
+            // Wait until all stream applications are completely stopped before triggering cleanup
             this.awaitClosed(app.createExecutableApp(), TIMEOUT);
             app.clean();
 
@@ -115,7 +115,7 @@ class StreamsCleanUpTest extends KafkaTest {
             );
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
-            // Wait until all stream application are completely stopped before triggering cleanup
+            // Wait until all stream applications are completely stopped before triggering cleanup
             this.awaitClosed(app.createExecutableApp(), TIMEOUT);
             app.reset();
 
