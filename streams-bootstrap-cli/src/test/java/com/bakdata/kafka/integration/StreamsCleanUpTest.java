@@ -58,7 +58,6 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsCleanUpTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @InjectSoftAssertions
     private SoftAssertions softly;
 
@@ -82,7 +81,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(app.createExecutableApp(), TIMEOUT);
+            this.awaitClosed(app.createExecutableApp());
             app.clean();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -116,7 +115,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(app.createExecutableApp(), TIMEOUT);
+            this.awaitClosed(app.createExecutableApp());
             app.reset();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -155,7 +154,7 @@ class StreamsCleanUpTest extends KafkaTest {
         // run in Thread because the application blocks indefinitely
         new Thread(app).start();
         // Wait until stream application has consumed all data
-        this.awaitProcessing(app.createExecutableApp(), TIMEOUT);
+        this.awaitProcessing(app.createExecutableApp());
     }
 
     private CloseFlagApp createCloseFlagApplication() {
@@ -168,7 +167,7 @@ class StreamsCleanUpTest extends KafkaTest {
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
-                .from(outputTopic, TIMEOUT);
+                .from(outputTopic, Duration.ofSeconds(10));
         return records.stream()
                 .map(consumerRecord -> new KeyValue<>(consumerRecord.key(), consumerRecord.value()))
                 .collect(Collectors.toList());

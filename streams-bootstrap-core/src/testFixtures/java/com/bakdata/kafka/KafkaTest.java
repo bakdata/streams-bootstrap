@@ -24,10 +24,9 @@
 
 package com.bakdata.kafka;
 
-import static org.awaitility.Awaitility.await;
-
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
+import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -45,10 +44,10 @@ public abstract class KafkaTest {
                 .withTag("3.8.1"));
     }
 
-    private static ConditionFactory awaitAtMost(final Duration timeout) {
-        return await()
+    private static ConditionFactory await() {
+        return Awaitility.await()
                 .pollInterval(Duration.ofSeconds(2L))
-                .atMost(timeout);
+                .atMost(Duration.ofSeconds(20L));
     }
 
     private static String getUniqueAppId(final ExecutableStreamsApp<?> app) {
@@ -84,21 +83,21 @@ public abstract class KafkaTest {
         return this.testTopologyFactory.getSchemaRegistryClient();
     }
 
-    protected void awaitProcessing(final ExecutableStreamsApp<?> app, final Duration timeout) {
-        this.awaitActive(app, timeout);
-        awaitAtMost(timeout)
+    protected void awaitProcessing(final ExecutableStreamsApp<?> app) {
+        this.awaitActive(app);
+        await()
                 .alias("Consumer group has finished processing")
                 .until(() -> this.hasFinishedProcessing(app));
     }
 
-    protected void awaitActive(final ExecutableStreamsApp<?> app, final Duration timeout) {
-        awaitAtMost(timeout)
+    protected void awaitActive(final ExecutableStreamsApp<?> app) {
+        await()
                 .alias("Consumer group is active")
                 .until(() -> this.isActive(app));
     }
 
-    protected void awaitClosed(final ExecutableStreamsApp<?> app, final Duration timeout) {
-        awaitAtMost(timeout)
+    protected void awaitClosed(final ExecutableStreamsApp<?> app) {
+        await()
                 .alias("Consumer group is closed")
                 .until(() -> this.isClosed(app));
     }

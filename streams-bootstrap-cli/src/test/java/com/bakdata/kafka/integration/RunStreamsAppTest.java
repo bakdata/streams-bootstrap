@@ -45,7 +45,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class RunStreamsAppTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     @Test
     void shouldRunApp() {
@@ -69,7 +68,7 @@ class RunStreamsAppTest extends KafkaTest {
             assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .from(output, TIMEOUT))
+                    .from(output, Duration.ofSeconds(10)))
                     .hasSize(1);
         }
     }

@@ -121,7 +121,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     private static void awaitThreadIsDead(final Thread thread) {
-        await("Thread is dead").atMost(TIMEOUT).until(() -> !thread.isAlive());
+        await("Thread is dead").atMost(Duration.ofSeconds(10)).until(() -> !thread.isAlive());
     }
 
     @Test
