@@ -33,16 +33,21 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
+import org.jooq.lambda.Seq;
 
 /**
  * This class offers helpers to interact with Kafka topics.
@@ -73,16 +78,16 @@ public final class TopicClient implements AutoCloseable {
         return new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
     }
 
-    private static KafkaAdminException failedToCheckIfTopicExists(final String topicName, final Throwable e) {
-        return new KafkaAdminException("Failed to check if Kafka topic " + topicName + " exists", e);
-    }
-
     private static KafkaAdminException failedToListTopics(final Throwable ex) {
         return new KafkaAdminException("Failed to list topics", ex);
     }
 
     private static KafkaAdminException failedToCreateTopic(final String topicName, final Throwable ex) {
         return new KafkaAdminException("Failed to create topic " + topicName, ex);
+    }
+
+    private static KafkaAdminException failedToListOffsets(final Throwable ex) {
+        return new KafkaAdminException("Failed to list offsets", ex);
     }
 
     /**
@@ -150,32 +155,17 @@ public final class TopicClient implements AutoCloseable {
      * @return settings of topic including number of partitions and replicationFactor
      */
     public TopicSettings describe(final String topicName) {
-        try {
-            final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
-                    this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
-            final TopicDescription description =
-                    kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            final List<TopicPartitionInfo> partitions = description.partitions();
-            final int replicationFactor = partitions.stream()
-                    .findFirst()
-                    .map(TopicPartitionInfo::replicas)
-                    .map(List::size)
-                    .orElseThrow(() -> new IllegalStateException("Topic " + topicName + " has no partitions"));
-            return TopicSettings.builder()
-                    .replicationFactor((short) replicationFactor)
-                    .partitions(partitions.size())
-                    .build();
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToRetrieveTopicDescription(topicName, e);
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
-            }
-            throw failedToRetrieveTopicDescription(topicName, e);
-        } catch (final TimeoutException e) {
-            throw failedToRetrieveTopicDescription(topicName, e);
-        }
+        final TopicDescription description = this.getDescription(topicName);
+        final List<TopicPartitionInfo> partitions = description.partitions();
+        final int replicationFactor = partitions.stream()
+                .findFirst()
+                .map(TopicPartitionInfo::replicas)
+                .map(List::size)
+                .orElseThrow(() -> new IllegalStateException("Topic " + topicName + " has no partitions"));
+        return TopicSettings.builder()
+                .replicationFactor((short) replicationFactor)
+                .partitions(partitions.size())
+                .build();
     }
 
     @Override
@@ -191,23 +181,59 @@ public final class TopicClient implements AutoCloseable {
      */
     public boolean exists(final String topicName) {
         try {
+            this.getDescription(topicName);
+            return true;
+        } catch (final UnknownTopicOrPartitionException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Describe a Kafka topic.
+     *
+     * @param topicName the topic name
+     * @return topic description
+     */
+    public TopicDescription getDescription(final String topicName) {
+        try {
             final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
                     this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
-            kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            return true;
+            return kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final ExecutionException e) {
-            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                return false;
-            }
             if (e.getCause() instanceof RuntimeException) {
                 throw (RuntimeException) e.getCause();
             }
-            throw failedToCheckIfTopicExists(topicName, e);
+            throw failedToRetrieveTopicDescription(topicName, e);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw failedToCheckIfTopicExists(topicName, e);
+            throw failedToRetrieveTopicDescription(topicName, e);
         } catch (final TimeoutException e) {
-            throw failedToCheckIfTopicExists(topicName, e);
+            throw failedToRetrieveTopicDescription(topicName, e);
+        }
+    }
+
+    /**
+     * List offsets for a set of partitions.
+     *
+     * @param topicPartitions partitions to list offsets for
+     * @return partition offsets
+     */
+    public Map<TopicPartition, ListOffsetsResultInfo> listOffsets(final Iterable<TopicPartition> topicPartitions) {
+        try {
+            final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
+                    .toMap(Function.identity(), o -> OffsetSpec.latest());
+            return this.adminClient.listOffsets(offsetRequest).all()
+                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw failedToListOffsets(e);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw failedToListOffsets(e);
+        } catch (final TimeoutException e) {
+            throw failedToListOffsets(e);
         }
     }
 

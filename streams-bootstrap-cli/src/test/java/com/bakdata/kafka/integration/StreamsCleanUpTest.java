@@ -62,20 +62,8 @@ class StreamsCleanUpTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    private static void runAppAndClose(final KafkaStreamsApplication<?> app) throws InterruptedException {
-        runApp(app);
-        app.stop();
-    }
-
-    private static void runApp(final KafkaStreamsApplication<?> app) throws InterruptedException {
-        // run in Thread because the application blocks indefinitely
-        new Thread(app).start();
-        // Wait until stream application has consumed all data
-        Thread.sleep(TIMEOUT.toMillis());
-    }
-
     @Test
-    void shouldClean() throws InterruptedException {
+    void shouldClean() {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
@@ -94,7 +82,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream application are completely stopped before triggering cleanup
-            Thread.sleep(TIMEOUT.toMillis());
+            this.awaitClosed(app.createConfiguredApp().getUniqueAppId(), TIMEOUT);
             app.clean();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -109,7 +97,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     @Test
-    void shouldReset() throws InterruptedException {
+    void shouldReset() {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
@@ -128,7 +116,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream application are completely stopped before triggering cleanup
-            Thread.sleep(TIMEOUT.toMillis());
+            this.awaitClosed(app.createConfiguredApp().getUniqueAppId(), TIMEOUT);
             app.reset();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -145,19 +133,29 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     @Test
-    void shouldCallClose() throws InterruptedException {
+    void shouldCallClose() {
         try (final CloseFlagApp app = this.createCloseFlagApplication()) {
             this.newTestClient().createTopic(app.getInputTopics().get(0));
-            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
             app.clean();
             this.softly.assertThat(app.isAppClosed()).isTrue();
             app.setAppClosed(false);
-            Thread.sleep(TIMEOUT.toMillis());
             app.reset();
             this.softly.assertThat(app.isAppClosed()).isTrue();
         }
+    }
+
+    private void runAppAndClose(final KafkaStreamsApplication<?> app) {
+        this.runApp(app);
+        app.stop();
+    }
+
+    private void runApp(final KafkaStreamsApplication<?> app) {
+        // run in Thread because the application blocks indefinitely
+        new Thread(app).start();
+        // Wait until stream application has consumed all data
+        this.awaitProcessing(app.createConfiguredApp().getUniqueAppId(), TIMEOUT);
     }
 
     private CloseFlagApp createCloseFlagApplication() {
@@ -177,9 +175,8 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
-            final String description, final KafkaStreamsApplication<?> app)
-            throws InterruptedException {
-        runAppAndClose(app);
+            final String description, final KafkaStreamsApplication<?> app) {
+        this.runAppAndClose(app);
 
         final List<KeyValue<String, Long>> output = this.readOutputTopic(app.getOutputTopic());
         this.softly.assertThat(output)

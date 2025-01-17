@@ -172,7 +172,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldThrowOnMissingInputTopic() throws InterruptedException {
+    void shouldThrowOnMissingInputTopic() {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
@@ -183,7 +183,7 @@ class StreamsRunnerTest extends KafkaTest {
             final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            Thread.sleep(TIMEOUT.toMillis());
+            awaitAtMost(TIMEOUT).until(() -> !thread.isAlive());
             this.softly.assertThat(thread.isAlive()).isFalse();
             this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
@@ -192,7 +192,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldCloseOnMapError() throws InterruptedException {
+    void shouldCloseOnMapError() {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         try (final ConfiguredStreamsApp<StreamsApp> app = createErrorApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
@@ -211,7 +211,7 @@ class StreamsRunnerTest extends KafkaTest {
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            Thread.sleep(TIMEOUT.toMillis());
+            this.awaitProcessing(app.getUniqueAppId(), TIMEOUT);
             this.softly.assertThat(thread.isAlive()).isFalse();
             this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));

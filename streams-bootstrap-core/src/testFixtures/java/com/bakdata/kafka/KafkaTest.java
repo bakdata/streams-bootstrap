@@ -24,7 +24,11 @@
 
 package com.bakdata.kafka;
 
+import static org.awaitility.Awaitility.await;
+
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import java.time.Duration;
+import org.awaitility.core.ConditionFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -32,12 +36,21 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 public abstract class KafkaTest {
+    private static final Duration POLL_INTERVAL = Duration.ofSeconds(1L);
+    private static final Duration POLL_DELAY = Duration.ofSeconds(1L);
     private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
 
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
+    }
+
+    public static ConditionFactory awaitAtMost(final Duration timeout) {
+        return await()
+                .pollInterval(POLL_INTERVAL)
+                .pollDelay(POLL_DELAY)
+                .atMost(timeout);
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
@@ -68,4 +81,46 @@ public abstract class KafkaTest {
     protected SchemaRegistryClient getSchemaRegistryClient() {
         return this.testTopologyFactory.getSchemaRegistryClient();
     }
+
+    protected void awaitMessages(final String topic, final int numberOfMessages, final Duration timeout) {
+        awaitAtMost(timeout)
+                .until(() -> this.hasMessages(topic, numberOfMessages, timeout));
+    }
+
+    protected void awaitProcessing(final String group, final Duration timeout) {
+        this.awaitActive(group, timeout);
+        awaitAtMost(timeout)
+                .until(() -> this.hasFinishedProcessing(group));
+    }
+
+    protected void awaitActive(final String group, final Duration timeout) {
+        awaitAtMost(timeout)
+                .until(() -> this.isActive(group));
+    }
+
+    protected void awaitClosed(final String group, final Duration timeout) {
+        awaitAtMost(timeout)
+                .until(() -> this.isClosed(group));
+    }
+
+    private boolean hasMessages(final String topic, final int numberOfMessages, final Duration timeout) {
+        return this.verifier().hasMessages(topic, numberOfMessages, timeout);
+    }
+
+    private ProgressVerifier verifier() {
+        return new ProgressVerifier(this.newTestClient());
+    }
+
+    private boolean hasFinishedProcessing(final String group) {
+        return this.verifier().hasFinishedProcessing(group);
+    }
+
+    private boolean isClosed(final String group) {
+        return this.verifier().isClosed(group);
+    }
+
+    private boolean isActive(final String group) {
+        return this.verifier().isActive(group);
+    }
+
 }

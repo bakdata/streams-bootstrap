@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.KafkaTest.awaitAtMost;
 import static com.bakdata.kafka.KafkaTest.newCluster;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,8 +42,10 @@ import org.testcontainers.kafka.KafkaContainer;
 
 class CliTest {
 
-    private static void runApp(final KafkaStreamsApplication<?> app, final String... args) {
-        new Thread(() -> KafkaApplication.startApplication(app, args)).start();
+    private static Thread runApp(final KafkaStreamsApplication<?> app, final String... args) {
+        final Thread thread = new Thread(() -> KafkaApplication.startApplication(app, args));
+        thread.start();
+        return thread;
     }
 
     @Test
@@ -209,7 +212,7 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorInTopology() throws InterruptedException {
+    void shouldExitWithErrorInTopology() {
         final String input = "input";
         try (final KafkaContainer kafkaCluster = newCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
@@ -233,7 +236,7 @@ class CliTest {
                 })) {
             kafkaCluster.start();
 
-            runApp(app,
+            final Thread thread = runApp(app,
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
@@ -241,7 +244,7 @@ class CliTest {
                     .bootstrapServers(kafkaCluster.getBootstrapServers())
                     .build()).send()
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            Thread.sleep(Duration.ofSeconds(10).toMillis());
+            awaitAtMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
         }
     }
 

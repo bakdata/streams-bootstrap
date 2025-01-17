@@ -56,7 +56,7 @@ class SchemaTopicClientTest extends KafkaTest {
 
     @Test
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
-            throws InterruptedException, IOException, RestClientException {
+            throws IOException, RestClientException {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
@@ -79,8 +79,6 @@ class SchemaTopicClientTest extends KafkaTest {
                 schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
             }
 
-            Thread.sleep(TIMEOUT.toMillis());
-
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(TOPIC + "-value");
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -89,7 +87,7 @@ class SchemaTopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldResetSchema() throws InterruptedException, IOException, RestClientException {
+    void shouldResetSchema() throws IOException, RestClientException {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
@@ -112,8 +110,6 @@ class SchemaTopicClientTest extends KafkaTest {
                 schemaTopicClient.resetSchemaRegistry(TOPIC);
             }
 
-            Thread.sleep(TIMEOUT.toMillis());
-
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(TOPIC + "-value");
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -122,7 +118,7 @@ class SchemaTopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws InterruptedException, RestClientException,
+    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws RestClientException,
             IOException {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
@@ -146,7 +142,6 @@ class SchemaTopicClientTest extends KafkaTest {
                 schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
             }
 
-            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(client.getAllSubjects())
                     .contains(TOPIC + "-value");
             this.softly.assertThat(topicClient.exists(TOPIC))

@@ -46,40 +46,42 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldFindTopic() throws InterruptedException {
+    void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", KafkaTestClient.defaultTopicSettings().build());
         }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.exists("exists")).isTrue();
-        }
+        awaitAtMost(CLIENT_TIMEOUT)
+                .untilAsserted(() -> {
+                    try (final TopicClient client = this.createClient()) {
+                        assertThat(client.exists("exists")).isTrue();
+                    }
+                });
     }
 
     @Test
-    void shouldListTopics() throws InterruptedException {
+    void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
             client.createTopic("bar", KafkaTestClient.defaultTopicSettings().build());
         }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.listTopics())
-                    .hasSize(2)
-                    .containsExactlyInAnyOrder("foo", "bar");
-        }
+        awaitAtMost(CLIENT_TIMEOUT)
+                .untilAsserted(() -> {
+                    try (final TopicClient client = this.createClient()) {
+                        assertThat(client.listTopics())
+                                .hasSize(2)
+                                .containsExactlyInAnyOrder("foo", "bar");
+                    }
+                });
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException {
+    void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
         }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.listTopics())
-                    .hasSize(1)
-                    .containsExactlyInAnyOrder("foo");
+            awaitAtMost(CLIENT_TIMEOUT)
+                    .until(() -> client.exists("foo"));
             client.deleteTopic("foo");
             assertThat(client.listTopics())
                     .isEmpty();
@@ -87,7 +89,7 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldCreateTopic() throws InterruptedException {
+    void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
@@ -96,8 +98,8 @@ class TopicClientTest extends KafkaTest {
                     .replicationFactor((short) 1)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            Thread.sleep(CLIENT_TIMEOUT.toMillis());
-            assertThat(client.exists("topic")).isTrue();
+            awaitAtMost(CLIENT_TIMEOUT)
+                    .until(() -> client.exists("foo"));
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
