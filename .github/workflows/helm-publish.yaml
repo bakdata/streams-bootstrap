@@ -14,7 +14,7 @@ jobs:
         uses: bakdata/ci-templates/actions/checkout@1.32.0
 
       - name: Set up Gradle with version ${{ inputs.gradle-version }}
-        uses: bakdata/ci-templates/actions/java-gradle-setup@1.42.0
+        uses: bakdata/ci-templates/actions/java-gradle-setup@1.54.1
         with:
           java-distribution: "microsoft"
           java-version: "11"
@@ -29,9 +29,10 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
         shell: bash
 
-  call-workflow-passing-data:
+
+  helm-publish:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.46.3
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.54.1
     needs: get-gradle-version
     with:
       charts-path: "./charts"
