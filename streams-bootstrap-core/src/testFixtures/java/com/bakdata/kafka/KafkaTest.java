@@ -87,16 +87,19 @@ public abstract class KafkaTest {
     protected void awaitProcessing(final ExecutableStreamsApp<?> app, final Duration timeout) {
         this.awaitActive(app, timeout);
         awaitAtMost(timeout)
+                .alias("Consumer group has finished processing")
                 .until(() -> this.hasFinishedProcessing(app));
     }
 
     protected void awaitActive(final ExecutableStreamsApp<?> app, final Duration timeout) {
         awaitAtMost(timeout)
+                .alias("Consumer group is active")
                 .until(() -> this.isActive(app));
     }
 
     protected void awaitClosed(final ExecutableStreamsApp<?> app, final Duration timeout) {
         awaitAtMost(timeout)
+                .alias("Consumer group is closed")
                 .until(() -> this.isClosed(app));
     }
 

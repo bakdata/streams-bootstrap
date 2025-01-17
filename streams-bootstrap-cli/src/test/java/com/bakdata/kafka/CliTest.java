@@ -24,9 +24,9 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.KafkaTest.awaitAtMost;
 import static com.bakdata.kafka.KafkaTest.newCluster;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
@@ -244,7 +244,7 @@ class CliTest {
                     .bootstrapServers(kafkaCluster.getBootstrapServers())
                     .build()).send()
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            awaitAtMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
+            await("Thread is dead").atMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
         }
     }
 

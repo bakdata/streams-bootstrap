@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -120,6 +120,10 @@ class StreamsRunnerTest extends KafkaTest {
                 .build());
     }
 
+    private static void awaitThreadIsDead(final Thread thread) {
+        await("Thread is dead").atMost(TIMEOUT).until(() -> !thread.isAlive());
+    }
+
     @Test
     void shouldRunApp() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
@@ -184,7 +188,7 @@ class StreamsRunnerTest extends KafkaTest {
             final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            awaitAtMost(TIMEOUT).untilAsserted(() -> assertThat(thread.isAlive()).isFalse()); // softly does not work
+            awaitThreadIsDead(thread);
             this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
@@ -211,7 +215,7 @@ class StreamsRunnerTest extends KafkaTest {
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            awaitAtMost(TIMEOUT).untilAsserted(() -> assertThat(thread.isAlive()).isFalse()); // softly does not work
+            awaitThreadIsDead(thread);
             this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
             verify(this.uncaughtExceptionHandler).handle(any());
