@@ -24,11 +24,11 @@
 
 package com.bakdata.kafka.util;
 
+import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
-import com.bakdata.kafka.KafkaTestClient;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -48,7 +48,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("exists", KafkaTestClient.defaultTopicSettings().build());
+            client.createTopic("exists", defaultTopicSettings().build());
             assertThat(client.exists("exists")).isTrue();
         }
     }
@@ -56,8 +56,8 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
-            client.createTopic("bar", KafkaTestClient.defaultTopicSettings().build());
+            client.createTopic("foo", defaultTopicSettings().build());
+            client.createTopic("bar", defaultTopicSettings().build());
             assertThat(client.listTopics())
                             .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -67,7 +67,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
+            client.createTopic("foo", defaultTopicSettings().build());
             assertThat(client.exists("foo")).isTrue();
             client.deleteTopic("foo");
             assertThat(client.listTopics())
