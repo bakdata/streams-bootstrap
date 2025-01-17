@@ -39,6 +39,9 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 
+/**
+ * Read data from a Kafka cluster
+ */
 @RequiredArgsConstructor
 public class ReaderBuilder {
 
@@ -65,15 +68,29 @@ public class ReaderBuilder {
         return pollAll(consumer, timeout);
     }
 
+    /**
+     * Add a consumer configuration
+     * @param key configuration key
+     * @param value configuration value
+     * @return {@code ReaderBuilder} with added configuration
+     */
     public ReaderBuilder with(final String key, final Object value) {
         final Map<String, Object> newProperties = new HashMap<>(this.properties);
         newProperties.put(key, value);
         return new ReaderBuilder(Map.copyOf(newProperties));
     }
 
-    public <K, V> List<ConsumerRecord<K, V>> from(final String output, final Duration timeout) {
+    /**
+     * Read data from a topic
+     * @param topic topic to read from
+     * @param timeout consumer poll timeout
+     * @return consumed records
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
+    public <K, V> List<ConsumerRecord<K, V>> from(final String topic, final Duration timeout) {
         try (final Consumer<K, V> consumer = new KafkaConsumer<>(this.properties)) {
-            return readAll(consumer, output, timeout);
+            return readAll(consumer, topic, timeout);
         }
     }
 

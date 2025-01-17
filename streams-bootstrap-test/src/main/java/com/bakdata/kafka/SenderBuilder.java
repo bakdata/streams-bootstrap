@@ -35,23 +35,44 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 
+/**
+ * Send data to a Kafka cluster
+ */
 @RequiredArgsConstructor
 public class SenderBuilder {
 
     private final @NonNull Map<String, Object> properties;
 
+    /**
+     * Add a producer configuration
+     * @param key configuration key
+     * @param value configuration value
+     * @return {@code SenderBuilder} with added configuration
+     */
     public SenderBuilder with(final String key, final Object value) {
         final Map<String, Object> newProperties = new HashMap<>(this.properties);
         newProperties.put(key, value);
         return new SenderBuilder(Map.copyOf(newProperties));
     }
 
+    /**
+     * Send data to a topic
+     * @param topic topic to send to
+     * @param records records to send
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public <K, V> void to(final String topic, final Iterable<SimpleProducerRecord<K, V>> records) {
         try (final Producer<K, V> producer = new KafkaProducer<>(this.properties)) {
             records.forEach(kv -> producer.send(kv.toProducerRecord(topic)));
         }
     }
 
+    /**
+     * Represents a {@link ProducerRecord} without topic assignment
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     @Value
     @RequiredArgsConstructor
     public static class SimpleProducerRecord<K, V> {
@@ -60,14 +81,31 @@ public class SenderBuilder {
         Instant timestamp;
         Iterable<Header> headers;
 
+        /**
+         * Create a new {@code SimpleProducerRecord} without timestamp and headers
+         * @param key key
+         * @param value value
+         */
         public SimpleProducerRecord(final K key, final V value) {
             this(key, value, (Instant) null);
         }
 
+        /**
+         * Create a new {@code SimpleProducerRecord} without headers
+         * @param key key
+         * @param value value
+         * @param timestamp timestamp
+         */
         public SimpleProducerRecord(final K key, final V value, final Instant timestamp) {
             this(key, value, timestamp, null);
         }
 
+        /**
+         * Create a new {@code SimpleProducerRecord} without timestamp
+         * @param key key
+         * @param value value
+         * @param headers headers
+         */
         public SimpleProducerRecord(final K key, final V value, final Iterable<Header> headers) {
             this(key, value, null, headers);
         }
