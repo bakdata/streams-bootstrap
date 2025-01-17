@@ -25,12 +25,14 @@
 package com.bakdata.kafka;
 
 import lombok.experimental.UtilityClass;
+import org.apache.kafka.common.utils.AppInfoParser;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @UtilityClass
 public class TestUtil {
     public static KafkaContainer newKafkaCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
+                .withTag(AppInfoParser.getVersion()));
     }
 }
