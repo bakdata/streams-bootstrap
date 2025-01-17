@@ -119,18 +119,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app,
             final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = createCommandLine(app);
-        return commandLine.execute(populatedArgs);
-    }
-
-    /**
-     * Create {@code CommandLine} for executing application
-     * @param app An instance of the custom application class.
-     * @return {@code CommandLine}
-     */
-    public static CommandLine createCommandLine(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
-        return new CommandLine(app)
+        final CommandLine commandLine = new CommandLine(app)
                 .setExecutionStrategy(app::execute);
+        return commandLine.execute(populatedArgs);
     }
 
     private static String[] addEnvironmentVariablesArguments(final String[] args) {
