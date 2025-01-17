@@ -25,11 +25,13 @@
 package com.bakdata.kafka.integration;
 
 
+import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
+import static java.util.Collections.emptyMap;
+
 import com.bakdata.kafka.CloseFlagApp;
+import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.KafkaTest;
-import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
@@ -52,13 +54,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
 
+@Testcontainers
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
-class StreamsCleanUpTest extends KafkaTest {
+class StreamsCleanUpTest {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    @Container
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
     @InjectSoftAssertions
     private SoftAssertions softly;
 
@@ -77,13 +85,15 @@ class StreamsCleanUpTest extends KafkaTest {
     @Test
     void shouldClean() throws InterruptedException {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getOutputTopic());
-            testClient.send()
+            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
+            kafkaContainerHelper.send()
                     .to(app.getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>(null, "blub"),
-                            new SimpleProducerRecord<>(null, "bla"),
-                            new SimpleProducerRecord<>(null, "blub")
+                            new KeyValue<>(null, "blub"),
+                            new KeyValue<>(null, "bla"),
+                            new KeyValue<>(null, "blub")
                     ));
 
             final List<KeyValue<String, Long>> expectedValues = List.of(
@@ -97,13 +107,15 @@ class StreamsCleanUpTest extends KafkaTest {
             Thread.sleep(TIMEOUT.toMillis());
             app.clean();
 
-            try (final ImprovedAdminClient admin = testClient.admin()) {
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();
             }
 
-            testClient.createTopic(app.getOutputTopic());
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 2nd run", app);
         }
     }
@@ -111,13 +123,15 @@ class StreamsCleanUpTest extends KafkaTest {
     @Test
     void shouldReset() throws InterruptedException {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getOutputTopic());
-            testClient.send()
+            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getOutputTopic(), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
+            kafkaContainerHelper.send()
                     .to(app.getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>(null, "blub"),
-                            new SimpleProducerRecord<>(null, "bla"),
-                            new SimpleProducerRecord<>(null, "blub")
+                            new KeyValue<>(null, "blub"),
+                            new KeyValue<>(null, "bla"),
+                            new KeyValue<>(null, "blub")
                     ));
 
             final List<KeyValue<String, Long>> expectedValues = List.of(
@@ -131,7 +145,7 @@ class StreamsCleanUpTest extends KafkaTest {
             Thread.sleep(TIMEOUT.toMillis());
             app.reset();
 
-            try (final ImprovedAdminClient admin = testClient.admin()) {
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
                         .as("Output topic exists")
                         .isTrue();
@@ -147,7 +161,9 @@ class StreamsCleanUpTest extends KafkaTest {
     @Test
     void shouldCallClose() throws InterruptedException {
         try (final CloseFlagApp app = this.createCloseFlagApplication()) {
-            this.newTestClient().createTopic(app.getInputTopics().get(0));
+            try (final ImprovedAdminClient admin = new KafkaContainerHelper(this.kafkaCluster).admin()) {
+                admin.getTopicClient().createTopic(app.getInputTopics().get(0), DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
             Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
@@ -168,7 +184,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
+        final List<ConsumerRecord<String, Long>> records = new KafkaContainerHelper(this.kafkaCluster).read()
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
                 .from(outputTopic, TIMEOUT);
         return records.stream()
@@ -195,7 +211,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
-        application.setBootstrapServers(this.getBootstrapServers());
+        application.setBootstrapServers(this.kafkaCluster.getBootstrapServers());
         application.setKafkaConfig(Map.of(
                 StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

@@ -24,19 +24,25 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
+import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaTest;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
 
-class TopicClientTest extends KafkaTest {
+@Testcontainers
+class TopicClientTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
+    @Container
+    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @Test
     void shouldNotFindTopic() {
@@ -48,7 +54,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldFindTopic() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("exists", defaultTopicSettings());
+            client.createTopic("exists", DEFAULT_TOPIC_SETTINGS, emptyMap());
         }
         Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {
@@ -59,8 +65,8 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldListTopics() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings());
-            client.createTopic("bar", defaultTopicSettings());
+            client.createTopic("foo", DEFAULT_TOPIC_SETTINGS, emptyMap());
+            client.createTopic("bar", DEFAULT_TOPIC_SETTINGS, emptyMap());
         }
         Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {
@@ -73,7 +79,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldDeleteTopic() throws InterruptedException {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings());
+            client.createTopic("foo", DEFAULT_TOPIC_SETTINGS, emptyMap());
         }
         Thread.sleep(CLIENT_TIMEOUT.toMillis());
         try (final TopicClient client = this.createClient()) {
@@ -107,7 +113,7 @@ class TopicClientTest extends KafkaTest {
     }
 
     private TopicClient createClient() {
-        final String brokerList = this.getBootstrapServers();
+        final String brokerList = this.kafkaCluster.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         return TopicClient.create(config, CLIENT_TIMEOUT);
     }

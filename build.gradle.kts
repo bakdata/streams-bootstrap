@@ -18,6 +18,13 @@ allprojects {
         maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
     }
+
+    configurations.all {
+        resolutionStrategy {
+            val kafkaVersion: String by project
+            force("org.apache.kafka:kafka-clients:$kafkaVersion")
+        }
+    }
 }
 
 configure<com.bakdata.gradle.SonatypeSettings> {

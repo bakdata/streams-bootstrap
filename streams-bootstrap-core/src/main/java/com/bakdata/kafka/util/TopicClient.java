@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka.util;
 
-import static java.util.Collections.emptyMap;
-
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -102,18 +100,6 @@ public final class TopicClient implements AutoCloseable {
         } else {
             this.createTopic(topicName, settings, config);
         }
-    }
-
-    /**
-     * Creates a new Kafka topic with the specified number of partitions if it does not yet exist.
-     *
-     * @param topicName the topic name
-     * @param settings settings for number of partitions and replicationFactor
-     * @see #createTopic(String, TopicSettings, Map)
-     * @see #exists(String)
-     */
-    public void createIfNotExists(final String topicName, final TopicSettings settings) {
-        this.createIfNotExists(topicName, settings, emptyMap());
     }
 
     /**
@@ -237,16 +223,6 @@ public final class TopicClient implements AutoCloseable {
         } catch (final TimeoutException ex) {
             throw failedToCreateTopic(topicName, ex);
         }
-    }
-
-    /**
-     * Creates a new Kafka topic with the specified number of partitions.
-     *
-     * @param topicName the topic name
-     * @param settings settings for number of partitions and replicationFactor
-     */
-    public void createTopic(final String topicName, final TopicSettings settings) {
-        this.createTopic(topicName, settings, emptyMap());
     }
 
     /**

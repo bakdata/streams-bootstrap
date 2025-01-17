@@ -11,12 +11,8 @@ dependencies {
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
     api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
     val confluentVersion: String by project
-    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients")
-    }
-    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients")
-    }
+    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
+    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
     implementation(
         group = "org.slf4j",
         name = "slf4j-api",
@@ -35,13 +31,11 @@ dependencies {
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
-    testFixturesApi(project(":streams-bootstrap-test"))
+    testImplementation(project(":streams-bootstrap-test"))
     val testContainersVersion: String by project
     testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
     testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients")
-    }
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }

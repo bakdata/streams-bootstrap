@@ -24,50 +24,15 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import lombok.experimental.UtilityClass;
 import org.apache.kafka.common.utils.AppInfoParser;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-@Testcontainers
-public abstract class KafkaTest {
-    private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
-    @Container
-    private final KafkaContainer kafkaCluster = newCluster();
-
-    public static KafkaContainer newCluster() {
+@UtilityClass
+public class TestUtil {
+    public static KafkaContainer newKafkaCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
                 .withTag(AppInfoParser.getVersion()));
-    }
-
-    protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .build();
-    }
-
-    protected KafkaEndpointConfig createEndpoint() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
-                .build();
-    }
-
-    protected String getBootstrapServers() {
-        return this.kafkaCluster.getBootstrapServers();
-    }
-
-    protected KafkaTestClient newTestClient() {
-        return new KafkaTestClient(this.createEndpoint());
-    }
-
-    protected String getSchemaRegistryUrl() {
-        return this.testTopologyFactory.getSchemaRegistryUrl();
-    }
-
-    protected SchemaRegistryClient getSchemaRegistryClient() {
-        return this.testTopologyFactory.getSchemaRegistryClient();
     }
 }

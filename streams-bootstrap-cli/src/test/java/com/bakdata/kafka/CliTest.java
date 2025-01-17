@@ -24,10 +24,12 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.KafkaTest.newCluster;
+import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
+import static com.bakdata.kafka.TestUtil.newKafkaCluster;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.regex.Pattern;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.kafka.KafkaContainer;
@@ -211,7 +214,7 @@ class CliTest {
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorInTopology() throws InterruptedException {
         final String input = "input";
-        try (final KafkaContainer kafkaCluster = newCluster();
+        try (final KafkaContainer kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -237,10 +240,8 @@ class CliTest {
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
-            new KafkaTestClient(KafkaEndpointConfig.builder()
-                    .bootstrapServers(kafkaCluster.getBootstrapServers())
-                    .build()).send()
-                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            new KafkaContainerHelper(kafkaCluster).send()
+                    .to(input, List.of(new KeyValue<>("foo", "bar")));
             Thread.sleep(Duration.ofSeconds(10).toMillis());
         }
     }
@@ -250,7 +251,7 @@ class CliTest {
     void shouldExitWithSuccessCodeOnShutdown() {
         final String input = "input";
         final String output = "output";
-        try (final KafkaContainer kafkaCluster = newCluster();
+        try (final KafkaContainer kafkaCluster = newKafkaCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -269,19 +270,19 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-            final KafkaTestClient testClient = new KafkaTestClient(KafkaEndpointConfig.builder()
-                    .bootstrapServers(kafkaCluster.getBootstrapServers())
-                    .build());
-            testClient.createTopic(output);
+            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(kafkaCluster);
+            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+                admin.getTopicClient().createTopic(output, DEFAULT_TOPIC_SETTINGS, emptyMap());
+            }
 
             runApp(app,
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input,
                     "--output-topic", output
             );
-            testClient.send()
-                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            final List<ConsumerRecord<String, String>> keyValues = testClient.read()
+            kafkaContainerHelper.send()
+                    .to(input, List.of(new KeyValue<>("foo", "bar")));
+            final List<ConsumerRecord<String, String>> keyValues = kafkaContainerHelper.read()
                     .from(output, Duration.ofSeconds(10));
             assertThat(keyValues)
                     .hasSize(1)
