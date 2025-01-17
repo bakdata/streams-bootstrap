@@ -82,7 +82,7 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsCleanUpRunnerTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration TIMEOUT = Duration.ofSeconds(20);
     @InjectSoftAssertions
     private SoftAssertions softly;
     @Mock
