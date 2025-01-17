@@ -63,9 +63,19 @@ public class SenderBuilder {
      * @param <V> type of values
      */
     public <K, V> void to(final String topic, final Iterable<SimpleProducerRecord<K, V>> records) {
-        try (final Producer<K, V> producer = new KafkaProducer<>(this.properties)) {
+        try (final Producer<K, V> producer = this.createProducer()) {
             records.forEach(kv -> producer.send(kv.toProducerRecord(topic)));
         }
+    }
+
+    /**
+     * Create a new {@code Producer} for a Kafka cluster
+     * @return {@code Producer}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
+    public <K, V> Producer<K, V> createProducer() {
+        return new KafkaProducer<>(this.properties);
     }
 
     /**

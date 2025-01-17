@@ -89,9 +89,19 @@ public class ReaderBuilder {
      * @param <V> type of values
      */
     public <K, V> List<ConsumerRecord<K, V>> from(final String topic, final Duration timeout) {
-        try (final Consumer<K, V> consumer = new KafkaConsumer<>(this.properties)) {
+        try (final Consumer<K, V> consumer = this.createConsumer()) {
             return readAll(consumer, topic, timeout);
         }
+    }
+
+    /**
+     * Create a new {@code Consumer} for a Kafka cluster
+     * @return {@code Consumer}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
+    public <K, V> Consumer<K, V> createConsumer() {
+        return new KafkaConsumer<>(this.properties);
     }
 
 }
