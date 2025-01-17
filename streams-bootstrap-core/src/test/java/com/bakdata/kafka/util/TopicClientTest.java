@@ -49,13 +49,9 @@ class TopicClientTest extends KafkaTest {
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", KafkaTestClient.defaultTopicSettings().build());
+            awaitAtMost(CLIENT_TIMEOUT)
+                    .untilAsserted(() -> assertThat(client.exists("exists")).isTrue());
         }
-        awaitAtMost(CLIENT_TIMEOUT)
-                .untilAsserted(() -> {
-                    try (final TopicClient client = this.createClient()) {
-                        assertThat(client.exists("exists")).isTrue();
-                    }
-                });
     }
 
     @Test
@@ -63,23 +59,17 @@ class TopicClientTest extends KafkaTest {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
             client.createTopic("bar", KafkaTestClient.defaultTopicSettings().build());
+            awaitAtMost(CLIENT_TIMEOUT)
+                    .untilAsserted(() -> assertThat(client.listTopics())
+                            .hasSize(2)
+                            .containsExactlyInAnyOrder("foo", "bar"));
         }
-        awaitAtMost(CLIENT_TIMEOUT)
-                .untilAsserted(() -> {
-                    try (final TopicClient client = this.createClient()) {
-                        assertThat(client.listTopics())
-                                .hasSize(2)
-                                .containsExactlyInAnyOrder("foo", "bar");
-                    }
-                });
     }
 
     @Test
     void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", KafkaTestClient.defaultTopicSettings().build());
-        }
-        try (final TopicClient client = this.createClient()) {
             awaitAtMost(CLIENT_TIMEOUT)
                     .until(() -> client.exists("foo"));
             client.deleteTopic("foo");

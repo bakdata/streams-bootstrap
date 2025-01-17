@@ -82,11 +82,6 @@ public abstract class KafkaTest {
         return this.testTopologyFactory.getSchemaRegistryClient();
     }
 
-    protected void awaitMessages(final String topic, final int numberOfMessages, final Duration timeout) {
-        awaitAtMost(timeout)
-                .until(() -> this.hasMessages(topic, numberOfMessages, timeout));
-    }
-
     protected void awaitProcessing(final String group, final Duration timeout) {
         this.awaitActive(group, timeout);
         awaitAtMost(timeout)
@@ -101,10 +96,6 @@ public abstract class KafkaTest {
     protected void awaitClosed(final String group, final Duration timeout) {
         awaitAtMost(timeout)
                 .until(() -> this.isClosed(group));
-    }
-
-    private boolean hasMessages(final String topic, final int numberOfMessages, final Duration timeout) {
-        return this.verifier().hasMessages(topic, numberOfMessages, timeout);
     }
 
     private ProgressVerifier verifier() {
