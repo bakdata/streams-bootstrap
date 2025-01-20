@@ -84,7 +84,8 @@ public class ReaderBuilder {
     }
 
     /**
-     * Read all data from a topic
+     * Read all data from a topic. This method is idempotent, meaning calling it multiple times will read the same
+     * data unless the data in the topic changes.
      * @param topic topic to read from
      * @param timeout consumer poll timeout
      * @return consumed records
