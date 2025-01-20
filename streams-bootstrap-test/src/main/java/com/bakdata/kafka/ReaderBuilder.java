@@ -61,11 +61,15 @@ public class ReaderBuilder {
             final Duration timeout) {
         final List<PartitionInfo> partitionInfos = consumer.listTopics().get(topic);
         final List<TopicPartition> topicPartitions = partitionInfos.stream()
-                .map(partition -> new TopicPartition(partition.topic(), partition.partition()))
+                .map(ReaderBuilder::toTopicPartition)
                 .collect(Collectors.toList());
         consumer.assign(topicPartitions);
         consumer.seekToBeginning(topicPartitions);
         return pollAll(consumer, timeout);
+    }
+
+    private static TopicPartition toTopicPartition(final PartitionInfo partition) {
+        return new TopicPartition(partition.topic(), partition.partition());
     }
 
     /**

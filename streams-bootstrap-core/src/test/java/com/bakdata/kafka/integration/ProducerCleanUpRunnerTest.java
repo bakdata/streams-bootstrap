@@ -47,10 +47,11 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -174,8 +175,10 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, String>> records =
-                this.newTestClient().read().from(outputTopic, Duration.ofSeconds(1L));
+        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());

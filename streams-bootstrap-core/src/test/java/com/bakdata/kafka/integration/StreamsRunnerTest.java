@@ -136,7 +136,7 @@ class StreamsRunnerTest extends KafkaTest {
             this.softly.assertThat(testClient.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                            .from(outputTopic, TIMEOUT))
+                            .from(outputTopic, POLL_TIMEOUT))
                     .hasSize(1);
         }
     }
@@ -166,7 +166,7 @@ class StreamsRunnerTest extends KafkaTest {
             this.softly.assertThat(testClient.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                             .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                            .from(outputTopic, TIMEOUT))
+                            .from(outputTopic, POLL_TIMEOUT))
                     .hasSize(2);
         }
     }

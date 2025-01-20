@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import java.time.Duration;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -32,12 +33,14 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 public abstract class KafkaTest {
+    protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
     private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
 
     public static KafkaContainer newCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
+                .withTag("3.8.1"));
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {

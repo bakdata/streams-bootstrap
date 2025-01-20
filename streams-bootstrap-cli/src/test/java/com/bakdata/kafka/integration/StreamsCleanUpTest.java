@@ -41,7 +41,10 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.SoftAssertions;
@@ -80,6 +83,8 @@ class StreamsCleanUpTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
             testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(app.getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -114,6 +119,8 @@ class StreamsCleanUpTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
             testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(app.getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -169,8 +176,9 @@ class StreamsCleanUpTest extends KafkaTest {
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
-                .from(outputTopic, TIMEOUT);
+                .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(consumerRecord -> new KeyValue<>(consumerRecord.key(), consumerRecord.value()))
                 .collect(Collectors.toList());

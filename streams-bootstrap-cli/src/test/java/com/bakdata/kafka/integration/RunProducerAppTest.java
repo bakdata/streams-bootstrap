@@ -77,7 +77,7 @@ class RunProducerAppTest extends KafkaTest {
             assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                    .<String, TestRecord>from(output, TIMEOUT))
+                    .<String, TestRecord>from(output, POLL_TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {
                         assertThat(kv.key()).isEqualTo("foo");
