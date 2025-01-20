@@ -41,6 +41,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -50,7 +51,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class SchemaTopicClientTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10);
     private static final String TOPIC = "topic";
 
     @InjectSoftAssertions
@@ -68,6 +69,7 @@ class SchemaTopicClientTest extends KafkaTest {
                     .isTrue();
 
             testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
@@ -99,6 +101,7 @@ class SchemaTopicClientTest extends KafkaTest {
                     .isTrue();
 
             testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
@@ -131,6 +134,7 @@ class SchemaTopicClientTest extends KafkaTest {
                     .isTrue();
 
             testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
@@ -155,14 +159,14 @@ class SchemaTopicClientTest extends KafkaTest {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, this.getSchemaRegistryUrl(), TIMEOUT);
+        return SchemaTopicClient.create(kafkaProperties, this.getSchemaRegistryUrl(), CLIENT_TIMEOUT);
     }
 
     private SchemaTopicClient createClientWithNoSchemaRegistry() {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, TIMEOUT);
+        return SchemaTopicClient.create(kafkaProperties, CLIENT_TIMEOUT);
     }
 
 }

@@ -33,10 +33,6 @@ import com.bakdata.kafka.util.TopicSettings.TopicSettingsBuilder;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
  * Client that supports communication with Kafka clusters in test setups, including topic management, reading from
@@ -59,23 +55,19 @@ public class KafkaTestClient {
     }
 
     /**
-     * Prepare sending new data to the cluster. {@link StringSerializer} is configured by default.
+     * Prepare sending new data to the cluster
      * @return configured {@code SenderBuilder}
      */
     public SenderBuilder send() {
-        return new SenderBuilder(this.endpointConfig.createKafkaProperties())
-                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        return new SenderBuilder(this.endpointConfig.createKafkaProperties());
     }
 
     /**
-     * Prepare reading data from the cluster. {@link StringDeserializer} is configured by default.
+     * Prepare reading data from the cluster
      * @return configured {@code ReaderBuilder}
      */
     public ReaderBuilder read() {
-        return new ReaderBuilder(this.endpointConfig.createKafkaProperties())
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return new ReaderBuilder(this.endpointConfig.createKafkaProperties());
     }
 
     /**

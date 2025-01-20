@@ -59,7 +59,7 @@ class TopicClientTest extends KafkaTest {
             client.createTopic("foo", defaultTopicSettings().build());
             client.createTopic("bar", defaultTopicSettings().build());
             assertThat(client.listTopics())
-                            .hasSize(2)
+                    .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
         }
     }

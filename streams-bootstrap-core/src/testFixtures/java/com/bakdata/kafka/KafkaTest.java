@@ -35,6 +35,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 public abstract class KafkaTest {
+    protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
     private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
@@ -48,10 +49,6 @@ public abstract class KafkaTest {
         return Awaitility.await()
                 .pollInterval(Duration.ofSeconds(2L))
                 .atMost(Duration.ofSeconds(20L));
-    }
-
-    private static String getUniqueAppId(final ExecutableStreamsApp<?> app) {
-        return new ImprovedStreamsConfig(app.getConfig()).getAppId();
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
@@ -85,37 +82,24 @@ public abstract class KafkaTest {
 
     protected void awaitProcessing(final ExecutableStreamsApp<?> app) {
         this.awaitActive(app);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         await()
                 .alias("Consumer group has finished processing")
-                .until(() -> this.hasFinishedProcessing(app));
+                .until(verifier::hasFinishedProcessing);
     }
 
     protected void awaitActive(final ExecutableStreamsApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         await()
                 .alias("Consumer group is active")
-                .until(() -> this.isActive(app));
+                .until(verifier::isActive);
     }
 
     protected void awaitClosed(final ExecutableStreamsApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         await()
                 .alias("Consumer group is closed")
-                .until(() -> this.isClosed(app));
-    }
-
-    private ProgressVerifier verifier() {
-        return new ProgressVerifier(this.newTestClient());
-    }
-
-    private boolean hasFinishedProcessing(final ExecutableStreamsApp<?> app) {
-        return this.verifier().hasFinishedProcessing(getUniqueAppId(app));
-    }
-
-    private boolean isClosed(final ExecutableStreamsApp<?> app) {
-        return this.verifier().isClosed(getUniqueAppId(app));
-    }
-
-    private boolean isActive(final ExecutableStreamsApp<?> app) {
-        return this.verifier().isActive(getUniqueAppId(app));
+                .until(verifier::isClosed);
     }
 
 }

@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.newCluster;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -33,9 +34,13 @@ import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.kafka.KafkaContainer;
@@ -243,6 +248,8 @@ class CliTest {
             new KafkaTestClient(KafkaEndpointConfig.builder()
                     .bootstrapServers(kafkaCluster.getBootstrapServers())
                     .build()).send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
             await("Thread is dead").atMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
         }
@@ -283,9 +290,13 @@ class CliTest {
                     "--output-topic", output
             );
             testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
             final List<ConsumerRecord<String, String>> keyValues = testClient.read()
-                    .from(output, Duration.ofSeconds(10));
+                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .from(output, POLL_TIMEOUT);
             assertThat(keyValues)
                     .hasSize(1)
                     .anySatisfy(kv -> {

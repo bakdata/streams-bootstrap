@@ -32,7 +32,6 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.Mirror;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -40,10 +39,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class RunStreamsAppTest extends KafkaTest {
 
     @Test
@@ -68,7 +64,7 @@ class RunStreamsAppTest extends KafkaTest {
             assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .from(output, Duration.ofSeconds(10)))
+                    .from(output, POLL_TIMEOUT))
                     .hasSize(1);
         }
     }

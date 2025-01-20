@@ -32,23 +32,19 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerRunner;
 import com.bakdata.kafka.ProducerTopicConfig;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 @ExtendWith(SoftAssertionsExtension.class)
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class ProducerRunnerTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
@@ -72,8 +68,10 @@ class ProducerRunnerTest extends KafkaTest {
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, String>> records =
-                this.newTestClient().read().from(outputTopic, Duration.ofSeconds(1L));
+        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());

@@ -8,5 +8,4 @@ dependencies {
         name = "fluent-kafka-streams-tests-junit5",
         version = fluentKafkaVersion
     )
-    implementation(group = "com.bakdata.seq2", name = "seq2", version = "1.0.12")
 }
