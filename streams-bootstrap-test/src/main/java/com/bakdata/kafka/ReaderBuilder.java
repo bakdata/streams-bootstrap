@@ -84,7 +84,7 @@ public class ReaderBuilder {
     }
 
     /**
-     * Read data from a topic
+     * Read all data from a topic
      * @param topic topic to read from
      * @param timeout consumer poll timeout
      * @return consumed records
