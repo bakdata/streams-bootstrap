@@ -1,8 +1,18 @@
 # Change Log
 
-## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) (2025-01-09)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.4.0)
+## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) (2025-01-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.0)
 
+
+## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) (2025-01-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.5.0)
+
+**Merged pull requests:**
+
+- Run tests in parallel [\#274](https://github.com/bakdata/streams-bootstrap/pull/274) ([@philipp94831](https://github.com/philipp94831))
+- Use Awaitility [\#273](https://github.com/bakdata/streams-bootstrap/pull/273) ([@philipp94831](https://github.com/philipp94831))
+- Add methods for simplified testing of Kafka endpoints [\#270](https://github.com/bakdata/streams-bootstrap/pull/270) ([@philipp94831](https://github.com/philipp94831))
+- Fix Helm publish [\#271](https://github.com/bakdata/streams-bootstrap/pull/271) ([@yannick-roeder](https://github.com/yannick-roeder))
 
 ## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) (2025-01-09)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.3.0...3.4.0)
