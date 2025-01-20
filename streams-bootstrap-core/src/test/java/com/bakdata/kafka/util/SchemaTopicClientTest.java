@@ -25,16 +25,14 @@
 package com.bakdata.kafka.util;
 
 
-import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static java.util.Collections.emptyMap;
+import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 
-import com.bakdata.kafka.KafkaContainerHelper;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TestTopologyFactory;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.time.Duration;
@@ -43,25 +41,18 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
 
-@Testcontainers
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-class SchemaTopicClientTest {
+class SchemaTopicClientTest extends KafkaTest {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
     private static final String TOPIC = "topic";
-    private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
-    @Container
-    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @InjectSoftAssertions
     SoftAssertions softly;
@@ -69,19 +60,19 @@ class SchemaTopicClientTest {
     @Test
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
             throws InterruptedException, IOException, RestClientException {
-        final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
-        try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-            final TopicClient topicClient = admin.getTopicClient();
-            topicClient.createTopic(TOPIC, DEFAULT_TOPIC_SETTINGS, emptyMap());
+        final KafkaTestClient testClient = this.newTestClient();
+        try (final ImprovedAdminClient admin = testClient.admin();
+                final TopicClient topicClient = admin.getTopicClient()) {
+            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
                     .as("Topic is created")
                     .isTrue();
 
-            kafkaContainerHelper.send()
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .to(TOPIC, List.of(
-                            new KeyValue<>(null, TestRecord.newBuilder().setContent("foo").build())
+                            new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
 
             final SchemaRegistryClient client = this.getSchemaRegistryClient();
@@ -103,19 +94,19 @@ class SchemaTopicClientTest {
 
     @Test
     void shouldResetSchema() throws InterruptedException, IOException, RestClientException {
-        final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
-        try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-            final TopicClient topicClient = admin.getTopicClient();
-            topicClient.createTopic(TOPIC, DEFAULT_TOPIC_SETTINGS, emptyMap());
+        final KafkaTestClient testClient = this.newTestClient();
+        try (final ImprovedAdminClient admin = testClient.admin();
+                final TopicClient topicClient = admin.getTopicClient()) {
+            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
                     .as("Topic is created")
                     .isTrue();
 
-            kafkaContainerHelper.send()
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .to(TOPIC, List.of(
-                            new KeyValue<>(null, TestRecord.newBuilder().setContent("foo").build())
+                            new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
 
             final SchemaRegistryClient client = this.getSchemaRegistryClient();
@@ -138,19 +129,19 @@ class SchemaTopicClientTest {
     @Test
     void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws InterruptedException, RestClientException,
             IOException {
-        final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
-        try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-            final TopicClient topicClient = admin.getTopicClient();
-            topicClient.createTopic(TOPIC, DEFAULT_TOPIC_SETTINGS, emptyMap());
+        final KafkaTestClient testClient = this.newTestClient();
+        try (final ImprovedAdminClient admin = testClient.admin();
+                final TopicClient topicClient = admin.getTopicClient()) {
+            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
                     .as("Topic is created")
                     .isTrue();
 
-            kafkaContainerHelper.send()
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl())
                     .to(TOPIC, List.of(
-                            new KeyValue<>(null, TestRecord.newBuilder().setContent("foo").build())
+                            new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
 
             final SchemaRegistryClient client = this.getSchemaRegistryClient();
@@ -171,24 +162,16 @@ class SchemaTopicClientTest {
 
     private SchemaTopicClient createClientWithSchemaRegistry() {
         final Map<String, Object> kafkaProperties = Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBootstrapServers()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
         return SchemaTopicClient.create(kafkaProperties, this.getSchemaRegistryUrl(), TIMEOUT);
     }
 
     private SchemaTopicClient createClientWithNoSchemaRegistry() {
         final Map<String, Object> kafkaProperties = Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBootstrapServers()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
         return SchemaTopicClient.create(kafkaProperties, TIMEOUT);
-    }
-
-    private String getSchemaRegistryUrl() {
-        return this.testTopologyFactory.getSchemaRegistryUrl();
-    }
-
-    private SchemaRegistryClient getSchemaRegistryClient() {
-        return this.testTopologyFactory.getSchemaRegistryClient();
     }
 
 }

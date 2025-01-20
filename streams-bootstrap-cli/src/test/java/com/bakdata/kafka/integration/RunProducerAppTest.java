@@ -24,11 +24,11 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaProducerApplication;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
@@ -36,7 +36,6 @@ import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.time.Duration;
@@ -45,29 +44,10 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
 
-@Testcontainers
-class RunProducerAppTest {
+class RunProducerAppTest extends KafkaTest {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
-    private static final String SCHEMA_REGISTRY_URL = "mock://";
-    @Container
-    private final KafkaContainer kafkaCluster = newKafkaCluster();
-
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster.start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        this.kafkaCluster.stop();
-    }
 
     @Test
     void shouldRunApp() throws InterruptedException {
@@ -88,16 +68,16 @@ class RunProducerAppTest {
                 return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
             }
         })) {
-            app.setBootstrapServers(this.kafkaCluster.getBootstrapServers());
-            app.setSchemaRegistryUrl(SCHEMA_REGISTRY_URL);
+            app.setBootstrapServers(this.getBootstrapServers());
+            final String schemaRegistryUrl = this.getSchemaRegistryUrl();
+            app.setSchemaRegistryUrl(schemaRegistryUrl);
             app.setOutputTopic(output);
             app.run();
-            final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
-            assertThat(kafkaContainerHelper.read()
+            final KafkaTestClient testClient = this.newTestClient();
+            assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SCHEMA_REGISTRY_URL)
-                    .<String, TestRecord>from(output, TIMEOUT))
+                    .<String, TestRecord>from(output, POLL_TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {
                         assertThat(kv.key()).isEqualTo("foo");
@@ -105,7 +85,7 @@ class RunProducerAppTest {
                     });
             app.clean();
             Thread.sleep(TIMEOUT.toMillis());
-            try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
+            try (final ImprovedAdminClient admin = testClient.admin()) {
                 assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();

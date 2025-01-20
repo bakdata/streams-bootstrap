@@ -24,48 +24,35 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaContainerHelper;
 import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.Mirror;
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.streams.KeyValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
 
-@Testcontainers
 @ExtendWith(MockitoExtension.class)
-class RunStreamsAppTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
-    @Container
-    private final KafkaContainer kafkaCluster = newKafkaCluster();
+class RunStreamsAppTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {
         final String input = "input";
         final String output = "output";
-        final KafkaContainerHelper kafkaContainerHelper = new KafkaContainerHelper(this.kafkaCluster);
-        try (final ImprovedAdminClient admin = kafkaContainerHelper.admin()) {
-            admin.getTopicClient().createTopic(output, DEFAULT_TOPIC_SETTINGS, emptyMap());
-        }
+        final KafkaTestClient testClient = this.newTestClient();
+        testClient.createTopic(output);
         try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(Mirror::new)) {
-            app.setBootstrapServers(this.kafkaCluster.getBootstrapServers());
+            app.setBootstrapServers(this.getBootstrapServers());
             app.setKafkaConfig(Map.of(
                     ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
             ));
@@ -73,14 +60,14 @@ class RunStreamsAppTest {
             app.setOutputTopic(output);
             // run in Thread because the application blocks indefinitely
             new Thread(app).start();
-            kafkaContainerHelper.send()
+            testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .to(input, List.of(new KeyValue<>("foo", "bar")));
-            assertThat(kafkaContainerHelper.read()
+                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .from(output, TIMEOUT))
+                    .from(output, POLL_TIMEOUT))
                     .hasSize(1);
         }
     }
