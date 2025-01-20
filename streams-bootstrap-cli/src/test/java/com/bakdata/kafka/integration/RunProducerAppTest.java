@@ -38,7 +38,6 @@ import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.time.Duration;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -47,10 +46,9 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 
 class RunProducerAppTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     @Test
-    void shouldRunApp() throws InterruptedException {
+    void shouldRunApp() {
         final String output = "output";
         try (final KafkaProducerApplication<?> app = new SimpleKafkaProducerApplication<>(() -> new ProducerApp() {
             @Override
@@ -84,7 +82,6 @@ class RunProducerAppTest extends KafkaTest {
                         assertThat(kv.value().getContent()).isEqualTo("bar");
                     });
             app.clean();
-            Thread.sleep(TIMEOUT.toMillis());
             try (final ImprovedAdminClient admin = testClient.admin()) {
                 assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
                         .as("Output topic is deleted")

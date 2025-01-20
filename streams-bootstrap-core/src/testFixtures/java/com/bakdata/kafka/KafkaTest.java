@@ -26,6 +26,8 @@ package com.bakdata.kafka;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
+import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -41,6 +43,12 @@ public abstract class KafkaTest {
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
                 .withTag("3.8.1"));
+    }
+
+    private static ConditionFactory await() {
+        return Awaitility.await()
+                .pollInterval(Duration.ofSeconds(2L))
+                .atMost(Duration.ofSeconds(20L));
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
@@ -71,4 +79,27 @@ public abstract class KafkaTest {
     protected SchemaRegistryClient getSchemaRegistryClient() {
         return this.testTopologyFactory.getSchemaRegistryClient();
     }
+
+    protected void awaitProcessing(final ExecutableStreamsApp<?> app) {
+        this.awaitActive(app);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group has finished processing")
+                .until(verifier::hasFinishedProcessing);
+    }
+
+    protected void awaitActive(final ExecutableStreamsApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is active")
+                .until(verifier::isActive);
+    }
+
+    protected void awaitClosed(final ExecutableStreamsApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is closed")
+                .until(verifier::isClosed);
+    }
+
 }

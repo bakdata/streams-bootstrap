@@ -46,24 +46,18 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldFindTopic() throws InterruptedException {
+    void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", defaultTopicSettings().build());
-        }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("exists")).isTrue();
         }
     }
 
     @Test
-    void shouldListTopics() throws InterruptedException {
+    void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", defaultTopicSettings().build());
             client.createTopic("bar", defaultTopicSettings().build());
-        }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
             assertThat(client.listTopics())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -71,15 +65,10 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException {
+    void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", defaultTopicSettings().build());
-        }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.listTopics())
-                    .hasSize(1)
-                    .containsExactlyInAnyOrder("foo");
+            assertThat(client.exists("foo")).isTrue();
             client.deleteTopic("foo");
             assertThat(client.listTopics())
                     .isEmpty();
@@ -87,7 +76,7 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldCreateTopic() throws InterruptedException {
+    void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
@@ -96,7 +85,6 @@ class TopicClientTest extends KafkaTest {
                     .replicationFactor((short) 1)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            Thread.sleep(CLIENT_TIMEOUT.toMillis());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {

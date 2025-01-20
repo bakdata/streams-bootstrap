@@ -33,7 +33,6 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,33 +51,15 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsCleanUpTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    private static void runAppAndClose(final KafkaStreamsApplication<?> app) throws InterruptedException {
-        runApp(app);
-        app.stop();
-    }
-
-    private static void runApp(final KafkaStreamsApplication<?> app) throws InterruptedException {
-        // run in Thread because the application blocks indefinitely
-        new Thread(app).start();
-        // Wait until stream application has consumed all data
-        Thread.sleep(TIMEOUT.toMillis());
-    }
-
     @Test
-    void shouldClean() throws InterruptedException {
+    void shouldClean() {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
@@ -98,8 +79,8 @@ class StreamsCleanUpTest extends KafkaTest {
             );
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
-            // Wait until all stream application are completely stopped before triggering cleanup
-            Thread.sleep(TIMEOUT.toMillis());
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            this.awaitClosed(app.createExecutableApp());
             app.clean();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -114,7 +95,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     @Test
-    void shouldReset() throws InterruptedException {
+    void shouldReset() {
         try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
@@ -134,8 +115,8 @@ class StreamsCleanUpTest extends KafkaTest {
             );
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
-            // Wait until all stream application are completely stopped before triggering cleanup
-            Thread.sleep(TIMEOUT.toMillis());
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            this.awaitClosed(app.createExecutableApp());
             app.reset();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -152,19 +133,29 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     @Test
-    void shouldCallClose() throws InterruptedException {
+    void shouldCallClose() {
         try (final CloseFlagApp app = this.createCloseFlagApplication()) {
             this.newTestClient().createTopic(app.getInputTopics().get(0));
-            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
             app.clean();
             this.softly.assertThat(app.isAppClosed()).isTrue();
             app.setAppClosed(false);
-            Thread.sleep(TIMEOUT.toMillis());
             app.reset();
             this.softly.assertThat(app.isAppClosed()).isTrue();
         }
+    }
+
+    private void runAppAndClose(final KafkaStreamsApplication<?> app) {
+        this.runApp(app);
+        app.stop();
+    }
+
+    private void runApp(final KafkaStreamsApplication<?> app) {
+        // run in Thread because the application blocks indefinitely
+        new Thread(app).start();
+        // Wait until stream application has consumed all data
+        this.awaitProcessing(app.createExecutableApp());
     }
 
     private CloseFlagApp createCloseFlagApplication() {
@@ -185,9 +176,8 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
-            final String description, final KafkaStreamsApplication<?> app)
-            throws InterruptedException {
-        runAppAndClose(app);
+            final String description, final KafkaStreamsApplication<?> app) {
+        this.runAppAndClose(app);
 
         final List<KeyValue<String, Long>> output = this.readOutputTopic(app.getOutputTopic());
         this.softly.assertThat(output)

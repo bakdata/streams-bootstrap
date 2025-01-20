@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.newCluster;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
@@ -46,8 +47,10 @@ import org.testcontainers.kafka.KafkaContainer;
 
 class CliTest {
 
-    private static void runApp(final KafkaStreamsApplication<?> app, final String... args) {
-        new Thread(() -> KafkaApplication.startApplication(app, args)).start();
+    private static Thread runApp(final KafkaStreamsApplication<?> app, final String... args) {
+        final Thread thread = new Thread(() -> KafkaApplication.startApplication(app, args));
+        thread.start();
+        return thread;
     }
 
     @Test
@@ -214,7 +217,7 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorInTopology() throws InterruptedException {
+    void shouldExitWithErrorInTopology() {
         final String input = "input";
         try (final KafkaContainer kafkaCluster = newCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
@@ -238,7 +241,7 @@ class CliTest {
                 })) {
             kafkaCluster.start();
 
-            runApp(app,
+            final Thread thread = runApp(app,
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
@@ -248,7 +251,7 @@ class CliTest {
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            Thread.sleep(Duration.ofSeconds(10).toMillis());
+            await("Thread is dead").atMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
         }
     }
 

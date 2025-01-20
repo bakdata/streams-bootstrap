@@ -38,6 +38,8 @@ dependencies {
     testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
+    val awaitilityVersion: String by project
+    testFixturesApi(group = "org.awaitility", name = "awaitility", version = awaitilityVersion)
 }
 
 tasks.withType<Test> {

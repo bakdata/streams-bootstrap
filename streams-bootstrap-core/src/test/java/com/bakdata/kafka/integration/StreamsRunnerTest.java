@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.integration;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,7 +74,6 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsRunnerTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @Mock
     private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
     @Mock
@@ -117,6 +117,10 @@ class StreamsRunnerTest extends KafkaTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
+    }
+
+    private static void awaitThreadIsDead(final Thread thread) {
+        await("Thread is dead").atMost(Duration.ofSeconds(10)).until(() -> !thread.isAlive());
     }
 
     @Test
@@ -172,7 +176,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldThrowOnMissingInputTopic() throws InterruptedException {
+    void shouldThrowOnMissingInputTopic() {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
@@ -183,8 +187,7 @@ class StreamsRunnerTest extends KafkaTest {
             final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            Thread.sleep(TIMEOUT.toMillis());
-            this.softly.assertThat(thread.isAlive()).isFalse();
+            awaitThreadIsDead(thread);
             this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
@@ -192,7 +195,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldCloseOnMapError() throws InterruptedException {
+    void shouldCloseOnMapError() {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
         try (final ConfiguredStreamsApp<StreamsApp> app = createErrorApplication();
                 final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
@@ -211,8 +214,7 @@ class StreamsRunnerTest extends KafkaTest {
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            Thread.sleep(TIMEOUT.toMillis());
-            this.softly.assertThat(thread.isAlive()).isFalse();
+            awaitThreadIsDead(thread);
             this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
             verify(this.uncaughtExceptionHandler).handle(any());

@@ -51,7 +51,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class SchemaTopicClientTest extends KafkaTest {
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10);
     private static final String TOPIC = "topic";
 
     @InjectSoftAssertions
@@ -59,7 +59,7 @@ class SchemaTopicClientTest extends KafkaTest {
 
     @Test
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
-            throws InterruptedException, IOException, RestClientException {
+            throws IOException, RestClientException {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
@@ -83,8 +83,6 @@ class SchemaTopicClientTest extends KafkaTest {
                 schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
             }
 
-            Thread.sleep(TIMEOUT.toMillis());
-
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(TOPIC + "-value");
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -93,7 +91,7 @@ class SchemaTopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldResetSchema() throws InterruptedException, IOException, RestClientException {
+    void shouldResetSchema() throws IOException, RestClientException {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
@@ -117,8 +115,6 @@ class SchemaTopicClientTest extends KafkaTest {
                 schemaTopicClient.resetSchemaRegistry(TOPIC);
             }
 
-            Thread.sleep(TIMEOUT.toMillis());
-
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(TOPIC + "-value");
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -127,7 +123,7 @@ class SchemaTopicClientTest extends KafkaTest {
     }
 
     @Test
-    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws InterruptedException, RestClientException,
+    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws RestClientException,
             IOException {
         final KafkaTestClient testClient = this.newTestClient();
         try (final ImprovedAdminClient admin = testClient.admin();
@@ -152,7 +148,6 @@ class SchemaTopicClientTest extends KafkaTest {
                 schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
             }
 
-            Thread.sleep(TIMEOUT.toMillis());
             this.softly.assertThat(client.getAllSubjects())
                     .contains(TOPIC + "-value");
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -164,14 +159,14 @@ class SchemaTopicClientTest extends KafkaTest {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, this.getSchemaRegistryUrl(), TIMEOUT);
+        return SchemaTopicClient.create(kafkaProperties, this.getSchemaRegistryUrl(), CLIENT_TIMEOUT);
     }
 
     private SchemaTopicClient createClientWithNoSchemaRegistry() {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, TIMEOUT);
+        return SchemaTopicClient.create(kafkaProperties, CLIENT_TIMEOUT);
     }
 
 }
