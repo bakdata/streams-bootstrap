@@ -31,10 +31,11 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
+import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -45,18 +46,20 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
 class StreamsCleanUpTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
+    @TempDir
+    private Path stateDir;
 
     @Test
     void shouldClean() {
@@ -194,10 +197,7 @@ class StreamsCleanUpTest extends KafkaTest {
 
     private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
         application.setBootstrapServers(this.getBootstrapServers());
-        application.setKafkaConfig(Map.of(
-                StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, "0",
-                ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-        ));
+        application.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
         return application;
     }
 
