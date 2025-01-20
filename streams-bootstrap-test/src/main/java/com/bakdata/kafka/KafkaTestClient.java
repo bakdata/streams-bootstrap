@@ -64,7 +64,8 @@ public class KafkaTestClient {
     }
 
     /**
-     * Prepare reading data from the cluster
+     * Prepare reading data from the cluster. {@link ConsumerConfig#AUTO_OFFSET_RESET_CONFIG} is configured to
+     * {@link OffsetResetStrategy#EARLIEST}
      * @return configured {@code ReaderBuilder}
      */
     public ReaderBuilder read() {
