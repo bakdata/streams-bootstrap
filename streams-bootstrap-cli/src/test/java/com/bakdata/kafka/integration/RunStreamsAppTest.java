@@ -31,16 +31,20 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
+import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.Mirror;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class RunStreamsAppTest extends KafkaTest {
+    @TempDir
+    private Path stateDir;
 
     @Test
     void shouldRunApp() {
@@ -50,9 +54,7 @@ class RunStreamsAppTest extends KafkaTest {
         testClient.createTopic(output);
         try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(Mirror::new)) {
             app.setBootstrapServers(this.getBootstrapServers());
-            app.setKafkaConfig(Map.of(
-                    ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-            ));
+            app.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
             // run in Thread because the application blocks indefinitely
