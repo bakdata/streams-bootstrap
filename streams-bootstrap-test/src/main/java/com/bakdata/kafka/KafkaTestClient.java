@@ -33,6 +33,8 @@ import com.bakdata.kafka.util.TopicSettings.TopicSettingsBuilder;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
 /**
  * Client that supports communication with Kafka clusters in test setups, including topic management, reading from
@@ -41,17 +43,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class KafkaTestClient {
 
-    private static final TopicSettingsBuilder DEFAULT_TOPIC_SETTINGS = TopicSettings.builder()
-            .partitions(1)
-            .replicationFactor((short) 1);
     private final @NonNull KafkaEndpointConfig endpointConfig;
 
     /**
-     * Create q new {@code TopicSettingsBuilder} which uses a single partition and no replicas
+     * Create a new {@code TopicSettingsBuilder} which uses a single partition and no replicas
      * @return default topic settings
      */
     public static TopicSettingsBuilder defaultTopicSettings() {
-        return DEFAULT_TOPIC_SETTINGS;
+        return TopicSettings.builder()
+                .partitions(1)
+                .replicationFactor((short) 1);
     }
 
     /**
@@ -67,7 +68,8 @@ public class KafkaTestClient {
      * @return configured {@code ReaderBuilder}
      */
     public ReaderBuilder read() {
-        return new ReaderBuilder(this.endpointConfig.createKafkaProperties());
+        return new ReaderBuilder(this.endpointConfig.createKafkaProperties())
+                .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.EARLIEST.toString());
     }
 
     /**

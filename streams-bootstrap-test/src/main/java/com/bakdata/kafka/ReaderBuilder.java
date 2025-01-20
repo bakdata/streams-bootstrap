@@ -64,7 +64,6 @@ public class ReaderBuilder {
                 .map(ReaderBuilder::toTopicPartition)
                 .collect(Collectors.toList());
         consumer.assign(topicPartitions);
-        consumer.seekToBeginning(topicPartitions);
         return pollAll(consumer, timeout);
     }
 
