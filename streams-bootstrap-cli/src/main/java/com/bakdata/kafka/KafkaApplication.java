@@ -296,9 +296,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     private int execute(final ParseResult parseResult) {
         this.startApplication();
-        final int exitCode = new CommandLine.RunLast().execute(parseResult);
-        this.close();
-        return exitCode;
+        return new CommandLine.RunLast().execute(parseResult);
     }
 
     @FunctionalInterface
