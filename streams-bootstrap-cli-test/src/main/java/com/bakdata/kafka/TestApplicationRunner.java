@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyList;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -49,17 +51,17 @@ public final class TestApplicationRunner {
     }
 
     public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
-        final String[] newArgs = this.setupArgs(args, null);
+        final String[] newArgs = this.setupArgs(args, emptyList());
         return start(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
     public int clean(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
-        final String[] newArgs = this.setupArgs(args, "clean");
+        final String[] newArgs = this.setupArgs(args, List.of("clean"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
     public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
-        final String[] newArgs = this.setupArgs(args, "reset");
+        final String[] newArgs = this.setupArgs(args, List.of("reset"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
@@ -106,15 +108,13 @@ public final class TestApplicationRunner {
         app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
     }
 
-    private String[] setupArgs(final String[] args, final String command) {
+    private String[] setupArgs(final String[] args, final Iterable<String> command) {
         final Builder<String> argBuilder = ImmutableList.<String>builder()
                 .add(args)
-                .add("--bootstrap-servers", this.bootstrapServers);
+                .add("--bootstrap-servers", this.bootstrapServers)
+                .addAll(command);
         if (this.schemaRegistryEnv.getSchemaRegistryUrl() != null) {
             argBuilder.add("--schema-registry-url", this.schemaRegistryEnv.getSchemaRegistryUrl());
-        }
-        if (command != null) {
-            argBuilder.add(command);
         }
         final List<String> newArgs = argBuilder.build();
         return newArgs.toArray(new String[0]);
