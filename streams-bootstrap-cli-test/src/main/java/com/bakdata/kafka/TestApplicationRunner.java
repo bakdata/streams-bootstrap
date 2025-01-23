@@ -37,15 +37,29 @@ public final class TestApplicationRunner {
     private final @NonNull String bootstrapServers;
     private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
-    public Thread runApplication(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        this.configure(app);
-        new CommandLine(app); // initialize all mixins
-        app.onApplicationStart();
+    public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        this.prepareExecution(app);
         final Thread thread = new Thread(app);
         final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
         return thread;
+    }
+
+    public void clean(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        this.prepareExecution(app);
+        app.clean();
+    }
+
+    public void reset(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        this.prepareExecution(app);
+        app.reset();
+    }
+
+    public void prepareExecution(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        this.configure(app);
+        new CommandLine(app); // initialize all mixins
+        app.onApplicationStart();
     }
 
     public ConsumerGroupVerifier verify(final KafkaStreamsApplication<? extends StreamsApp> app) {

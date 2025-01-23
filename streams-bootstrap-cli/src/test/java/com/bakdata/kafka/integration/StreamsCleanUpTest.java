@@ -87,7 +87,7 @@ class StreamsCleanUpTest extends KafkaTest {
 
             // Wait until all stream applications are completely stopped before triggering cleanup
             this.awaitClosed(app.createExecutableApp());
-            app.clean();
+            this.clean(app);
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
@@ -123,7 +123,7 @@ class StreamsCleanUpTest extends KafkaTest {
 
             // Wait until all stream applications are completely stopped before triggering cleanup
             this.awaitClosed(app.createExecutableApp());
-            app.reset();
+            this.reset(app);
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
@@ -144,13 +144,20 @@ class StreamsCleanUpTest extends KafkaTest {
             this.newTestClient().createTopic(app.getInputTopics().get(0));
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
-            this.createTestHelper().configure(app);
-            app.clean();
+            this.clean(app);
             this.softly.assertThat(app.isAppClosed()).isTrue();
             app.setAppClosed(false);
-            app.reset();
+            this.reset(app);
             this.softly.assertThat(app.isAppClosed()).isTrue();
         }
+    }
+
+    private void clean(final KafkaStreamsApplication<?> app) {
+        this.createTestRunner().clean(app);
+    }
+
+    private void reset(final KafkaStreamsApplication<?> app) {
+        this.createTestRunner().reset(app);
     }
 
     private void runAppAndClose(final KafkaStreamsApplication<?> app) {
@@ -159,12 +166,12 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runApp(final KafkaStreamsApplication<?> app) {
-        this.createTestHelper().runApplication(app);
+        this.createTestRunner().run(app);
         // Wait until stream application has consumed all data
         this.awaitProcessing(app.createExecutableApp());
     }
 
-    private TestApplicationRunner createTestHelper() {
+    private TestApplicationRunner createTestRunner() {
         return new TestApplicationRunner(this.getBootstrapServers(), withoutSchemaRegistry());
     }
 
