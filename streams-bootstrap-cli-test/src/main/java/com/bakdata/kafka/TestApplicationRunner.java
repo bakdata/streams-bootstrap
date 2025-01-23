@@ -24,7 +24,10 @@
 
 package com.bakdata.kafka;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +40,28 @@ public final class TestApplicationRunner {
     private final @NonNull String bootstrapServers;
     private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
-    public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        this.prepareExecution(app);
-        final Thread thread = new Thread(app);
+    private static Thread start(final Runnable runnable) {
+        final Thread thread = new Thread(runnable);
         final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
         return thread;
+    }
+
+    public Thread start(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+        final Builder<String> argBuilder = ImmutableList.<String>builder()
+                .add(args)
+                .add("--bootstrap-servers", this.bootstrapServers);
+        if (this.schemaRegistryEnv.getSchemaRegistryUrl() != null) {
+            argBuilder.add("--schema-registry-url", this.schemaRegistryEnv.getSchemaRegistryUrl());
+        }
+        final List<String> newArgs = argBuilder.build();
+        return start(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs.toArray(new String[0])));
+    }
+
+    public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        this.prepareExecution(app);
+        return start(app);
     }
 
     public void clean(final KafkaStreamsApplication<? extends StreamsApp> app) {
