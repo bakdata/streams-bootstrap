@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.SchemaRegistryEnv.withSchemaRegistry;
+
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.test_applications.MirrorWithNonDefaultSerde;
 import java.util.List;
@@ -35,7 +37,7 @@ class AvroMirrorTest {
     private final ConfiguredStreamsApp<MirrorWithNonDefaultSerde> app = createApp();
     @RegisterExtension
     final TestTopologyExtension<TestRecord, TestRecord> testTopology =
-            TestTopologyFactory.withSchemaRegistry().createTopologyExtension(this.app);
+            new TestTopologyFactory(withSchemaRegistry()).createTopologyExtension(this.app);
 
     private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(StreamsTopicConfig.builder()

@@ -26,28 +26,16 @@ package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import java.lang.Thread.UncaughtExceptionHandler;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import picocli.CommandLine;
 
 @RequiredArgsConstructor
 public final class TestApplicationHelper {
 
-    @Delegate
-    private final @NonNull TestTopologyFactory topologyFactory;
-
-    public static TestApplicationHelper withoutSchemaRegistry() {
-        return new TestApplicationHelper(TestTopologyFactory.withoutSchemaRegistry());
-    }
-
-    public static TestApplicationHelper withSchemaRegistry() {
-        return new TestApplicationHelper(TestTopologyFactory.withSchemaRegistry());
-    }
-
-    public static TestApplicationHelper withSchemaRegistry(final String schemaRegistryUrl) {
-        return new TestApplicationHelper(TestTopologyFactory.withSchemaRegistry(schemaRegistryUrl));
-    }
+    @Getter
+    private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
     public Thread runApplication(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.configure(app);
@@ -79,23 +67,29 @@ public final class TestApplicationHelper {
 
     public <K, V> TestTopology<K, V> createTopology(final KafkaStreamsApplication<? extends StreamsApp> app) {
         final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = this.createConfiguredApp(app);
-        return this.<K, V>createTopology(configuredApp);
+        final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
+        return testTopologyFactory.createTopology(configuredApp);
     }
 
     public <K, V> TestTopology<K, V> createTopologyExtension(final KafkaStreamsApplication<? extends StreamsApp> app) {
         final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = this.createConfiguredApp(app);
-        return this.<K, V>createTopologyExtension(configuredApp);
+        final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
+        return testTopologyFactory.createTopologyExtension(configuredApp);
     }
 
     public KafkaTestClient newTestClient(final String bootstrapServers) {
         return new KafkaTestClient(KafkaEndpointConfig.builder()
                 .bootstrapServers(bootstrapServers)
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
+                .schemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl())
                 .build());
     }
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        app.setSchemaRegistryUrl(this.getSchemaRegistryUrl());
+        app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
+    }
+
+    private TestTopologyFactory createTestTopologyFactory() {
+        return new TestTopologyFactory(this.schemaRegistryEnv);
     }
 
 }

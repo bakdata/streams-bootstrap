@@ -25,6 +25,8 @@
 package com.bakdata.kafka.integration;
 
 
+import static com.bakdata.kafka.SchemaRegistryEnv.withoutSchemaRegistry;
+
 import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.KafkaTest;
@@ -156,7 +158,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runApp(final KafkaStreamsApplication<?> app) {
-        TestApplicationHelper.withoutSchemaRegistry().runApplication(app);
+        new TestApplicationHelper(withoutSchemaRegistry()).runApplication(app);
         // Wait until stream application has consumed all data
         this.awaitProcessing(app.createExecutableApp());
     }

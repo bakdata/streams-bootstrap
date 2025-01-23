@@ -24,21 +24,13 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import io.confluent.kafka.schemaregistry.SchemaProvider;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
@@ -46,44 +38,16 @@ import org.apache.kafka.streams.StreamsConfig;
 /**
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class TestTopologyFactory {
 
-    private static final String MOCK_URL_PREFIX = "mock://";
     private static final Map<String, String> STREAMS_TEST_CONFIG = Map.of(
             // Disable caching to allow immediate aggregations
             StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
             ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
     );
-    private final String schemaRegistryUrl;
-
-    /**
-     * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
-     * @return {@code TestTopologyFactory} with no configured Schema Registry
-     */
-    public static TestTopologyFactory withoutSchemaRegistry() {
-        return withSchemaRegistry(null);
-    }
-
-    /**
-     * Create a new {@code TestTopologyFactory} with configured
-     * {@link io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry}. The scope is random in order to avoid
-     * collisions between different test instances as scopes are retained globally.
-     * @return {@code TestTopologyFactory} with configured Schema Registry
-     */
-    public static TestTopologyFactory withSchemaRegistry() {
-        return withSchemaRegistry(MOCK_URL_PREFIX + UUID.randomUUID());
-    }
-
-    /**
-     * Create a new {@code TestTopologyFactory} with configured Schema Registry.
-     * @param schemaRegistryUrl Schema Registry URL to use
-     * @return {@code TestTopologyFactory} with configured Schema Registry
-     */
-    public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
-        return new TestTopologyFactory(schemaRegistryUrl);
-    }
+    private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
     /**
      * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
@@ -122,28 +86,6 @@ public final class TestTopologyFactory {
      */
     public static Map<String, String> createStreamsTestConfig() {
         return STREAMS_TEST_CONFIG;
-    }
-
-    /**
-     * Get {@code SchemaRegistryClient} for configured URL with default providers
-     * @return {@code SchemaRegistryClient}
-     * @throws NullPointerException if Schema Registry is not configured
-     */
-    public SchemaRegistryClient getSchemaRegistryClient() {
-        return this.getSchemaRegistryClient(null);
-    }
-
-    /**
-     * Get {@code SchemaRegistryClient} for configured URL
-     * @param providers list of {@code SchemaProvider} to use for {@code SchemaRegistryClient}
-     * @return {@code SchemaRegistryClient}
-     * @throws NullPointerException if Schema Registry is not configured
-     */
-    public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        final List<String> baseUrls = List.of(
-                Objects.requireNonNull(this.schemaRegistryUrl, "Schema Registry is not configured")
-        );
-        return SchemaRegistryClientFactory.newClient(baseUrls, 0, providers, emptyMap(), null);
     }
 
     /**
@@ -189,7 +131,7 @@ public final class TestTopologyFactory {
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("localhost:9092")
-                .schemaRegistryUrl(this.schemaRegistryUrl)
+                .schemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl())
                 .build();
         return app.getKafkaProperties(endpointConfig);
     }
