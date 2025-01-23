@@ -48,15 +48,19 @@ public final class TestApplicationRunner {
         return thread;
     }
 
-    public Thread start(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
-        final Builder<String> argBuilder = ImmutableList.<String>builder()
-                .add(args)
-                .add("--bootstrap-servers", this.bootstrapServers);
-        if (this.schemaRegistryEnv.getSchemaRegistryUrl() != null) {
-            argBuilder.add("--schema-registry-url", this.schemaRegistryEnv.getSchemaRegistryUrl());
-        }
-        final List<String> newArgs = argBuilder.build();
-        return start(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs.toArray(new String[0])));
+    public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+        final String[] newArgs = this.setupArgs(args, "run");
+        return start(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+    }
+
+    public int clean(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+        final String[] newArgs = this.setupArgs(args, "clean");
+        return KafkaApplication.startApplicationWithoutExit(app, newArgs);
+    }
+
+    public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+        final String[] newArgs = this.setupArgs(args, "reset");
+        return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
     public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app) {
@@ -100,6 +104,18 @@ public final class TestApplicationRunner {
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
         app.setBootstrapServers(this.bootstrapServers);
         app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
+    }
+
+    private String[] setupArgs(final String[] args, final String command) {
+        final Builder<String> argBuilder = ImmutableList.<String>builder()
+                .add(args)
+                .add("--bootstrap-servers", this.bootstrapServers);
+        if (this.schemaRegistryEnv.getSchemaRegistryUrl() != null) {
+            argBuilder.add("--schema-registry-url", this.schemaRegistryEnv.getSchemaRegistryUrl());
+        }
+        argBuilder.add(command);
+        final List<String> newArgs = argBuilder.build();
+        return newArgs.toArray(new String[0]);
     }
 
 }
