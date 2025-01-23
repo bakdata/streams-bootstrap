@@ -42,17 +42,10 @@ public final class TestApplicationRunner {
     private final @NonNull String bootstrapServers;
     private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
-    private static Thread start(final Runnable runnable) {
-        final Thread thread = new Thread(runnable);
-        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return thread;
-    }
-
-    public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+    public void run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
-        return start(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+        final Thread thread = new Thread(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+        thread.start();
     }
 
     public int clean(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
@@ -67,7 +60,11 @@ public final class TestApplicationRunner {
 
     public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.prepareExecution(app);
-        return start(app);
+        final Thread thread = new Thread(app);
+        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
+        thread.setUncaughtExceptionHandler(handler);
+        thread.start();
+        return thread;
     }
 
     public void clean(final KafkaStreamsApplication<? extends StreamsApp> app) {
