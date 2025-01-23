@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -154,7 +154,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
      * Called before cleaning the application, i.e., invoking {@link #clean()} or {@link #reset()}
      */
     @Override
-    protected void prepareClean() {
+    public void prepareClean() {
         super.prepareClean();
     }
 
