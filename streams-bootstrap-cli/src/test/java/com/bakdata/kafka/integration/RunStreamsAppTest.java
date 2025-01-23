@@ -55,11 +55,10 @@ class RunStreamsAppTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         testClient.createTopic(output);
         try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(Mirror::new)) {
-            app.setBootstrapServers(this.getBootstrapServers());
             app.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
-            new TestApplicationHelper(withoutSchemaRegistry()).runApplication(app);
+            new TestApplicationHelper(this.getBootstrapServers(), withoutSchemaRegistry()).runApplication(app);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

@@ -158,7 +158,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runApp(final KafkaStreamsApplication<?> app) {
-        new TestApplicationHelper(withoutSchemaRegistry()).runApplication(app);
+        new TestApplicationHelper(this.getBootstrapServers(), withoutSchemaRegistry()).runApplication(app);
         // Wait until stream application has consumed all data
         this.awaitProcessing(app.createExecutableApp());
     }
@@ -198,7 +198,6 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
-        application.setBootstrapServers(this.getBootstrapServers());
         application.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
         return application;
     }

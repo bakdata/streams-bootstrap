@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
+import com.bakdata.kafka.CapturingUncaughtExceptionHandler;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
@@ -48,7 +49,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -227,16 +227,6 @@ class StreamsRunnerTest extends KafkaTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
-    }
-
-    @Getter
-    private static class CapturingUncaughtExceptionHandler implements UncaughtExceptionHandler {
-        private Throwable lastException;
-
-        @Override
-        public void uncaughtException(final Thread t, final Throwable e) {
-            this.lastException = e;
-        }
     }
 
     private static class ErrorApplication implements StreamsApp {

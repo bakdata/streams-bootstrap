@@ -34,6 +34,7 @@ import picocli.CommandLine;
 @RequiredArgsConstructor
 public final class TestApplicationHelper {
 
+    private final @NonNull String bootstrapServers;
     @Getter
     private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
@@ -77,14 +78,15 @@ public final class TestApplicationHelper {
         return testTopologyFactory.createTopologyExtension(configuredApp);
     }
 
-    public KafkaTestClient newTestClient(final String bootstrapServers) {
+    public KafkaTestClient newTestClient() {
         return new KafkaTestClient(KafkaEndpointConfig.builder()
-                .bootstrapServers(bootstrapServers)
+                .bootstrapServers(this.bootstrapServers)
                 .schemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl())
                 .build());
     }
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        app.setBootstrapServers(this.bootstrapServers);
         app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
     }
 
