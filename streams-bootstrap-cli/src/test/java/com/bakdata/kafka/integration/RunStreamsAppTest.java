@@ -31,6 +31,7 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
+import com.bakdata.kafka.TestApplicationHelper;
 import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -57,8 +58,7 @@ class RunStreamsAppTest extends KafkaTest {
             app.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
-            // run in Thread because the application blocks indefinitely
-            new Thread(app).start();
+            TestApplicationHelper.withoutSchemaRegistry().runApplication(app);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

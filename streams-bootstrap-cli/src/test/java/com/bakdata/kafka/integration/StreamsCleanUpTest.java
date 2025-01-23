@@ -31,6 +31,7 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
+import com.bakdata.kafka.TestApplicationHelper;
 import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
@@ -155,8 +156,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runApp(final KafkaStreamsApplication<?> app) {
-        // run in Thread because the application blocks indefinitely
-        new Thread(app).start();
+        TestApplicationHelper.withoutSchemaRegistry().runApplication(app);
         // Wait until stream application has consumed all data
         this.awaitProcessing(app.createExecutableApp());
     }
