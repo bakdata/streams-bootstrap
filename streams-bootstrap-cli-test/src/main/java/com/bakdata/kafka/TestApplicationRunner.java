@@ -24,42 +24,50 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.lang.Thread.UncaughtExceptionHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import picocli.CommandLine;
 
 @Getter
 @RequiredArgsConstructor
-public final class TestApplicationHelper {
+public final class TestApplicationRunner {
 
+    private final @NonNull String bootstrapServers;
     private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
 
-    public ConfiguredStreamsApp<? extends StreamsApp> createConfiguredApp(
-            final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public Thread runApplication(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.configure(app);
-        app.prepareRun();
-        return app.createConfiguredApp();
+        new CommandLine(app); // initialize all mixins
+        app.onApplicationStart();
+        final Thread thread = new Thread(app);
+        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
+        thread.setUncaughtExceptionHandler(handler);
+        thread.start();
+        return thread;
     }
 
-    public <K, V> TestTopology<K, V> createTopology(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = this.createConfiguredApp(app);
-        final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
-        return testTopologyFactory.createTopology(configuredApp);
+    public ConsumerGroupVerifier verify(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        this.configure(app);
+        final KafkaEndpointConfig endpointConfig = app.getEndpointConfig();
+        final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+        try (final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = app.createConfiguredApp()) {
+            final String uniqueAppId = configuredApp.getUniqueAppId();
+            return new ConsumerGroupVerifier(uniqueAppId, testClient::admin);
+        }
     }
 
-    public <K, V> TestTopology<K, V> createTopologyExtension(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = this.createConfiguredApp(app);
-        final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
-        return testTopologyFactory.createTopologyExtension(configuredApp);
+    public KafkaTestClient newTestClient() {
+        return new KafkaTestClient(KafkaEndpointConfig.builder()
+                .bootstrapServers(this.bootstrapServers)
+                .schemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl())
+                .build());
     }
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        app.setBootstrapServers(this.bootstrapServers);
         app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
-    }
-
-    private TestTopologyFactory createTestTopologyFactory() {
-        return new TestTopologyFactory(this.schemaRegistryEnv);
     }
 
 }

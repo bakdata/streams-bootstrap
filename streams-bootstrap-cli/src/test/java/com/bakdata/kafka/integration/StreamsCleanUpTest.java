@@ -33,7 +33,7 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
-import com.bakdata.kafka.TestApplicationHelper;
+import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
@@ -144,6 +144,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.newTestClient().createTopic(app.getInputTopics().get(0));
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
+            this.createTestHelper().configure(app);
             app.clean();
             this.softly.assertThat(app.isAppClosed()).isTrue();
             app.setAppClosed(false);
@@ -158,9 +159,13 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private void runApp(final KafkaStreamsApplication<?> app) {
-        new TestApplicationHelper(this.getBootstrapServers(), withoutSchemaRegistry()).runApplication(app);
+        this.createTestHelper().runApplication(app);
         // Wait until stream application has consumed all data
         this.awaitProcessing(app.createExecutableApp());
+    }
+
+    private TestApplicationRunner createTestHelper() {
+        return new TestApplicationRunner(this.getBootstrapServers(), withoutSchemaRegistry());
     }
 
     private CloseFlagApp createCloseFlagApplication() {
