@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
@@ -46,6 +47,7 @@ import org.apache.kafka.streams.StreamsConfig;
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class TestTopologyFactory {
 
     private static final String MOCK_URL_PREFIX = "mock://";
@@ -123,15 +125,6 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Get Schema Registry URL if configured
-     * @return Schema Registry URL
-     * @throws NullPointerException if Schema Registry is not configured
-     */
-    public String getSchemaRegistryUrl() {
-        return Objects.requireNonNull(this.schemaRegistryUrl, "Schema Registry is not configured");
-    }
-
-    /**
      * Get {@code SchemaRegistryClient} for configured URL with default providers
      * @return {@code SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
@@ -147,8 +140,10 @@ public final class TestTopologyFactory {
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        return SchemaRegistryClientFactory.newClient(List.of(this.getSchemaRegistryUrl()), 0, providers, emptyMap(),
-                null);
+        final List<String> baseUrls = List.of(
+                Objects.requireNonNull(this.schemaRegistryUrl, "Schema Registry is not configured")
+        );
+        return SchemaRegistryClientFactory.newClient(baseUrls, 0, providers, emptyMap(), null);
     }
 
     /**
