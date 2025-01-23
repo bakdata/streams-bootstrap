@@ -49,7 +49,7 @@ public final class TestApplicationRunner {
     }
 
     public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
-        final String[] newArgs = this.setupArgs(args, "run");
+        final String[] newArgs = this.setupArgs(args, null);
         return start(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
@@ -113,7 +113,9 @@ public final class TestApplicationRunner {
         if (this.schemaRegistryEnv.getSchemaRegistryUrl() != null) {
             argBuilder.add("--schema-registry-url", this.schemaRegistryEnv.getSchemaRegistryUrl());
         }
-        argBuilder.add(command);
+        if (command != null) {
+            argBuilder.add(command);
+        }
         final List<String> newArgs = argBuilder.build();
         return newArgs.toArray(new String[0]);
     }
