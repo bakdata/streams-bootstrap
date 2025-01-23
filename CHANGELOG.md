@@ -1,8 +1,19 @@
 # Change Log
 
-## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) (2025-01-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.0)
+## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.1)
 
+
+## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.1)
+
+**Closed issues:**
+
+- Close method is called twice on shutdown [\#263](https://github.com/bakdata/streams-bootstrap/issues/263)
+
+**Merged pull requests:**
+
+- Call close on KafkaApplication only once [\#275](https://github.com/bakdata/streams-bootstrap/pull/275) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) (2025-01-20)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.5.0)
