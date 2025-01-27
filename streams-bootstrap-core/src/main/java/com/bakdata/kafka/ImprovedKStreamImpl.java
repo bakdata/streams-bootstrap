@@ -504,9 +504,20 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
+    public ImprovedKTable<K, V> toTable(final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.toTable(materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKTable<K, V> toTable(final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.toTable(named, materialized));
+    }
+
+    @Override
+    public ImprovedKTable<K, V> toTable(final Named named,
+            final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.toTable(named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override

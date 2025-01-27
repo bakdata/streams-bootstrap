@@ -64,9 +64,20 @@ class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
     }
 
     @Override
+    public ImprovedKTable<K, Long> count(final ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.count(materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKTable<K, Long> count(final Named named,
             final Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.count(named, materialized));
+    }
+
+    @Override
+    public ImprovedKTable<K, Long> count(final Named named,
+            final ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.count(named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -81,9 +92,21 @@ class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
     }
 
     @Override
+    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer,
+            final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.reduce(reducer, materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKTable<K, V> reduce(final Reducer<V> reducer, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.reduce(reducer, named, materialized));
+    }
+
+    @Override
+    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer, final Named named,
+            final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.reduce(reducer, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -101,9 +124,23 @@ class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
 
     @Override
     public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+            final Aggregator<? super K, ? super V, VR> aggregator,
+            final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.aggregate(initializer, aggregator, materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, named, materialized));
+    }
+
+    @Override
+    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+            final Aggregator<? super K, ? super V, VR> aggregator, final Named named,
+            final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.aggregate(initializer, aggregator, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override

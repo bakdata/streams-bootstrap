@@ -69,9 +69,21 @@ class ImprovedCogroupedStreamImpl<K, V> implements ImprovedCogroupedKStream<K, V
     }
 
     @Override
+    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer,
+            final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.aggregate(initializer, materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, named, materialized));
+    }
+
+    @Override
+    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named,
+            final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.aggregate(initializer, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override

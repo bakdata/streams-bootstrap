@@ -263,8 +263,12 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     @Override
     ImprovedKTable<K, V> toTable(Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
+    ImprovedKTable<K, V> toTable(ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+
     @Override
     ImprovedKTable<K, V> toTable(Named named, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+
+    ImprovedKTable<K, V> toTable(Named named, ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector);

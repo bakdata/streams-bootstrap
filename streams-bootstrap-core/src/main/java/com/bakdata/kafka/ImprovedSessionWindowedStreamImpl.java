@@ -61,9 +61,21 @@ class ImprovedSessionWindowedStreamImpl<K, V> implements ImprovedSessionWindowed
     }
 
     @Override
+    public ImprovedKTable<Windowed<K>, Long> count(
+            final ConfiguredMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized) {
+        return this.count(materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKTable<Windowed<K>, Long> count(final Named named,
             final Materialized<K, Long, SessionStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.count(named, materialized));
+    }
+
+    @Override
+    public ImprovedKTable<Windowed<K>, Long> count(final Named named,
+            final ConfiguredMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized) {
+        return this.count(named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -89,9 +101,24 @@ class ImprovedSessionWindowedStreamImpl<K, V> implements ImprovedSessionWindowed
     @Override
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger,
+            final ConfiguredMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
+        return this.aggregate(initializer, aggregator, sessionMerger, materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
+            final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger,
             final Named named,
             final Materialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, sessionMerger, materialized));
+    }
+
+    @Override
+    public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
+            final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger, final Named named,
+            final ConfiguredMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
+        return this.aggregate(initializer, aggregator, sessionMerger, named,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -111,9 +138,21 @@ class ImprovedSessionWindowedStreamImpl<K, V> implements ImprovedSessionWindowed
     }
 
     @Override
+    public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer,
+            final ConfiguredMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+        return this.reduce(reducer, materialized.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer, final Named named,
             final Materialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.reduce(reducer, named, materialized));
+    }
+
+    @Override
+    public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer, final Named named,
+            final ConfiguredMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+        return this.reduce(reducer, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
