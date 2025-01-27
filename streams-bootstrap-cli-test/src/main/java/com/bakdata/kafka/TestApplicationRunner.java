@@ -33,14 +33,13 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import picocli.CommandLine;
 
 @Getter
 @RequiredArgsConstructor
 public final class TestApplicationRunner {
 
     private final @NonNull String bootstrapServers;
-    private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
+    private final @NonNull TestEnvironment environment;
 
     public void run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
@@ -79,7 +78,6 @@ public final class TestApplicationRunner {
 
     public void prepareExecution(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.configure(app);
-        new CommandLine(app); // initialize all mixins
         app.onApplicationStart();
     }
 
@@ -96,13 +94,13 @@ public final class TestApplicationRunner {
     public KafkaTestClient newTestClient() {
         return new KafkaTestClient(KafkaEndpointConfig.builder()
                 .bootstrapServers(this.bootstrapServers)
-                .schemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl())
+                .schemaRegistryUrl(this.environment.getSchemaRegistryUrl())
                 .build());
     }
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
         app.setBootstrapServers(this.bootstrapServers);
-        app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
+        app.setSchemaRegistryUrl(this.environment.getSchemaRegistryUrl());
     }
 
     private String[] setupArgs(final String[] args, final Iterable<String> command) {
@@ -110,8 +108,8 @@ public final class TestApplicationRunner {
                 .add(args)
                 .add("--bootstrap-servers", this.bootstrapServers)
                 .addAll(command);
-        if (this.schemaRegistryEnv.getSchemaRegistryUrl() != null) {
-            argBuilder.add("--schema-registry-url", this.schemaRegistryEnv.getSchemaRegistryUrl());
+        if (this.environment.getSchemaRegistryUrl() != null) {
+            argBuilder.add("--schema-registry-url", this.environment.getSchemaRegistryUrl());
         }
         final List<String> newArgs = argBuilder.build();
         return newArgs.toArray(new String[0]);

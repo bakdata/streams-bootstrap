@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class TestApplicationHelper {
 
-    private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
+    private final @NonNull TestEnvironment environment;
 
     public ConfiguredStreamsApp<? extends StreamsApp> createConfiguredApp(
             final KafkaStreamsApplication<? extends StreamsApp> app) {
@@ -55,11 +55,11 @@ public final class TestApplicationHelper {
     }
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        app.setSchemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl());
+        app.setSchemaRegistryUrl(this.environment.getSchemaRegistryUrl());
     }
 
     private TestTopologyFactory createTestTopologyFactory() {
-        return new TestTopologyFactory(this.schemaRegistryEnv);
+        return new TestTopologyFactory(this.environment);
     }
 
 }

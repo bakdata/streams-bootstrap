@@ -25,7 +25,7 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.SchemaRegistryEnv.withoutSchemaRegistry;
+import static com.bakdata.kafka.TestEnvironment.withoutSchemaRegistry;
 
 import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;

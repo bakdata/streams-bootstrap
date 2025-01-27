@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.SchemaRegistryEnv.withoutSchemaRegistry;
+import static com.bakdata.kafka.TestEnvironment.withoutSchemaRegistry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaStreamsApplication;

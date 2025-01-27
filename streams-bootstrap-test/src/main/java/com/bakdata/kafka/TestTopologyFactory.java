@@ -47,7 +47,7 @@ public final class TestTopologyFactory {
             StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
             ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
     );
-    private final @NonNull SchemaRegistryEnv schemaRegistryEnv;
+    private final @NonNull TestEnvironment environment;
 
     /**
      * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
@@ -131,7 +131,7 @@ public final class TestTopologyFactory {
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
                 .bootstrapServers("localhost:9092")
-                .schemaRegistryUrl(this.schemaRegistryEnv.getSchemaRegistryUrl())
+                .schemaRegistryUrl(this.environment.getSchemaRegistryUrl())
                 .build();
         return app.getKafkaProperties(endpointConfig);
     }

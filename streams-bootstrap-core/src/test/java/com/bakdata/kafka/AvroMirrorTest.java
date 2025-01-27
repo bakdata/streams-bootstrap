@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.SchemaRegistryEnv.withSchemaRegistry;
+import static com.bakdata.kafka.TestEnvironment.withSchemaRegistry;
 
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.test_applications.MirrorWithNonDefaultSerde;

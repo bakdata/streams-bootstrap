@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class SchemaRegistryEnv {
+public final class TestEnvironment {
 
     private static final String MOCK_URL_PREFIX = "mock://";
     private final String schemaRegistryUrl;
@@ -50,7 +50,7 @@ public final class SchemaRegistryEnv {
      * Create a new {@code SchemaRegistryEnv} with no configured Schema Registry.
      * @return {@code SchemaRegistryEnv} with no configured Schema Registry
      */
-    public static SchemaRegistryEnv withoutSchemaRegistry() {
+    public static TestEnvironment withoutSchemaRegistry() {
         return withSchemaRegistry(null);
     }
 
@@ -60,7 +60,7 @@ public final class SchemaRegistryEnv {
      * collisions between different test instances as scopes are retained globally.
      * @return {@code SchemaRegistryEnv} with configured Schema Registry
      */
-    public static SchemaRegistryEnv withSchemaRegistry() {
+    public static TestEnvironment withSchemaRegistry() {
         return withSchemaRegistry(MOCK_URL_PREFIX + UUID.randomUUID());
     }
 
@@ -69,8 +69,8 @@ public final class SchemaRegistryEnv {
      * @param schemaRegistryUrl Schema Registry URL to use
      * @return {@code SchemaRegistryEnv} with configured Schema Registry
      */
-    public static SchemaRegistryEnv withSchemaRegistry(final String schemaRegistryUrl) {
-        return new SchemaRegistryEnv(schemaRegistryUrl);
+    public static TestEnvironment withSchemaRegistry(final String schemaRegistryUrl) {
+        return new TestEnvironment(schemaRegistryUrl);
     }
 
     /**
