@@ -24,11 +24,11 @@
 
 package com.bakdata.kafka;
 
+import java.util.Arrays;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.kstream.BranchedKStream;
 import org.apache.kafka.streams.kstream.ForeachAction;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Grouped;
@@ -64,74 +64,167 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public ImprovedKStream<K, V> filter(final Predicate<? super K, ? super V> predicate) {
-        return this.context.newStream(this.wrapped.filter(predicate));
+        return this.context.wrap(this.wrapped.filter(predicate));
     }
 
     @Override
     public ImprovedKStream<K, V> filter(final Predicate<? super K, ? super V> predicate, final Named named) {
-        return this.context.newStream(this.wrapped.filter(predicate, named));
+        return this.context.wrap(this.wrapped.filter(predicate, named));
     }
 
     @Override
     public ImprovedKStream<K, V> filterNot(final Predicate<? super K, ? super V> predicate) {
-        return this.context.newStream(this.wrapped.filterNot(predicate));
+        return this.context.wrap(this.wrapped.filterNot(predicate));
     }
 
     @Override
     public ImprovedKStream<K, V> filterNot(final Predicate<? super K, ? super V> predicate, final Named named) {
-        return this.context.newStream(this.wrapped.filterNot(predicate, named));
+        return this.context.wrap(this.wrapped.filterNot(predicate, named));
     }
 
     @Override
     public <KR> ImprovedKStream<KR, V> selectKey(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper) {
-        return this.context.newStream(this.wrapped.selectKey(mapper));
+        return this.context.wrap(this.wrapped.selectKey(mapper));
     }
 
     @Override
     public <KR> ImprovedKStream<KR, V> selectKey(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.selectKey(mapper, named));
+        return this.context.wrap(this.wrapped.selectKey(mapper, named));
     }
 
     @Override
     public <KR, VR> ImprovedKStream<KR, VR> map(
             final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper) {
-        return this.context.newStream(this.wrapped.map(mapper));
+        return this.context.wrap(this.wrapped.map(mapper));
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper) {
+        return this.mapCapturingErrors_(ErrorCapturingKeyValueMapper.captureErrors(mapper));
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter) {
+        return this.mapCapturingErrors_(ErrorCapturingKeyValueMapper.captureErrors(mapper, errorFilter));
     }
 
     @Override
     public <KR, VR> ImprovedKStream<KR, VR> map(
             final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.map(mapper, named));
+        return this.context.wrap(this.wrapped.map(mapper, named));
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
+            final Named named) {
+        return this.mapCapturingErrors_(ErrorCapturingKeyValueMapper.captureErrors(mapper), named);
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter, final Named named) {
+        return this.mapCapturingErrors_(ErrorCapturingKeyValueMapper.captureErrors(mapper, errorFilter), named);
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper) {
-        return this.context.newStream(this.wrapped.mapValues(mapper));
+        return this.context.wrap(this.wrapped.mapValues(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            final ValueMapper<? super V, ? extends VR> mapper) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapper.captureErrors(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(final ValueMapper<? super V, ? extends VR> mapper,
+            final java.util.function.Predicate<Exception> errorFilter) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapper.captureErrors(mapper, errorFilter));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper, final Named named) {
-        return this.context.newStream(this.wrapped.mapValues(mapper, named));
+        return this.context.wrap(this.wrapped.mapValues(mapper, named));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(final ValueMapper<? super V, ? extends VR> mapper,
+            final Named named) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapper.captureErrors(mapper), named);
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(final ValueMapper<? super V, ? extends VR> mapper,
+            final java.util.function.Predicate<Exception> errorFilter, final Named named) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapper.captureErrors(mapper, errorFilter), named);
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper) {
-        return this.context.newStream(this.wrapped.mapValues(mapper));
+        return this.context.wrap(this.wrapped.mapValues(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapperWithKey.captureErrors(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+            final java.util.function.Predicate<Exception> errorFilter) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapperWithKey.captureErrors(mapper, errorFilter));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.mapValues(mapper, named));
+        return this.context.wrap(this.wrapped.mapValues(mapper, named));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, final Named named) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapperWithKey.captureErrors(mapper), named);
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+            final java.util.function.Predicate<Exception> errorFilter, final Named named) {
+        return this.mapValuesCapturingErrors_(ErrorCapturingValueMapperWithKey.captureErrors(mapper, errorFilter),
+                named);
     }
 
     @Override
     public <KR, VR> ImprovedKStream<KR, VR> flatMap(
             final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
                     extends VR>>> mapper) {
-        return this.context.newStream(this.wrapped.flatMap(mapper));
+        return this.context.wrap(this.wrapped.flatMap(mapper));
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
+                    extends VR>>> mapper) {
+        return this.flatMapCapturingErrors_(ErrorCapturingFlatKeyValueMapper.captureErrors(mapper));
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
+                    extends VR>>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter) {
+        return this.flatMapCapturingErrors_(ErrorCapturingFlatKeyValueMapper.captureErrors(mapper, errorFilter));
     }
 
     @Override
@@ -139,33 +232,106 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
             final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
                     extends VR>>> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.flatMap(mapper, named));
+        return this.context.wrap(this.wrapped.flatMap(mapper, named));
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
+                    extends VR>>> mapper,
+            final Named named) {
+        return this.flatMapCapturingErrors_(ErrorCapturingFlatKeyValueMapper.captureErrors(mapper), named);
+    }
+
+    @Override
+    public <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
+                    extends VR>>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter, final Named named) {
+        return this.flatMapCapturingErrors_(ErrorCapturingFlatKeyValueMapper.captureErrors(mapper, errorFilter), named);
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> flatMapValues(
             final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper) {
-        return this.context.newStream(this.wrapped.flatMapValues(mapper));
+        return this.context.wrap(this.wrapped.flatMapValues(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper) {
+        return this.flatMapValuesCapturingErrors_(ErrorCapturingFlatValueMapper.captureErrors(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter) {
+        return this.flatMapValuesCapturingErrors_(ErrorCapturingFlatValueMapper.captureErrors(mapper, errorFilter));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> flatMapValues(
             final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.flatMapValues(mapper, named));
+        return this.context.wrap(this.wrapped.flatMapValues(mapper, named));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper, final Named named) {
+        return this.flatMapValuesCapturingErrors_(ErrorCapturingFlatValueMapper.captureErrors(mapper), named);
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter,
+            final Named named) {
+        return this.flatMapValuesCapturingErrors_(ErrorCapturingFlatValueMapper.captureErrors(mapper, errorFilter),
+                named);
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> flatMapValues(
             final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper) {
-        return this.context.newStream(this.wrapped.flatMapValues(mapper));
+        return this.context.wrap(this.wrapped.flatMapValues(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper) {
+        return this.flatMapValuesCapturingErrors_(ErrorCapturingFlatValueMapperWithKey.captureErrors(mapper));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter) {
+        return this.flatMapValuesCapturingErrors_(
+                ErrorCapturingFlatValueMapperWithKey.captureErrors(mapper, errorFilter));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> flatMapValues(
             final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.flatMapValues(mapper, named));
+        return this.context.wrap(this.wrapped.flatMapValues(mapper, named));
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
+            final Named named) {
+        return this.flatMapValuesCapturingErrors_(ErrorCapturingFlatValueMapperWithKey.captureErrors(mapper), named);
+    }
+
+    @Override
+    public <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
+            final java.util.function.Predicate<Exception> errorFilter, final Named named) {
+        return this.flatMapValuesCapturingErrors_(
+                ErrorCapturingFlatValueMapperWithKey.captureErrors(mapper, errorFilter), named);
     }
 
     @Override
@@ -185,62 +351,66 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public ImprovedKStream<K, V> peek(final ForeachAction<? super K, ? super V> action) {
-        return this.context.newStream(this.wrapped.peek(action));
+        return this.context.wrap(this.wrapped.peek(action));
     }
 
     @Override
     public ImprovedKStream<K, V> peek(final ForeachAction<? super K, ? super V> action, final Named named) {
-        return this.context.newStream(this.wrapped.peek(action, named));
+        return this.context.wrap(this.wrapped.peek(action, named));
     }
 
     @Override
-    public KStream<K, V>[] branch(final Predicate<? super K, ? super V>... predicates) {
-        return this.wrapped.branch(predicates);
+    public ImprovedKStream<K, V>[] branch(final Predicate<? super K, ? super V>... predicates) {
+        return Arrays.stream(this.wrapped.branch(predicates))
+                .map(this.context::wrap)
+                .toArray(ImprovedKStream[]::new);
     }
 
     @Override
-    public KStream<K, V>[] branch(final Named named, final Predicate<? super K, ? super V>... predicates) {
-        return this.wrapped.branch(named, predicates);
+    public ImprovedKStream<K, V>[] branch(final Named named, final Predicate<? super K, ? super V>... predicates) {
+        return Arrays.stream(this.wrapped.branch(named, predicates))
+                .map(this.context::wrap)
+                .toArray(ImprovedKStream[]::new);
     }
 
     @Override
-    public BranchedKStream<K, V> split() {
-        return this.wrapped.split();
+    public ImprovedBranchedKStream<K, V> split() {
+        return this.context.wrap(this.wrapped.split());
     }
 
     @Override
-    public BranchedKStream<K, V> split(final Named named) {
-        return this.wrapped.split(named);
+    public ImprovedBranchedKStream<K, V> split(final Named named) {
+        return this.context.wrap(this.wrapped.split(named));
     }
 
     @Override
     public ImprovedKStream<K, V> merge(final KStream<K, V> stream) {
-        return this.context.newStream(this.wrapped.merge(stream));
+        return this.context.wrap(this.wrapped.merge(stream));
     }
 
     @Override
     public ImprovedKStream<K, V> merge(final KStream<K, V> stream, final Named named) {
-        return this.context.newStream(this.wrapped.merge(stream, named));
+        return this.context.wrap(this.wrapped.merge(stream, named));
     }
 
     @Override
     public ImprovedKStream<K, V> through(final String topic) {
-        return this.context.newStream(this.wrapped.through(topic));
+        return this.context.wrap(this.wrapped.through(topic));
     }
 
     @Override
     public ImprovedKStream<K, V> through(final String topic, final Produced<K, V> produced) {
-        return this.context.newStream(this.wrapped.through(topic, produced));
+        return this.context.wrap(this.wrapped.through(topic, produced));
     }
 
     @Override
     public ImprovedKStream<K, V> repartition() {
-        return this.context.newStream(this.wrapped.repartition());
+        return this.context.wrap(this.wrapped.repartition());
     }
 
     @Override
     public ImprovedKStream<K, V> repartition(final Repartitioned<K, V> repartitioned) {
-        return this.context.newStream(this.wrapped.repartition(repartitioned));
+        return this.context.wrap(this.wrapped.repartition(repartitioned));
     }
 
     @Override
@@ -310,252 +480,252 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public ImprovedKTable<K, V> toTable() {
-        return this.context.newTable(this.wrapped.toTable());
+        return this.context.wrap(this.wrapped.toTable());
     }
 
     @Override
     public ImprovedKTable<K, V> toTable(final Named named) {
-        return this.context.newTable(this.wrapped.toTable(named));
+        return this.context.wrap(this.wrapped.toTable(named));
     }
 
     @Override
     public ImprovedKTable<K, V> toTable(final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.toTable(materialized));
+        return this.context.wrap(this.wrapped.toTable(materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> toTable(final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.toTable(named, materialized));
+        return this.context.wrap(this.wrapped.toTable(named, materialized));
     }
 
     @Override
     public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector) {
-        return this.context.newGroupedStream(this.wrapped.groupBy(keySelector));
+        return this.context.wrap(this.wrapped.groupBy(keySelector));
     }
 
     @Override
     public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
             final Grouped<KR, V> grouped) {
-        return this.context.newGroupedStream(this.wrapped.groupBy(keySelector, grouped));
+        return this.context.wrap(this.wrapped.groupBy(keySelector, grouped));
     }
 
     @Override
     public ImprovedKGroupedStream<K, V> groupByKey() {
-        return this.context.newGroupedStream(this.wrapped.groupByKey());
+        return this.context.wrap(this.wrapped.groupByKey());
     }
 
     @Override
     public ImprovedKGroupedStream<K, V> groupByKey(final Grouped<K, V> grouped) {
-        return this.context.newGroupedStream(this.wrapped.groupByKey(grouped));
+        return this.context.wrap(this.wrapped.groupByKey(grouped));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
-        return this.context.newStream(this.wrapped.join(otherStream, joiner, windows));
+        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
-        return this.context.newStream(this.wrapped.join(otherStream, joiner, windows));
+        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.newStream(this.wrapped.join(otherStream, joiner, windows, streamJoined));
+        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.newStream(this.wrapped.join(otherStream, joiner, windows, streamJoined));
+        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
-        return this.context.newStream(this.wrapped.leftJoin(otherStream, joiner, windows));
+        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
-        return this.context.newStream(this.wrapped.leftJoin(otherStream, joiner, windows));
+        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.newStream(this.wrapped.leftJoin(otherStream, joiner, windows, streamJoined));
+        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.newStream(this.wrapped.leftJoin(otherStream, joiner, windows, streamJoined));
+        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
-        return this.context.newStream(this.wrapped.outerJoin(otherStream, joiner, windows));
+        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
-        return this.context.newStream(this.wrapped.outerJoin(otherStream, joiner, windows));
+        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.newStream(this.wrapped.outerJoin(otherStream, joiner, windows, streamJoined));
+        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.newStream(this.wrapped.outerJoin(otherStream, joiner, windows, streamJoined));
+        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows, streamJoined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.newStream(this.wrapped.join(table, joiner));
+        return this.context.wrap(this.wrapped.join(table, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.newStream(this.wrapped.join(table, joiner));
+        return this.context.wrap(this.wrapped.join(table, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final Joined<K, V, VT> joined) {
-        return this.context.newStream(this.wrapped.join(table, joiner, joined));
+        return this.context.wrap(this.wrapped.join(table, joiner, joined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
-        return this.context.newStream(this.wrapped.join(table, joiner, joined));
+        return this.context.wrap(this.wrapped.join(table, joiner, joined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.newStream(this.wrapped.leftJoin(table, joiner));
+        return this.context.wrap(this.wrapped.leftJoin(table, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.newStream(this.wrapped.leftJoin(table, joiner));
+        return this.context.wrap(this.wrapped.leftJoin(table, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final Joined<K, V, VT> joined) {
-        return this.context.newStream(this.wrapped.leftJoin(table, joiner, joined));
+        return this.context.wrap(this.wrapped.leftJoin(table, joiner, joined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
-        return this.context.newStream(this.wrapped.leftJoin(table, joiner, joined));
+        return this.context.wrap(this.wrapped.leftJoin(table, joiner, joined));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> joiner) {
-        return this.context.newStream(this.wrapped.join(globalTable, keySelector, joiner));
+        return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner) {
-        return this.context.newStream(this.wrapped.join(globalTable, keySelector, joiner));
+        return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> joiner, final Named named) {
-        return this.context.newStream(this.wrapped.join(globalTable, keySelector, joiner, named));
+        return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner, final Named named) {
-        return this.context.newStream(this.wrapped.join(globalTable, keySelector, joiner, named));
+        return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner) {
-        return this.context.newStream(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
+        return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner) {
-        return this.context.newStream(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
+        return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
-        return this.context.newStream(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
+        return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
     }
 
     @Override
     public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
-        return this.context.newStream(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
+        return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
     }
 
     @Override
     public <K1, V1> ImprovedKStream<K1, V1> transform(
             final TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.transform(transformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.transform(transformerSupplier, stateStoreNames));
     }
 
     @Override
     public <K1, V1> ImprovedKStream<K1, V1> transform(
             final TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier, final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.transform(transformerSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.transform(transformerSupplier, named, stateStoreNames));
     }
 
     @Override
     public <K1, V1> ImprovedKStream<K1, V1> flatTransform(
             final TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.flatTransform(transformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.flatTransform(transformerSupplier, stateStoreNames));
     }
 
     @Override
@@ -563,28 +733,28 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
             final TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
             final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.flatTransform(transformerSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.flatTransform(transformerSupplier, named, stateStoreNames));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> transformValues(
             final ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> transformValues(
             final ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier, final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
@@ -592,21 +762,21 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
             final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> flatTransformValues(
             final ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
     public <VR> ImprovedKStream<K, VR> flatTransformValues(
             final ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier, final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(
+        return this.context.wrap(
                 this.wrapped.flatTransformValues(valueTransformerSupplier, named, stateStoreNames));
     }
 
@@ -614,7 +784,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     public <VR> ImprovedKStream<K, VR> flatTransformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
@@ -622,7 +792,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
             final ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
             final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(
+        return this.context.wrap(
                 this.wrapped.flatTransformValues(valueTransformerSupplier, named, stateStoreNames));
     }
 
@@ -644,27 +814,199 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     public <KOut, VOut> ImprovedKStream<KOut, VOut> process(
             final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.process(processorSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.process(processorSupplier, stateStoreNames));
+    }
+
+    @Override
+    public <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final String... stateStoreNames) {
+        return this.processCapturingErrors_(ErrorCapturingProcessor.captureErrors(processorSupplier), stateStoreNames);
+    }
+
+    @Override
+    public <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final java.util.function.Predicate<Exception> errorFilter,
+            final String... stateStoreNames) {
+        return this.processCapturingErrors_(ErrorCapturingProcessor.captureErrors(processorSupplier, errorFilter),
+                stateStoreNames);
     }
 
     @Override
     public <KOut, VOut> ImprovedKStream<KOut, VOut> process(
             final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier, final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.process(processorSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.process(processorSupplier, named, stateStoreNames));
+    }
+
+    @Override
+    public <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier, final Named named,
+            final String... stateStoreNames) {
+        return this.processCapturingErrors_(ErrorCapturingProcessor.captureErrors(processorSupplier), named,
+                stateStoreNames);
+    }
+
+    @Override
+    public <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final java.util.function.Predicate<Exception> errorFilter,
+            final Named named, final String... stateStoreNames) {
+        return this.processCapturingErrors_(ErrorCapturingProcessor.captureErrors(processorSupplier, errorFilter),
+                named, stateStoreNames);
     }
 
     @Override
     public <VOut> ImprovedKStream<K, VOut> processValues(
             final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.processValues(processorSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.processValues(processorSupplier, stateStoreNames));
+    }
+
+    @Override
+    public <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final String... stateStoreNames) {
+        return this.processValuesCapturingErrors_(ErrorCapturingValueProcessor.captureErrors(processorSupplier),
+                stateStoreNames);
+    }
+
+    @Override
+    public <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final java.util.function.Predicate<Exception> errorFilter, final String... stateStoreNames) {
+        return this.processValuesCapturingErrors_(
+                ErrorCapturingValueProcessor.captureErrors(processorSupplier, errorFilter),
+                stateStoreNames
+        );
     }
 
     @Override
     public <VOut> ImprovedKStream<K, VOut> processValues(
             final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier, final Named named,
             final String... stateStoreNames) {
-        return this.context.newStream(this.wrapped.processValues(processorSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.processValues(processorSupplier, named, stateStoreNames));
+    }
+
+    @Override
+    public <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier, final Named named,
+            final String... stateStoreNames) {
+        return this.processValuesCapturingErrors_(ErrorCapturingValueProcessor.captureErrors(processorSupplier), named,
+                stateStoreNames);
+    }
+
+    @Override
+    public <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final java.util.function.Predicate<Exception> errorFilter, final Named named,
+            final String... stateStoreNames) {
+        return this.processValuesCapturingErrors_(
+                ErrorCapturingValueProcessor.captureErrors(processorSupplier, errorFilter), named, stateStoreNames);
+    }
+
+    private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> mapCapturingErrors_(
+            final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper) {
+        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper);
+        return new KeyValueKErrorStream<>(map);
+    }
+
+    private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> mapCapturingErrors_(
+            final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper, final Named named) {
+        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper, named);
+        return new KeyValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrors_(
+            final ValueMapper<V, ProcessedValue<V, VR>> mapper) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrors_(
+            final ValueMapper<V, ProcessedValue<V, VR>> mapper,
+            final Named named) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrors_(
+            final ValueMapperWithKey<K, V, ProcessedValue<V, VR>> mapper) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrors_(
+            final ValueMapperWithKey<K, V, ProcessedValue<V, VR>> mapper, final Named named) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> flatMapCapturingErrors_(
+            final KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>> mapper) {
+        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper);
+        return new KeyValueKErrorStream<>(map);
+    }
+
+    private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> flatMapCapturingErrors_(
+            final KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>> mapper, final Named named) {
+        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper, named);
+        return new KeyValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrors_(
+            final ValueMapper<V, Iterable<ProcessedValue<V, VR>>> mapper) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrors_(
+            final ValueMapper<V, Iterable<ProcessedValue<V, VR>>> mapper, final Named named) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrors_(
+            final ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> mapper) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrors_(
+            final ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> mapper, final Named named) {
+        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <KOut, VOut> KeyValueKErrorStream<K, V, KOut, VOut> processCapturingErrors_(
+            final ProcessorSupplier<K, V, KOut, ProcessedKeyValue<K, V, VOut>> processorSupplier,
+            final String... stateStoreNames) {
+        final ImprovedKStream<KOut, ProcessedKeyValue<K, V, VOut>> map =
+                this.process(processorSupplier, stateStoreNames);
+        return new KeyValueKErrorStream<>(map);
+    }
+
+    private <KOut, VOut> KeyValueKErrorStream<K, V, KOut, VOut> processCapturingErrors_(
+            final ProcessorSupplier<K, V, KOut, ProcessedKeyValue<K, V, VOut>> processorSupplier, final Named named,
+            final String... stateStoreNames) {
+        final ImprovedKStream<KOut, ProcessedKeyValue<K, V, VOut>> map =
+                this.process(processorSupplier, named, stateStoreNames);
+        return new KeyValueKErrorStream<>(map);
+    }
+
+    private <VOut> ValueKErrorStream<K, V, VOut> processValuesCapturingErrors_(
+            final FixedKeyProcessorSupplier<? super K, V, ProcessedValue<V, VOut>> processorSupplier,
+            final String... stateStoreNames) {
+        final ImprovedKStream<K, ProcessedValue<V, VOut>> map = this.processValues(processorSupplier, stateStoreNames);
+        return new ValueKErrorStream<>(map);
+    }
+
+    private <VOut> ValueKErrorStream<K, V, VOut> processValuesCapturingErrors_(
+            final FixedKeyProcessorSupplier<? super K, V, ProcessedValue<V, VOut>> processorSupplier,
+            final Named named, final String... stateStoreNames) {
+        final ImprovedKStream<K, ProcessedValue<V, VOut>> map =
+                this.processValues(processorSupplier, named, stateStoreNames);
+        return new ValueKErrorStream<>(map);
     }
 }

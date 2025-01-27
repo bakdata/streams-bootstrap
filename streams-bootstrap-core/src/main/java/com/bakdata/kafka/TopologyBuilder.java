@@ -50,27 +50,27 @@ public class TopologyBuilder {
     Map<String, Object> kafkaProperties;
 
     public <K, V> ImprovedKStream<K, V> stream(final String topic) {
-        return this.getContext().newStream(this.streamsBuilder.stream(topic));
+        return this.getContext().wrap(this.streamsBuilder.stream(topic));
     }
 
     public <K, V> ImprovedKStream<K, V> stream(final String topic, final Consumed<K, V> consumed) {
-        return this.getContext().newStream(this.streamsBuilder.stream(topic, consumed));
+        return this.getContext().wrap(this.streamsBuilder.stream(topic, consumed));
     }
 
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics) {
-        return this.getContext().newStream(this.streamsBuilder.stream(topics));
+        return this.getContext().wrap(this.streamsBuilder.stream(topics));
     }
 
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics, final Consumed<K, V> consumed) {
-        return this.getContext().newStream(this.streamsBuilder.stream(topics, consumed));
+        return this.getContext().wrap(this.streamsBuilder.stream(topics, consumed));
     }
 
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern) {
-        return this.getContext().newStream(this.streamsBuilder.stream(topicPattern));
+        return this.getContext().wrap(this.streamsBuilder.stream(topicPattern));
     }
 
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final Consumed<K, V> consumed) {
-        return this.getContext().newStream(this.streamsBuilder.stream(topicPattern, consumed));
+        return this.getContext().wrap(this.streamsBuilder.stream(topicPattern, consumed));
     }
 
     /**

@@ -48,6 +48,7 @@ import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 public interface ImprovedKStream<K, V> extends KStream<K, V> {
@@ -74,52 +75,146 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     <KR, VR> ImprovedKStream<KR, VR> map(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper);
 
+    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper);
+
+    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
+            java.util.function.Predicate<Exception> errorFilter);
+
     @Override
     <KR, VR> ImprovedKStream<KR, VR> map(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper, Named named);
 
+    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper, Named named);
+
+    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
+            java.util.function.Predicate<Exception> errorFilter, Named named);
+
     @Override
     <VR> ImprovedKStream<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper,
+            java.util.function.Predicate<Exception> errorFilter);
 
     @Override
     <VR> ImprovedKStream<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named);
 
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper, Named named);
+
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper,
+            java.util.function.Predicate<Exception> errorFilter, Named named);
+
     @Override
     <VR> ImprovedKStream<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+            java.util.function.Predicate<Exception> errorFilter);
 
     @Override
     <VR> ImprovedKStream<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
 
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
+
+    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+            java.util.function.Predicate<Exception> errorFilter, Named named);
+
     @Override
     <KR, VR> ImprovedKStream<KR, VR> flatMap(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper);
+
+    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper);
+
+    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
+            java.util.function.Predicate<Exception> errorFilter);
 
     @Override
     <KR, VR> ImprovedKStream<KR, VR> flatMap(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
             Named named);
 
+    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
+            Named named);
+
+    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+            KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
+            java.util.function.Predicate<Exception> errorFilter, Named named);
+
     @Override
     <VR> ImprovedKStream<K, VR> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
+            java.util.function.Predicate<Exception> errorFilter);
 
     @Override
     <VR> ImprovedKStream<K, VR> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             Named named);
 
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
+            Named named);
+
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
+            java.util.function.Predicate<Exception> errorFilter, Named named);
+
     @Override
     <VR> ImprovedKStream<K, VR> flatMapValues(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper);
+
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
+            java.util.function.Predicate<Exception> errorFilter);
 
     @Override
     <VR> ImprovedKStream<K, VR> flatMapValues(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
             Named named);
 
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper, Named named);
+
+    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+            ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
+            java.util.function.Predicate<Exception> errorFilter, Named named);
+
     @Override
     ImprovedKStream<K, V> peek(ForeachAction<? super K, ? super V> action);
 
     @Override
     ImprovedKStream<K, V> peek(ForeachAction<? super K, ? super V> action, Named named);
+
+    @Override
+    ImprovedKStream<K, V>[] branch(Named named, Predicate<? super K, ? super V>... predicates);
+
+    @Override
+    ImprovedKStream<K, V>[] branch(Predicate<? super K, ? super V>... predicates);
+
+    @Override
+    ImprovedBranchedKStream<K, V> split();
+
+    @Override
+    ImprovedBranchedKStream<K, V> split(Named named);
 
     @Override
     ImprovedKStream<K, V> merge(KStream<K, V> stream);
@@ -371,12 +466,30 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
 
     @Override
     <KOut, VOut> ImprovedKStream<KOut, VOut> process(
-            org.apache.kafka.streams.processor.api.ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            String... stateStoreNames);
+
+    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            String... stateStoreNames);
+
+    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            java.util.function.Predicate<Exception> errorFilter,
             String... stateStoreNames);
 
     @Override
     <KOut, VOut> ImprovedKStream<KOut, VOut> process(
-            org.apache.kafka.streams.processor.api.ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            Named named, String... stateStoreNames);
+
+    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            Named named, String... stateStoreNames);
+
+    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
 
     @Override
@@ -384,8 +497,26 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             String... stateStoreNames);
 
+    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            String... stateStoreNames);
+
+    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            java.util.function.Predicate<Exception> errorFilter,
+            String... stateStoreNames);
+
     @Override
     <VOut> ImprovedKStream<K, VOut> processValues(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            Named named, String... stateStoreNames);
+
+    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            Named named, String... stateStoreNames);
+
+    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
 }

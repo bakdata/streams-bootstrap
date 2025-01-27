@@ -44,27 +44,27 @@ class ImprovedSessionWindowedCogroupedStreamImpl<K, V> implements ImprovedSessio
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, sessionMerger));
+        return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Named named) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, sessionMerger, named));
+        return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger, named));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Materialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, sessionMerger, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger, materialized));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Named named, final Materialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, sessionMerger, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger, materialized));
     }
 }

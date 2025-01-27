@@ -48,43 +48,43 @@ class ImprovedCogroupedStreamImpl<K, V> implements ImprovedCogroupedKStream<K, V
     @Override
     public <VIn> ImprovedCogroupedKStream<K, V> cogroup(final KGroupedStream<K, VIn> groupedStream,
             final Aggregator<? super K, ? super VIn, V> aggregator) {
-        return this.context.newCogroupedStream(this.wrapped.cogroup(groupedStream, aggregator));
+        return this.context.wrap(this.wrapped.cogroup(groupedStream, aggregator));
     }
 
     @Override
     public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer) {
-        return this.context.newTable(this.wrapped.aggregate(initializer));
+        return this.context.wrap(this.wrapped.aggregate(initializer));
     }
 
     @Override
     public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, named));
+        return this.context.wrap(this.wrapped.aggregate(initializer, named));
     }
 
     @Override
     public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, named, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, named, materialized));
     }
 
     @Override
     public <W extends Window> ImprovedTimeWindowedCogroupedKStream<K, V> windowedBy(final Windows<W> windows) {
-        return this.context.newTimeWindowedCogroupedStream(this.wrapped.windowedBy(windows));
+        return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 
     @Override
     public ImprovedTimeWindowedCogroupedKStream<K, V> windowedBy(final SlidingWindows windows) {
-        return this.context.newTimeWindowedCogroupedStream(this.wrapped.windowedBy(windows));
+        return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 
     @Override
     public ImprovedSessionWindowedCogroupedKStream<K, V> windowedBy(final SessionWindows windows) {
-        return this.context.newSessionWindowedCogroupedStream(this.wrapped.windowedBy(windows));
+        return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 }

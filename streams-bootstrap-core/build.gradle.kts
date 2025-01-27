@@ -19,6 +19,7 @@ dependencies {
         version = "2.0.9"
     ) // required because other dependencies use Slf4j 1.x which is not properly resolved if this library is used in test scope
     implementation(group = "org.jooq", name = "jool", version = "0.9.14")
+    implementation(group = "com.bakdata.kafka", name = "error-handling-core", version = "1.6.1-SNAPSHOT")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)

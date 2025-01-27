@@ -45,76 +45,76 @@ class ImprovedTimeWindowedStreamImpl<K, V> implements ImprovedTimeWindowedKStrea
 
     @Override
     public ImprovedKTable<Windowed<K>, Long> count() {
-        return this.context.newTable(this.wrapped.count());
+        return this.context.wrap(this.wrapped.count());
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, Long> count(final Named named) {
-        return this.context.newTable(this.wrapped.count(named));
+        return this.context.wrap(this.wrapped.count(named));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, Long> count(
             final Materialized<K, Long, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.count(materialized));
+        return this.context.wrap(this.wrapped.count(materialized));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, Long> count(final Named named,
             final Materialized<K, Long, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.count(named, materialized));
+        return this.context.wrap(this.wrapped.count(named, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, aggregator));
+        return this.context.wrap(this.wrapped.aggregate(initializer, aggregator));
     }
 
     @Override
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Named named) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, aggregator, named));
+        return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, named));
     }
 
     @Override
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator,
             final Materialized<K, VR, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, aggregator, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Named named,
             final Materialized<K, VR, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, aggregator, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, materialized));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer) {
-        return this.context.newTable(this.wrapped.reduce(reducer));
+        return this.context.wrap(this.wrapped.reduce(reducer));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer, final Named named) {
-        return this.context.newTable(this.wrapped.reduce(reducer, named));
+        return this.context.wrap(this.wrapped.reduce(reducer, named));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer,
             final Materialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.reduce(reducer, materialized));
+        return this.context.wrap(this.wrapped.reduce(reducer, materialized));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> reduce(final Reducer<V> reducer, final Named named,
             final Materialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.reduce(reducer, named, materialized));
+        return this.context.wrap(this.wrapped.reduce(reducer, named, materialized));
     }
 
     @Override
     public ImprovedTimeWindowedKStream<K, V> emitStrategy(final EmitStrategy emitStrategy) {
-        return this.context.newTimeWindowedStream(this.wrapped.emitStrategy(emitStrategy));
+        return this.context.wrap(this.wrapped.emitStrategy(emitStrategy));
     }
 }

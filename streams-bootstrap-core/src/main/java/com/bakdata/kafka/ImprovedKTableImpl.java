@@ -51,124 +51,124 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
 
     @Override
     public ImprovedKTable<K, V> filter(final Predicate<? super K, ? super V> predicate) {
-        return this.context.newTable(this.wrapped.filter(predicate));
+        return this.context.wrap(this.wrapped.filter(predicate));
     }
 
     @Override
     public ImprovedKTable<K, V> filter(final Predicate<? super K, ? super V> predicate, final Named named) {
-        return this.context.newTable(this.wrapped.filter(predicate, named));
+        return this.context.wrap(this.wrapped.filter(predicate, named));
     }
 
     @Override
     public ImprovedKTable<K, V> filter(final Predicate<? super K, ? super V> predicate,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.filter(predicate, materialized));
+        return this.context.wrap(this.wrapped.filter(predicate, materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> filter(final Predicate<? super K, ? super V> predicate, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.filter(predicate, named, materialized));
+        return this.context.wrap(this.wrapped.filter(predicate, named, materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> filterNot(final Predicate<? super K, ? super V> predicate) {
-        return this.context.newTable(this.wrapped.filterNot(predicate));
+        return this.context.wrap(this.wrapped.filterNot(predicate));
     }
 
     @Override
     public ImprovedKTable<K, V> filterNot(final Predicate<? super K, ? super V> predicate, final Named named) {
-        return this.context.newTable(this.wrapped.filterNot(predicate, named));
+        return this.context.wrap(this.wrapped.filterNot(predicate, named));
     }
 
     @Override
     public ImprovedKTable<K, V> filterNot(final Predicate<? super K, ? super V> predicate,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.filterNot(predicate, materialized));
+        return this.context.wrap(this.wrapped.filterNot(predicate, materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> filterNot(final Predicate<? super K, ? super V> predicate, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.filterNot(predicate, materialized));
+        return this.context.wrap(this.wrapped.filterNot(predicate, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper) {
-        return this.context.newTable(this.wrapped.mapValues(mapper));
+        return this.context.wrap(this.wrapped.mapValues(mapper));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper, final Named named) {
-        return this.context.newTable(this.wrapped.mapValues(mapper, named));
+        return this.context.wrap(this.wrapped.mapValues(mapper, named));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper) {
-        return this.context.newTable(this.wrapped.mapValues(mapper));
+        return this.context.wrap(this.wrapped.mapValues(mapper));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             final Named named) {
-        return this.context.newTable(this.wrapped.mapValues(mapper, named));
+        return this.context.wrap(this.wrapped.mapValues(mapper, named));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.mapValues(mapper, materialized));
+        return this.context.wrap(this.wrapped.mapValues(mapper, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.mapValues(mapper, named, materialized));
+        return this.context.wrap(this.wrapped.mapValues(mapper, named, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.mapValues(mapper, materialized));
+        return this.context.wrap(this.wrapped.mapValues(mapper, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             final Named named, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.mapValues(mapper, named, materialized));
+        return this.context.wrap(this.wrapped.mapValues(mapper, named, materialized));
     }
 
     @Override
     public ImprovedKStream<K, V> toStream() {
-        return this.context.newStream(this.wrapped.toStream());
+        return this.context.wrap(this.wrapped.toStream());
     }
 
     @Override
     public ImprovedKStream<K, V> toStream(final Named named) {
-        return this.context.newStream(this.wrapped.toStream(named));
+        return this.context.wrap(this.wrapped.toStream(named));
     }
 
     @Override
     public <KR> ImprovedKStream<KR, V> toStream(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper) {
-        return this.context.newStream(this.wrapped.toStream(mapper));
+        return this.context.wrap(this.wrapped.toStream(mapper));
     }
 
     @Override
     public <KR> ImprovedKStream<KR, V> toStream(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper,
             final Named named) {
-        return this.context.newStream(this.wrapped.toStream(mapper, named));
+        return this.context.wrap(this.wrapped.toStream(mapper, named));
     }
 
     @Override
     public ImprovedKTable<K, V> suppress(final Suppressed<? super K> suppressed) {
-        return this.context.newTable(this.wrapped.suppress(suppressed));
+        return this.context.wrap(this.wrapped.suppress(suppressed));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             final String... stateStoreNames) {
-        return this.context.newTable(this.wrapped.transformValues(transformerSupplier, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(transformerSupplier, stateStoreNames));
     }
 
     @Override
@@ -176,14 +176,14 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             final Named named,
             final String... stateStoreNames) {
-        return this.context.newTable(this.wrapped.transformValues(transformerSupplier, named, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(transformerSupplier, named, stateStoreNames));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, final String... stateStoreNames) {
-        return this.context.newTable(this.wrapped.transformValues(transformerSupplier, materialized, stateStoreNames));
+        return this.context.wrap(this.wrapped.transformValues(transformerSupplier, materialized, stateStoreNames));
     }
 
     @Override
@@ -191,126 +191,126 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, final Named named,
             final String... stateStoreNames) {
-        return this.context.newTable(
+        return this.context.wrap(
                 this.wrapped.transformValues(transformerSupplier, materialized, named, stateStoreNames));
     }
 
     @Override
     public <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(
             final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector) {
-        return this.context.newGroupedTable(this.wrapped.groupBy(selector));
+        return this.context.wrap(this.wrapped.groupBy(selector));
     }
 
     @Override
     public <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(
             final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector, final Grouped<KR, VR> grouped) {
-        return this.context.newGroupedTable(this.wrapped.groupBy(selector, grouped));
+        return this.context.wrap(this.wrapped.groupBy(selector, grouped));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
-        return this.context.newTable(this.wrapped.join(other, joiner));
+        return this.context.wrap(this.wrapped.join(other, joiner));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named) {
-        return this.context.newTable(this.wrapped.join(other, joiner, named));
+        return this.context.wrap(this.wrapped.join(other, joiner, named));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.join(other, joiner, materialized));
+        return this.context.wrap(this.wrapped.join(other, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.join(other, joiner, materialized));
+        return this.context.wrap(this.wrapped.join(other, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
-        return this.context.newTable(this.wrapped.leftJoin(other, joiner));
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named) {
-        return this.context.newTable(this.wrapped.leftJoin(other, joiner, named));
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, named));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.leftJoin(other, joiner, materialized));
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.leftJoin(other, joiner, materialized));
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
-        return this.context.newTable(this.wrapped.outerJoin(other, joiner));
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named) {
-        return this.context.newTable(this.wrapped.outerJoin(other, joiner, named));
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, named));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.outerJoin(other, joiner, materialized));
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.outerJoin(other, joiner, materialized));
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, materialized));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner) {
-        return this.context.newTable(this.wrapped.join(other, foreignKeyExtractor, joiner));
+        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named) {
-        return this.context.newTable(this.wrapped.join(other, foreignKeyExtractor, joiner, named));
+        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, named));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
-        return this.context.newTable(this.wrapped.join(other, foreignKeyExtractor, joiner, tableJoined));
+        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.join(other, foreignKeyExtractor, joiner, materialized));
+        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
@@ -318,7 +318,7 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.join(other, foreignKeyExtractor, joiner, named, materialized));
+        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, named, materialized));
     }
 
     @Override
@@ -326,35 +326,35 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.join(other, foreignKeyExtractor, joiner, tableJoined, materialized));
+        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, tableJoined, materialized));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner) {
-        return this.context.newTable(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner));
+        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named) {
-        return this.context.newTable(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, named));
+        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, named));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
-        return this.context.newTable(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, tableJoined));
+        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, materialized));
+        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
@@ -362,7 +362,7 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, named, materialized));
+        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, named, materialized));
     }
 
     @Override
@@ -370,7 +370,7 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(
+        return this.context.wrap(
                 this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, tableJoined, materialized));
     }
 

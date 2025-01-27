@@ -28,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Value;
+import org.apache.kafka.streams.kstream.BranchedKStream;
 import org.apache.kafka.streams.kstream.CogroupedKStream;
 import org.apache.kafka.streams.kstream.KGroupedStream;
 import org.apache.kafka.streams.kstream.KGroupedTable;
@@ -47,43 +48,47 @@ public class StreamsContext {
     @NonNull
     Configurator configurator;
 
-    public <KR, VR> ImprovedKStream<KR, VR> newStream(final KStream<KR, VR> stream) {
+    public <KR, VR> ImprovedKStream<KR, VR> wrap(final KStream<KR, VR> stream) {
         return new ImprovedKStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedKGroupedStream<KR, VR> newGroupedStream(final KGroupedStream<KR, VR> stream) {
+    public <KR, VR> ImprovedKGroupedStream<KR, VR> wrap(final KGroupedStream<KR, VR> stream) {
         return new ImprovedKGroupedStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedTimeWindowedKStream<KR, VR> newTimeWindowedStream(
+    public <KR, VR> ImprovedTimeWindowedKStream<KR, VR> wrap(
             final TimeWindowedKStream<KR, VR> stream) {
         return new ImprovedTimeWindowedStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedSessionWindowedKStream<KR, VR> newSessionWindowedStream(
+    public <KR, VR> ImprovedSessionWindowedKStream<KR, VR> wrap(
             final SessionWindowedKStream<KR, VR> stream) {
         return new ImprovedSessionWindowedStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedTimeWindowedCogroupedKStream<KR, VR> newTimeWindowedCogroupedStream(
+    public <KR, VR> ImprovedTimeWindowedCogroupedKStream<KR, VR> wrap(
             final TimeWindowedCogroupedKStream<KR, VR> stream) {
         return new ImprovedTimeWindowedCogroupedStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedSessionWindowedCogroupedKStream<KR, VR> newSessionWindowedCogroupedStream(
+    public <KR, VR> ImprovedSessionWindowedCogroupedKStream<KR, VR> wrap(
             final SessionWindowedCogroupedKStream<KR, VR> stream) {
         return new ImprovedSessionWindowedCogroupedStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedCogroupedKStream<KR, VR> newCogroupedStream(final CogroupedKStream<KR, VR> stream) {
+    public <KR, VR> ImprovedCogroupedKStream<KR, VR> wrap(final CogroupedKStream<KR, VR> stream) {
         return new ImprovedCogroupedStreamImpl<>(stream, this);
     }
 
-    public <KR, VR> ImprovedKTable<KR, VR> newTable(final KTable<KR, VR> table) {
+    public <KR, VR> ImprovedBranchedKStream<KR, VR> wrap(final BranchedKStream<KR, VR> stream) {
+        return new ImprovedBranchedKStreamImpl<>(stream, this);
+    }
+
+    public <KR, VR> ImprovedKTable<KR, VR> wrap(final KTable<KR, VR> table) {
         return new ImprovedKTableImpl<>(table, this);
     }
 
-    public <KR, VR> ImprovedKGroupedTable<KR, VR> newGroupedTable(final KGroupedTable<KR, VR> table) {
+    public <KR, VR> ImprovedKGroupedTable<KR, VR> wrap(final KGroupedTable<KR, VR> table) {
         return new ImprovedKGroupedTableImpl<>(table, this);
     }
 }

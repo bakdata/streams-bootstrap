@@ -42,23 +42,23 @@ class ImprovedTimeWindowedCogroupedStreamImpl<K, V> implements ImprovedTimeWindo
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer) {
-        return this.context.newTable(this.wrapped.aggregate(initializer));
+        return this.context.wrap(this.wrapped.aggregate(initializer));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, named));
+        return this.context.wrap(this.wrapped.aggregate(initializer, named));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Materialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, materialized));
     }
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
             final Materialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, named, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, named, materialized));
     }
 }

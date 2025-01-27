@@ -43,40 +43,40 @@ class ImprovedKGroupedTableImpl<K, V> implements ImprovedKGroupedTable<K, V> {
 
     @Override
     public ImprovedKTable<K, Long> count(final Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.count(materialized));
+        return this.context.wrap(this.wrapped.count(materialized));
     }
 
     @Override
     public ImprovedKTable<K, Long> count(final Named named,
             final Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.count(named, materialized));
+        return this.context.wrap(this.wrapped.count(named, materialized));
     }
 
     @Override
     public ImprovedKTable<K, Long> count() {
-        return this.context.newTable(this.wrapped.count());
+        return this.context.wrap(this.wrapped.count());
     }
 
     @Override
     public ImprovedKTable<K, Long> count(final Named named) {
-        return this.context.newTable(this.wrapped.count(named));
+        return this.context.wrap(this.wrapped.count(named));
     }
 
     @Override
     public ImprovedKTable<K, V> reduce(final Reducer<V> adder, final Reducer<V> subtractor,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.reduce(adder, subtractor, materialized));
+        return this.context.wrap(this.wrapped.reduce(adder, subtractor, materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> reduce(final Reducer<V> adder, final Reducer<V> subtractor, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.reduce(adder, subtractor, materialized));
+        return this.context.wrap(this.wrapped.reduce(adder, subtractor, materialized));
     }
 
     @Override
     public ImprovedKTable<K, V> reduce(final Reducer<V> adder, final Reducer<V> subtractor) {
-        return this.context.newTable(this.wrapped.reduce(adder, subtractor));
+        return this.context.wrap(this.wrapped.reduce(adder, subtractor));
     }
 
     @Override
@@ -84,7 +84,7 @@ class ImprovedKGroupedTableImpl<K, V> implements ImprovedKGroupedTable<K, V> {
             final Aggregator<? super K, ? super V, VR> adder,
             final Aggregator<? super K, ? super V, VR> subtractor,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, adder, subtractor, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, adder, subtractor, materialized));
     }
 
     @Override
@@ -92,20 +92,20 @@ class ImprovedKGroupedTableImpl<K, V> implements ImprovedKGroupedTable<K, V> {
             final Aggregator<? super K, ? super V, VR> adder,
             final Aggregator<? super K, ? super V, VR> subtractor, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, adder, subtractor, materialized));
+        return this.context.wrap(this.wrapped.aggregate(initializer, adder, subtractor, materialized));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> adder,
             final Aggregator<? super K, ? super V, VR> subtractor) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, adder, subtractor));
+        return this.context.wrap(this.wrapped.aggregate(initializer, adder, subtractor));
     }
 
     @Override
     public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> adder,
             final Aggregator<? super K, ? super V, VR> subtractor, final Named named) {
-        return this.context.newTable(this.wrapped.aggregate(initializer, adder, subtractor, named));
+        return this.context.wrap(this.wrapped.aggregate(initializer, adder, subtractor, named));
     }
 }
