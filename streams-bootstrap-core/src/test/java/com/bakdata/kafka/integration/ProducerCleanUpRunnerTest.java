@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,7 @@ import com.bakdata.kafka.EffectiveAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableProducerApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
+import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.ProducerTopicConfig;
@@ -42,12 +43,16 @@ import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.test_applications.AvroKeyProducer;
 import com.bakdata.kafka.test_applications.AvroValueProducer;
 import com.bakdata.kafka.test_applications.StringProducer;
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
 import java.util.List;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
+import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -94,7 +99,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException {
+    void shouldDeleteTopic() {
         try (final ConfiguredProducerApp<ProducerApp> app = createStringApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app.withEndpoint(
                         this.createEndpointWithoutSchemaRegistry())) {
@@ -106,9 +111,11 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
             clean(executableApp);
 
-            this.softly.assertThat(this.kafkaCluster.exists(app.getTopics().getOutputTopic()))
-                    .as("Output topic is deleted")
-                    .isFalse();
+            try (final ImprovedAdminClient admin = this.newTestClient().admin()) {
+                this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
+                        .as("Output topic is deleted")
+                        .isFalse();
+            }
         }
     }
 
@@ -116,7 +123,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteValueSchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroValueApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             run(executableApp);
 
             final String outputTopic = app.getTopics().getOutputTopic();
@@ -132,7 +139,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteKeySchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroKeyApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient()) {
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             run(executableApp);
 
             final String outputTopic = app.getTopics().getOutputTopic();
@@ -167,9 +174,14 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
                 .build());
     }
 
-    private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) throws InterruptedException {
-        final ReadKeyValues<String, String> readRequest = ReadKeyValues.from(outputTopic).build();
-        return this.kafkaCluster.read(readRequest);
+    private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
+        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .from(outputTopic, POLL_TIMEOUT);
+        return records.stream()
+                .map(StreamsCleanUpRunnerTest::toKeyValue)
+                .collect(Collectors.toList());
     }
 
 }

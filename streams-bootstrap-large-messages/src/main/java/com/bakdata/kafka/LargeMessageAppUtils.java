@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,12 +77,16 @@ public class LargeMessageAppUtils {
 
     @RequiredArgsConstructor
     private static class LargeMessageTopicHook implements TopicHook {
-        //TODO: close storer once it implements AutoCloseable
         private final @NonNull LargeMessageStoringClient storer;
 
         @Override
         public void deleted(final String topic) {
             this.storer.deleteAllFiles(topic);
+        }
+
+        @Override
+        public void close() {
+            this.storer.close();
         }
     }
 }

@@ -24,28 +24,33 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static net.mguenther.kafka.junit.Wait.delay;
+import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
+import static com.bakdata.kafka.KafkaTest.newCluster;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.SendKeyValues;
-import net.mguenther.kafka.junit.TopicConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.kafka.KafkaContainer;
 
 class CliTest {
 
-    private static void runApp(final KafkaStreamsApplication<?> app, final String... args) {
-        new Thread(() -> KafkaApplication.startApplication(app, args)).start();
+    private static Thread runApp(final KafkaStreamsApplication<?> app, final String... args) {
+        final Thread thread = new Thread(() -> KafkaApplication.startApplication(app, args));
+        thread.start();
+        return thread;
     }
 
     @Test
@@ -212,9 +217,9 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorInTopology() throws InterruptedException {
+    void shouldExitWithErrorInTopology() {
         final String input = "input";
-        try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
+        try (final KafkaContainer kafkaCluster = newCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -235,23 +240,27 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-            kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
-            runApp(app,
-                    "--bootstrap-server", kafkaCluster.getBrokerList(),
+            final Thread thread = runApp(app,
+                    "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
-            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
-            delay(10, TimeUnit.SECONDS);
+            new KafkaTestClient(KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build()).send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            await("Thread is dead").atMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
         }
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
-    void shouldExitWithSuccessCodeOnShutdown() throws InterruptedException {
+    void shouldExitWithSuccessCodeOnShutdown() {
         final String input = "input";
         final String output = "output";
-        try (final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
+        try (final KafkaContainer kafkaCluster = newCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -270,22 +279,29 @@ class CliTest {
                     }
                 })) {
             kafkaCluster.start();
-            kafkaCluster.createTopic(TopicConfig.withName(input).build());
-            kafkaCluster.createTopic(TopicConfig.withName(output).build());
+            final KafkaTestClient testClient = new KafkaTestClient(KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build());
+            testClient.createTopic(output);
 
             runApp(app,
-                    "--bootstrap-server", kafkaCluster.getBrokerList(),
+                    "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input,
                     "--output-topic", output
             );
-            kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
-            delay(10, TimeUnit.SECONDS);
-            final List<KeyValue<String, String>> keyValues = kafkaCluster.read(ReadKeyValues.from(output));
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            final List<ConsumerRecord<String, String>> keyValues = testClient.read()
+                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .from(output, POLL_TIMEOUT);
             assertThat(keyValues)
                     .hasSize(1)
                     .anySatisfy(kv -> {
-                        assertThat(kv.getKey()).isEqualTo("foo");
-                        assertThat(kv.getValue()).isEqualTo("bar");
+                        assertThat(kv.key()).isEqualTo("foo");
+                        assertThat(kv.value()).isEqualTo("bar");
                     });
         }
     }

@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api(project(":streams-bootstrap-core"))
-    api(group = "info.picocli", name = "picocli", version = "4.7.5")
+    api(group = "info.picocli", name = "picocli", version = "4.7.6")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
@@ -17,17 +17,10 @@ dependencies {
     val mockitoVersion: String by project
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
-    val kafkaJunitVersion: String by project
-    testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaJunitVersion) {
-        exclude(group = "org.slf4j", module = "slf4j-log4j12")
-    }
+    testImplementation(testFixtures(project(":streams-bootstrap-core")))
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
-    val fluentKafkaVersion: String by project
-    testImplementation(
-        group = "com.bakdata.fluent-kafka-streams-tests",
-        name = "schema-registry-mock-junit5",
-        version = fluentKafkaVersion
-    )
+    val confluentVersion: String by project
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,165 +25,148 @@
 package com.bakdata.kafka.util;
 
 
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static net.mguenther.kafka.junit.Wait.delay;
+import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.SendValuesTransactional;
-import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-class SchemaTopicClientTest {
-    private static final int TIMEOUT_SECONDS = 10;
+class SchemaTopicClientTest extends KafkaTest {
+    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10);
     private static final String TOPIC = "topic";
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
 
     @InjectSoftAssertions
     SoftAssertions softly;
 
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster.start();
-    }
-
-    @AfterEach
-    void teardown() {
-        this.kafkaCluster.stop();
-    }
-
     @Test
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
-            throws InterruptedException, IOException, RestClientException {
-        this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
-        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
-                .as("Topic is created")
-                .isTrue();
+            throws IOException, RestClientException {
+        final KafkaTestClient testClient = this.newTestClient();
+        try (final ImprovedAdminClient admin = testClient.admin();
+                final TopicClient topicClient = admin.getTopicClient()) {
+            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
+            this.softly.assertThat(topicClient.exists(TOPIC))
+                    .as("Topic is created")
+                    .isTrue();
 
-        final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
-                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                        this.schemaRegistryMockExtension.getUrl())
-                .build();
-        this.kafkaCluster.send(sendRequest);
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .to(TOPIC, List.of(
+                            new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
+                    ));
 
-        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        this.softly.assertThat(client.getAllSubjects())
-                .contains(TOPIC + "-value");
+            final SchemaRegistryClient client = this.getSchemaRegistryClient();
+            this.softly.assertThat(client.getAllSubjects())
+                    .contains(TOPIC + "-value");
 
-        try (final SchemaTopicClient schemaTopicClient = this.createClientWithSchemaRegistry()) {
-            schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+            try (final SchemaTopicClient schemaTopicClient = this.createClientWithSchemaRegistry()) {
+                schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+            }
+
+            this.softly.assertThat(client.getAllSubjects())
+                    .doesNotContain(TOPIC + "-value");
+            this.softly.assertThat(topicClient.exists(TOPIC))
+                    .isFalse();
         }
-
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-        this.softly.assertThat(client.getAllSubjects())
-                .doesNotContain(TOPIC + "-value");
-        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
-                .isFalse();
     }
 
     @Test
-    void shouldResetSchema() throws InterruptedException, IOException, RestClientException {
-        this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
-        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
-                .as("Topic is created")
-                .isTrue();
+    void shouldResetSchema() throws IOException, RestClientException {
+        final KafkaTestClient testClient = this.newTestClient();
+        try (final ImprovedAdminClient admin = testClient.admin();
+                final TopicClient topicClient = admin.getTopicClient()) {
+            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
+            this.softly.assertThat(topicClient.exists(TOPIC))
+                    .as("Topic is created")
+                    .isTrue();
 
-        final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
-                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                        this.schemaRegistryMockExtension.getUrl())
-                .build();
-        this.kafkaCluster.send(sendRequest);
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .to(TOPIC, List.of(
+                            new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
+                    ));
 
-        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        this.softly.assertThat(client.getAllSubjects())
-                .contains(TOPIC + "-value");
+            final SchemaRegistryClient client = this.getSchemaRegistryClient();
+            this.softly.assertThat(client.getAllSubjects())
+                    .contains(TOPIC + "-value");
 
-        try (final SchemaTopicClient schemaTopicClient = this.createClientWithSchemaRegistry()) {
-            schemaTopicClient.resetSchemaRegistry(TOPIC);
+            try (final SchemaTopicClient schemaTopicClient = this.createClientWithSchemaRegistry()) {
+                schemaTopicClient.resetSchemaRegistry(TOPIC);
+            }
+
+            this.softly.assertThat(client.getAllSubjects())
+                    .doesNotContain(TOPIC + "-value");
+            this.softly.assertThat(topicClient.exists(TOPIC))
+                    .isTrue();
         }
-
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-        this.softly.assertThat(client.getAllSubjects())
-                .doesNotContain(TOPIC + "-value");
-        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
-                .isTrue();
     }
 
     @Test
-    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws InterruptedException, RestClientException,
+    void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws RestClientException,
             IOException {
-        this.kafkaCluster.createTopic(TopicConfig.withName(TOPIC).useDefaults());
-        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
-                .as("Topic is created")
-                .isTrue();
+        final KafkaTestClient testClient = this.newTestClient();
+        try (final ImprovedAdminClient admin = testClient.admin();
+                final TopicClient topicClient = admin.getTopicClient()) {
+            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
+            this.softly.assertThat(topicClient.exists(TOPIC))
+                    .as("Topic is created")
+                    .isTrue();
 
-        final SendValuesTransactional<TestRecord> sendRequest = SendValuesTransactional
-                .inTransaction(TOPIC, List.of(TestRecord.newBuilder().setContent("foo").build()))
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                        this.schemaRegistryMockExtension.getUrl())
-                .build();
-        this.kafkaCluster.send(sendRequest);
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .to(TOPIC, List.of(
+                            new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
+                    ));
 
-        final SchemaRegistryClient client = this.schemaRegistryMockExtension.getSchemaRegistryClient();
-        this.softly.assertThat(client.getAllSubjects())
-                .contains(TOPIC + "-value");
+            final SchemaRegistryClient client = this.getSchemaRegistryClient();
+            this.softly.assertThat(client.getAllSubjects())
+                    .contains(TOPIC + "-value");
 
-        try (final SchemaTopicClient schemaTopicClient = this.createClientWithNoSchemaRegistry()) {
-            schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+            try (final SchemaTopicClient schemaTopicClient = this.createClientWithNoSchemaRegistry()) {
+                schemaTopicClient.deleteTopicAndResetSchemaRegistry(TOPIC);
+            }
+
+            this.softly.assertThat(client.getAllSubjects())
+                    .contains(TOPIC + "-value");
+            this.softly.assertThat(topicClient.exists(TOPIC))
+                    .isFalse();
         }
-
-        delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        this.softly.assertThat(client.getAllSubjects())
-                .contains(TOPIC + "-value");
-        this.softly.assertThat(this.kafkaCluster.exists(TOPIC))
-                .isFalse();
     }
 
     private SchemaTopicClient createClientWithSchemaRegistry() {
         final Map<String, Object> kafkaProperties = Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, this.schemaRegistryMockExtension.getUrl(),
-                Duration.of(TIMEOUT_SECONDS, ChronoUnit.SECONDS));
+        return SchemaTopicClient.create(kafkaProperties, this.getSchemaRegistryUrl(), CLIENT_TIMEOUT);
     }
 
     private SchemaTopicClient createClientWithNoSchemaRegistry() {
         final Map<String, Object> kafkaProperties = Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaCluster.getBrokerList()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        return SchemaTopicClient.create(kafkaProperties, Duration.of(TIMEOUT_SECONDS, ChronoUnit.SECONDS));
+        return SchemaTopicClient.create(kafkaProperties, CLIENT_TIMEOUT);
     }
 
 }

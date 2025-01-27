@@ -1,8 +1,53 @@
 # Change Log
 
-## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.1.0)
+## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.1)
 
+
+## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.1)
+
+**Closed issues:**
+
+- Close method is called twice on shutdown [\#263](https://github.com/bakdata/streams-bootstrap/issues/263)
+
+**Merged pull requests:**
+
+- Call close on KafkaApplication only once [\#275](https://github.com/bakdata/streams-bootstrap/pull/275) ([@philipp94831](https://github.com/philipp94831))
+
+## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) (2025-01-20)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.5.0)
+
+**Merged pull requests:**
+
+- Run tests in parallel [\#274](https://github.com/bakdata/streams-bootstrap/pull/274) ([@philipp94831](https://github.com/philipp94831))
+- Use Awaitility [\#273](https://github.com/bakdata/streams-bootstrap/pull/273) ([@philipp94831](https://github.com/philipp94831))
+- Add methods for simplified testing of Kafka endpoints [\#270](https://github.com/bakdata/streams-bootstrap/pull/270) ([@philipp94831](https://github.com/philipp94831))
+- Fix Helm publish [\#271](https://github.com/bakdata/streams-bootstrap/pull/271) ([@yannick-roeder](https://github.com/yannick-roeder))
+
+## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) (2025-01-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.3.0...3.4.0)
+
+**Merged pull requests:**
+
+- Use Confluent MockSchemaRegistry [\#269](https://github.com/bakdata/streams-bootstrap/pull/269) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade large\-message to 2.9 [\#268](https://github.com/bakdata/streams-bootstrap/pull/268) ([@philipp94831](https://github.com/philipp94831))
+
+## [3.3.0](https://github.com/bakdata/streams-bootstrap/tree/3.3.0) (2025-01-08)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.2.0...3.3.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.8 [\#267](https://github.com/bakdata/streams-bootstrap/pull/267) ([@philipp94831](https://github.com/philipp94831))
+
+## [3.2.0](https://github.com/bakdata/streams-bootstrap/tree/3.2.0) (2025-01-07)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.2.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.7 [\#266](https://github.com/bakdata/streams-bootstrap/pull/266) ([@philipp94831](https://github.com/philipp94831))
+- Replace kafka\-junit with testcontainers [\#264](https://github.com/bakdata/streams-bootstrap/pull/264) ([@philipp94831](https://github.com/philipp94831))
+- Fix version in README [\#262](https://github.com/bakdata/streams-bootstrap/pull/262) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.1.0)

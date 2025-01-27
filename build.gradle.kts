@@ -1,17 +1,12 @@
 plugins {
-    id("com.bakdata.release") version "1.4.0"
-    id("com.bakdata.sonar") version "1.4.0"
-    id("com.bakdata.sonatype") version "1.4.1"
-    id("io.freefair.lombok") version "8.4"
+    id("com.bakdata.release") version "1.6.1"
+    id("com.bakdata.sonar") version "1.6.1"
+    id("com.bakdata.sonatype") version "1.6.1"
+    id("io.freefair.lombok") version "8.11"
 }
 
 allprojects {
     group = "com.bakdata.kafka"
-
-    tasks.withType<Test> {
-        maxParallelForks = 1 // Embedded Kafka does not reliably work in parallel since Kafka 3.0
-        useJUnitPlatform()
-    }
 
     repositories {
         mavenCentral()
@@ -67,6 +62,7 @@ configure<com.bakdata.gradle.SonatypeSettings> {
 
 subprojects {
     apply(plugin = "java-library")
+    apply(plugin = "java-test-fixtures")
     apply(plugin = "io.freefair.lombok")
 
     configure<JavaPluginExtension> {

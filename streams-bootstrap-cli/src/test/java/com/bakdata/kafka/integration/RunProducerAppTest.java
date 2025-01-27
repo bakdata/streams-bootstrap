@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,56 +24,32 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaProducerApplication;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
 import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
-class RunProducerAppTest {
-    private static final int TIMEOUT_SECONDS = 10;
-    @RegisterExtension
-    final SchemaRegistryMockExtension schemaRegistryMockExtension = new SchemaRegistryMockExtension();
-    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
-
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster.start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        this.kafkaCluster.stop();
-    }
+class RunProducerAppTest extends KafkaTest {
 
     @Test
-    void shouldRunApp() throws InterruptedException {
+    void shouldRunApp() {
         final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
         try (final KafkaProducerApplication<?> app = new SimpleKafkaProducerApplication<>(() -> new ProducerApp() {
             @Override
             public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
@@ -90,30 +66,27 @@ class RunProducerAppTest {
                 return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
             }
         })) {
-            app.setBootstrapServers(this.kafkaCluster.getBrokerList());
-            app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
+            app.setBootstrapServers(this.getBootstrapServers());
+            final String schemaRegistryUrl = this.getSchemaRegistryUrl();
+            app.setSchemaRegistryUrl(schemaRegistryUrl);
             app.setOutputTopic(output);
-            app.setKafkaConfig(Map.of(
-                    ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-            ));
             app.run();
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, TestRecord.class)
+            final KafkaTestClient testClient = this.newTestClient();
+            assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
-                    .with(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                            this.schemaRegistryMockExtension.getUrl())
-                    .build()))
+                    .<String, TestRecord>from(output, POLL_TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {
-                        assertThat(kv.getKey()).isEqualTo("foo");
-                        assertThat(kv.getValue().getContent()).isEqualTo("bar");
+                        assertThat(kv.key()).isEqualTo("foo");
+                        assertThat(kv.value().getContent()).isEqualTo("bar");
                     });
             app.clean();
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(this.kafkaCluster.exists(app.getOutputTopic()))
-                    .as("Output topic is deleted")
-                    .isFalse();
+            try (final ImprovedAdminClient admin = testClient.admin()) {
+                assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
+                        .as("Output topic is deleted")
+                        .isFalse();
+            }
         }
     }
 }

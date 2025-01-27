@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,42 +24,19 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.TestUtil.newKafkaConfig;
+import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static java.util.Collections.emptyMap;
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.newClusterConfig;
-import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bakdata.kafka.KafkaTest;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TopicClientTest {
+class TopicClientTest extends KafkaTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
-    private final EmbeddedKafkaCluster kafkaCluster = provisionWith(newClusterConfig()
-            .configure(newKafkaConfig()
-                    .withNumberOfBrokers(2)
-                    .build())
-            .build());
-
-    @BeforeEach
-    void setup() throws InterruptedException {
-        this.kafkaCluster.start();
-        delay(20, TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    void teardown() {
-        this.kafkaCluster.stop();
-    }
 
     @Test
     void shouldNotFindTopic() {
@@ -69,20 +46,18 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldFindTopic() throws InterruptedException {
-        this.kafkaCluster.createTopic(TopicConfig.withName("exists").useDefaults());
-        delay((int) CLIENT_TIMEOUT.toSeconds());
+    void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
+            client.createTopic("exists", defaultTopicSettings().build());
             assertThat(client.exists("exists")).isTrue();
         }
     }
 
     @Test
-    void shouldListTopics() throws InterruptedException {
-        this.kafkaCluster.createTopic(TopicConfig.withName("foo").useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.withName("bar").useDefaults());
-        delay((int) CLIENT_TIMEOUT.toSeconds());
+    void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
+            client.createTopic("foo", defaultTopicSettings().build());
+            client.createTopic("bar", defaultTopicSettings().build());
             assertThat(client.listTopics())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -90,13 +65,10 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException {
-        this.kafkaCluster.createTopic(TopicConfig.withName("foo").useDefaults());
-        delay((int) CLIENT_TIMEOUT.toSeconds());
+    void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.listTopics())
-                    .hasSize(1)
-                    .containsExactlyInAnyOrder("foo");
+            client.createTopic("foo", defaultTopicSettings().build());
+            assertThat(client.exists("foo")).isTrue();
             client.deleteTopic("foo");
             assertThat(client.listTopics())
                     .isEmpty();
@@ -104,26 +76,26 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldCreateTopic() throws InterruptedException {
+    void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
-                    .replicationFactor((short) 2)
+//                    .replicationFactor((short) 2) // FIXME setup testcontainers with multiple brokers
+                    .replicationFactor((short) 1)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            delay((int) CLIENT_TIMEOUT.toSeconds(), TimeUnit.SECONDS);
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
-                        assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
+                        assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
                         assertThat(info.getPartitions()).isEqualTo(5);
                     });
         }
     }
 
     private TopicClient createClient() {
-        final String brokerList = this.kafkaCluster.getBrokerList();
+        final String brokerList = this.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         return TopicClient.create(config, CLIENT_TIMEOUT);
     }

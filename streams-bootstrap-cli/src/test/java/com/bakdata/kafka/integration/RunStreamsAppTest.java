@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,72 +24,49 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
-import static net.mguenther.kafka.junit.Wait.delay;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
+import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.Mirror;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.KeyValue;
-import net.mguenther.kafka.junit.ReadKeyValues;
-import net.mguenther.kafka.junit.SendKeyValuesTransactional;
-import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.io.TempDir;
 
-@ExtendWith(MockitoExtension.class)
-class RunStreamsAppTest {
-    private static final int TIMEOUT_SECONDS = 10;
-    private final EmbeddedKafkaCluster kafkaCluster = newKafkaCluster();
-
-    @BeforeEach
-    void setup() {
-        this.kafkaCluster.start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        this.kafkaCluster.stop();
-    }
+class RunStreamsAppTest extends KafkaTest {
+    @TempDir
+    private Path stateDir;
 
     @Test
-    void shouldRunApp() throws InterruptedException {
+    void shouldRunApp() {
         final String input = "input";
         final String output = "output";
-        this.kafkaCluster.createTopic(TopicConfig.withName(input).useDefaults());
-        this.kafkaCluster.createTopic(TopicConfig.withName(output).useDefaults());
+        final KafkaTestClient testClient = this.newTestClient();
+        testClient.createTopic(output);
         try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(Mirror::new)) {
-            app.setBootstrapServers(this.kafkaCluster.getBrokerList());
-            app.setKafkaConfig(Map.of(
-                    ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"
-            ));
+            app.setBootstrapServers(this.getBootstrapServers());
+            app.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
             // run in Thread because the application blocks indefinitely
             new Thread(app).start();
-            final SendKeyValuesTransactional<String, String> kvSendKeyValuesTransactionalBuilder =
-                    SendKeyValuesTransactional.inTransaction(input, List.of(new KeyValue<>("foo", "bar")))
-                            .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                            .build();
-            this.kafkaCluster.send(kvSendKeyValuesTransactionalBuilder);
-            delay(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertThat(this.kafkaCluster.read(ReadKeyValues.from(output, String.class, String.class)
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
+            assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .build()))
+                    .from(output, POLL_TIMEOUT))
                     .hasSize(1);
         }
     }
