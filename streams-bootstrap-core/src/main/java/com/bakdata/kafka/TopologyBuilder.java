@@ -229,6 +229,10 @@ public class TopologyBuilder {
         return new StreamsContext(this.topics, this.createConfigurator());
     }
 
+    public ConfiguredStores stores() {
+        return new ConfiguredStores(this.createConfigurator());
+    }
+
     Topology build() {
         return this.streamsBuilder.build();
     }
