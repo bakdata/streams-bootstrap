@@ -25,6 +25,8 @@
 package com.bakdata.kafka;
 
 import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.utils.Bytes;
@@ -46,6 +48,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 @RequiredArgsConstructor
 class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
 
+    @Getter(AccessLevel.PROTECTED)
     private final @NonNull KTable<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
@@ -210,107 +213,123 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.join(other, joiner));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, joiner));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named) {
-        return this.context.wrap(this.wrapped.join(other, joiner, named));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, joiner, named));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.join(other, joiner, materialized));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.join(other, joiner, materialized));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.leftJoin(other, joiner));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, joiner));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named) {
-        return this.context.wrap(this.wrapped.leftJoin(other, joiner, named));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, joiner, named));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.leftJoin(other, joiner, materialized));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.leftJoin(other, joiner, materialized));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.outerJoin(other, joiner));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.outerJoin(otherTable, joiner));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named) {
-        return this.context.wrap(this.wrapped.outerJoin(other, joiner, named));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.outerJoin(otherTable, joiner, named));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.outerJoin(other, joiner, materialized));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.outerJoin(otherTable, joiner, materialized));
     }
 
     @Override
     public <VO, VR> ImprovedKTable<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.outerJoin(other, joiner, materialized));
+        final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.outerJoin(otherTable, joiner, materialized));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner) {
-        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named) {
-        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, named));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, named));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
-        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, tableJoined));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, materialized));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
@@ -318,7 +337,8 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, named, materialized));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, named, materialized));
     }
 
     @Override
@@ -326,35 +346,40 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.join(other, foreignKeyExtractor, joiner, tableJoined, materialized));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, tableJoined, materialized));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner) {
-        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named) {
-        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, named));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, named));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
-        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, tableJoined));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, materialized));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
@@ -362,7 +387,8 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.context.wrap(this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, named, materialized));
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
+        return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, named, materialized));
     }
 
     @Override
@@ -370,8 +396,9 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+        final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(
-                this.wrapped.leftJoin(other, foreignKeyExtractor, joiner, tableJoined, materialized));
+                this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, tableJoined, materialized));
     }
 
     @Override

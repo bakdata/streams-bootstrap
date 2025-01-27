@@ -48,7 +48,8 @@ class ImprovedCogroupedStreamImpl<K, V> implements ImprovedCogroupedKStream<K, V
     @Override
     public <VIn> ImprovedCogroupedKStream<K, V> cogroup(final KGroupedStream<K, VIn> groupedStream,
             final Aggregator<? super K, ? super VIn, V> aggregator) {
-        return this.context.wrap(this.wrapped.cogroup(groupedStream, aggregator));
+        final KGroupedStream<K, VIn> other = StreamsContext.maybeUnwrap(groupedStream);
+        return this.context.wrap(this.wrapped.cogroup(other, aggregator));
     }
 
     @Override

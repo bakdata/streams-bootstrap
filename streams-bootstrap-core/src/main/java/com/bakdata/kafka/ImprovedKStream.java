@@ -234,6 +234,8 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     @Override
     ImprovedKStream<K, V> repartition(Repartitioned<K, V> repartitioned);
 
+    ImprovedKStream<K, V> repartition(ConfiguredRepartitioned<K, V> repartitioned);
+
     void toOutputTopic();
 
     void toOutputTopic(Produced<K, V> produced);

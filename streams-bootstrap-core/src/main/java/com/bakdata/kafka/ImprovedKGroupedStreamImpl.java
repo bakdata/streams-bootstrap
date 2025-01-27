@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.utils.Bytes;
@@ -42,6 +44,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 @RequiredArgsConstructor
 class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
 
+    @Getter(AccessLevel.PACKAGE)
     private final @NonNull KGroupedStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 

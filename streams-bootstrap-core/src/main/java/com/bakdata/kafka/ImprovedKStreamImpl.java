@@ -25,6 +25,8 @@
 package com.bakdata.kafka;
 
 import java.util.Arrays;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.utils.Bytes;
@@ -59,6 +61,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 @RequiredArgsConstructor
 class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
+    @Getter(AccessLevel.PACKAGE)
     private final @NonNull KStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
@@ -385,12 +388,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public ImprovedKStream<K, V> merge(final KStream<K, V> stream) {
-        return this.context.wrap(this.wrapped.merge(stream));
+        final KStream<K, V> other = StreamsContext.maybeUnwrap(stream);
+        return this.context.wrap(this.wrapped.merge(other));
     }
 
     @Override
     public ImprovedKStream<K, V> merge(final KStream<K, V> stream, final Named named) {
-        return this.context.wrap(this.wrapped.merge(stream, named));
+        final KStream<K, V> other = StreamsContext.maybeUnwrap(stream);
+        return this.context.wrap(this.wrapped.merge(other, named));
     }
 
     @Override
@@ -411,6 +416,11 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public ImprovedKStream<K, V> repartition(final Repartitioned<K, V> repartitioned) {
         return this.context.wrap(this.wrapped.repartition(repartitioned));
+    }
+
+    @Override
+    public ImprovedKStream<K, V> repartition(final ConfiguredRepartitioned<K, V> repartitioned) {
+        return this.repartition(repartitioned.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -523,132 +533,152 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
-        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.join(other, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
-        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.join(other, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows, streamJoined));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.join(other, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.wrap(this.wrapped.join(otherStream, joiner, windows, streamJoined));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.join(other, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
-        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
-        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows, streamJoined));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.wrap(this.wrapped.leftJoin(otherStream, joiner, windows, streamJoined));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
-        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
-        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, windows));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows, streamJoined));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, windows, streamJoined));
     }
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
-        return this.context.wrap(this.wrapped.outerJoin(otherStream, joiner, windows, streamJoined));
+        final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
+        return this.context.wrap(this.wrapped.outerJoin(other, joiner, windows, streamJoined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.join(table, joiner));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.join(other, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.join(table, joiner));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.join(other, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final Joined<K, V, VT> joined) {
-        return this.context.wrap(this.wrapped.join(table, joiner, joined));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.join(other, joiner, joined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
-        return this.context.wrap(this.wrapped.join(table, joiner, joined));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.join(other, joiner, joined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.leftJoin(table, joiner));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner) {
-        return this.context.wrap(this.wrapped.leftJoin(table, joiner));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final Joined<K, V, VT> joined) {
-        return this.context.wrap(this.wrapped.leftJoin(table, joiner, joined));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, joined));
     }
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
-        return this.context.wrap(this.wrapped.leftJoin(table, joiner, joined));
+        final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
+        return this.context.wrap(this.wrapped.leftJoin(other, joiner, joined));
     }
 
     @Override
