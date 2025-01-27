@@ -61,9 +61,17 @@ public class ConfiguredConsumed<K, V> {
 
     Consumed<K, V> configure(final Configurator configurator) {
         return Consumed.<K, V>as(this.name)
-                .withKeySerde(configurator.configureForKeys(this.keySerde))
-                .withValueSerde(configurator.configureForValues(this.valueSerde))
+                .withKeySerde(this.configureKeySerde(configurator))
+                .withValueSerde(this.configureValueSerde(configurator))
                 .withOffsetResetPolicy(this.offsetResetPolicy)
                 .withTimestampExtractor(this.timestampExtractor);
+    }
+
+    private Serde<V> configureValueSerde(final Configurator configurator) {
+        return this.valueSerde == null ? null : configurator.configureForValues(this.valueSerde);
+    }
+
+    private Serde<K> configureKeySerde(final Configurator configurator) {
+        return this.keySerde == null ? null : configurator.configureForKeys(this.keySerde);
     }
 }

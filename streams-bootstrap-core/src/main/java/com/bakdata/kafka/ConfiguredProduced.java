@@ -59,8 +59,16 @@ public class ConfiguredProduced<K, V> {
 
     Produced<K, V> configure(final Configurator configurator) {
         return Produced.<K, V>as(this.name)
-                .withKeySerde(configurator.configureForKeys(this.keySerde))
-                .withValueSerde(configurator.configureForValues(this.valueSerde))
+                .withKeySerde(this.configureKeySerde(configurator))
+                .withValueSerde(this.configuredValueSerde(configurator))
                 .withStreamPartitioner(this.streamPartitioner);
+    }
+
+    private Serde<V> configuredValueSerde(final Configurator configurator) {
+        return this.valueSerde == null ? null : configurator.configureForValues(this.valueSerde);
+    }
+
+    private Serde<K> configureKeySerde(final Configurator configurator) {
+        return this.keySerde == null ? null : configurator.configureForKeys(this.keySerde);
     }
 }
