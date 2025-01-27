@@ -75,10 +75,11 @@ public class ConfiguredRepartitioned<K, V> {
     }
 
     Repartitioned<K, V> configure(final Configurator configurator) {
-        return Repartitioned.<K, V>as(this.name)
+        final Repartitioned<K, V> repartitioned = Repartitioned.<K, V>as(this.name)
                 .withKeySerde(this.configureKeySerde(configurator))
                 .withValueSerde(this.configuredValueSerde(configurator))
-                .withStreamPartitioner(this.streamPartitioner)
+                .withStreamPartitioner(this.streamPartitioner);
+        return this.numberOfPartitions == null ? repartitioned : repartitioned
                 .withNumberOfPartitions(this.numberOfPartitions);
     }
 
