@@ -22,33 +22,33 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.ImprovedKStream;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.streams.kstream.Named;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
+@RequiredArgsConstructor
+class ValueKErrorStream<K, V, VR> implements KErrorStream<K, V, K, VR> {
+    private final @NonNull ImprovedKStream<K, ProcessedValue<V, VR>> stream;
+
     @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final ImprovedKStream<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
+    public ImprovedKStream<K, VR> values() {
+        return this.stream.flatMapValues(ProcessedValue::getValues);
     }
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    public ImprovedKStream<K, VR> values(final Named named) {
+        return this.stream.flatMapValues(ProcessedValue::getValues, named);
     }
 
     @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
+    public ImprovedKStream<K, ProcessingError<V>> errors() {
+        return this.stream.flatMapValues(ProcessedValue::getErrors);
+    }
+
+    @Override
+    public ImprovedKStream<K, ProcessingError<V>> errors(final Named named) {
+        return this.stream.flatMapValues(ProcessedValue::getErrors, named);
     }
 }

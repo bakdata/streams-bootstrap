@@ -22,33 +22,28 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.ImprovedKStream;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import java.util.Map;
+import org.apache.kafka.streams.kstream.Branched;
+import org.apache.kafka.streams.kstream.BranchedKStream;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Predicate;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
-    @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final ImprovedKStream<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
-    }
+public interface ImprovedBranchedKStream<K, V> extends BranchedKStream<K, V> {
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
-    }
+    ImprovedBranchedKStream<K, V> branch(Predicate<? super K, ? super V> predicate);
 
     @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
-    }
+    ImprovedBranchedKStream<K, V> branch(Predicate<? super K, ? super V> predicate, Branched<K, V> branched);
+
+    @Override
+    Map<String, KStream<K, V>> defaultBranch();
+
+    @Override
+    Map<String, KStream<K, V>> defaultBranch(Branched<K, V> branched);
+
+    @Override
+    Map<String, KStream<K, V>> noDefaultBranch();
 }

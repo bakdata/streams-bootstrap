@@ -22,33 +22,17 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.ImprovedKStream;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.streams.kstream.Named;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
-    @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final ImprovedKStream<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
-    }
+public interface KErrorStream<K, V, KR, VR> {
 
-    @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
-    }
+    ImprovedKStream<KR, VR> values();
 
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
-    }
+    ImprovedKStream<KR, VR> values(Named named);
+
+    ImprovedKStream<K, ProcessingError<V>> errors();
+
+    ImprovedKStream<K, ProcessingError<V>> errors(Named named);
 }

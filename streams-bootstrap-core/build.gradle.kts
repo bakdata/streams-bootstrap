@@ -19,6 +19,7 @@ dependencies {
         version = "2.0.16"
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
+    api(group = "com.bakdata.kafka", name = "error-handling-core", version = "1.6.1-SNAPSHOT")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
