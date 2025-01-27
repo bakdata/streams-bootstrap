@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.apache.kafka.common.serialization.Serde;
@@ -34,20 +35,20 @@ import org.apache.kafka.streams.processor.TimestampExtractor;
 
 @With
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfiguredConsumed<K, V> {
+public final class ConfiguredConsumed<K, V> {
 
-    private final Preconfigured<Serde<K>> keySerde;
-    private final Preconfigured<Serde<V>> valueSerde;
+    private final @NonNull Preconfigured<Serde<K>> keySerde;
+    private final @NonNull Preconfigured<Serde<V>> valueSerde;
     private final TimestampExtractor timestampExtractor;
     private final AutoOffsetReset offsetResetPolicy;
     private final String name;
 
     public static <K, V> ConfiguredConsumed<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
-        return with(keySerde, null);
+        return with(keySerde, Preconfigured.defaultSerde());
     }
 
     public static <K, V> ConfiguredConsumed<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
-        return with(null, valueSerde);
+        return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     public static <K, V> ConfiguredConsumed<K, V> with(final Preconfigured<Serde<K>> keySerde,
@@ -56,22 +57,16 @@ public class ConfiguredConsumed<K, V> {
     }
 
     public static <K, V> ConfiguredConsumed<K, V> as(final String processorName) {
-        return new ConfiguredConsumed<>(null, null, null, null, processorName);
+        return new ConfiguredConsumed<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
+                processorName);
     }
 
     Consumed<K, V> configure(final Configurator configurator) {
         return Consumed.<K, V>as(this.name)
-                .withKeySerde(this.configureKeySerde(configurator))
-                .withValueSerde(this.configureValueSerde(configurator))
+                .withKeySerde(configurator.configureForKeys(this.keySerde))
+                .withValueSerde(configurator.configureForValues(this.valueSerde))
                 .withOffsetResetPolicy(this.offsetResetPolicy)
                 .withTimestampExtractor(this.timestampExtractor);
     }
 
-    private Serde<V> configureValueSerde(final Configurator configurator) {
-        return this.valueSerde == null ? null : configurator.configureForValues(this.valueSerde);
-    }
-
-    private Serde<K> configureKeySerde(final Configurator configurator) {
-        return this.keySerde == null ? null : configurator.configureForKeys(this.keySerde);
-    }
 }

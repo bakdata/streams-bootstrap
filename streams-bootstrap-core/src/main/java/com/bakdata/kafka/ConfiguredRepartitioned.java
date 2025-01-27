@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.apache.kafka.common.serialization.Serde;
@@ -32,12 +33,12 @@ import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.processor.StreamPartitioner;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfiguredRepartitioned<K, V> {
+public final class ConfiguredRepartitioned<K, V> {
 
     @With
-    private final Preconfigured<Serde<K>> keySerde;
+    private final @NonNull Preconfigured<Serde<K>> keySerde;
     @With
-    private final Preconfigured<Serde<V>> valueSerde;
+    private final @NonNull Preconfigured<Serde<V>> valueSerde;
     @With
     private final StreamPartitioner<K, V> streamPartitioner;
     @With
@@ -45,11 +46,11 @@ public class ConfiguredRepartitioned<K, V> {
     private final Integer numberOfPartitions;
 
     public static <K, V> ConfiguredRepartitioned<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
-        return with(keySerde, null);
+        return with(keySerde, Preconfigured.defaultSerde());
     }
 
     public static <K, V> ConfiguredRepartitioned<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
-        return with(null, valueSerde);
+        return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     public static <K, V> ConfiguredRepartitioned<K, V> with(final Preconfigured<Serde<K>> keySerde,
@@ -58,15 +59,18 @@ public class ConfiguredRepartitioned<K, V> {
     }
 
     public static <K, V> ConfiguredRepartitioned<K, V> as(final String name) {
-        return new ConfiguredRepartitioned<>(null, null, null, name, null);
+        return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, name,
+                null);
     }
 
     public static <K, V> ConfiguredRepartitioned<K, V> numberOfPartitions(final int numberOfPartitions) {
-        return new ConfiguredRepartitioned<>(null, null, null, null, numberOfPartitions);
+        return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
+                numberOfPartitions);
     }
 
     public static <K, V> ConfiguredRepartitioned<K, V> streamPartitioner(final StreamPartitioner<K, V> partitioner) {
-        return new ConfiguredRepartitioned<>(null, null, partitioner, null, null);
+        return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), partitioner,
+                null, null);
     }
 
     public ConfiguredRepartitioned<K, V> withNumberOfPartitions(final int numberOfPartitions) {
@@ -76,18 +80,11 @@ public class ConfiguredRepartitioned<K, V> {
 
     Repartitioned<K, V> configure(final Configurator configurator) {
         final Repartitioned<K, V> repartitioned = Repartitioned.<K, V>as(this.name)
-                .withKeySerde(this.configureKeySerde(configurator))
-                .withValueSerde(this.configuredValueSerde(configurator))
+                .withKeySerde(configurator.configureForKeys(this.keySerde))
+                .withValueSerde(configurator.configureForValues(this.valueSerde))
                 .withStreamPartitioner(this.streamPartitioner);
         return this.numberOfPartitions == null ? repartitioned : repartitioned
                 .withNumberOfPartitions(this.numberOfPartitions);
     }
 
-    private Serde<V> configuredValueSerde(final Configurator configurator) {
-        return this.valueSerde == null ? null : configurator.configureForValues(this.valueSerde);
-    }
-
-    private Serde<K> configureKeySerde(final Configurator configurator) {
-        return this.keySerde == null ? null : configurator.configureForKeys(this.keySerde);
-    }
 }
