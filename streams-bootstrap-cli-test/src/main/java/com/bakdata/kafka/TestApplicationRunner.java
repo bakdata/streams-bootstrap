@@ -106,12 +106,13 @@ public final class TestApplicationRunner {
     private String[] setupArgs(final String[] args, final Iterable<String> command) {
         final Builder<String> argBuilder = ImmutableList.<String>builder()
                 .add(args)
-                .add("--bootstrap-servers", this.bootstrapServers)
-                .addAll(command);
+                .add("--bootstrap-servers", this.bootstrapServers);
         if (this.environment.getSchemaRegistryUrl() != null) {
             argBuilder.add("--schema-registry-url", this.environment.getSchemaRegistryUrl());
         }
-        final List<String> newArgs = argBuilder.build();
+        final List<String> newArgs = argBuilder
+                .addAll(command)
+                .build();
         return newArgs.toArray(new String[0]);
     }
 
