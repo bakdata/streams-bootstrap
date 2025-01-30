@@ -112,10 +112,6 @@ public class ApacheKafkaContainerCluster implements Startable {
 
                     return Integer.parseInt(brokers);
                 }, readyBrokers -> readyBrokers == this.brokersNum);
-        await()
-                .pollDelay(Duration.ofSeconds(10))
-                .atMost(Duration.ofSeconds(11))
-                .until(() -> true);
     }
 
     @Override

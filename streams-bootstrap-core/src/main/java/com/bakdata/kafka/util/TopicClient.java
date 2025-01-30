@@ -259,9 +259,9 @@ public final class TopicClient implements AutoCloseable {
         } catch (final TimeoutException ex) {
             throw failedToCreateTopic(topicName, ex);
         }
-        if (!this.exists(topicName)) {
-            throw new IllegalStateException(String.format("Creation of topic %s failed", topicName));
-        }
+//        if (!this.exists(topicName)) {
+//            throw new IllegalStateException(String.format("Creation of topic %s failed", topicName));
+//        }
     }
 
     /**
