@@ -26,6 +26,8 @@ package com.bakdata.kafka.util;
 
 import static java.util.Collections.emptyMap;
 
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +57,12 @@ import org.jooq.lambda.Seq;
 @Slf4j
 public final class TopicClient implements AutoCloseable {
 
+    private static final RetryConfig RETRY_CONFIG = RetryConfig.<Boolean>custom()
+            .retryOnResult(result -> result)
+            .failAfterMaxAttempts(false)
+            .maxAttempts(3)
+            .waitDuration(Duration.ofSeconds(5L))
+            .build();
     private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
 
@@ -142,7 +150,9 @@ public final class TopicClient implements AutoCloseable {
         } catch (final TimeoutException ex) {
             throw failedToDeleteTopic(topicName, ex);
         }
-        if (this.exists(topicName)) {
+        final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
+        final boolean exists = Retry.decorateSupplier(retry, () -> this.exists(topicName)).get();
+        if (exists) {
             throw new IllegalStateException(String.format("Deletion of topic %s failed", topicName));
         }
     }
@@ -259,9 +269,11 @@ public final class TopicClient implements AutoCloseable {
         } catch (final TimeoutException ex) {
             throw failedToCreateTopic(topicName, ex);
         }
-//        if (!this.exists(topicName)) {
-//            throw new IllegalStateException(String.format("Creation of topic %s failed", topicName));
-//        }
+        final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
+        final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists(topicName)).get();
+        if (doesNotExist) {
+            throw new IllegalStateException(String.format("Creation of topic %s failed", topicName));
+        }
     }
 
     /**

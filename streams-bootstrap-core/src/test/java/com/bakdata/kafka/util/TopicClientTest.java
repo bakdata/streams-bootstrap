@@ -33,8 +33,6 @@ import com.bakdata.kafka.ApacheKafkaContainerCluster;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.awaitility.Awaitility;
-import org.awaitility.core.ConditionFactory;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -43,7 +41,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class TopicClientTest {
 
     @Container
-    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster(KAFKA_VERSION, 2, 1);
+    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster(KAFKA_VERSION, 3, 2);
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
 
@@ -54,16 +52,11 @@ class TopicClientTest {
         }
     }
 
-    private static ConditionFactory await() {
-        return Awaitility.await().atMost(Duration.ofSeconds(5));
-    }
-
     @Test
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", defaultTopicSettings().build());
-            await()
-                    .untilAsserted(() -> assertThat(client.exists("exists")).isTrue());
+            assertThat(client.exists("exists")).isTrue();
         }
     }
 
@@ -72,11 +65,6 @@ class TopicClientTest {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", defaultTopicSettings().build());
             client.createTopic("bar", defaultTopicSettings().build());
-            await()
-                    .untilAsserted(() -> {
-                        assertThat(client.exists("foo")).isTrue();
-                        assertThat(client.exists("bar")).isTrue();
-                    });
             assertThat(client.listTopics())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -87,8 +75,6 @@ class TopicClientTest {
     void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("foo", defaultTopicSettings().build());
-            await()
-                    .untilAsserted(() -> assertThat(client.exists("foo")).isTrue());
             assertThat(client.exists("foo")).isTrue();
             client.deleteTopic("foo");
             assertThat(client.listTopics())
@@ -105,8 +91,6 @@ class TopicClientTest {
                     .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            await()
-                    .untilAsserted(() -> assertThat(client.exists("topic")).isTrue());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
