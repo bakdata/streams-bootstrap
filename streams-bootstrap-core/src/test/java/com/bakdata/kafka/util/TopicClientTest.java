@@ -24,17 +24,24 @@
 
 package com.bakdata.kafka.util;
 
+import static com.bakdata.kafka.KafkaTest.KAFKA_VERSION;
 import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.ApacheKafkaContainerCluster;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-class TopicClientTest extends KafkaTest {
+@Testcontainers
+class TopicClientTest {
+
+    @Container
+    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster(KAFKA_VERSION, 3, 2);
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
 
@@ -81,21 +88,20 @@ class TopicClientTest extends KafkaTest {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
-//                    .replicationFactor((short) 2) // FIXME setup testcontainers with multiple brokers
-                    .replicationFactor((short) 1)
+                    .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
-                        assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
+                        assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
                         assertThat(info.getPartitions()).isEqualTo(5);
                     });
         }
     }
 
     private TopicClient createClient() {
-        final String brokerList = this.getBootstrapServers();
+        final String brokerList = this.kafkaCluster.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         return TopicClient.create(config, CLIENT_TIMEOUT);
     }
