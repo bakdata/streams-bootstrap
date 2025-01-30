@@ -43,7 +43,6 @@ dependencies {
         name = "kafka",
         version = testContainersVersion
     )
-    testFixturesImplementation(group = "org.assertj", name = "assertj-core", version = assertJVersion)
     testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)

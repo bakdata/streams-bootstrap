@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import java.time.Duration;
@@ -98,7 +97,7 @@ public class ApacheKafkaContainerCluster implements Startable {
 
         await()
                 .atMost(Duration.ofSeconds(120))
-                .untilAsserted(() -> {
+                .until(() -> {
                     final Container.ExecResult result = this.brokers.stream()
                             .findFirst()
                             .get()
@@ -111,8 +110,12 @@ public class ApacheKafkaContainerCluster implements Startable {
                             );
                     final String brokers = result.getStdout().replace("\n", "");
 
-                    assertThat(brokers).asInt().isEqualTo(this.brokersNum);
-                });
+                    return Integer.parseInt(brokers);
+                }, readyBrokers -> readyBrokers == this.brokersNum);
+        await()
+                .pollDelay(Duration.ofSeconds(10))
+                .atMost(Duration.ofSeconds(11))
+                .until(() -> true);
     }
 
     @Override
