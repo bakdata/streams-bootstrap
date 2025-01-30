@@ -31,6 +31,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import lombok.Getter;
 import org.apache.kafka.common.Uuid;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
@@ -46,6 +47,7 @@ public class ApacheKafkaContainerCluster implements Startable {
 
     private final Network network;
 
+    @Getter
     private final Collection<KafkaContainer> brokers;
 
     public ApacheKafkaContainerCluster(final String version, final int brokersNum, final int internalTopicsRf) {
@@ -61,8 +63,7 @@ public class ApacheKafkaContainerCluster implements Startable {
         this.brokersNum = brokersNum;
         this.network = Network.newNetwork();
 
-        final String controllerQuorumVoters = IntStream
-                .range(0, brokersNum)
+        final String controllerQuorumVoters = IntStream.range(0, brokersNum)
                 .mapToObj(brokerNum -> String.format("%d@broker-%d:9094", brokerNum, brokerNum))
                 .collect(Collectors.joining(","));
 
@@ -84,10 +85,6 @@ public class ApacheKafkaContainerCluster implements Startable {
                         .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", internalTopicsRf + "")
                         .withStartupTimeout(Duration.ofMinutes(1)))
                 .collect(Collectors.toList());
-    }
-
-    public Collection<KafkaContainer> getBrokers() {
-        return this.brokers;
     }
 
     public String getBootstrapServers() {
@@ -121,5 +118,7 @@ public class ApacheKafkaContainerCluster implements Startable {
     @Override
     public void stop() {
         this.brokers.stream().parallel().forEach(GenericContainer::stop);
+
+        this.network.close();
     }
 }

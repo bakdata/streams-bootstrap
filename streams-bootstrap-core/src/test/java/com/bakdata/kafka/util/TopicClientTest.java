@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.util;
 
+import static com.bakdata.kafka.KafkaTest.KAFKA_VERSION;
 import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +41,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class TopicClientTest {
 
     @Container
-    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster("3.8.0", 3, 2);
+    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster(KAFKA_VERSION, 3, 2);
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
 
