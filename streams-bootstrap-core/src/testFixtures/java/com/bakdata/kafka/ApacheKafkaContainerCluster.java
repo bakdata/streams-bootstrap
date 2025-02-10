@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static org.awaitility.Awaitility.await;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import java.util.stream.IntStream;
 import lombok.Getter;
 import org.apache.kafka.common.Uuid;
 import org.testcontainers.containers.Container;
+import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
@@ -86,6 +88,21 @@ public class ApacheKafkaContainerCluster implements Startable {
                 .collect(Collectors.toList());
     }
 
+    private static int getNumberOfReadyBrokers(final ContainerState container)
+            throws IOException, InterruptedException {
+        final Container.ExecResult result = container
+                .execInContainer(
+                        "sh",
+                        "-c",
+                        "/opt/kafka/bin/kafka-log-dirs.sh --bootstrap-server localhost:9093 --describe | "
+                        + "grep -o '\"broker\"' | "
+                        + "wc -l"
+                );
+        final String brokers = result.getStdout().replace("\n", "");
+
+        return Integer.parseInt(brokers);
+    }
+
     public String getBootstrapServers() {
         return this.brokers.stream().map(KafkaContainer::getBootstrapServers).collect(Collectors.joining(","));
     }
@@ -98,19 +115,10 @@ public class ApacheKafkaContainerCluster implements Startable {
         await()
                 .atMost(Duration.ofSeconds(120))
                 .until(() -> {
-                    final Container.ExecResult result = this.brokers.stream()
+                    final KafkaContainer container = this.brokers.stream()
                             .findFirst()
-                            .get()
-                            .execInContainer(
-                                    "sh",
-                                    "-c",
-                                    "/opt/kafka/bin/kafka-log-dirs.sh --bootstrap-server localhost:9093 --describe | "
-                                    + "grep -o '\"broker\"' | "
-                                    + "wc -l"
-                            );
-                    final String brokers = result.getStdout().replace("\n", "");
-
-                    return Integer.parseInt(brokers);
+                            .orElseThrow();
+                    return getNumberOfReadyBrokers(container);
                 }, readyBrokers -> readyBrokers == this.brokersNum);
     }
 
