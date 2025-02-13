@@ -19,6 +19,7 @@ dependencies {
         version = "2.0.16"
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
+    implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
