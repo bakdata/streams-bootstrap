@@ -32,6 +32,12 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.processor.StreamPartitioner;
 
+/**
+ * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Produced} using {@link Configurator}
+ * @param <K> type of keys
+ * @param <V> type of values
+ * @see Produced
+ */
 @With
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfiguredProduced<K, V> {
@@ -41,19 +47,48 @@ public final class ConfiguredProduced<K, V> {
     private final StreamPartitioner<? super K, ? super V> streamPartitioner;
     private final String name;
 
+    /**
+     * Create an instance of {@code ConfiguredProduced} with provided key serde
+     * @param keySerde Serde to use for keys
+     * @return a new instance of {@code ConfiguredProduced}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredProduced<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
+    /**
+     * Create an instance of {@code ConfiguredProduced} with provided value serde
+     * @param valueSerde Serde to use for values
+     * @return a new instance of {@code ConfiguredProduced}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredProduced<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredProduced} with provided key and value serde
+     * @param keySerde Serde to use for keys
+     * @param valueSerde Serde to use for values
+     * @return a new instance of {@code ConfiguredProduced}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredProduced<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
         return new ConfiguredProduced<>(keySerde, valueSerde, null, null);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredProduced} with provided processor name
+     * @param processorName the processor name to be used
+     * @return a new instance of {@code ConfiguredProduced}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredProduced<K, V> as(final String processorName) {
         return new ConfiguredProduced<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null,
                 processorName);

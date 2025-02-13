@@ -37,6 +37,10 @@ import org.apache.kafka.streams.kstream.Window;
 import org.apache.kafka.streams.kstream.Windows;
 import org.apache.kafka.streams.state.KeyValueStore;
 
+/**
+ * Extends the {@code KGroupedStream} interface by adding methods to simplify Serde configuration, error handling,
+ * and topic access
+ */
 public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
 
     @Override
@@ -48,11 +52,26 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
     @Override
     ImprovedKTable<K, Long> count(Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Count the number of records in this stream by the grouped key
+     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
+     * @return a {@code KTable} that contains "update" records with unmodified keys and {@code Long} values that
+     * represent the latest (rolling) count (i.e., number of records) for each key
+     * @see #count(Materialized)
+     */
     ImprovedKTable<K, Long> count(ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     ImprovedKTable<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Count the number of records in this stream by the grouped key
+     * @param named a {@code Named} config used to name the processor in the topology
+     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
+     * @return a {@code KTable} that contains "update" records with unmodified keys and {@code Long} values that
+     * represent the latest (rolling) count (i.e., number of records) for each key
+     * @see #count(Named, Materialized)
+     */
     ImprovedKTable<K, Long> count(Named named,
             ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 

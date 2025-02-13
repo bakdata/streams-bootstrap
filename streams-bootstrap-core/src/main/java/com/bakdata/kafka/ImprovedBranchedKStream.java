@@ -30,6 +30,10 @@ import org.apache.kafka.streams.kstream.BranchedKStream;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Predicate;
 
+/**
+ * Extends the {@code BranchedKStream} interface by adding methods to simplify Serde configuration, error handling,
+ * and topic access
+ */
 public interface ImprovedBranchedKStream<K, V> extends BranchedKStream<K, V> {
 
     @Override

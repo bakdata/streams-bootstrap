@@ -36,6 +36,13 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.processor.StateStore;
 import org.apache.kafka.streams.state.DslStoreSuppliers;
 
+/**
+ * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Materialized} using {@link Configurator}
+ * @param <K> type of keys
+ * @param <V> type of values
+ * @param <S> type of state store
+ * @see Materialized
+ */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfiguredMaterialized<K, V, S extends StateStore> {
 
@@ -52,27 +59,68 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     private final boolean loggingEnabled;
     private final boolean cachingEnabled;
 
+    /**
+     * Create an instance of {@code ConfiguredMaterialized} with provided key serde
+     * @param keySerde Serde to use for keys
+     * @return a new instance of {@code ConfiguredMaterialized}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param <S> type of state store
+     */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> keySerde(
             final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
+    /**
+     * Create an instance of {@code ConfiguredMaterialized} with provided value serde
+     * @param valueSerde Serde to use for values
+     * @return a new instance of {@code ConfiguredMaterialized}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param <S> type of state store
+     */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> valueSerde(
             final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredMaterialized} with provided key and value serde
+     * @param keySerde Serde to use for keys
+     * @param valueSerde Serde to use for values
+     * @return a new instance of {@code ConfiguredMaterialized}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param <S> type of state store
+     */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> with(
             final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
         return new ConfiguredMaterialized<>(keySerde, valueSerde, null, null, null, new HashMap<>(), true, true);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredMaterialized} with provided store name
+     * @param storeName the store name to be used
+     * @return a new instance of {@code ConfiguredMaterialized}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param <S> type of state store
+     */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> as(final String storeName) {
         return new ConfiguredMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), storeName, null,
                 null, new HashMap<>(), true, true);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredMaterialized} with provided store suppliers
+     * @param storeSuppliers the store suppliers to be used
+     * @return a new instance of {@code ConfiguredMaterialized}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param <S> type of state store
+     */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> as(
             final DslStoreSuppliers storeSuppliers) {
         return new ConfiguredMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,

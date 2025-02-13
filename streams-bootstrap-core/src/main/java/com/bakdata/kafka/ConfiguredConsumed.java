@@ -33,6 +33,12 @@ import org.apache.kafka.streams.Topology.AutoOffsetReset;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.processor.TimestampExtractor;
 
+/**
+ * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Consumed} using {@link Configurator}
+ * @param <K> type of keys
+ * @param <V> type of values
+ * @see Consumed
+ */
 @With
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfiguredConsumed<K, V> {
@@ -43,19 +49,48 @@ public final class ConfiguredConsumed<K, V> {
     private final AutoOffsetReset offsetResetPolicy;
     private final String name;
 
+    /**
+     * Create an instance of {@code ConfiguredConsumed} with provided key serde
+     * @param keySerde Serde to use for keys
+     * @return a new instance of {@code ConfiguredConsumed}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredConsumed<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
+    /**
+     * Create an instance of {@code ConfiguredConsumed} with provided value serde
+     * @param valueSerde Serde to use for values
+     * @return a new instance of {@code ConfiguredConsumed}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredConsumed<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredConsumed} with provided key and value serde
+     * @param keySerde Serde to use for keys
+     * @param valueSerde Serde to use for values
+     * @return a new instance of {@code ConfiguredConsumed}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredConsumed<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
         return new ConfiguredConsumed<>(keySerde, valueSerde, null, null, null);
     }
 
+    /**
+     * Create an instance of {@code ConfiguredConsumed} with provided processor name
+     * @param processorName the processor name to be used
+     * @return a new instance of {@code ConfiguredConsumed}
+     * @param <K> type of keys
+     * @param <V> type of values
+     */
     public static <K, V> ConfiguredConsumed<K, V> as(final String processorName) {
         return new ConfiguredConsumed<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
                 processorName);

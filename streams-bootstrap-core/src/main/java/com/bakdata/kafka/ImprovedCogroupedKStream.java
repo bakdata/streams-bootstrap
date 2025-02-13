@@ -37,6 +37,10 @@ import org.apache.kafka.streams.kstream.Window;
 import org.apache.kafka.streams.kstream.Windows;
 import org.apache.kafka.streams.state.KeyValueStore;
 
+/**
+ * Extends the {@code CogroupedKStream} interface by adding methods to simplify Serde configuration, error handling,
+ * and topic access
+ */
 public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, VOut> {
 
     @Override
@@ -53,6 +57,14 @@ public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, V
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer,
             Materialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Aggregate the values of records in these streams by the grouped key
+     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
+     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
+     * @return a {@code KTable} that contains "update" records with unmodified keys, and values that represent the
+     * latest (rolling) aggregate for each key
+     * @see #aggregate(Initializer, Materialized)
+     */
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer,
             ConfiguredMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
@@ -60,6 +72,15 @@ public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, V
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
             Materialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Aggregate the values of records in these streams by the grouped key
+     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
+     * @param named name the processors
+     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
+     * @return a {@code KTable} that contains "update" records with unmodified keys, and values that represent the
+     * latest (rolling) aggregate for each key
+     * @see #aggregate(Initializer, Named, Materialized)
+     */
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
             ConfiguredMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
