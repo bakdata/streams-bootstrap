@@ -55,10 +55,6 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
     ImprovedKTable<K, Long> count(Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Count the number of records in this stream by the grouped key
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a {@code KTable} that contains "update" records with unmodified keys and {@code Long} values that
-     * represent the latest (rolling) count (i.e., number of records) for each key
      * @see #count(Materialized)
      */
     ImprovedKTable<K, Long> count(ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
@@ -67,11 +63,6 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
     ImprovedKTable<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Count the number of records in this stream by the grouped key
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a {@code KTable} that contains "update" records with unmodified keys and {@code Long} values that
-     * represent the latest (rolling) count (i.e., number of records) for each key
      * @see #count(Named, Materialized)
      */
     ImprovedKTable<K, Long> count(Named named,
@@ -84,11 +75,6 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
     ImprovedKTable<K, V> reduce(Reducer<V> reducer, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Combine the value of records in this stream by the grouped key
-     * @param reducer a {@code Reducer} that computes a new aggregate result
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a {@code KTable} that contains "update" records with unmodified keys, and values that represent the
-     * latest (rolling) aggregate for each key
      * @see #reduce(Reducer, Materialized)
      */
     ImprovedKTable<K, V> reduce(Reducer<V> reducer,
@@ -99,12 +85,6 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Combine the value of records in this stream by the grouped key
-     * @param reducer a {@code Reducer} that computes a new aggregate result
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a {@code KTable} that contains "update" records with unmodified keys, and values that represent the
-     * latest (rolling) aggregate for each key
      * @see #reduce(Reducer, Named, Materialized)
      */
     ImprovedKTable<K, V> reduce(Reducer<V> reducer, Named named,
@@ -118,13 +98,6 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param aggregator an {@code Aggregator} that computes a new aggregate result
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a {@code KTable} that contains "update" records with unmodified keys, and values that represent the
-     * latest (rolling) aggregate for each key
-     * @param <VR> the value type of the resulting {@code KTable}
      * @see #aggregate(Initializer, Aggregator, Materialized)
      */
     <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
@@ -135,14 +108,6 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
             Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param aggregator an {@code Aggregator} that computes a new aggregate result
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a {@code KTable} that contains "update" records with unmodified keys, and values that represent the
-     * latest (rolling) aggregate for each key
-     * @param <VR> the value type of the resulting {@code KTable}
      * @see #aggregate(Initializer, Aggregator, Named, Materialized)
      */
     <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,

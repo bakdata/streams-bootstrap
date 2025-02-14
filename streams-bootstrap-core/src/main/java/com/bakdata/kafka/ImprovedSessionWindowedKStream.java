@@ -54,11 +54,6 @@ public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKSt
     ImprovedKTable<Windowed<K>, Long> count(Materialized<K, Long, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * Count the number of records in this stream by the grouped key and defined sessions
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys and {@code Long} values
-     * that represent
-     * the latest (rolling) count (i.e., number of records) for each key per session
      * @see #count(Materialized)
      */
     ImprovedKTable<Windowed<K>, Long> count(ConfiguredMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized);
@@ -68,12 +63,6 @@ public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKSt
             Materialized<K, Long, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * Count the number of records in this stream by the grouped key and defined sessions
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys and {@code Long} values
-     * that represent
-     * the latest (rolling) count (i.e., number of records) for each key per session
      * @see #count(Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, Long> count(Named named,
@@ -95,14 +84,6 @@ public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKSt
             Merger<? super K, VR> sessionMerger, Materialized<K, VR, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key and defined sessions
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param aggregator an {@code Aggregator} that computes a new aggregate result
-     * @param sessionMerger a {@code Merger} that combines two aggregation results
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the latest (rolling) aggregate for each key per session
-     * @param <VR> the value type of the resulting {@code KTable}
      * @see #aggregate(Initializer, Aggregator, Merger, Materialized)
      */
     <VR> ImprovedKTable<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
@@ -117,15 +98,6 @@ public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKSt
             Materialized<K, VR, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key and defined sessions
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param aggregator an {@code Aggregator} that computes a new aggregate result
-     * @param sessionMerger a {@code Merger} that combines two aggregation results
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the latest (rolling) aggregate for each key per session
-     * @param <VR> the value type of the resulting {@code KTable}
      * @see #aggregate(Initializer, Aggregator, Merger, Named, Materialized)
      */
     <VR> ImprovedKTable<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
@@ -144,12 +116,6 @@ public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKSt
             Materialized<K, V, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * Combine the values of records in this stream by the grouped key and defined sessions
-     * @param reducer a {@code Reducer} that computes a new aggregate result
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key per session
      * @see #reduce(Reducer, Materialized)
      */
     ImprovedKTable<Windowed<K>, V> reduce(Reducer<V> reducer,
@@ -160,13 +126,6 @@ public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKSt
             Materialized<K, V, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * Combine the values of records in this stream by the grouped key and defined sessions
-     * @param reducer a {@code Reducer} that computes a new aggregate result
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key per session
      * @see #reduce(Reducer, Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, V> reduce(Reducer<V> reducer, Named named,

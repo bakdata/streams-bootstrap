@@ -51,12 +51,6 @@ public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindo
             Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key and defined windows
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key within a window
      * @see #aggregate(Initializer, Materialized)
      */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
@@ -67,13 +61,6 @@ public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindo
             Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key and defined windows
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key within a window
      * @see #aggregate(Initializer, Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,

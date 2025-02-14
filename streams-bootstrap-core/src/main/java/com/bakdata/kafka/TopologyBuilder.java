@@ -50,11 +50,6 @@ public class TopologyBuilder {
     Map<String, Object> kafkaProperties;
 
     /**
-     * Create a {@code KStream} from the specified topic
-     * @param topic the topic name
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(String)
      */
     public <K, V> ImprovedKStream<K, V> stream(final String topic) {
@@ -62,12 +57,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topic
-     * @param topic the topic name
-     * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(String, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final String topic, final Consumed<K, V> consumed) {
@@ -75,12 +64,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topic
-     * @param topic the topic name
-     * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(String, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final String topic, final ConfiguredConsumed<K, V> consumed) {
@@ -88,11 +71,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topics
-     * @param topics the topic names
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(Collection)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics) {
@@ -100,12 +78,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topics
-     * @param topics the topic names
-     * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics, final Consumed<K, V> consumed) {
@@ -113,12 +85,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topics
-     * @param topics the topic names
-     * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics,
@@ -127,11 +93,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topic pattern
-     * @param topicPattern the pattern to match for topic names
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern) {
@@ -139,12 +100,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topic pattern
-     * @param topicPattern the pattern to match for topic names
-     * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final Consumed<K, V> consumed) {
@@ -152,12 +107,6 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from the specified topic pattern
-     * @param topicPattern the pattern to match for topic names
-     * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
-     * @param <K> type of keys
-     * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final ConfiguredConsumed<K, V> consumed) {

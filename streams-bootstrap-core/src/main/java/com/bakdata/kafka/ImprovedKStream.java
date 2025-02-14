@@ -242,29 +242,16 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     ImprovedKStream<K, V> repartition(Repartitioned<K, V> repartitioned);
 
     /**
-     * Materialize this stream to an auto-generated repartition topic and create a new KStream from the
-     * auto-generated topic
-     * @param repartitioned the {@code Repartitioned} instance used to specify {@code Serdes}, {@code StreamPartitioner}
-     * which determines how records are distributed among partitions of the topic, part of the topic name, and number
-     * of partitions
-     * for a repartition topic
-     * @return a {@code KStream} that contains the exact same repartitioned records as this {@code KStream}
      * @see #repartition(Repartitioned)
      */
     ImprovedKStream<K, V> repartition(ConfiguredRepartitioned<K, V> repartitioned);
 
     /**
-     * Materialize this stream to a topic using the provided {@code ConfiguredProduced} instance
-     * @param topic the topic name
-     * @param produced the options to use when producing to the topic
      * @see #to(String, Produced)
      */
     void to(String topic, ConfiguredProduced<K, V> produced);
 
     /**
-     * Dynamically materialize this stream to topics using the provided {@code ConfiguredProduced} instance
-     * @param topicExtractor the extractor to determine the name of the Kafka topic to write to for each record
-     * @param produced the options to use when producing to the topic
      * @see #to(TopicNameExtractor, Produced)
      */
     void to(TopicNameExtractor<K, V> topicExtractor, ConfiguredProduced<K, V> produced);
@@ -297,11 +284,6 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     ImprovedKTable<K, V> toTable(Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Convert this stream to a {@code KTable}
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to describe how the state store of the
-     * resulting table
-     * should be materialized
-     * @return a {@code KTable} that contains the same records as this {@code KStream}
      * @see #toTable(Materialized)
      */
     ImprovedKTable<K, V> toTable(ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
@@ -310,12 +292,6 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     ImprovedKTable<K, V> toTable(Named named, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
-     * Convert this stream to a {@code KTable}
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to describe how the state store of the
-     * resulting table
-     * should be materialized
-     * @return a {@code KTable} that contains the same records as this {@code KStream}
      * @see #toTable(Named, Materialized)
      */
     ImprovedKTable<K, V> toTable(Named named, ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
@@ -328,12 +304,6 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             Grouped<KR, V> grouped);
 
     /**
-     * Group the records of this {@code KStream} on a new key that is selected using the provided {@code KeyValueMapper}
-     * @param keySelector a {@code KeyValueMapper} that computes a new key for grouping
-     * @param grouped the {@code ConfiguredGrouped} instance used to specify {@code Serdes} and part of the name for a
-     * repartition topic if repartitioning is required
-     * @return a {@code KGroupedStream} that contains the grouped records of the original {@code KStream}
-     * @param <KR> the key type of the result {@code KGroupedStream}
      * @see #groupBy(KeyValueMapper, Grouped)
      */
     <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
@@ -346,10 +316,6 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     ImprovedKGroupedStream<K, V> groupByKey(Grouped<K, V> grouped);
 
     /**
-     * Group the records by their current key into a {@code KGroupedStream} while preserving the original values
-     * @param grouped the {@code ConfiguredGrouped} instance used to specify {@code Serdes} and part of the name for a
-     * repartition topic if repartitioning is required
-     * @return a {@code KGroupedStream} that contains the grouped records of the original {@code KStream}
      * @see #groupByKey(Grouped)
      */
     ImprovedKGroupedStream<K, V> groupByKey(ConfiguredGrouped<K, V> grouped);

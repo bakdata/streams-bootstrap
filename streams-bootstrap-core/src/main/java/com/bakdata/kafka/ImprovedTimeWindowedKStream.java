@@ -53,12 +53,6 @@ public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K
     ImprovedKTable<Windowed<K>, Long> count(Materialized<K, Long, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Count the number of records in this stream by the grouped key and defined windows
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys and {@code Long} values
-     * that
-     * represent
-     * the latest (rolling) count (i.e., number of records) for each key within a window
      * @see #count(Materialized)
      */
     ImprovedKTable<Windowed<K>, Long> count(ConfiguredMaterialized<K, Long, WindowStore<Bytes, byte[]>> materialized);
@@ -68,13 +62,6 @@ public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K
             Materialized<K, Long, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Count the number of records in this stream by the grouped key and defined windows
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized an instance of {@code ConfiguredMaterialized} used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys and {@code Long} values
-     * that
-     * represent
-     * the latest (rolling) count (i.e., number of records) for each key within a window
      * @see #count(Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, Long> count(Named named,
@@ -95,14 +82,6 @@ public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K
             Materialized<K, VR, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key and defined windows
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param aggregator an {@code Aggregator} that computes a new aggregate result
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key within a window
-     * @param <VR> the value type of the resulting {@code KTable}
      * @see #aggregate(Initializer, Aggregator, Materialized)
      */
     <VR> ImprovedKTable<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
@@ -115,15 +94,6 @@ public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K
             Named named, Materialized<K, VR, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Aggregate the values of records in this stream by the grouped key and defined windows
-     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
-     * @param aggregator an {@code Aggregator} that computes a new aggregate result
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key within a window
-     * @param <VR> the value type of the resulting {@code KTable}
      * @see #aggregate(Initializer, Aggregator, Named, Materialized)
      */
     <VR> ImprovedKTable<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
@@ -141,12 +111,6 @@ public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K
             Materialized<K, V, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Combine the values of records in this stream by the grouped key and defined windows
-     * @param reducer a {@code Reducer} that computes a new aggregate result
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key within a window
      * @see #reduce(Reducer, Materialized)
      */
     ImprovedKTable<Windowed<K>, V> reduce(Reducer<V> reducer,
@@ -157,13 +121,6 @@ public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K
             Materialized<K, V, WindowStore<Bytes, byte[]>> materialized);
 
     /**
-     * Combine the values of records in this stream by the grouped key and defined windows
-     * @param reducer a {@code Reducer} that computes a new aggregate result
-     * @param named a {@code Named} config used to name the processor in the topology
-     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
-     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
-     * represent the
-     * latest (rolling) aggregate for each key within a window
      * @see #reduce(Reducer, Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, V> reduce(Reducer<V> reducer, Named named,
