@@ -28,6 +28,7 @@ import static com.bakdata.kafka.KStreamXTest.startApp;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.kstream.Named;
 import org.junit.jupiter.api.Test;
 
 class KGroupedStreamXTest {
@@ -98,6 +99,44 @@ class KGroupedStreamXTest {
     }
 
     @Test
+    void shouldReduceNamedUsingMaterialized() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<Long, Long> input = builder.stream("input",
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
+                        AutoGrouped.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final KTableX<Long, Long> reduced = grouped.reduce(Long::sum, Named.as("reduce"),
+                        AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                reduced.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L)
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
     void shouldAggregate() {
         final StreamsApp app = new SimpleApp() {
             @Override
@@ -139,6 +178,45 @@ class KGroupedStreamXTest {
                 final KTableX<Long, Long> aggregated =
                         grouped.aggregate(() -> 0L, (key, value, aggregate) -> aggregate + value,
                                 AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
+                                        Preconfigured.create(Serdes.Long())));
+                aggregated.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L)
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldAggregateNamedUsingMaterialized() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<Long, Long> input = builder.stream("input",
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
+                        AutoGrouped.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final KTableX<Long, Long> aggregated =
+                        grouped.aggregate(() -> 0L, (key, value, aggregate) -> aggregate + value,
+                                Named.as("aggregate"), AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                         Preconfigured.create(Serdes.Long())));
                 aggregated.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
