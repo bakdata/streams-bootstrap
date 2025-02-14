@@ -49,28 +49,119 @@ public class TopologyBuilder {
     @NonNull
     Map<String, Object> kafkaProperties;
 
+    /**
+     * Create a {@code KStream} from the specified topic
+     * @param topic the topic name
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(String)
+     */
     public <K, V> ImprovedKStream<K, V> stream(final String topic) {
         return this.getContext().wrap(this.streamsBuilder.stream(topic));
     }
 
+    /**
+     * Create a {@code KStream} from the specified topic
+     * @param topic the topic name
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(String, Consumed)
+     */
     public <K, V> ImprovedKStream<K, V> stream(final String topic, final Consumed<K, V> consumed) {
         return this.getContext().wrap(this.streamsBuilder.stream(topic, consumed));
     }
 
+    /**
+     * Create a {@code KStream} from the specified topic
+     * @param topic the topic name
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(String, Consumed)
+     */
+    public <K, V> ImprovedKStream<K, V> stream(final String topic, final ConfiguredConsumed<K, V> consumed) {
+        return this.stream(topic, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * Create a {@code KStream} from the specified topics
+     * @param topics the topic names
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection)
+     */
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics) {
         return this.getContext().wrap(this.streamsBuilder.stream(topics));
     }
 
+    /**
+     * Create a {@code KStream} from the specified topics
+     * @param topics the topic names
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
+     */
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics, final Consumed<K, V> consumed) {
         return this.getContext().wrap(this.streamsBuilder.stream(topics, consumed));
     }
 
+    /**
+     * Create a {@code KStream} from the specified topics
+     * @param topics the topic names
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
+     */
+    public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics,
+            final ConfiguredConsumed<K, V> consumed) {
+        return this.stream(topics, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * Create a {@code KStream} from the specified topic pattern
+     * @param topicPattern the pattern to match for topic names
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern)
+     */
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern) {
         return this.getContext().wrap(this.streamsBuilder.stream(topicPattern));
     }
 
+    /**
+     * Create a {@code KStream} from the specified topic pattern
+     * @param topicPattern the pattern to match for topic names
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
+     */
     public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final Consumed<K, V> consumed) {
         return this.getContext().wrap(this.streamsBuilder.stream(topicPattern, consumed));
+    }
+
+    /**
+     * Create a {@code KStream} from the specified topic pattern
+     * @param topicPattern the pattern to match for topic names
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
+     */
+    public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final ConfiguredConsumed<K, V> consumed) {
+        return this.stream(topicPattern, consumed.configure(this.createConfigurator()));
     }
 
     /**
@@ -79,6 +170,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInput(final Consumed<K, V> consumed) {
         return this.stream(this.topics.getInputTopics(), consumed);
@@ -90,6 +182,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInput(final ConfiguredConsumed<K, V> consumed) {
         return this.streamInput(consumed.configure(this.createConfigurator()));
@@ -100,6 +193,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection)
      */
     public <K, V> ImprovedKStream<K, V> streamInput() {
         return this.stream(this.topics.getInputTopics());
@@ -112,6 +206,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInput(final String label, final Consumed<K, V> consumed) {
         return this.stream(this.topics.getInputTopics(label), consumed);
@@ -124,6 +219,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInput(final String label, final ConfiguredConsumed<K, V> consumed) {
         return this.streamInput(label, consumed.configure(this.createConfigurator()));
@@ -135,6 +231,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection)
      */
     public <K, V> ImprovedKStream<K, V> streamInput(final String label) {
         return this.stream(this.topics.getInputTopics(label));
@@ -146,6 +243,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern(final Consumed<K, V> consumed) {
         return this.stream(this.topics.getInputPattern(), consumed);
@@ -157,6 +255,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern(final ConfiguredConsumed<K, V> consumed) {
         return this.streamInputPattern(consumed.configure(this.createConfigurator()));
@@ -167,6 +266,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern() {
         return this.stream(this.topics.getInputPattern());
@@ -179,6 +279,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern(final String label, final Consumed<K, V> consumed) {
         return this.stream(this.topics.getInputPattern(label), consumed);
@@ -191,6 +292,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern(final String label,
             final ConfiguredConsumed<K, V> consumed) {
@@ -203,6 +305,7 @@ public class TopologyBuilder {
      * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern(final String label) {
         return this.stream(this.topics.getInputPattern(label));
@@ -225,10 +328,18 @@ public class TopologyBuilder {
         return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
     }
 
+    /**
+     * Create a {@code StreamsContext} to wrap Kafka Streams interfaces
+     * @return {@code StreamsContext}
+     */
     public StreamsContext getContext() {
         return new StreamsContext(this.topics, this.createConfigurator());
     }
 
+    /**
+     * Create stores using application context to lazily configures Serdes
+     * @return {@code ConfiguredStores}
+     */
     public ConfiguredStores stores() {
         return new ConfiguredStores(this.createConfigurator());
     }
