@@ -89,7 +89,7 @@ class BranchedKStreamXTest {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.split()
                         .branch((k, v) -> "foo".equals(k), BranchedX.withConsumer(KStreamX::toOutputTopic))
-                        .defaultBranch(Branched.withConsumer(s -> s.to("default_output")));
+                        .defaultBranchX(Branched.withConsumer(s -> s.to("default_output")));
             }
         };
         final TestTopology<String, String> topology =
