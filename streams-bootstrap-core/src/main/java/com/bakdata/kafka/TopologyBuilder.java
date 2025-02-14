@@ -30,9 +30,15 @@ import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.GlobalKTable;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
 
 /**
  * Provides all runtime configurations and supports building a {@link Topology} of a {@link StreamsApp}
@@ -258,6 +264,140 @@ public class TopologyBuilder {
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final String label) {
         return this.stream(this.topics.getInputPattern(label));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String)
+     */
+    public <K, V> KTableX<K, V> table(final String topic) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic, consumed));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final AutoConsumed<K, V> consumed) {
+        return this.table(topic, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic, materialized));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.table(topic, materialized.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic, consumed, materialized));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final AutoConsumed<K, V> consumed,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        final Configurator configurator = this.createConfigurator();
+        return this.table(topic, consumed.configure(configurator), materialized.configure(configurator));
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic) {
+        return this.streamsBuilder.globalTable(topic);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final Consumed<K, V> consumed) {
+        return this.streamsBuilder.globalTable(topic, consumed);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final AutoConsumed<K, V> consumed) {
+        return this.globalTable(topic, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.streamsBuilder.globalTable(topic, materialized);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.globalTable(topic, materialized.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final Consumed<K, V> consumed,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.streamsBuilder.globalTable(topic, consumed, materialized);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final AutoConsumed<K, V> consumed,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        final Configurator configurator = this.createConfigurator();
+        return this.globalTable(topic, consumed.configure(configurator), materialized.configure(configurator));
+    }
+
+    /**
+     * @see StreamsBuilder#addStateStore(StoreBuilder)
+     */
+    public TopologyBuilder addStateStore(final StoreBuilder<?> builder) {
+        this.streamsBuilder.addStateStore(builder);
+        return this;
+    }
+
+    /**
+     * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
+     */
+    public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
+            final Consumed<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
+        this.streamsBuilder.addGlobalStore(storeBuilder, topic, consumed, stateUpdateSupplier);
+        return this;
+    }
+
+    /**
+     * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
+     */
+    public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
+            final AutoConsumed<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
+        return this.addGlobalStore(storeBuilder, topic, consumed.configure(this.createConfigurator()),
+                stateUpdateSupplier);
     }
 
     /**

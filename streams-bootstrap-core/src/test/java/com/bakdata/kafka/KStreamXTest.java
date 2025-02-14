@@ -582,7 +582,7 @@ class KStreamXTest {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
-                builder.getStreamsBuilder().addStateStore(store);
+                builder.addStateStore(store);
                 final KStreamX<String, String> input = builder.stream("input");
                 input.process(processor, "my-store");
             }
@@ -612,7 +612,7 @@ class KStreamXTest {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
-                builder.getStreamsBuilder().addStateStore(store);
+                builder.addStateStore(store);
                 final KStreamX<String, String> input = builder.stream("input");
                 input.process(processor, Named.as("process"), "my-store");
             }
@@ -706,7 +706,7 @@ class KStreamXTest {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
-                builder.getStreamsBuilder().addStateStore(store);
+                builder.addStateStore(store);
                 final KStreamX<String, String> input = builder.stream("input");
                 input.processValues(processor, "my-store");
             }
@@ -736,7 +736,7 @@ class KStreamXTest {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
-                builder.getStreamsBuilder().addStateStore(store);
+                builder.addStateStore(store);
                 final KStreamX<String, String> input = builder.stream("input");
                 input.processValues(processor, Named.as("process"), "my-store");
             }
