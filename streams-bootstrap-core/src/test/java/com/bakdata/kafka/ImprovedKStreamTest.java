@@ -445,6 +445,31 @@ class ImprovedKStreamTest {
     }
 
     @Test
+    void shouldFilterNot() {
+        final Predicate<String, String> predicate = mock();
+        when(predicate.test("foo", "bar")).thenReturn(false);
+        when(predicate.test("foo", "baz")).thenReturn(true);
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                input.filterNot(predicate).to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .add("foo", "bar")
+                .add("foo", "baz");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
     void shouldSelectKey() {
         final StreamsApp app = new SimpleApp() {
             @Override
@@ -849,6 +874,28 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKTable<String, String> table = input.toTable();
+                table.toStream().to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldConvertToTableUsingMaterialized() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
@@ -877,6 +924,196 @@ class ImprovedKStreamTest {
 
     @Test
     void shouldJoin() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
+                final ImprovedKStream<String, String> joined = input.join(otherInput,
+                        (v1, v2) -> v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
+                joined.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        topology.input("other_input")
+                .add("foo", "baz");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("barbaz")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldJoinWithKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
+                final ImprovedKStream<String, String> joined = input.join(otherInput,
+                        (k, v1, v2) -> v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
+                joined.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        topology.input("other_input")
+                .add("foo", "baz");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("barbaz")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldLeftJoin() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
+                final ImprovedKStream<String, String> joined = input.leftJoin(otherInput,
+                        (v1, v2) -> v2 == null ? v1 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
+                joined.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        topology.input("other_input")
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add("bar", "");
+        topology.input("other_input")
+                .at(0L)
+                .add("foo", "baz");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("barbaz")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldLeftJoinWithKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
+                final ImprovedKStream<String, String> joined = input.leftJoin(otherInput,
+                        (k, v1, v2) -> v2 == null ? v1 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
+                joined.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        topology.input("other_input")
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add("bar", "");
+        topology.input("other_input")
+                .at(0L)
+                .add("foo", "baz");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("barbaz")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldOuterJoin() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
+                final ImprovedKStream<String, String> joined = input.outerJoin(otherInput,
+                        (v1, v2) -> v1 == null ? v2 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
+                joined.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("other_input")
+                .add("foo", "baz");
+        topology.input("input")
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add("bar", "");
+        topology.input("input")
+                .at(0L)
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("baz")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("barbaz")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldOuterJoinWithKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
+                final ImprovedKStream<String, String> joined = input.outerJoin(otherInput,
+                        (k, v1, v2) -> v1 == null ? v2 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
+                joined.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("other_input")
+                .add("foo", "baz");
+        topology.input("input")
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add("bar", "");
+        topology.input("input")
+                .at(0L)
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("baz")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("barbaz")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldJoinUsingJoined() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -916,7 +1153,7 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldJoinWithKey() {
+    void shouldJoinWithKeyUsingJoined() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -956,7 +1193,7 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldLeftJoin() {
+    void shouldLeftJoinUsingJoined() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -1005,7 +1242,7 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldLeftJoinWithKey() {
+    void shouldLeftJoinWithKeyUsingJoined() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -1054,7 +1291,7 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldOuterJoin() {
+    void shouldOuterJoinUsingJoined() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -1103,7 +1340,7 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldOuterJoinWithKey() {
+    void shouldOuterJoinWithKeyUsingJoined() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
