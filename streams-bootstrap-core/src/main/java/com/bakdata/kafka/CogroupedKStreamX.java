@@ -43,10 +43,10 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * @param <K> type of keys
  * @param <VOut> type of values
  */
-public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, VOut> {
+public interface CogroupedKStreamX<K, VOut> extends CogroupedKStream<K, VOut> {
 
     @Override
-    <VIn> ImprovedCogroupedKStream<K, VOut> cogroup(KGroupedStream<K, VIn> groupedStream,
+    <VIn> CogroupedKStreamX<K, VOut> cogroup(KGroupedStream<K, VIn> groupedStream,
             Aggregator<? super K, ? super VIn, VOut> aggregator);
 
     @Override

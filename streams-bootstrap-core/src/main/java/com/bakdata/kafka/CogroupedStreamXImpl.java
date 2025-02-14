@@ -40,13 +40,13 @@ import org.apache.kafka.streams.kstream.Windows;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 @RequiredArgsConstructor
-class ImprovedCogroupedStreamImpl<K, V> implements ImprovedCogroupedKStream<K, V> {
+class CogroupedStreamXImpl<K, V> implements CogroupedKStreamX<K, V> {
 
     private final @NonNull CogroupedKStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
     @Override
-    public <VIn> ImprovedCogroupedKStream<K, V> cogroup(final KGroupedStream<K, VIn> groupedStream,
+    public <VIn> CogroupedKStreamX<K, V> cogroup(final KGroupedStream<K, VIn> groupedStream,
             final Aggregator<? super K, ? super VIn, V> aggregator) {
         final KGroupedStream<K, VIn> other = StreamsContext.maybeUnwrap(groupedStream);
         return this.context.wrap(this.wrapped.cogroup(other, aggregator));

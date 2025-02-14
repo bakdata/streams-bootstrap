@@ -160,7 +160,7 @@ class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
     }
 
     @Override
-    public <VOut> ImprovedCogroupedKStream<K, VOut> cogroup(final Aggregator<? super K, ? super V, VOut> aggregator) {
+    public <VOut> CogroupedKStreamX<K, VOut> cogroup(final Aggregator<? super K, ? super V, VOut> aggregator) {
         return this.context.wrap(this.wrapped.cogroup(aggregator));
     }
 }

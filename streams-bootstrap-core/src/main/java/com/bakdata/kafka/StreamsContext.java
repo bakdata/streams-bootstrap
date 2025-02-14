@@ -175,11 +175,11 @@ public class StreamsContext {
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedCogroupedKStream<KR, VR> wrap(final CogroupedKStream<KR, VR> stream) {
-        if (stream instanceof ImprovedCogroupedKStream) {
-            return (ImprovedCogroupedKStream<KR, VR>) stream;
+    public <KR, VR> CogroupedKStreamX<KR, VR> wrap(final CogroupedKStream<KR, VR> stream) {
+        if (stream instanceof CogroupedKStreamX) {
+            return (CogroupedKStreamX<KR, VR>) stream;
         }
-        return new ImprovedCogroupedStreamImpl<>(stream, this);
+        return new CogroupedStreamXImpl<>(stream, this);
     }
 
     /**

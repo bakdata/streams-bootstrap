@@ -123,5 +123,5 @@ public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
     ImprovedSessionWindowedKStream<K, V> windowedBy(SessionWindows windows);
 
     @Override
-    <VOut> ImprovedCogroupedKStream<K, VOut> cogroup(Aggregator<? super K, ? super V, VOut> aggregator);
+    <VOut> CogroupedKStreamX<K, VOut> cogroup(Aggregator<? super K, ? super V, VOut> aggregator);
 }
