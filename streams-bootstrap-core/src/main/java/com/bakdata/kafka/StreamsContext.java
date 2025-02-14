@@ -61,25 +61,25 @@ public class StreamsContext {
     }
 
     static <K, V> KGroupedStream<K, V> maybeUnwrap(final KGroupedStream<K, V> stream) {
-        if (stream instanceof ImprovedKGroupedStream) {
+        if (stream instanceof KGroupedStreamX) {
             // Kafka Streams internally casts KGroupedStream to KGroupedStreamImpl in some cases
-            return ((ImprovedKGroupedStreamImpl<K, V>) stream).getWrapped();
+            return ((KGroupedStreamXImpl<K, V>) stream).getWrapped();
         }
         return stream;
     }
 
     static <K, V> KTable<K, V> maybeUnwrap(final KTable<K, V> table) {
-        if (table instanceof ImprovedKTableImpl) {
+        if (table instanceof KTableXImpl) {
             // Kafka Streams internally casts KTable to KTableImpl in some cases
-            return ((ImprovedKTableImpl<K, V>) table).getWrapped();
+            return ((KTableXImpl<K, V>) table).getWrapped();
         }
         return table;
     }
 
     /**
-     * Wrap a {@code KStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * Wrap a {@link KStream} and add methods to simplify Serde configuration, error handling, and topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedKStream}
+     * @return {@link ImprovedKStream}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
@@ -91,87 +91,87 @@ public class StreamsContext {
     }
 
     /**
-     * Wrap a {@code KGroupedStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * Wrap a {@link KGroupedStream} and add methods to simplify Serde configuration, error handling, and topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedKGroupedStream}
+     * @return {@link KGroupedStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedKGroupedStream<KR, VR> wrap(final KGroupedStream<KR, VR> stream) {
-        if (stream instanceof ImprovedKGroupedStream) {
-            return (ImprovedKGroupedStream<KR, VR>) stream;
+    public <KR, VR> KGroupedStreamX<KR, VR> wrap(final KGroupedStream<KR, VR> stream) {
+        if (stream instanceof KGroupedStreamX) {
+            return (KGroupedStreamX<KR, VR>) stream;
         }
-        return new ImprovedKGroupedStreamImpl<>(stream, this);
+        return new KGroupedStreamXImpl<>(stream, this);
     }
 
     /**
-     * Wrap a {@code TimeWindowedKStream} and add methods to simplify Serde configuration, error handling, and topic
+     * Wrap a {@link TimeWindowedKStream} and add methods to simplify Serde configuration, error handling, and topic
      * access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedTimeWindowedKStream}
+     * @return {@link TimeWindowedKStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedTimeWindowedKStream<KR, VR> wrap(
+    public <KR, VR> TimeWindowedKStreamX<KR, VR> wrap(
             final TimeWindowedKStream<KR, VR> stream) {
-        if (stream instanceof ImprovedTimeWindowedKStream) {
-            return (ImprovedTimeWindowedKStream<KR, VR>) stream;
+        if (stream instanceof TimeWindowedKStreamX) {
+            return (TimeWindowedKStreamX<KR, VR>) stream;
         }
-        return new ImprovedTimeWindowedStreamImpl<>(stream, this);
+        return new TimeWindowedStreamXImpl<>(stream, this);
     }
 
     /**
-     * Wrap a {@code SessionWindowedKStream} and add methods to simplify Serde configuration, error handling, and
+     * Wrap a {@link SessionWindowedKStream} and add methods to simplify Serde configuration, error handling, and
      * topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedSessionWindowedKStream}
+     * @return {@link SessionWindowedKStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedSessionWindowedKStream<KR, VR> wrap(
+    public <KR, VR> SessionWindowedKStreamX<KR, VR> wrap(
             final SessionWindowedKStream<KR, VR> stream) {
-        if (stream instanceof ImprovedSessionWindowedKStream) {
-            return (ImprovedSessionWindowedKStream<KR, VR>) stream;
+        if (stream instanceof SessionWindowedKStreamX) {
+            return (SessionWindowedKStreamX<KR, VR>) stream;
         }
-        return new ImprovedSessionWindowedStreamImpl<>(stream, this);
+        return new SessionWindowedStreamXImpl<>(stream, this);
     }
 
     /**
-     * Wrap a {@code TimeWindowedCogroupedKStream} and add methods to simplify Serde configuration, error handling,
+     * Wrap a {@link TimeWindowedCogroupedKStream} and add methods to simplify Serde configuration, error handling,
      * and topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedTimeWindowedCogroupedKStream}
+     * @return {@link TimeWindowedCogroupedKStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedTimeWindowedCogroupedKStream<KR, VR> wrap(
+    public <KR, VR> TimeWindowedCogroupedKStreamX<KR, VR> wrap(
             final TimeWindowedCogroupedKStream<KR, VR> stream) {
-        if (stream instanceof ImprovedTimeWindowedCogroupedKStream) {
-            return (ImprovedTimeWindowedCogroupedKStream<KR, VR>) stream;
+        if (stream instanceof TimeWindowedCogroupedKStreamX) {
+            return (TimeWindowedCogroupedKStreamX<KR, VR>) stream;
         }
-        return new ImprovedTimeWindowedCogroupedStreamImpl<>(stream, this);
+        return new TimeWindowedCogroupedStreamXImpl<>(stream, this);
     }
 
     /**
-     * Wrap a {@code SessionWindowedCogroupedKStream} and add methods to simplify Serde configuration, error
+     * Wrap a {@link SessionWindowedCogroupedKStream} and add methods to simplify Serde configuration, error
      * handling, and topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedSessionWindowedCogroupedKStream}
+     * @return {@link SessionWindowedCogroupedKStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedSessionWindowedCogroupedKStream<KR, VR> wrap(
+    public <KR, VR> SessionWindowedCogroupedKStreamX<KR, VR> wrap(
             final SessionWindowedCogroupedKStream<KR, VR> stream) {
-        if (stream instanceof ImprovedSessionWindowedCogroupedKStream) {
-            return (ImprovedSessionWindowedCogroupedKStream<KR, VR>) stream;
+        if (stream instanceof SessionWindowedCogroupedKStreamX) {
+            return (SessionWindowedCogroupedKStreamX<KR, VR>) stream;
         }
-        return new ImprovedSessionWindowedCogroupedStreamImpl<>(stream, this);
+        return new SessionWindowedCogroupedStreamXImpl<>(stream, this);
     }
 
     /**
-     * Wrap a {@code CogroupedKStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * Wrap a {@link CogroupedKStream} and add methods to simplify Serde configuration, error handling, and topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedCogroupedKStream}
+     * @return {@link CogroupedKStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
@@ -183,44 +183,44 @@ public class StreamsContext {
     }
 
     /**
-     * Wrap a {@code BranchedKStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * Wrap a {@link BranchedKStream} and add methods to simplify Serde configuration, error handling, and topic access
      * @param stream stream to be wrapped
-     * @return {@code ImprovedBranchedKStream}
+     * @return {@link BranchedKStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedBranchedKStream<KR, VR> wrap(final BranchedKStream<KR, VR> stream) {
-        if (stream instanceof ImprovedBranchedKStream) {
-            return (ImprovedBranchedKStream<KR, VR>) stream;
+    public <KR, VR> BranchedKStreamX<KR, VR> wrap(final BranchedKStream<KR, VR> stream) {
+        if (stream instanceof BranchedKStreamX) {
+            return (BranchedKStreamX<KR, VR>) stream;
         }
-        return new ImprovedBranchedKStreamImpl<>(stream, this);
+        return new BranchedKStreamXImpl<>(stream, this);
     }
 
     /**
-     * Wrap a {@code KTable} and add methods to simplify Serde configuration, error handling, and topic access
+     * Wrap a {@link KTable} and add methods to simplify Serde configuration, error handling, and topic access
      * @param table table to be wrapped
-     * @return {@code ImprovedKTable}
+     * @return {@link KTableX}
      * @param <KR> type of keys in the table
      * @param <VR> type of values in the table
      */
-    public <KR, VR> ImprovedKTable<KR, VR> wrap(final KTable<KR, VR> table) {
-        if (table instanceof ImprovedKTable) {
-            return (ImprovedKTable<KR, VR>) table;
+    public <KR, VR> KTableX<KR, VR> wrap(final KTable<KR, VR> table) {
+        if (table instanceof KTableX) {
+            return (KTableX<KR, VR>) table;
         }
-        return new ImprovedKTableImpl<>(table, this);
+        return new KTableXImpl<>(table, this);
     }
 
     /**
-     * Wrap a {@code KGroupedTable} and add methods to simplify Serde configuration, error handling, and topic access
+     * Wrap a {@link KGroupedTable} and add methods to simplify Serde configuration, error handling, and topic access
      * @param table table to be wrapped
-     * @return {@code ImprovedKGroupedTable}
+     * @return {@link KGroupedTableX}
      * @param <KR> type of keys in the table
      * @param <VR> type of values in the table
      */
-    public <KR, VR> ImprovedKGroupedTable<KR, VR> wrap(final KGroupedTable<KR, VR> table) {
-        if (table instanceof ImprovedKGroupedTable) {
-            return (ImprovedKGroupedTable<KR, VR>) table;
+    public <KR, VR> KGroupedTableX<KR, VR> wrap(final KGroupedTable<KR, VR> table) {
+        if (table instanceof KGroupedTableX) {
+            return (KGroupedTableX<KR, VR>) table;
         }
-        return new ImprovedKGroupedTableImpl<>(table, this);
+        return new KGroupedTableXImpl<>(table, this);
     }
 }

@@ -39,83 +39,83 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * @param <K> type of keys
  * @param <V> type of values
  */
-public interface ImprovedKGroupedTable<K, V> extends KGroupedTable<K, V> {
+public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
 
     @Override
-    ImprovedKTable<K, Long> count(Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #count(Materialized)
      */
-    ImprovedKTable<K, Long> count(AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #count(Named, Materialized)
      */
-    ImprovedKTable<K, Long> count(Named named,
+    KTableX<K, Long> count(Named named,
             AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, Long> count();
+    KTableX<K, Long> count();
 
     @Override
-    ImprovedKTable<K, Long> count(Named named);
+    KTableX<K, Long> count(Named named);
 
     @Override
-    ImprovedKTable<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor,
+    KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #reduce(Reducer, Reducer, Materialized)
      */
-    ImprovedKTable<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor,
+    KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor, Named named,
+    KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor, Named named,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #reduce(Reducer, Reducer, Named, Materialized)
      */
-    ImprovedKTable<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor, Named named,
+    KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor, Named named,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor);
+    KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #aggregate(Initializer, Aggregator, Aggregator, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor, Named named,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #aggregate(Initializer, Aggregator, Aggregator, Named, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor, Named named,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor, Named named);
 }

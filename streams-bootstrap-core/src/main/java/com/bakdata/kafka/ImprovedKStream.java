@@ -218,10 +218,10 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     ImprovedKStream<K, V>[] branch(Predicate<? super K, ? super V>... predicates);
 
     @Override
-    ImprovedBranchedKStream<K, V> split();
+    BranchedKStreamX<K, V> split();
 
     @Override
-    ImprovedBranchedKStream<K, V> split(Named named);
+    BranchedKStreamX<K, V> split(Named named);
 
     @Override
     ImprovedKStream<K, V> merge(KStream<K, V> stream);
@@ -275,50 +275,50 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     void toErrorTopic(AutoProduced<K, V> produced);
 
     @Override
-    ImprovedKTable<K, V> toTable();
+    KTableX<K, V> toTable();
 
     @Override
-    ImprovedKTable<K, V> toTable(Named named);
+    KTableX<K, V> toTable(Named named);
 
     @Override
-    ImprovedKTable<K, V> toTable(Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> toTable(Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #toTable(Materialized)
      */
-    ImprovedKTable<K, V> toTable(AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> toTable(AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> toTable(Named named, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> toTable(Named named, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #toTable(Named, Materialized)
      */
-    ImprovedKTable<K, V> toTable(Named named, AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> toTable(Named named, AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector);
+    <KR> KGroupedStreamX<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector);
 
     @Override
-    <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
+    <KR> KGroupedStreamX<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
             Grouped<KR, V> grouped);
 
     /**
      * @see #groupBy(KeyValueMapper, Grouped)
      */
-    <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
+    <KR> KGroupedStreamX<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
             AutoGrouped<KR, V> grouped);
 
     @Override
-    ImprovedKGroupedStream<K, V> groupByKey();
+    KGroupedStreamX<K, V> groupByKey();
 
     @Override
-    ImprovedKGroupedStream<K, V> groupByKey(Grouped<K, V> grouped);
+    KGroupedStreamX<K, V> groupByKey(Grouped<K, V> grouped);
 
     /**
      * @see #groupByKey(Grouped)
      */
-    ImprovedKGroupedStream<K, V> groupByKey(AutoGrouped<K, V> grouped);
+    KGroupedStreamX<K, V> groupByKey(AutoGrouped<K, V> grouped);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,

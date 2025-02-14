@@ -25,7 +25,7 @@
 package com.bakdata.kafka.test_applications;
 
 import com.bakdata.kafka.ImprovedKStream;
-import com.bakdata.kafka.ImprovedKTable;
+import com.bakdata.kafka.KTableX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -47,7 +47,7 @@ public class WordCountPattern implements StreamsApp {
         final ImprovedKStream<String, String> textLines = builder.streamInputPattern();
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
-        final ImprovedKTable<String, Long> wordCounts = textLines
+        final KTableX<String, Long> wordCounts = textLines
                 .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
                 .groupBy((key, word) -> word)
                 .count(Materialized.as("counts"));

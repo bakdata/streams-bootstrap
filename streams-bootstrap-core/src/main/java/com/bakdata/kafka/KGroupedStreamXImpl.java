@@ -42,120 +42,120 @@ import org.apache.kafka.streams.kstream.Windows;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 @RequiredArgsConstructor
-class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
+class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
 
     @Getter(AccessLevel.PACKAGE)
     private final @NonNull KGroupedStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
     @Override
-    public ImprovedKTable<K, Long> count() {
+    public KTableX<K, Long> count() {
         return this.context.wrap(this.wrapped.count());
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(final Named named) {
+    public KTableX<K, Long> count(final Named named) {
         return this.context.wrap(this.wrapped.count(named));
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(final Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+    public KTableX<K, Long> count(final Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.count(materialized));
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(
+    public KTableX<K, Long> count(
             final AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.count(materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(final Named named,
+    public KTableX<K, Long> count(final Named named,
             final Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.count(named, materialized));
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(final Named named,
+    public KTableX<K, Long> count(final Named named,
             final AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.count(named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer) {
+    public KTableX<K, V> reduce(final Reducer<V> reducer) {
         return this.context.wrap(this.wrapped.reduce(reducer));
     }
 
     @Override
-    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer,
+    public KTableX<K, V> reduce(final Reducer<V> reducer,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.reduce(reducer, materialized));
     }
 
     @Override
-    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer,
+    public KTableX<K, V> reduce(final Reducer<V> reducer,
             final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.reduce(reducer, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer, final Named named,
+    public KTableX<K, V> reduce(final Reducer<V> reducer, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.reduce(reducer, named, materialized));
     }
 
     @Override
-    public ImprovedKTable<K, V> reduce(final Reducer<V> reducer, final Named named,
+    public KTableX<K, V> reduce(final Reducer<V> reducer, final Named named,
             final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.reduce(reducer, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+    public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator) {
         return this.context.wrap(this.wrapped.aggregate(initializer, aggregator));
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+    public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, materialized));
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+    public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator,
             final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+    public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Named named,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, aggregator, named, materialized));
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+    public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Named named,
             final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <W extends Window> ImprovedTimeWindowedKStream<K, V> windowedBy(final Windows<W> windows) {
+    public <W extends Window> TimeWindowedKStreamX<K, V> windowedBy(final Windows<W> windows) {
         return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 
     @Override
-    public ImprovedTimeWindowedKStream<K, V> windowedBy(final SlidingWindows windows) {
+    public TimeWindowedKStreamX<K, V> windowedBy(final SlidingWindows windows) {
         return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 
     @Override
-    public ImprovedSessionWindowedKStream<K, V> windowedBy(final SessionWindows windows) {
+    public SessionWindowedKStreamX<K, V> windowedBy(final SessionWindows windows) {
         return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 

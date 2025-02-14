@@ -384,12 +384,12 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedBranchedKStream<K, V> split() {
+    public BranchedKStreamX<K, V> split() {
         return this.context.wrap(this.wrapped.split());
     }
 
     @Override
-    public ImprovedBranchedKStream<K, V> split(final Named named) {
+    public BranchedKStreamX<K, V> split(final Named named) {
         return this.context.wrap(this.wrapped.split(named));
     }
 
@@ -506,66 +506,66 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable() {
+    public KTableX<K, V> toTable() {
         return this.context.wrap(this.wrapped.toTable());
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable(final Named named) {
+    public KTableX<K, V> toTable(final Named named) {
         return this.context.wrap(this.wrapped.toTable(named));
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable(final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+    public KTableX<K, V> toTable(final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.toTable(materialized));
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable(final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+    public KTableX<K, V> toTable(final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.toTable(materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable(final Named named,
+    public KTableX<K, V> toTable(final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.toTable(named, materialized));
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable(final Named named,
+    public KTableX<K, V> toTable(final Named named,
             final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.toTable(named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector) {
+    public <KR> KGroupedStreamX<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector) {
         return this.context.wrap(this.wrapped.groupBy(keySelector));
     }
 
     @Override
-    public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
+    public <KR> KGroupedStreamX<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
             final Grouped<KR, V> grouped) {
         return this.context.wrap(this.wrapped.groupBy(keySelector, grouped));
     }
 
     @Override
-    public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
+    public <KR> KGroupedStreamX<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
             final AutoGrouped<KR, V> grouped) {
         return this.groupBy(keySelector, grouped.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKGroupedStream<K, V> groupByKey() {
+    public KGroupedStreamX<K, V> groupByKey() {
         return this.context.wrap(this.wrapped.groupByKey());
     }
 
     @Override
-    public ImprovedKGroupedStream<K, V> groupByKey(final Grouped<K, V> grouped) {
+    public KGroupedStreamX<K, V> groupByKey(final Grouped<K, V> grouped) {
         return this.context.wrap(this.wrapped.groupByKey(grouped));
     }
 
     @Override
-    public ImprovedKGroupedStream<K, V> groupByKey(final AutoGrouped<K, V> grouped) {
+    public KGroupedStreamX<K, V> groupByKey(final AutoGrouped<K, V> grouped) {
         return this.groupByKey(grouped.configure(this.context.getConfigurator()));
     }
 

@@ -47,110 +47,110 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * @param <K> type of keys
  * @param <V> type of values
  */
-public interface ImprovedKTable<K, V> extends KTable<K, V> {
+public interface KTableX<K, V> extends KTable<K, V> {
 
     @Override
-    ImprovedKTable<K, V> filter(Predicate<? super K, ? super V> predicate);
+    KTableX<K, V> filter(Predicate<? super K, ? super V> predicate);
 
     @Override
-    ImprovedKTable<K, V> filter(Predicate<? super K, ? super V> predicate, Named named);
+    KTableX<K, V> filter(Predicate<? super K, ? super V> predicate, Named named);
 
     @Override
-    ImprovedKTable<K, V> filter(Predicate<? super K, ? super V> predicate,
+    KTableX<K, V> filter(Predicate<? super K, ? super V> predicate,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #filter(Predicate, Materialized)
      */
-    ImprovedKTable<K, V> filter(Predicate<? super K, ? super V> predicate,
+    KTableX<K, V> filter(Predicate<? super K, ? super V> predicate,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> filter(Predicate<? super K, ? super V> predicate, Named named,
+    KTableX<K, V> filter(Predicate<? super K, ? super V> predicate, Named named,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #filter(Predicate, Named, Materialized)
      */
-    ImprovedKTable<K, V> filter(Predicate<? super K, ? super V> predicate, Named named,
+    KTableX<K, V> filter(Predicate<? super K, ? super V> predicate, Named named,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> filterNot(Predicate<? super K, ? super V> predicate);
+    KTableX<K, V> filterNot(Predicate<? super K, ? super V> predicate);
 
     @Override
-    ImprovedKTable<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named);
+    KTableX<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named);
 
     @Override
-    ImprovedKTable<K, V> filterNot(Predicate<? super K, ? super V> predicate,
+    KTableX<K, V> filterNot(Predicate<? super K, ? super V> predicate,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #filterNot(Predicate, Materialized)
      */
-    ImprovedKTable<K, V> filterNot(Predicate<? super K, ? super V> predicate,
+    KTableX<K, V> filterNot(Predicate<? super K, ? super V> predicate,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named,
+    KTableX<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #filterNot(Predicate, Named, Materialized)
      */
-    ImprovedKTable<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named,
+    KTableX<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper);
+    <VR> KTableX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named);
+    <VR> KTableX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
+    <VR> KTableX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
+    <VR> KTableX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper,
+    <VR> KTableX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #mapValues(ValueMapper, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper,
+    <VR> KTableX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named,
+    <VR> KTableX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #mapValues(ValueMapper, Named, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named,
+    <VR> KTableX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+    <VR> KTableX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #mapValues(ValueMapperWithKey, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+    <VR> KTableX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named,
+    <VR> KTableX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #mapValues(ValueMapperWithKey, Named, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named,
+    <VR> KTableX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
@@ -166,236 +166,236 @@ public interface ImprovedKTable<K, V> extends KTable<K, V> {
     <KR> ImprovedKStream<KR, V> toStream(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
 
     @Override
-    ImprovedKTable<K, V> suppress(Suppressed<? super K> suppressed);
+    KTableX<K, V> suppress(Suppressed<? super K> suppressed);
 
     @Override
-    <VR> ImprovedKTable<K, VR> transformValues(
+    <VR> KTableX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKTable<K, VR> transformValues(
+    <VR> KTableX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier, Named named,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKTable<K, VR> transformValues(
+    <VR> KTableX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, String... stateStoreNames);
 
     /**
      * @see #transformValues(ValueTransformerWithKeySupplier, Materialized, String...)
      */
-    <VR> ImprovedKTable<K, VR> transformValues(
+    <VR> KTableX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKTable<K, VR> transformValues(
+    <VR> KTableX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, Named named, String... stateStoreNames);
 
     /**
      * @see #transformValues(ValueTransformerWithKeySupplier, Materialized, Named, String...)
      */
-    <VR> ImprovedKTable<K, VR> transformValues(
+    <VR> KTableX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, Named named,
             String... stateStoreNames);
 
     @Override
-    <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector);
+    <KR, VR> KGroupedTableX<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector);
 
     @Override
-    <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector,
+    <KR, VR> KGroupedTableX<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector,
             Grouped<KR, VR> grouped);
 
     /**
      * @see #groupBy(KeyValueMapper, Grouped)
      */
-    <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector,
+    <KR, VR> KGroupedTableX<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector,
             AutoGrouped<KR, VR> grouped);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner);
+    <VO, VR> KTableX<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+    <VO, VR> KTableX<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+    <VO, VR> KTableX<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #join(KTable, ValueJoiner, Materialized)
      */
-    <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+    <VO, VR> KTableX<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+    <VO, VR> KTableX<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #join(KTable, ValueJoiner, Named, Materialized)
      */
-    <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+    <VO, VR> KTableX<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> leftJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> leftJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> leftJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> leftJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> leftJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> leftJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #leftJoin(KTable, ValueJoiner, Materialized)
      */
-    <VO, VR> ImprovedKTable<K, VR> leftJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> leftJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> leftJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> leftJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #leftJoin(KTable, ValueJoiner, Named, Materialized)
      */
-    <VO, VR> ImprovedKTable<K, VR> leftJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> leftJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> outerJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> outerJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> outerJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> outerJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> outerJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> outerJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #outerJoin(KTable, ValueJoiner, Materialized)
      */
-    <VO, VR> ImprovedKTable<K, VR> outerJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> outerJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VO, VR> ImprovedKTable<K, VR> outerJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> outerJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #outerJoin(KTable, ValueJoiner, Named, Materialized)
      */
-    <VO, VR> ImprovedKTable<K, VR> outerJoin(KTable<K, VO> other,
+    <VO, VR> KTableX<K, VR> outerJoin(KTable<K, VO> other,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             Named named, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #join(KTable, Function, ValueJoiner, Materialized)
      */
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #join(KTable, Function, ValueJoiner, Named, Materialized)
      */
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #join(KTable, Function, ValueJoiner, TableJoined, Materialized)
      */
-    <VR, KO, VO> ImprovedKTable<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #leftJoin(KTable, Function, ValueJoiner, Materialized)
      */
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #leftJoin(KTable, Function, ValueJoiner, Named, Materialized)
      */
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #leftJoin(KTable, Function, ValueJoiner, TableJoined, Materialized)
      */
-    <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
+    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 }

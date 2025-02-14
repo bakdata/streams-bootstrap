@@ -27,42 +27,44 @@ package com.bakdata.kafka;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Merger;
 import org.apache.kafka.streams.kstream.Named;
-import org.apache.kafka.streams.kstream.TimeWindowedCogroupedKStream;
+import org.apache.kafka.streams.kstream.SessionWindowedCogroupedKStream;
 import org.apache.kafka.streams.kstream.Windowed;
-import org.apache.kafka.streams.state.WindowStore;
+import org.apache.kafka.streams.state.SessionStore;
 
 /**
- * Extends the {@code TimeWindowedCogroupedKStream} interface by adding methods to simplify Serde configuration,
+ * Extends the {@code SessionWindowedCogroupedKStream} interface by adding methods to simplify Serde configuration,
  * error handling, and topic access
  * @param <K> type of keys
  * @param <VOut> type of values
  */
-public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindowedCogroupedKStream<K, VOut> {
+public interface SessionWindowedCogroupedKStreamX<K, VOut> extends SessionWindowedCogroupedKStream<K, VOut> {
 
     @Override
-    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer);
+    KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger);
 
     @Override
-    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named);
+    KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
+            Named named);
 
     @Override
-    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
-            Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+    KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
+            Materialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * @see #aggregate(Initializer, Materialized)
+     * @see #aggregate(Initializer, Merger, Materialized)
      */
-    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
-            AutoMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+    KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
+            AutoMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
-            Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+    KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
+            Named named, Materialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 
     /**
-     * @see #aggregate(Initializer, Named, Materialized)
+     * @see #aggregate(Initializer, Merger, Named, Materialized)
      */
-    ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
-            AutoMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+    KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
+            Named named, AutoMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 }

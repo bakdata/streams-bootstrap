@@ -50,37 +50,37 @@ public interface CogroupedKStreamX<K, VOut> extends CogroupedKStream<K, VOut> {
             Aggregator<? super K, ? super VIn, VOut> aggregator);
 
     @Override
-    ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer);
+    KTableX<K, VOut> aggregate(Initializer<VOut> initializer);
 
     @Override
-    ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named);
+    KTableX<K, VOut> aggregate(Initializer<VOut> initializer, Named named);
 
     @Override
-    ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer,
+    KTableX<K, VOut> aggregate(Initializer<VOut> initializer,
             Materialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #aggregate(Initializer, Materialized)
      */
-    ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer,
+    KTableX<K, VOut> aggregate(Initializer<VOut> initializer,
             AutoMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
+    KTableX<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
             Materialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #aggregate(Initializer, Named, Materialized)
      */
-    ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
+    KTableX<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
             AutoMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <W extends Window> ImprovedTimeWindowedCogroupedKStream<K, VOut> windowedBy(Windows<W> windows);
+    <W extends Window> TimeWindowedCogroupedKStreamX<K, VOut> windowedBy(Windows<W> windows);
 
     @Override
-    ImprovedTimeWindowedCogroupedKStream<K, VOut> windowedBy(SlidingWindows windows);
+    TimeWindowedCogroupedKStreamX<K, VOut> windowedBy(SlidingWindows windows);
 
     @Override
-    ImprovedSessionWindowedCogroupedKStream<K, VOut> windowedBy(SessionWindows windows);
+    SessionWindowedCogroupedKStreamX<K, VOut> windowedBy(SessionWindows windows);
 }

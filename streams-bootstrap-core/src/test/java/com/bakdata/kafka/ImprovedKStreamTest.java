@@ -875,7 +875,7 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKTable<String, String> table = input.toTable();
+                final KTableX<String, String> table = input.toTable();
                 table.toStream().to("output");
             }
         };
@@ -899,7 +899,7 @@ class ImprovedKStreamTest {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKTable<Long, Long> table = input.toTable(
+                final KTableX<Long, Long> table = input.toTable(
                         AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 table.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -1394,8 +1394,8 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKGroupedStream<String, String> grouped = input.groupByKey();
-                final ImprovedKTable<String, Long> count = grouped.count();
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KTableX<String, Long> count = grouped.count();
                 count.toStream().to("output");
             }
         };
@@ -1424,10 +1424,10 @@ class ImprovedKStreamTest {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
+                final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
                         AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKTable<Long, Long> count = grouped.count();
+                final KTableX<Long, Long> count = grouped.count();
                 count.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
@@ -1458,8 +1458,8 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKGroupedStream<String, String> grouped = input.groupBy((k, v) -> v);
-                final ImprovedKTable<String, Long> count = grouped.count();
+                final KGroupedStreamX<String, String> grouped = input.groupBy((k, v) -> v);
+                final KTableX<String, Long> count = grouped.count();
                 count.toStream().to("output");
             }
         };
@@ -1488,10 +1488,10 @@ class ImprovedKStreamTest {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKGroupedStream<Long, Long> grouped = input.groupBy((k, v) -> v,
+                final KGroupedStreamX<Long, Long> grouped = input.groupBy((k, v) -> v,
                         AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKTable<Long, Long> count = grouped.count();
+                final KTableX<Long, Long> count = grouped.count();
                 count.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }

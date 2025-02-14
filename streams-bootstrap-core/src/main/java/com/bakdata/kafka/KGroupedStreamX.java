@@ -43,84 +43,84 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * @param <K> type of keys
  * @param <V> type of values
  */
-public interface ImprovedKGroupedStream<K, V> extends KGroupedStream<K, V> {
+public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
 
     @Override
-    ImprovedKTable<K, Long> count();
+    KTableX<K, Long> count();
 
     @Override
-    ImprovedKTable<K, Long> count(Named named);
+    KTableX<K, Long> count(Named named);
 
     @Override
-    ImprovedKTable<K, Long> count(Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #count(Materialized)
      */
-    ImprovedKTable<K, Long> count(AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #count(Named, Materialized)
      */
-    ImprovedKTable<K, Long> count(Named named,
+    KTableX<K, Long> count(Named named,
             AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> reduce(Reducer<V> reducer);
+    KTableX<K, V> reduce(Reducer<V> reducer);
 
     @Override
-    ImprovedKTable<K, V> reduce(Reducer<V> reducer, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> reduce(Reducer<V> reducer, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #reduce(Reducer, Materialized)
      */
-    ImprovedKTable<K, V> reduce(Reducer<V> reducer,
+    KTableX<K, V> reduce(Reducer<V> reducer,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKTable<K, V> reduce(Reducer<V> reducer, Named named,
+    KTableX<K, V> reduce(Reducer<V> reducer, Named named,
             Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #reduce(Reducer, Named, Materialized)
      */
-    ImprovedKTable<K, V> reduce(Reducer<V> reducer, Named named,
+    KTableX<K, V> reduce(Reducer<V> reducer, Named named,
             AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator);
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
             Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #aggregate(Initializer, Aggregator, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
             Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     /**
      * @see #aggregate(Initializer, Aggregator, Named, Materialized)
      */
-    <VR> ImprovedKTable<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
+    <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
             Named named, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    <W extends Window> ImprovedTimeWindowedKStream<K, V> windowedBy(Windows<W> windows);
+    <W extends Window> TimeWindowedKStreamX<K, V> windowedBy(Windows<W> windows);
 
     @Override
-    ImprovedTimeWindowedKStream<K, V> windowedBy(SlidingWindows windows);
+    TimeWindowedKStreamX<K, V> windowedBy(SlidingWindows windows);
 
     @Override
-    ImprovedSessionWindowedKStream<K, V> windowedBy(SessionWindows windows);
+    SessionWindowedKStreamX<K, V> windowedBy(SessionWindows windows);
 
     @Override
     <VOut> CogroupedKStreamX<K, VOut> cogroup(Aggregator<? super K, ? super V, VOut> aggregator);

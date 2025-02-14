@@ -53,51 +53,51 @@ class CogroupedStreamXImpl<K, V> implements CogroupedKStreamX<K, V> {
     }
 
     @Override
-    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer) {
+    public KTableX<K, V> aggregate(final Initializer<V> initializer) {
         return this.context.wrap(this.wrapped.aggregate(initializer));
     }
 
     @Override
-    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named) {
+    public KTableX<K, V> aggregate(final Initializer<V> initializer, final Named named) {
         return this.context.wrap(this.wrapped.aggregate(initializer, named));
     }
 
     @Override
-    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer,
+    public KTableX<K, V> aggregate(final Initializer<V> initializer,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, materialized));
     }
 
     @Override
-    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer,
+    public KTableX<K, V> aggregate(final Initializer<V> initializer,
             final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named,
+    public KTableX<K, V> aggregate(final Initializer<V> initializer, final Named named,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, named, materialized));
     }
 
     @Override
-    public ImprovedKTable<K, V> aggregate(final Initializer<V> initializer, final Named named,
+    public KTableX<K, V> aggregate(final Initializer<V> initializer, final Named named,
             final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, named, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <W extends Window> ImprovedTimeWindowedCogroupedKStream<K, V> windowedBy(final Windows<W> windows) {
+    public <W extends Window> TimeWindowedCogroupedKStreamX<K, V> windowedBy(final Windows<W> windows) {
         return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 
     @Override
-    public ImprovedTimeWindowedCogroupedKStream<K, V> windowedBy(final SlidingWindows windows) {
+    public TimeWindowedCogroupedKStreamX<K, V> windowedBy(final SlidingWindows windows) {
         return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 
     @Override
-    public ImprovedSessionWindowedCogroupedKStream<K, V> windowedBy(final SessionWindows windows) {
+    public SessionWindowedCogroupedKStreamX<K, V> windowedBy(final SessionWindows windows) {
         return this.context.wrap(this.wrapped.windowedBy(windows));
     }
 }

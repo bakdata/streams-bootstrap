@@ -35,18 +35,18 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Predicate;
 
 @RequiredArgsConstructor
-class ImprovedBranchedKStreamImpl<K, V> implements ImprovedBranchedKStream<K, V> {
+class BranchedKStreamXImpl<K, V> implements BranchedKStreamX<K, V> {
 
     private final @NonNull BranchedKStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
     @Override
-    public ImprovedBranchedKStream<K, V> branch(final Predicate<? super K, ? super V> predicate) {
+    public BranchedKStreamX<K, V> branch(final Predicate<? super K, ? super V> predicate) {
         return this.context.wrap(this.wrapped.branch(predicate));
     }
 
     @Override
-    public ImprovedBranchedKStream<K, V> branch(final Predicate<? super K, ? super V> predicate,
+    public BranchedKStreamX<K, V> branch(final Predicate<? super K, ? super V> predicate,
             final Branched<K, V> branched) {
         return this.context.wrap(this.wrapped.branch(predicate, branched));
     }

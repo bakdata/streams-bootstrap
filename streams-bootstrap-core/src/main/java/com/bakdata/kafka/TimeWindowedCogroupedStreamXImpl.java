@@ -35,41 +35,41 @@ import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.WindowStore;
 
 @RequiredArgsConstructor
-class ImprovedTimeWindowedCogroupedStreamImpl<K, V> implements ImprovedTimeWindowedCogroupedKStream<K, V> {
+class TimeWindowedCogroupedStreamXImpl<K, V> implements TimeWindowedCogroupedKStreamX<K, V> {
 
     private final @NonNull TimeWindowedCogroupedKStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer) {
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer) {
         return this.context.wrap(this.wrapped.aggregate(initializer));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named) {
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named) {
         return this.context.wrap(this.wrapped.aggregate(initializer, named));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Materialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, materialized));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final AutoMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
             final Materialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, named, materialized));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
             final AutoMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, named, materialized.configure(this.context.getConfigurator()));
     }

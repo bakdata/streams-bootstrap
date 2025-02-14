@@ -36,47 +36,47 @@ import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.SessionStore;
 
 @RequiredArgsConstructor
-class ImprovedSessionWindowedCogroupedStreamImpl<K, V> implements ImprovedSessionWindowedCogroupedKStream<K, V> {
+class SessionWindowedCogroupedStreamXImpl<K, V> implements SessionWindowedCogroupedKStreamX<K, V> {
 
     private final @NonNull SessionWindowedCogroupedKStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger) {
         return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Named named) {
         return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger, named));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Materialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger, materialized));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, sessionMerger, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Named named, final Materialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.context.wrap(this.wrapped.aggregate(initializer, sessionMerger, materialized));
     }
 
     @Override
-    public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
+    public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
             final Named named, final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, sessionMerger, named,

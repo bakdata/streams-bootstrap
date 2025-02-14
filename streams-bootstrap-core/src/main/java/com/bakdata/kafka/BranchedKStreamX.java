@@ -36,13 +36,13 @@ import org.apache.kafka.streams.kstream.Predicate;
  * @param <K> type of keys
  * @param <V> type of values
  */
-public interface ImprovedBranchedKStream<K, V> extends BranchedKStream<K, V> {
+public interface BranchedKStreamX<K, V> extends BranchedKStream<K, V> {
 
     @Override
-    ImprovedBranchedKStream<K, V> branch(Predicate<? super K, ? super V> predicate);
+    BranchedKStreamX<K, V> branch(Predicate<? super K, ? super V> predicate);
 
     @Override
-    ImprovedBranchedKStream<K, V> branch(Predicate<? super K, ? super V> predicate, Branched<K, V> branched);
+    BranchedKStreamX<K, V> branch(Predicate<? super K, ? super V> predicate, Branched<K, V> branched);
 
     @Override
     Map<String, KStream<K, V>> defaultBranch();

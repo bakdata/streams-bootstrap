@@ -30,7 +30,7 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import org.apache.kafka.common.serialization.Serdes;
 import org.junit.jupiter.api.Test;
 
-class ImprovedKGroupedStreamTest {
+class KGroupedStreamXTest {
 
     @Test
     void shouldReduce() {
@@ -38,8 +38,8 @@ class ImprovedKGroupedStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKGroupedStream<String, String> grouped = input.groupByKey();
-                final ImprovedKTable<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2);
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2);
                 reduced.toStream().to("output");
             }
         };
@@ -67,10 +67,10 @@ class ImprovedKGroupedStreamTest {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
+                final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
                         AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKTable<Long, Long> reduced = grouped.reduce(Long::sum,
+                final KTableX<Long, Long> reduced = grouped.reduce(Long::sum,
                         AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 reduced.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -103,8 +103,8 @@ class ImprovedKGroupedStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKGroupedStream<String, String> grouped = input.groupByKey();
-                final ImprovedKTable<String, String> aggregated =
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KTableX<String, String> aggregated =
                         grouped.aggregate(() -> "", (key, value, aggregate) -> aggregate + value);
                 aggregated.toStream().to("output");
             }
@@ -133,10 +133,10 @@ class ImprovedKGroupedStreamTest {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
+                final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
                         AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKTable<Long, Long> aggregated =
+                final KTableX<Long, Long> aggregated =
                         grouped.aggregate(() -> 0L, (key, value, aggregate) -> aggregate + value,
                                 AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                         Preconfigured.create(Serdes.Long())));

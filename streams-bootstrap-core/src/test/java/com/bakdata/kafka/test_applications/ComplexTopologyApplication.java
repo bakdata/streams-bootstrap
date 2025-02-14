@@ -25,7 +25,7 @@
 package com.bakdata.kafka.test_applications;
 
 import com.bakdata.kafka.ImprovedKStream;
-import com.bakdata.kafka.ImprovedKTable;
+import com.bakdata.kafka.KTableX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -51,7 +51,7 @@ public class ComplexTopologyApplication implements StreamsApp {
 
         input.to(THROUGH_TOPIC);
         final ImprovedKStream<String, TestRecord> through = builder.stream(THROUGH_TOPIC);
-        final ImprovedKTable<Windowed<String>, TestRecord> reduce = through
+        final KTableX<Windowed<String>, TestRecord> reduce = through
                 .groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(5L)))
                 .reduce((a, b) -> a);
