@@ -389,9 +389,16 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
             Joined<K, V, VT> joined);
 
+    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
+            ConfiguredJoined<K, V, VT> joined);
+
     @Override
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner, Joined<K, V, VT> joined);
+
+    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
+            ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
+            ConfiguredJoined<K, V, VT> joined);
 
     @Override
     <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
@@ -406,9 +413,17 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
             Joined<K, V, VT> joined);
 
+    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+            ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
+            ConfiguredJoined<K, V, VT> joined);
+
     @Override
     <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner, Joined<K, V, VT> joined);
+
+    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+            ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
+            ConfiguredJoined<K, V, VT> joined);
 
     @Override
     <GK, GV, RV> ImprovedKStream<K, RV> join(GlobalKTable<GK, GV> globalTable,

@@ -35,7 +35,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Predicate;
 
 @RequiredArgsConstructor
-public class ImprovedBranchedKStreamImpl<K, V> implements ImprovedBranchedKStream<K, V> {
+class ImprovedBranchedKStreamImpl<K, V> implements ImprovedBranchedKStream<K, V> {
 
     private final @NonNull BranchedKStream<K, V> wrapped;
     private final @NonNull StreamsContext context;

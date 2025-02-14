@@ -24,139 +24,107 @@
 
 package com.bakdata.kafka;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.streams.kstream.StreamJoined;
-import org.apache.kafka.streams.state.DslStoreSuppliers;
+import org.apache.kafka.streams.kstream.Joined;
 
 /**
- * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link StreamJoined} using {@link Configurator}
+ * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Joined} using {@link Configurator}
  * @param <K> type of keys
  * @param <V1> this value type
  * @param <V2> other value type
- * @see StreamJoined
+ * @see Joined
  */
+@With
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredStreamJoined<K, V1, V2> {
+public final class ConfiguredJoined<K, V1, V2> {
 
-    @With
     private final @NonNull Preconfigured<Serde<K>> keySerde;
-    @With
     private final @NonNull Preconfigured<Serde<V1>> valueSerde;
-    @With
     private final @NonNull Preconfigured<Serde<V2>> otherValueSerde;
-    @With
-    private final DslStoreSuppliers dslStoreSuppliers;
-    @With
     private final String name;
-    @With
-    private final String storeName;
-    private final Map<String, String> topicConfig;
-    private final boolean loggingEnabled;
+    private final Duration gracePeriod;
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided key serde
+     * Create an instance of {@code ConfiguredJoined} with provided key serde
      * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code ConfiguredJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> keySerde(
+    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> keySerde(
             final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde(), Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided value serde
+     * Create an instance of {@code ConfiguredJoined} with provided value serde
      * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code ConfiguredJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> valueSerde(
+    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> valueSerde(
             final Preconfigured<Serde<V1>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided other value serde
+     * Create an instance of {@code ConfiguredJoined} with provided other value serde
      * @param valueSerde Serde to use for other values
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code ConfiguredJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> otherValueSerde(
+    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> otherValueSerde(
             final Preconfigured<Serde<V2>> valueSerde) {
         return with(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), valueSerde);
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided key and value serde
+     * Create an instance of {@code ConfiguredJoined} with provided key and value serde
      * @param keySerde Serde to use for keys
      * @param valueSerde Serde to use for values
      * @param otherValueSerde Serde to use for other values
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code ConfiguredJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> with(
+    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> with(
             final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V1>> valueSerde,
             final Preconfigured<Serde<V2>> otherValueSerde) {
-        return new ConfiguredStreamJoined<>(keySerde, valueSerde, otherValueSerde, null, null, null, new HashMap<>(),
-                true);
+        return new ConfiguredJoined<>(keySerde, valueSerde, otherValueSerde, null, null);
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided store name
-     * @param storeName the store name to be used
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * Create an instance of {@code ConfiguredJoined} with provided store name
+     * @param name the name used as the base for naming components of the join including any repartition topics
+     * @return a new instance of {@code ConfiguredJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> as(final String storeName) {
-        return new ConfiguredStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
-                Preconfigured.defaultSerde(),
-                null, null, storeName, new HashMap<>(), true);
+    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> as(final String name) {
+        return new ConfiguredJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
+                Preconfigured.defaultSerde(), name, null);
     }
 
-    /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided store suppliers
-     * @param storeSuppliers the store suppliers to be used
-     * @return a new instance of {@code ConfiguredStreamJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
-     */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> as(
-            final DslStoreSuppliers storeSuppliers) {
-        return new ConfiguredStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
-                Preconfigured.defaultSerde(), storeSuppliers,
-                null, null, new HashMap<>(), true);
-    }
-
-    StreamJoined<K, V1, V2> configure(final Configurator configurator) {
-        final StreamJoined<K, V1, V2> streamJoined = StreamJoined.<K, V1, V2>as(this.storeName)
+    Joined<K, V1, V2> configure(final Configurator configurator) {
+        return Joined.<K, V1, V2>as(this.name)
                 .withKeySerde(configurator.configureForKeys(this.keySerde))
                 .withValueSerde(configurator.configureForValues(this.valueSerde))
                 .withOtherValueSerde(configurator.configureForValues(this.otherValueSerde))
                 .withName(this.name)
-                .withDslStoreSuppliers(this.dslStoreSuppliers);
-        if (this.loggingEnabled) {
-            return streamJoined.withLoggingEnabled(this.topicConfig);
-        } else {
-            return streamJoined.withLoggingDisabled();
-        }
+                .withGracePeriod(this.gracePeriod);
     }
 
 }

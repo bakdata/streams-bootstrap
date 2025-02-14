@@ -727,10 +727,23 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+            final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final ConfiguredJoined<K, V, VT> joined) {
+        return this.join(table, joiner, joined.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.join(other, joiner, joined));
+    }
+
+    @Override
+    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+            final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
+            final ConfiguredJoined<K, V, VT> joined) {
+        return this.join(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -756,10 +769,23 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+            final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final ConfiguredJoined<K, V, VT> joined) {
+        return this.leftJoin(table, joiner, joined.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.leftJoin(other, joiner, joined));
+    }
+
+    @Override
+    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+            final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
+            final ConfiguredJoined<K, V, VT> joined) {
+        return this.leftJoin(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
     @Override
