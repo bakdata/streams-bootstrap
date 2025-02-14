@@ -27,20 +27,24 @@ package com.bakdata.kafka;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import io.vavr.collection.List;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.ForeachAction;
 import org.apache.kafka.streams.kstream.JoinWindows;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
+import org.apache.kafka.streams.processor.StateStore;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessor;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
@@ -49,6 +53,12 @@ import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.processor.api.Record;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,7 +67,11 @@ import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@ExtendWith(SoftAssertionsExtension.class)
 class KStreamXTest {
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     static <K, V> TestTopology<K, V> startApp(final StreamsApp app, final StreamsTopicConfig topicConfig) {
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
@@ -553,6 +567,66 @@ class KStreamXTest {
     }
 
     @Test
+    void shouldProcessUsingStore() {
+        final ProcessorSupplier<String, String, String, String> processor = () -> new SimpleProcessor<>() {
+
+            @Override
+            public void process(final Record<String, String> inputRecord) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(inputRecord.key(), inputRecord.value());
+            }
+        };
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.getStreamsBuilder().addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.process(processor, "my-store");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input().add("foo", "bar");
+        final KeyValueStore<String, String> store =
+                topology.getTestDriver().getKeyValueStore("my-store");
+        this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        topology.stop();
+    }
+
+    @Test
+    void shouldProcessNamedUsingStore() {
+        final ProcessorSupplier<String, String, String, String> processor = () -> new SimpleProcessor<>() {
+
+            @Override
+            public void process(final Record<String, String> inputRecord) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(inputRecord.key(), inputRecord.value());
+            }
+        };
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.getStreamsBuilder().addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.process(processor, Named.as("process"), "my-store");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input().add("foo", "bar");
+        final KeyValueStore<String, String> store =
+                topology.getTestDriver().getKeyValueStore("my-store");
+        this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        topology.stop();
+    }
+
+    @Test
     void shouldProcessValues() {
         final FixedKeyProcessorSupplier<String, String, String> processor = () -> new SimpleFixedKeyProcessor<>() {
 
@@ -613,6 +687,66 @@ class KStreamXTest {
                 .hasKey("foo")
                 .hasValue("baz")
                 .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldProcessValuesUsingStore() {
+        final FixedKeyProcessorSupplier<String, String, String> processor = () -> new SimpleFixedKeyProcessor<>() {
+
+            @Override
+            public void process(final FixedKeyRecord<String, String> inputRecord) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(inputRecord.key(), inputRecord.value());
+            }
+        };
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.getStreamsBuilder().addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.processValues(processor, "my-store");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input().add("foo", "bar");
+        final KeyValueStore<String, String> store =
+                topology.getTestDriver().getKeyValueStore("my-store");
+        this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        topology.stop();
+    }
+
+    @Test
+    void shouldProcessValuesNamedUsingStore() {
+        final FixedKeyProcessorSupplier<String, String, String> processor = () -> new SimpleFixedKeyProcessor<>() {
+
+            @Override
+            public void process(final FixedKeyRecord<String, String> inputRecord) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(inputRecord.key(), inputRecord.value());
+            }
+        };
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.getStreamsBuilder().addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.processValues(processor, Named.as("process"), "my-store");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input().add("foo", "bar");
+        final KeyValueStore<String, String> store =
+                topology.getTestDriver().getKeyValueStore("my-store");
+        this.softly.assertThat(store.get("foo")).isEqualTo("bar");
         topology.stop();
     }
 
@@ -2163,6 +2297,100 @@ class KStreamXTest {
         topology.stop();
     }
 
+    @Test
+    void shouldMerge() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input1 = builder.stream("input1");
+                final KStreamX<String, String> input2 = builder.stream("input2");
+                final KStreamX<String, String> grouped = input1.merge(input2);
+                grouped.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input1")
+                .add("foo", "bar");
+        topology.input("input2")
+                .add("baz", "qux");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNextRecord()
+                .hasKey("baz")
+                .hasValue("qux")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldMergeNamed() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input1 = builder.stream("input1");
+                final KStreamX<String, String> input2 = builder.stream("input2");
+                final KStreamX<String, String> grouped = input1.merge(input2, Named.as("merge"));
+                grouped.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input1")
+                .add("foo", "bar");
+        topology.input("input2")
+                .add("baz", "qux");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNextRecord()
+                .hasKey("baz")
+                .hasValue("qux")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldDoForEach() {
+        final ForeachAction<String, String> action = mock();
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.foreach(action);
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        verify(action).apply("foo", "bar");
+        verifyNoMoreInteractions(action);
+        topology.stop();
+    }
+
+    @Test
+    void shouldDoForEachNamed() {
+        final ForeachAction<String, String> action = mock();
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.foreach(action, Named.as("forEach"));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        verify(action).apply("foo", "bar");
+        verifyNoMoreInteractions(action);
+        topology.stop();
+    }
+
     private abstract static class SimpleProcessor<KIn, VIn, KOut, VOut> implements Processor<KIn, VIn, KOut, VOut> {
         private ProcessorContext<KOut, VOut> context = null;
 
@@ -2173,6 +2401,10 @@ class KStreamXTest {
 
         protected void forward(final Record<? extends KOut, ? extends VOut> outputRecord) {
             this.context.forward(outputRecord);
+        }
+
+        protected <S extends StateStore> S getStateStore(final String name) {
+            return this.context.getStateStore(name);
         }
 
     }
@@ -2187,6 +2419,10 @@ class KStreamXTest {
 
         protected void forward(final FixedKeyRecord<? extends KIn, ? extends VOut> outputRecord) {
             this.context.forward(outputRecord);
+        }
+
+        protected <S extends StateStore> S getStateStore(final String name) {
+            return this.context.getStateStore(name);
         }
 
     }
