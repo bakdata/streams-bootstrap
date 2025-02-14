@@ -583,6 +583,13 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
+            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+        return this.join(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -590,6 +597,13 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
+    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+            final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
+            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+        return this.join(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -614,10 +628,24 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
+            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+        return this.leftJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
         return this.context.wrap(this.wrapped.leftJoin(other, joiner, windows, streamJoined));
+    }
+
+    @Override
+    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+            final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
+            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+        return this.leftJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -645,10 +673,24 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
+            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+        return this.outerJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
+    }
+
+    @Override
+    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
         return this.context.wrap(this.wrapped.outerJoin(other, joiner, windows, streamJoined));
+    }
+
+    @Override
+    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+            final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
+            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+        return this.outerJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override

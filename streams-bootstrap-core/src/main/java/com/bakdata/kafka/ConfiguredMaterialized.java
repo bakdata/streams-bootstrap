@@ -128,7 +128,9 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     }
 
     Materialized<K, V, S> configure(final Configurator configurator) {
-        final Materialized<K, V, S> materialized = Materialized.<K, V, S>as(this.storeName)
+        final Materialized<K, V, S> materialized =
+                this.storeName == null ? Materialized.with(configurator.configureForKeys(this.keySerde),
+                        configurator.configureForValues(this.valueSerde)) : Materialized.<K, V, S>as(this.storeName)
                 .withKeySerde(configurator.configureForKeys(this.keySerde))
                 .withValueSerde(configurator.configureForValues(this.valueSerde));
         if (this.retention != null) {

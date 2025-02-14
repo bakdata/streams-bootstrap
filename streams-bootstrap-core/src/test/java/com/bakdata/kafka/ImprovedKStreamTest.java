@@ -556,4 +556,66 @@ class ImprovedKStreamTest {
                 .expectNoMoreRecord();
         topology.stop();
     }
+
+    @Test
+    void shouldRepartition() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> repartitioned = input.repartition(
+                        ConfiguredRepartitioned.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                repartitioned.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldConvertToTable() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKTable<Long, Long> table = input.toTable(
+                        ConfiguredMaterialized.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                table.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
 }

@@ -308,11 +308,19 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             JoinWindows windows, StreamJoined<K, V, VO> streamJoined);
 
+    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+            ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+            JoinWindows windows, ConfiguredStreamJoined<K, V, VO> streamJoined);
+
     @Override
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
+    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+            ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
+            ConfiguredStreamJoined<K, V, VO> streamJoined);
+
     @Override
     <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows);
@@ -326,10 +334,18 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
+    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+            ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
+            ConfiguredStreamJoined<K, V, VO> streamJoined);
+
     @Override
     <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
+
+    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+            ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
+            ConfiguredStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
@@ -344,10 +360,18 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
+    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+            ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
+            ConfiguredStreamJoined<K, V, VO> streamJoined);
+
     @Override
     <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
+
+    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+            ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
+            ConfiguredStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner);
