@@ -24,11 +24,26 @@
 
 package com.bakdata.kafka;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import io.vavr.collection.List;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.KeyValueMapper;
+import org.apache.kafka.streams.kstream.ValueMapper;
+import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class ImprovedKStreamTest {
 
     @Test
@@ -201,6 +216,252 @@ class ImprovedKStreamTest {
                 .expectNextRecord()
                 .hasKey(1L)
                 .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldMapCapturingErrors() {
+        final KeyValueMapper<String, String, KeyValue<String, String>> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
+        doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.mapCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("success_key")
+                .hasValue("success_value")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldMapValuesCapturingErrors() {
+        final ValueMapper<String, String> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("bar");
+        doReturn("success").when(mapper).apply("baz");
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.mapValuesCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("success")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldMapValuesWithKeyCapturingErrors() {
+        final ValueMapperWithKey<String, String, String> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
+        doReturn("success").when(mapper).apply("foo", "baz");
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.mapValuesCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("success")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldFlatMapCapturingErrors() {
+        final KeyValueMapper<String, String, Iterable<KeyValue<String, String>>> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
+        doReturn(List.of(KeyValue.pair("success_key", "success_value"))).when(mapper).apply("foo", "baz");
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.flatMapCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("success_key")
+                .hasValue("success_value")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldFlatMapValuesCapturingErrors() {
+        final ValueMapper<String, Iterable<String>> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("bar");
+        doReturn(List.of("success")).when(mapper).apply("baz");
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.flatMapValuesCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("success")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldFlatMapValuesWithKeyCapturingErrors() {
+        final ValueMapperWithKey<String, String, Iterable<String>> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
+        doReturn(List.of("success")).when(mapper).apply("foo", "baz");
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.flatMapValuesCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("success")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
                 .expectNoMoreRecord();
         topology.stop();
     }
