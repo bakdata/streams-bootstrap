@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,21 @@
 
 package com.bakdata.kafka;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.GlobalKTable;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
 
 /**
  * Provides all runtime configurations and supports building a {@link Topology} of a {@link StreamsApp}
@@ -49,91 +56,348 @@ public class TopologyBuilder {
     Map<String, Object> kafkaProperties;
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
+     * @see StreamsBuilder#stream(String)
+     */
+    public <K, V> KStreamX<K, V> stream(final String topic) {
+        return this.getContext().wrap(this.streamsBuilder.stream(topic));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(String, Consumed)
+     */
+    public <K, V> KStreamX<K, V> stream(final String topic, final Consumed<K, V> consumed) {
+        return this.getContext().wrap(this.streamsBuilder.stream(topic, consumed));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(String, Consumed)
+     */
+    public <K, V> KStreamX<K, V> stream(final String topic, final AutoConsumed<K, V> consumed) {
+        return this.stream(topic, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(Collection)
+     */
+    public <K, V> KStreamX<K, V> stream(final Collection<String> topics) {
+        return this.getContext().wrap(this.streamsBuilder.stream(topics));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(Collection, Consumed)
+     */
+    public <K, V> KStreamX<K, V> stream(final Collection<String> topics, final Consumed<K, V> consumed) {
+        return this.getContext().wrap(this.streamsBuilder.stream(topics, consumed));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(Collection, Consumed)
+     */
+    public <K, V> KStreamX<K, V> stream(final Collection<String> topics,
+            final AutoConsumed<K, V> consumed) {
+        return this.stream(topics, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(Pattern)
+     */
+    public <K, V> KStreamX<K, V> stream(final Pattern topicPattern) {
+        return this.getContext().wrap(this.streamsBuilder.stream(topicPattern));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(Pattern, Consumed)
+     */
+    public <K, V> KStreamX<K, V> stream(final Pattern topicPattern, final Consumed<K, V> consumed) {
+        return this.getContext().wrap(this.streamsBuilder.stream(topicPattern, consumed));
+    }
+
+    /**
+     * @see StreamsBuilder#stream(Pattern, Consumed)
+     */
+    public <K, V> KStreamX<K, V> stream(final Pattern topicPattern, final AutoConsumed<K, V> consumed) {
+        return this.stream(topicPattern, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> KStream<K, V> streamInput(final Consumed<K, V> consumed) {
-        return this.streamsBuilder.stream(this.topics.getInputTopics(), consumed);
+    public <K, V> KStreamX<K, V> streamInput(final Consumed<K, V> consumed) {
+        return this.stream(this.topics.getInputTopics(), consumed);
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> KStream<K, V> streamInput() {
-        return this.streamsBuilder.stream(this.topics.getInputTopics());
+    public <K, V> KStreamX<K, V> streamInput(final AutoConsumed<K, V> consumed) {
+        return this.streamInput(consumed.configure(this.createConfigurator()));
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection)
+     */
+    public <K, V> KStreamX<K, V> streamInput() {
+        return this.stream(this.topics.getInputTopics());
+    }
+
+    /**
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param label label of input topics
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> KStream<K, V> streamInput(final String label, final Consumed<K, V> consumed) {
-        return this.streamsBuilder.stream(this.topics.getInputTopics(label), consumed);
+    public <K, V> KStreamX<K, V> streamInput(final String label, final Consumed<K, V> consumed) {
+        return this.stream(this.topics.getInputTopics(label), consumed);
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param label label of input topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
-     * @param <K> type of keys
-     * @param <V> type of values
-     */
-    public <K, V> KStream<K, V> streamInput(final String label) {
-        return this.streamsBuilder.stream(this.topics.getInputTopics(label));
-    }
-
-    /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> KStream<K, V> streamInputPattern(final Consumed<K, V> consumed) {
-        return this.streamsBuilder.stream(this.topics.getInputPattern(), consumed);
+    public <K, V> KStreamX<K, V> streamInput(final String label, final AutoConsumed<K, V> consumed) {
+        return this.streamInput(label, consumed.configure(this.createConfigurator()));
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @param label label of input topics
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Collection)
      */
-    public <K, V> KStream<K, V> streamInputPattern() {
-        return this.streamsBuilder.stream(this.topics.getInputPattern());
+    public <K, V> KStreamX<K, V> streamInput(final String label) {
+        return this.stream(this.topics.getInputTopics(label));
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
+     */
+    public <K, V> KStreamX<K, V> streamInputPattern(final Consumed<K, V> consumed) {
+        return this.stream(this.topics.getInputPattern(), consumed);
+    }
+
+    /**
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
+     */
+    public <K, V> KStreamX<K, V> streamInputPattern(final AutoConsumed<K, V> consumed) {
+        return this.streamInputPattern(consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern)
+     */
+    public <K, V> KStreamX<K, V> streamInputPattern() {
+        return this.stream(this.topics.getInputPattern());
+    }
+
+    /**
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param label label of input pattern
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
      */
-    public <K, V> KStream<K, V> streamInputPattern(final String label, final Consumed<K, V> consumed) {
-        return this.streamsBuilder.stream(this.topics.getInputPattern(label), consumed);
+    public <K, V> KStreamX<K, V> streamInputPattern(final String label, final Consumed<K, V> consumed) {
+        return this.stream(this.topics.getInputPattern(label), consumed);
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param label label of input pattern
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param consumed define optional parameters for streaming topics
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern, Consumed)
      */
-    public <K, V> KStream<K, V> streamInputPattern(final String label) {
-        return this.streamsBuilder.stream(this.topics.getInputPattern(label));
+    public <K, V> KStreamX<K, V> streamInputPattern(final String label,
+            final AutoConsumed<K, V> consumed) {
+        return this.streamInputPattern(label, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param label label of input pattern
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @see StreamsBuilder#stream(Pattern)
+     */
+    public <K, V> KStreamX<K, V> streamInputPattern(final String label) {
+        return this.stream(this.topics.getInputPattern(label));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String)
+     */
+    public <K, V> KTableX<K, V> table(final String topic) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic, consumed));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final AutoConsumed<K, V> consumed) {
+        return this.table(topic, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic, materialized));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.table(topic, materialized.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.getContext().wrap(this.streamsBuilder.table(topic, consumed, materialized));
+    }
+
+    /**
+     * @see StreamsBuilder#table(String, Consumed, Materialized)
+     */
+    public <K, V> KTableX<K, V> table(final String topic, final AutoConsumed<K, V> consumed,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        final Configurator configurator = this.createConfigurator();
+        return this.table(topic, consumed.configure(configurator), materialized.configure(configurator));
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic) {
+        return this.streamsBuilder.globalTable(topic);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final Consumed<K, V> consumed) {
+        return this.streamsBuilder.globalTable(topic, consumed);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final AutoConsumed<K, V> consumed) {
+        return this.globalTable(topic, consumed.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.streamsBuilder.globalTable(topic, materialized);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.globalTable(topic, materialized.configure(this.createConfigurator()));
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final Consumed<K, V> consumed,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.streamsBuilder.globalTable(topic, consumed, materialized);
+    }
+
+    /**
+     * @see StreamsBuilder#globalTable(String, Consumed, Materialized)
+     */
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final AutoConsumed<K, V> consumed,
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        final Configurator configurator = this.createConfigurator();
+        return this.globalTable(topic, consumed.configure(configurator), materialized.configure(configurator));
+    }
+
+    /**
+     * @see StreamsBuilder#addStateStore(StoreBuilder)
+     */
+    public TopologyBuilder addStateStore(final StoreBuilder<?> builder) {
+        this.streamsBuilder.addStateStore(builder);
+        return this;
+    }
+
+    /**
+     * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
+     */
+    public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
+            final Consumed<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
+        this.streamsBuilder.addGlobalStore(storeBuilder, topic, consumed, stateUpdateSupplier);
+        return this;
+    }
+
+    /**
+     * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
+     */
+    public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
+            final AutoConsumed<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
+        return this.addGlobalStore(storeBuilder, topic, consumed.configure(this.createConfigurator()),
+                stateUpdateSupplier);
     }
 
     /**
@@ -151,6 +415,22 @@ public class TopologyBuilder {
      */
     public EffectiveAppConfiguration<StreamsTopicConfig> createEffectiveConfiguration() {
         return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
+    }
+
+    /**
+     * Create a {@link StreamsContext} to wrap Kafka Streams interfaces
+     * @return {@link StreamsContext}
+     */
+    public StreamsContext getContext() {
+        return new StreamsContext(this.topics, this.createConfigurator());
+    }
+
+    /**
+     * Create stores using application context to lazily configures Serdes
+     * @return {@link AutoStores}
+     */
+    public AutoStores stores() {
+        return new AutoStores(this.createConfigurator());
     }
 
     Topology build() {
