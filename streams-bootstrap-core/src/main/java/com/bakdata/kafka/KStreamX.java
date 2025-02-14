@@ -899,6 +899,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.Processor}. Errors in the mapper are captured
      * @param processorSupplier an instance of {@link ProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.Processor}
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
@@ -915,6 +916,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param processorSupplier an instance of {@link ProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.Processor}
      * @param errorFilter expression that filters errors which should be thrown and not captured
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
@@ -937,6 +939,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param processorSupplier an instance of {@link ProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.Processor}
      * @param named a {@link Named} config used to name the processor in the topology
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
@@ -954,6 +957,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.Processor}
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
@@ -976,6 +980,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * mapper are captured
      * @param processorSupplier an instance of {@link FixedKeyProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
@@ -993,6 +998,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param processorSupplier an instance of {@link FixedKeyProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
      * @param errorFilter expression that filters errors which should be thrown and not captured
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
@@ -1016,6 +1022,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param processorSupplier an instance of {@link FixedKeyProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
      * @param named a {@link Named} config used to name the processor in the topology
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
@@ -1034,6 +1041,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
+     * @param stateStoreNames the names of the state store used by the processor
      * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
