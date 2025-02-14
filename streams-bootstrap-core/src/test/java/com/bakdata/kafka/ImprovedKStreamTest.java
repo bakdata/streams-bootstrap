@@ -30,9 +30,11 @@ import static org.mockito.Mockito.mock;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import io.vavr.collection.List;
+import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.JoinWindows;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
@@ -449,13 +451,7 @@ class ImprovedKStreamTest {
 
     @Test
     void shouldProcessCapturingErrors() {
-        final ProcessorSupplier<String, String, String, String> processor = () -> new Processor<>() {
-            private ProcessorContext<String, String> context = null;
-
-            @Override
-            public void init(final ProcessorContext<String, String> context) {
-                this.context = context;
-            }
+        final ProcessorSupplier<String, String, String, String> processor = () -> new SimpleProcessor<>() {
 
             @Override
             public void process(final Record<String, String> inputRecord) {
@@ -463,7 +459,7 @@ class ImprovedKStreamTest {
                     throw new RuntimeException("Cannot process");
                 }
                 if ("foo".equals(inputRecord.key()) && "baz".equals(inputRecord.value())) {
-                    this.context.forward(inputRecord.withKey("success_key").withValue("success_value"));
+                    this.forward(inputRecord.withKey("success_key").withValue("success_value"));
                     return;
                 }
                 throw new UnsupportedOperationException();
@@ -504,13 +500,7 @@ class ImprovedKStreamTest {
 
     @Test
     void shouldProcessValuesCapturingErrors() {
-        final FixedKeyProcessorSupplier<String, String, String> processor = () -> new FixedKeyProcessor<>() {
-            private FixedKeyProcessorContext<String, String> context = null;
-
-            @Override
-            public void init(final FixedKeyProcessorContext<String, String> context) {
-                this.context = context;
-            }
+        final FixedKeyProcessorSupplier<String, String, String> processor = () -> new SimpleFixedKeyProcessor<>() {
 
             @Override
             public void process(final FixedKeyRecord<String, String> inputRecord) {
@@ -518,7 +508,7 @@ class ImprovedKStreamTest {
                     throw new RuntimeException("Cannot process");
                 }
                 if ("foo".equals(inputRecord.key()) && "baz".equals(inputRecord.value())) {
-                    this.context.forward(inputRecord.withValue("success"));
+                    this.forward(inputRecord.withValue("success"));
                     return;
                 }
                 throw new UnsupportedOperationException();
@@ -617,5 +607,309 @@ class ImprovedKStreamTest {
                 .hasValue(2L)
                 .expectNoMoreRecord();
         topology.stop();
+    }
+
+    @Test
+    void shouldJoin() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> joined = input.join(otherInput,
+                        Long::sum,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
+                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
+                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldJoinWithKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> joined = input.join(otherInput,
+                        (k, v1, v2) -> v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
+                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
+                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldLeftJoin() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> joined = input.leftJoin(otherInput,
+                        (v1, v2) -> v2 == null ? v1 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
+                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
+                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add(2L, 0L);
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(0L)
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldLeftJoinWithKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> joined = input.leftJoin(otherInput,
+                        (k, v1, v2) -> v2 == null ? v1 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
+                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
+                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add(2L, 0L);
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(0L)
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldOuterJoin() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> joined = input.outerJoin(otherInput,
+                        (v1, v2) -> v1 == null ? v2 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
+                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
+                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 3L);
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add(2L, 0L);
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(0L)
+                .add(1L, 2L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(3L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldOuterJoinWithKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKStream<Long, Long> joined = input.outerJoin(otherInput,
+                        (k, v1, v2) -> v1 == null ? v2 : v1 + v2,
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
+                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
+                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("other_input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 3L);
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(Duration.ofMinutes(1L).toMillis() + 1) // trigger flush
+                .add(2L, 0L);
+        topology.input("input")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .at(0L)
+                .add(1L, 2L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(3L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    private abstract static class SimpleProcessor<KIn, VIn, KOut, VOut> implements Processor<KIn, VIn, KOut, VOut> {
+        private ProcessorContext<KOut, VOut> context = null;
+
+        @Override
+        public void init(final ProcessorContext<KOut, VOut> context) {
+            this.context = context;
+        }
+
+        protected void forward(final Record<? extends KOut, ? extends VOut> outputRecord) {
+            this.context.forward(outputRecord);
+        }
+
+    }
+
+    private abstract static class SimpleFixedKeyProcessor<KIn, VIn, VOut> implements FixedKeyProcessor<KIn, VIn, VOut> {
+        private FixedKeyProcessorContext<KIn, VOut> context = null;
+
+        @Override
+        public void init(final FixedKeyProcessorContext<KIn, VOut> context) {
+            this.context = context;
+        }
+
+        protected void forward(final FixedKeyRecord<? extends KIn, ? extends VOut> outputRecord) {
+            this.context.forward(outputRecord);
+        }
+
     }
 }
