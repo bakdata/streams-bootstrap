@@ -49,13 +49,6 @@ public class ConfiguredStores {
     private final @NonNull Configurator configurator;
 
     /**
-     * Creates a {@code StoreBuilder} that can be used to build a {@code SessionStore}
-     * @param supplier a {@code SessionBytesStoreSupplier}
-     * @param keySerde the key serde to use
-     * @param valueSerde the value serde to use
-     * @return a store builder
-     * @param <K> key type
-     * @param <V> value type
      * @see Stores#sessionStoreBuilder(SessionBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<SessionStore<K, V>> sessionStoreBuilder(final SessionBytesStoreSupplier supplier,
@@ -65,13 +58,6 @@ public class ConfiguredStores {
     }
 
     /**
-     * Creates a {@code StoreBuilder} that can be used to build a {@code TimestampedWindowStore}
-     * @param supplier a {@code WindowBytesStoreSupplier}
-     * @param keySerde the key serde to use
-     * @param valueSerde the value serde to use
-     * @return a store builder
-     * @param <K> key type
-     * @param <V> value type
      * @see Stores#timestampedWindowStoreBuilder(WindowBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<TimestampedWindowStore<K, V>> timestampedWindowStoreBuilder(
@@ -82,13 +68,6 @@ public class ConfiguredStores {
     }
 
     /**
-     * Creates a {@code StoreBuilder} that can be used to build a {@code WindowStore}
-     * @param supplier a {@code WindowBytesStoreSupplier}
-     * @param keySerde the key serde to use
-     * @param valueSerde the value serde to use
-     * @return a store builder
-     * @param <K> key type
-     * @param <V> value type
      * @see Stores#windowStoreBuilder(WindowBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<WindowStore<K, V>> windowStoreBuilder(final WindowBytesStoreSupplier supplier,
@@ -98,13 +77,6 @@ public class ConfiguredStores {
     }
 
     /**
-     * Creates a {@code StoreBuilder} that can be used to build a {@code VersionedKeyValueStore}
-     * @param supplier a {@code VersionedBytesStoreSupplier}
-     * @param keySerde the key serde to use
-     * @param valueSerde the value serde to use
-     * @return a store builder
-     * @param <K> key type
-     * @param <V> value type
      * @see Stores#versionedKeyValueStoreBuilder(VersionedBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<VersionedKeyValueStore<K, V>> versionedKeyValueStoreBuilder(
@@ -115,13 +87,6 @@ public class ConfiguredStores {
     }
 
     /**
-     * Creates a {@code StoreBuilder} that can be used to build a {@code TimestampedKeyValueStore}
-     * @param supplier a {@code KeyValueBytesStoreSupplier}
-     * @param keySerde the key serde to use
-     * @param valueSerde the value serde to use
-     * @return a store builder
-     * @param <K> key type
-     * @param <V> value type
      * @see Stores#timestampedKeyValueStoreBuilder(KeyValueBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<TimestampedKeyValueStore<K, V>> timestampedKeyValueStoreBuilder(
@@ -132,13 +97,6 @@ public class ConfiguredStores {
     }
 
     /**
-     * Creates a {@code StoreBuilder} that can be used to build a {@code KeyValueStore}
-     * @param supplier a {@code KeyValueBytesStoreSupplier}
-     * @param keySerde the key serde to use
-     * @param valueSerde the value serde to use
-     * @return a store builder
-     * @param <K> key type
-     * @param <V> value type
      * @see Stores#keyValueStoreBuilder(KeyValueBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<KeyValueStore<K, V>> keyValueStoreBuilder(final KeyValueBytesStoreSupplier supplier,

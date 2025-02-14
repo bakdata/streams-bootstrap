@@ -48,34 +48,21 @@ public final class ConfiguredGrouped<K, V> {
     private final String name;
 
     /**
-     * Create an instance of {@code ConfiguredGrouped} with provided key serde
-     * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredGrouped}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Grouped#keySerde(Serde)
      */
     public static <K, V> ConfiguredGrouped<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredGrouped} with provided value serde
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredGrouped}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Grouped#valueSerde(Serde)
      */
     public static <K, V> ConfiguredGrouped<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     /**
-     * Create an instance of {@code ConfiguredGrouped} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredGrouped}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Grouped#with(Serde, Serde)
      */
     public static <K, V> ConfiguredGrouped<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
@@ -83,11 +70,7 @@ public final class ConfiguredGrouped<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredGrouped} with provided name
-     * @param name the name used for a repartition topic if required
-     * @return a new instance of {@code ConfiguredGrouped}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Grouped#as(String)
      */
     public static <K, V> ConfiguredGrouped<K, V> as(final String name) {
         return new ConfiguredGrouped<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), name);

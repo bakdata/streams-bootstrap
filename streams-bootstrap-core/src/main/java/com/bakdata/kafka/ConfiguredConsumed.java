@@ -72,12 +72,7 @@ public final class ConfiguredConsumed<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredConsumed} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredConsumed}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Consumed#with(Serde, Serde)
      */
     public static <K, V> ConfiguredConsumed<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
@@ -85,11 +80,7 @@ public final class ConfiguredConsumed<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredConsumed} with provided processor name
-     * @param processorName the processor name to be used
-     * @return a new instance of {@code ConfiguredConsumed}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Consumed#as(String)
      */
     public static <K, V> ConfiguredConsumed<K, V> as(final String processorName) {
         return new ConfiguredConsumed<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,

@@ -74,12 +74,7 @@ public final class ConfiguredRepartitioned<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredRepartitioned}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Repartitioned#with(Serde, Serde)
      */
     public static <K, V> ConfiguredRepartitioned<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
@@ -87,11 +82,7 @@ public final class ConfiguredRepartitioned<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided name
-     * @param name the name used as a processor name and part of the repartition topic name
-     * @return a new instance of {@code ConfiguredRepartitioned}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Repartitioned#as(String)
      */
     public static <K, V> ConfiguredRepartitioned<K, V> as(final String name) {
         return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, name,
@@ -99,11 +90,7 @@ public final class ConfiguredRepartitioned<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided number of partitions for repartition topic
-     * @param numberOfPartitions number of partitions
-     * @return a new instance of {@code ConfiguredRepartitioned}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Repartitioned#numberOfPartitions(int)
      */
     public static <K, V> ConfiguredRepartitioned<K, V> numberOfPartitions(final int numberOfPartitions) {
         return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
@@ -111,11 +98,7 @@ public final class ConfiguredRepartitioned<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided partitioner for repartition topic
-     * @param partitioner partitioner to use
-     * @return a new instance of {@code ConfiguredRepartitioned}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Repartitioned#streamPartitioner(StreamPartitioner)
      */
     public static <K, V> ConfiguredRepartitioned<K, V> streamPartitioner(final StreamPartitioner<K, V> partitioner) {
         return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), partitioner,
@@ -123,9 +106,7 @@ public final class ConfiguredRepartitioned<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided number of partitions for repartition topic
-     * @param numberOfPartitions number of partitions
-     * @return a new instance of {@code ConfiguredRepartitioned}
+     * @see Repartitioned#withNumberOfPartitions(int)
      */
     public ConfiguredRepartitioned<K, V> withNumberOfPartitions(final int numberOfPartitions) {
         return new ConfiguredRepartitioned<>(this.keySerde, this.valueSerde, this.streamPartitioner, this.name,

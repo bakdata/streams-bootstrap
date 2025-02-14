@@ -48,34 +48,21 @@ public final class ConfiguredProduced<K, V> {
     private final String name;
 
     /**
-     * Create an instance of {@code ConfiguredProduced} with provided key serde
-     * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredProduced}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Produced#keySerde(Serde) 
      */
     public static <K, V> ConfiguredProduced<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredProduced} with provided value serde
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredProduced}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Produced#valueSerde(Serde)
      */
     public static <K, V> ConfiguredProduced<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     /**
-     * Create an instance of {@code ConfiguredProduced} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredProduced}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Produced#with(Serde, Serde) 
      */
     public static <K, V> ConfiguredProduced<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
@@ -83,11 +70,7 @@ public final class ConfiguredProduced<K, V> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredProduced} with provided processor name
-     * @param processorName the processor name to be used
-     * @return a new instance of {@code ConfiguredProduced}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Produced#as(String) 
      */
     public static <K, V> ConfiguredProduced<K, V> as(final String processorName) {
         return new ConfiguredProduced<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null,

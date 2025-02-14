@@ -50,12 +50,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     private final Duration gracePeriod;
 
     /**
-     * Create an instance of {@code ConfiguredJoined} with provided key serde
-     * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see Joined#keySerde(Serde) 
      */
     public static <K, V1, V2> ConfiguredJoined<K, V1, V2> keySerde(
             final Preconfigured<Serde<K>> keySerde) {
@@ -63,12 +58,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredJoined} with provided value serde
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see Joined#valueSerde(Serde) 
      */
     public static <K, V1, V2> ConfiguredJoined<K, V1, V2> valueSerde(
             final Preconfigured<Serde<V1>> valueSerde) {
@@ -76,12 +66,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredJoined} with provided other value serde
-     * @param valueSerde Serde to use for other values
-     * @return a new instance of {@code ConfiguredJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see Joined#otherValueSerde(Serde) 
      */
     public static <K, V1, V2> ConfiguredJoined<K, V1, V2> otherValueSerde(
             final Preconfigured<Serde<V2>> valueSerde) {
@@ -89,14 +74,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredJoined} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @param otherValueSerde Serde to use for other values
-     * @return a new instance of {@code ConfiguredJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see Joined#with(Serde, Serde, Serde) 
      */
     public static <K, V1, V2> ConfiguredJoined<K, V1, V2> with(
             final Preconfigured<Serde<K>> keySerde,
@@ -106,12 +84,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredJoined} with provided store name
-     * @param name the name used as the base for naming components of the join including any repartition topics
-     * @return a new instance of {@code ConfiguredJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see Joined#as(String) 
      */
     public static <K, V1, V2> ConfiguredJoined<K, V1, V2> as(final String name) {
         return new ConfiguredJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),

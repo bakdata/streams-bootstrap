@@ -86,13 +86,7 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredMaterialized} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredMaterialized}
-     * @param <K> type of keys
-     * @param <V> type of values
-     * @param <S> type of state store
+     * @see Materialized#with(Serde, Serde)
      */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> with(
             final Preconfigured<Serde<K>> keySerde,
@@ -101,12 +95,7 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredMaterialized} with provided store name
-     * @param storeName the store name to be used
-     * @return a new instance of {@code ConfiguredMaterialized}
-     * @param <K> type of keys
-     * @param <V> type of values
-     * @param <S> type of state store
+     * @see Materialized#as(String)
      */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> as(final String storeName) {
         return new ConfiguredMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), storeName, null,
@@ -114,12 +103,7 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredMaterialized} with provided store suppliers
-     * @param storeSuppliers the store suppliers to be used
-     * @return a new instance of {@code ConfiguredMaterialized}
-     * @param <K> type of keys
-     * @param <V> type of values
-     * @param <S> type of state store
+     * @see Materialized#as(DslStoreSuppliers)
      */
     public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> as(
             final DslStoreSuppliers storeSuppliers) {

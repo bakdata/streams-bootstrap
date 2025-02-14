@@ -99,14 +99,7 @@ public final class ConfiguredStreamJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided key and value serde
-     * @param keySerde Serde to use for keys
-     * @param valueSerde Serde to use for values
-     * @param otherValueSerde Serde to use for other values
-     * @return a new instance of {@code ConfiguredStreamJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see StreamJoined#with(Serde, Serde, Serde)
      */
     public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> with(
             final Preconfigured<Serde<K>> keySerde,
@@ -117,12 +110,7 @@ public final class ConfiguredStreamJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided store name
-     * @param storeName the store name to be used
-     * @return a new instance of {@code ConfiguredStreamJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see StreamJoined#as(String)
      */
     public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> as(final String storeName) {
         return new ConfiguredStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
@@ -131,15 +119,9 @@ public final class ConfiguredStreamJoined<K, V1, V2> {
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided store suppliers
-     * @param storeSuppliers the store suppliers to be used
-     * @return a new instance of {@code ConfiguredStreamJoined}
-     * @param <K> type of keys
-     * @param <V1> this value type
-     * @param <V2> other value type
+     * @see StreamJoined#with(DslStoreSuppliers)
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> as(
-            final DslStoreSuppliers storeSuppliers) {
+    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> with(final DslStoreSuppliers storeSuppliers) {
         return new ConfiguredStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
                 Preconfigured.defaultSerde(), storeSuppliers,
                 null, null, new HashMap<>(), true);
