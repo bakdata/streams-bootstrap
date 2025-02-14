@@ -63,7 +63,7 @@ public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, V
      * @see #aggregate(Initializer, Materialized)
      */
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer,
-            ConfiguredMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
+            AutoMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
@@ -73,7 +73,7 @@ public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, V
      * @see #aggregate(Initializer, Named, Materialized)
      */
     ImprovedKTable<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
-            ConfiguredMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
+            AutoMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <W extends Window> ImprovedTimeWindowedCogroupedKStream<K, VOut> windowedBy(Windows<W> windows);

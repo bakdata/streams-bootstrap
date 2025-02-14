@@ -41,7 +41,7 @@ import org.apache.kafka.streams.kstream.Joined;
  */
 @With
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredJoined<K, V1, V2> {
+public final class AutoJoined<K, V1, V2> {
 
     private final @NonNull Preconfigured<Serde<K>> keySerde;
     private final @NonNull Preconfigured<Serde<V1>> valueSerde;
@@ -52,7 +52,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     /**
      * @see Joined#keySerde(Serde) 
      */
-    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> keySerde(
+    public static <K, V1, V2> AutoJoined<K, V1, V2> keySerde(
             final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde(), Preconfigured.defaultSerde());
     }
@@ -60,7 +60,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     /**
      * @see Joined#valueSerde(Serde) 
      */
-    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> valueSerde(
+    public static <K, V1, V2> AutoJoined<K, V1, V2> valueSerde(
             final Preconfigured<Serde<V1>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde, Preconfigured.defaultSerde());
     }
@@ -68,7 +68,7 @@ public final class ConfiguredJoined<K, V1, V2> {
     /**
      * @see Joined#otherValueSerde(Serde) 
      */
-    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> otherValueSerde(
+    public static <K, V1, V2> AutoJoined<K, V1, V2> otherValueSerde(
             final Preconfigured<Serde<V2>> valueSerde) {
         return with(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), valueSerde);
     }
@@ -76,18 +76,18 @@ public final class ConfiguredJoined<K, V1, V2> {
     /**
      * @see Joined#with(Serde, Serde, Serde) 
      */
-    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> with(
+    public static <K, V1, V2> AutoJoined<K, V1, V2> with(
             final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V1>> valueSerde,
             final Preconfigured<Serde<V2>> otherValueSerde) {
-        return new ConfiguredJoined<>(keySerde, valueSerde, otherValueSerde, null, null);
+        return new AutoJoined<>(keySerde, valueSerde, otherValueSerde, null, null);
     }
 
     /**
      * @see Joined#as(String) 
      */
-    public static <K, V1, V2> ConfiguredJoined<K, V1, V2> as(final String name) {
-        return new ConfiguredJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
+    public static <K, V1, V2> AutoJoined<K, V1, V2> as(final String name) {
+        return new AutoJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
                 Preconfigured.defaultSerde(), name, null);
     }
 

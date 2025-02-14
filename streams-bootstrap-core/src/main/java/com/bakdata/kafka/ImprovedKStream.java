@@ -244,35 +244,35 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     /**
      * @see #repartition(Repartitioned)
      */
-    ImprovedKStream<K, V> repartition(ConfiguredRepartitioned<K, V> repartitioned);
+    ImprovedKStream<K, V> repartition(AutoRepartitioned<K, V> repartitioned);
 
     /**
      * @see #to(String, Produced)
      */
-    void to(String topic, ConfiguredProduced<K, V> produced);
+    void to(String topic, AutoProduced<K, V> produced);
 
     /**
      * @see #to(TopicNameExtractor, Produced)
      */
-    void to(TopicNameExtractor<K, V> topicExtractor, ConfiguredProduced<K, V> produced);
+    void to(TopicNameExtractor<K, V> topicExtractor, AutoProduced<K, V> produced);
 
     void toOutputTopic();
 
     void toOutputTopic(Produced<K, V> produced);
 
-    void toOutputTopic(ConfiguredProduced<K, V> produced);
+    void toOutputTopic(AutoProduced<K, V> produced);
 
     void toOutputTopic(String label);
 
     void toOutputTopic(String label, Produced<K, V> produced);
 
-    void toOutputTopic(String label, ConfiguredProduced<K, V> produced);
+    void toOutputTopic(String label, AutoProduced<K, V> produced);
 
     void toErrorTopic();
 
     void toErrorTopic(Produced<K, V> produced);
 
-    void toErrorTopic(ConfiguredProduced<K, V> produced);
+    void toErrorTopic(AutoProduced<K, V> produced);
 
     @Override
     ImprovedKTable<K, V> toTable();
@@ -286,7 +286,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     /**
      * @see #toTable(Materialized)
      */
-    ImprovedKTable<K, V> toTable(ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    ImprovedKTable<K, V> toTable(AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     ImprovedKTable<K, V> toTable(Named named, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
@@ -294,7 +294,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     /**
      * @see #toTable(Named, Materialized)
      */
-    ImprovedKTable<K, V> toTable(Named named, ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    ImprovedKTable<K, V> toTable(Named named, AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector);
@@ -307,7 +307,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      * @see #groupBy(KeyValueMapper, Grouped)
      */
     <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
-            ConfiguredGrouped<KR, V> grouped);
+            AutoGrouped<KR, V> grouped);
 
     @Override
     ImprovedKGroupedStream<K, V> groupByKey();
@@ -318,7 +318,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     /**
      * @see #groupByKey(Grouped)
      */
-    ImprovedKGroupedStream<K, V> groupByKey(ConfiguredGrouped<K, V> grouped);
+    ImprovedKGroupedStream<K, V> groupByKey(AutoGrouped<K, V> grouped);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
@@ -339,7 +339,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
-            JoinWindows windows, ConfiguredStreamJoined<K, V, VO> streamJoined);
+            JoinWindows windows, AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
@@ -351,7 +351,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            ConfiguredStreamJoined<K, V, VO> streamJoined);
+            AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
@@ -371,7 +371,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            ConfiguredStreamJoined<K, V, VO> streamJoined);
+            AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
@@ -383,7 +383,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            ConfiguredStreamJoined<K, V, VO> streamJoined);
+            AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
@@ -403,7 +403,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            ConfiguredStreamJoined<K, V, VO> streamJoined);
+            AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
@@ -415,7 +415,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            ConfiguredStreamJoined<K, V, VO> streamJoined);
+            AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner);
@@ -432,7 +432,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      * @see #join(KTable, ValueJoiner, Joined)
      */
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
-            ConfiguredJoined<K, V, VT> joined);
+            AutoJoined<K, V, VT> joined);
 
     @Override
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
@@ -443,7 +443,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
-            ConfiguredJoined<K, V, VT> joined);
+            AutoJoined<K, V, VT> joined);
 
     @Override
     <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
@@ -463,7 +463,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
-            ConfiguredJoined<K, V, VT> joined);
+            AutoJoined<K, V, VT> joined);
 
     @Override
     <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
@@ -474,7 +474,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      */
     <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
-            ConfiguredJoined<K, V, VT> joined);
+            AutoJoined<K, V, VT> joined);
 
     @Override
     <GK, GV, RV> ImprovedKStream<K, RV> join(GlobalKTable<GK, GV> globalTable,

@@ -58,7 +58,7 @@ class ImprovedTimeWindowedCogroupedStreamImpl<K, V> implements ImprovedTimeWindo
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
-            final ConfiguredMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
+            final AutoMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -70,7 +70,7 @@ class ImprovedTimeWindowedCogroupedStreamImpl<K, V> implements ImprovedTimeWindo
 
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
-            final ConfiguredMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
+            final AutoMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, named, materialized.configure(this.context.getConfigurator()));
     }
 }

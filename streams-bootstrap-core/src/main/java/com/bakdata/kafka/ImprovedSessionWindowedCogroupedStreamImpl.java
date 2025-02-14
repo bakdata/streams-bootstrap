@@ -64,7 +64,7 @@ class ImprovedSessionWindowedCogroupedStreamImpl<K, V> implements ImprovedSessio
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
-            final ConfiguredMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+            final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, sessionMerger, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -78,7 +78,7 @@ class ImprovedSessionWindowedCogroupedStreamImpl<K, V> implements ImprovedSessio
     @Override
     public ImprovedKTable<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
-            final Named named, final ConfiguredMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+            final Named named, final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, sessionMerger, named,
                 materialized.configure(this.context.getConfigurator()));
     }

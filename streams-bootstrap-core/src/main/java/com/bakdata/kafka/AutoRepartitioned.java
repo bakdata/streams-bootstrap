@@ -39,7 +39,7 @@ import org.apache.kafka.streams.processor.StreamPartitioner;
  * @see Repartitioned
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredRepartitioned<K, V> {
+public final class AutoRepartitioned<K, V> {
 
     @With
     private final @NonNull Preconfigured<Serde<K>> keySerde;
@@ -52,64 +52,64 @@ public final class ConfiguredRepartitioned<K, V> {
     private final Integer numberOfPartitions;
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided key serde
+     * Create an instance of {@code AutoRepartitioned} with provided key serde
      * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredRepartitioned}
+     * @return a new instance of {@code AutoRepartitioned}
      * @param <K> type of keys
      * @param <V> type of values
      */
-    public static <K, V> ConfiguredRepartitioned<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
+    public static <K, V> AutoRepartitioned<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredRepartitioned} with provided value serde
+     * Create an instance of {@code AutoRepartitioned} with provided value serde
      * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredRepartitioned}
+     * @return a new instance of {@code AutoRepartitioned}
      * @param <K> type of keys
      * @param <V> type of values
      */
-    public static <K, V> ConfiguredRepartitioned<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
+    public static <K, V> AutoRepartitioned<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     /**
      * @see Repartitioned#with(Serde, Serde)
      */
-    public static <K, V> ConfiguredRepartitioned<K, V> with(final Preconfigured<Serde<K>> keySerde,
+    public static <K, V> AutoRepartitioned<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
-        return new ConfiguredRepartitioned<>(keySerde, valueSerde, null, null, null);
+        return new AutoRepartitioned<>(keySerde, valueSerde, null, null, null);
     }
 
     /**
      * @see Repartitioned#as(String)
      */
-    public static <K, V> ConfiguredRepartitioned<K, V> as(final String name) {
-        return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, name,
+    public static <K, V> AutoRepartitioned<K, V> as(final String name) {
+        return new AutoRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, name,
                 null);
     }
 
     /**
      * @see Repartitioned#numberOfPartitions(int)
      */
-    public static <K, V> ConfiguredRepartitioned<K, V> numberOfPartitions(final int numberOfPartitions) {
-        return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
+    public static <K, V> AutoRepartitioned<K, V> numberOfPartitions(final int numberOfPartitions) {
+        return new AutoRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
                 numberOfPartitions);
     }
 
     /**
      * @see Repartitioned#streamPartitioner(StreamPartitioner)
      */
-    public static <K, V> ConfiguredRepartitioned<K, V> streamPartitioner(final StreamPartitioner<K, V> partitioner) {
-        return new ConfiguredRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), partitioner,
+    public static <K, V> AutoRepartitioned<K, V> streamPartitioner(final StreamPartitioner<K, V> partitioner) {
+        return new AutoRepartitioned<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), partitioner,
                 null, null);
     }
 
     /**
      * @see Repartitioned#withNumberOfPartitions(int)
      */
-    public ConfiguredRepartitioned<K, V> withNumberOfPartitions(final int numberOfPartitions) {
-        return new ConfiguredRepartitioned<>(this.keySerde, this.valueSerde, this.streamPartitioner, this.name,
+    public AutoRepartitioned<K, V> withNumberOfPartitions(final int numberOfPartitions) {
+        return new AutoRepartitioned<>(this.keySerde, this.valueSerde, this.streamPartitioner, this.name,
                 numberOfPartitions);
     }
 

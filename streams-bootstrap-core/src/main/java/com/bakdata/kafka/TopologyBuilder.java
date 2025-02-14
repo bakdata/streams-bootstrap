@@ -66,7 +66,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#stream(String, Consumed)
      */
-    public <K, V> ImprovedKStream<K, V> stream(final String topic, final ConfiguredConsumed<K, V> consumed) {
+    public <K, V> ImprovedKStream<K, V> stream(final String topic, final AutoConsumed<K, V> consumed) {
         return this.stream(topic, consumed.configure(this.createConfigurator()));
     }
 
@@ -88,7 +88,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> stream(final Collection<String> topics,
-            final ConfiguredConsumed<K, V> consumed) {
+            final AutoConsumed<K, V> consumed) {
         return this.stream(topics, consumed.configure(this.createConfigurator()));
     }
 
@@ -109,7 +109,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
-    public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final ConfiguredConsumed<K, V> consumed) {
+    public <K, V> ImprovedKStream<K, V> stream(final Pattern topicPattern, final AutoConsumed<K, V> consumed) {
         return this.stream(topicPattern, consumed.configure(this.createConfigurator()));
     }
 
@@ -133,7 +133,7 @@ public class TopologyBuilder {
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> ImprovedKStream<K, V> streamInput(final ConfiguredConsumed<K, V> consumed) {
+    public <K, V> ImprovedKStream<K, V> streamInput(final AutoConsumed<K, V> consumed) {
         return this.streamInput(consumed.configure(this.createConfigurator()));
     }
 
@@ -170,7 +170,7 @@ public class TopologyBuilder {
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> ImprovedKStream<K, V> streamInput(final String label, final ConfiguredConsumed<K, V> consumed) {
+    public <K, V> ImprovedKStream<K, V> streamInput(final String label, final AutoConsumed<K, V> consumed) {
         return this.streamInput(label, consumed.configure(this.createConfigurator()));
     }
 
@@ -206,7 +206,7 @@ public class TopologyBuilder {
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
-    public <K, V> ImprovedKStream<K, V> streamInputPattern(final ConfiguredConsumed<K, V> consumed) {
+    public <K, V> ImprovedKStream<K, V> streamInputPattern(final AutoConsumed<K, V> consumed) {
         return this.streamInputPattern(consumed.configure(this.createConfigurator()));
     }
 
@@ -244,7 +244,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> ImprovedKStream<K, V> streamInputPattern(final String label,
-            final ConfiguredConsumed<K, V> consumed) {
+            final AutoConsumed<K, V> consumed) {
         return this.streamInputPattern(label, consumed.configure(this.createConfigurator()));
     }
 
@@ -287,10 +287,10 @@ public class TopologyBuilder {
 
     /**
      * Create stores using application context to lazily configures Serdes
-     * @return {@code ConfiguredStores}
+     * @return {@code AutoStores}
      */
-    public ConfiguredStores stores() {
-        return new ConfiguredStores(this.createConfigurator());
+    public AutoStores stores() {
+        return new AutoStores(this.createConfigurator());
     }
 
     Topology build() {

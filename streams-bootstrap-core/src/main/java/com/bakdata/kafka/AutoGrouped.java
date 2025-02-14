@@ -38,7 +38,7 @@ import org.apache.kafka.streams.kstream.Grouped;
  * @see Grouped
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredGrouped<K, V> {
+public final class AutoGrouped<K, V> {
 
     @With
     private final @NonNull Preconfigured<Serde<K>> keySerde;
@@ -50,30 +50,30 @@ public final class ConfiguredGrouped<K, V> {
     /**
      * @see Grouped#keySerde(Serde)
      */
-    public static <K, V> ConfiguredGrouped<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
+    public static <K, V> AutoGrouped<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
     /**
      * @see Grouped#valueSerde(Serde)
      */
-    public static <K, V> ConfiguredGrouped<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
+    public static <K, V> AutoGrouped<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     /**
      * @see Grouped#with(Serde, Serde)
      */
-    public static <K, V> ConfiguredGrouped<K, V> with(final Preconfigured<Serde<K>> keySerde,
+    public static <K, V> AutoGrouped<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
-        return new ConfiguredGrouped<>(keySerde, valueSerde, null);
+        return new AutoGrouped<>(keySerde, valueSerde, null);
     }
 
     /**
      * @see Grouped#as(String)
      */
-    public static <K, V> ConfiguredGrouped<K, V> as(final String name) {
-        return new ConfiguredGrouped<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), name);
+    public static <K, V> AutoGrouped<K, V> as(final String name) {
+        return new AutoGrouped<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), name);
     }
 
     Grouped<K, V> configure(final Configurator configurator) {

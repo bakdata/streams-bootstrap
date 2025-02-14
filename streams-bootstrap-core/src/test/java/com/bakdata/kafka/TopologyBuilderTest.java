@@ -63,9 +63,9 @@ class TopologyBuilderTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.streamInput(
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -115,9 +115,9 @@ class TopologyBuilderTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.streamInput("label",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -167,9 +167,9 @@ class TopologyBuilderTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.streamInputPattern(
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -219,9 +219,9 @@ class TopologyBuilderTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.streamInputPattern("label",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };

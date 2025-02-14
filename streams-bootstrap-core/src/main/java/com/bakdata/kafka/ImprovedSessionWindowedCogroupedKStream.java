@@ -56,7 +56,7 @@ public interface ImprovedSessionWindowedCogroupedKStream<K, VOut> extends Sessio
      * @see #aggregate(Initializer, Merger, Materialized)
      */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
-            ConfiguredMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
+            AutoMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
@@ -66,5 +66,5 @@ public interface ImprovedSessionWindowedCogroupedKStream<K, VOut> extends Sessio
      * @see #aggregate(Initializer, Merger, Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
-            Named named, ConfiguredMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
+            Named named, AutoMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 }

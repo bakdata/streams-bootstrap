@@ -65,15 +65,15 @@ class ImprovedKGroupedStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
-                        ConfiguredGrouped.with(Preconfigured.create(Serdes.Long()),
+                        AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKTable<Long, Long> reduced = grouped.reduce(Long::sum,
-                        ConfiguredMaterialized.with(Preconfigured.create(Serdes.Long()),
+                        AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                reduced.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                reduced.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -131,16 +131,16 @@ class ImprovedKGroupedStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
-                        ConfiguredGrouped.with(Preconfigured.create(Serdes.Long()),
+                        AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKTable<Long, Long> aggregated =
                         grouped.aggregate(() -> 0L, (key, value, aggregate) -> aggregate + value,
-                                ConfiguredMaterialized.with(Preconfigured.create(Serdes.Long()),
+                                AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                         Preconfigured.create(Serdes.Long())));
-                aggregated.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                aggregated.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };

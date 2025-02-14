@@ -44,7 +44,7 @@ import org.apache.kafka.streams.state.WindowStore;
  * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Stores} using {@link Configurator}
  */
 @RequiredArgsConstructor
-public class ConfiguredStores {
+public class AutoStores {
 
     private final @NonNull Configurator configurator;
 

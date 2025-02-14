@@ -44,7 +44,7 @@ import org.apache.kafka.streams.state.DslStoreSuppliers;
  * @see Materialized
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredMaterialized<K, V, S extends StateStore> {
+public final class AutoMaterialized<K, V, S extends StateStore> {
 
     @With
     private final @NonNull Preconfigured<Serde<K>> keySerde;
@@ -60,27 +60,27 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     private final boolean cachingEnabled;
 
     /**
-     * Create an instance of {@code ConfiguredMaterialized} with provided key serde
+     * Create an instance of {@code AutoMaterialized} with provided key serde
      * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredMaterialized}
+     * @return a new instance of {@code AutoMaterialized}
      * @param <K> type of keys
      * @param <V> type of values
      * @param <S> type of state store
      */
-    public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> keySerde(
+    public static <K, V, S extends StateStore> AutoMaterialized<K, V, S> keySerde(
             final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredMaterialized} with provided value serde
+     * Create an instance of {@code AutoMaterialized} with provided value serde
      * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredMaterialized}
+     * @return a new instance of {@code AutoMaterialized}
      * @param <K> type of keys
      * @param <V> type of values
      * @param <S> type of state store
      */
-    public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> valueSerde(
+    public static <K, V, S extends StateStore> AutoMaterialized<K, V, S> valueSerde(
             final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
@@ -88,26 +88,26 @@ public final class ConfiguredMaterialized<K, V, S extends StateStore> {
     /**
      * @see Materialized#with(Serde, Serde)
      */
-    public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> with(
+    public static <K, V, S extends StateStore> AutoMaterialized<K, V, S> with(
             final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
-        return new ConfiguredMaterialized<>(keySerde, valueSerde, null, null, null, new HashMap<>(), true, true);
+        return new AutoMaterialized<>(keySerde, valueSerde, null, null, null, new HashMap<>(), true, true);
     }
 
     /**
      * @see Materialized#as(String)
      */
-    public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> as(final String storeName) {
-        return new ConfiguredMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), storeName, null,
+    public static <K, V, S extends StateStore> AutoMaterialized<K, V, S> as(final String storeName) {
+        return new AutoMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), storeName, null,
                 null, new HashMap<>(), true, true);
     }
 
     /**
      * @see Materialized#as(DslStoreSuppliers)
      */
-    public static <K, V, S extends StateStore> ConfiguredMaterialized<K, V, S> as(
+    public static <K, V, S extends StateStore> AutoMaterialized<K, V, S> as(
             final DslStoreSuppliers storeSuppliers) {
-        return new ConfiguredMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
+        return new AutoMaterialized<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
                 storeSuppliers, new HashMap<>(), true, true);
     }
 

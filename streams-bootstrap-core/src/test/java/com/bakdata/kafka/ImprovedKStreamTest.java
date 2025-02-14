@@ -95,9 +95,9 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.toOutputTopic(ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.toOutputTopic(AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -147,9 +147,9 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.toOutputTopic("label", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.toOutputTopic("label", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -199,9 +199,9 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.toErrorTopic(ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.toErrorTopic(AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -844,12 +844,12 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> repartitioned = input.repartition(
-                        ConfiguredRepartitioned.with(Preconfigured.create(Serdes.Long()),
+                        AutoRepartitioned.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                repartitioned.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                repartitioned.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -897,12 +897,12 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKTable<Long, Long> table = input.toTable(
-                        ConfiguredMaterialized.with(Preconfigured.create(Serdes.Long()),
+                        AutoMaterialized.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                table.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                table.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1118,17 +1118,17 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> joined = input.join(otherInput,
                         Long::sum,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                        AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
-                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                joined.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1158,17 +1158,17 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> joined = input.join(otherInput,
                         (k, v1, v2) -> v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                        AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
-                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                joined.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1198,17 +1198,17 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> joined = input.leftJoin(otherInput,
                         (v1, v2) -> v2 == null ? v1 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                        AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
-                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                joined.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1247,17 +1247,17 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> joined = input.leftJoin(otherInput,
                         (k, v1, v2) -> v2 == null ? v1 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                        AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
-                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                joined.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1296,17 +1296,17 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> joined = input.outerJoin(otherInput,
                         (v1, v2) -> v1 == null ? v2 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                        AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
-                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                joined.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1345,17 +1345,17 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKStream<Long, Long> joined = input.outerJoin(otherInput,
                         (k, v1, v2) -> v1 == null ? v2 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        ConfiguredStreamJoined.with(Preconfigured.create(Serdes.Long()),
+                        AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long()), Preconfigured.create(Serdes.Long())));
-                joined.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                joined.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1422,13 +1422,13 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
-                        ConfiguredGrouped.with(Preconfigured.create(Serdes.Long()),
+                        AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKTable<Long, Long> count = grouped.count();
-                count.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                count.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
@@ -1486,13 +1486,13 @@ class ImprovedKStreamTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
-                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                        AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKGroupedStream<Long, Long> grouped = input.groupBy((k, v) -> v,
-                        ConfiguredGrouped.with(Preconfigured.create(Serdes.Long()),
+                        AutoGrouped.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final ImprovedKTable<Long, Long> count = grouped.count();
-                count.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                count.toStream().to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };

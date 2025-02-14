@@ -29,70 +29,59 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.streams.Topology.AutoOffsetReset;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.processor.TimestampExtractor;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.processor.StreamPartitioner;
 
 /**
- * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Consumed} using {@link Configurator}
+ * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Produced} using {@link Configurator}
  * @param <K> type of keys
  * @param <V> type of values
- * @see Consumed
+ * @see Produced
  */
 @With
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredConsumed<K, V> {
+public final class AutoProduced<K, V> {
 
     private final @NonNull Preconfigured<Serde<K>> keySerde;
     private final @NonNull Preconfigured<Serde<V>> valueSerde;
-    private final TimestampExtractor timestampExtractor;
-    private final AutoOffsetReset offsetResetPolicy;
+    private final StreamPartitioner<? super K, ? super V> streamPartitioner;
     private final String name;
 
     /**
-     * Create an instance of {@code ConfiguredConsumed} with provided key serde
-     * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredConsumed}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Produced#keySerde(Serde) 
      */
-    public static <K, V> ConfiguredConsumed<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
+    public static <K, V> AutoProduced<K, V> keySerde(final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredConsumed} with provided value serde
-     * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredConsumed}
-     * @param <K> type of keys
-     * @param <V> type of values
+     * @see Produced#valueSerde(Serde)
      */
-    public static <K, V> ConfiguredConsumed<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
+    public static <K, V> AutoProduced<K, V> valueSerde(final Preconfigured<Serde<V>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde);
     }
 
     /**
-     * @see Consumed#with(Serde, Serde)
+     * @see Produced#with(Serde, Serde) 
      */
-    public static <K, V> ConfiguredConsumed<K, V> with(final Preconfigured<Serde<K>> keySerde,
+    public static <K, V> AutoProduced<K, V> with(final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V>> valueSerde) {
-        return new ConfiguredConsumed<>(keySerde, valueSerde, null, null, null);
+        return new AutoProduced<>(keySerde, valueSerde, null, null);
     }
 
     /**
-     * @see Consumed#as(String)
+     * @see Produced#as(String) 
      */
-    public static <K, V> ConfiguredConsumed<K, V> as(final String processorName) {
-        return new ConfiguredConsumed<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null, null,
+    public static <K, V> AutoProduced<K, V> as(final String processorName) {
+        return new AutoProduced<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), null,
                 processorName);
     }
 
-    Consumed<K, V> configure(final Configurator configurator) {
-        return Consumed.<K, V>as(this.name)
+    Produced<K, V> configure(final Configurator configurator) {
+        return Produced.<K, V>as(this.name)
                 .withKeySerde(configurator.configureForKeys(this.keySerde))
                 .withValueSerde(configurator.configureForValues(this.valueSerde))
-                .withOffsetResetPolicy(this.offsetResetPolicy)
-                .withTimestampExtractor(this.timestampExtractor);
+                .withStreamPartitioner(this.streamPartitioner);
     }
 
 }

@@ -426,7 +426,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedKStream<K, V> repartition(final ConfiguredRepartitioned<K, V> repartitioned) {
+    public ImprovedKStream<K, V> repartition(final AutoRepartitioned<K, V> repartitioned) {
         return this.repartition(repartitioned.configure(this.context.getConfigurator()));
     }
 
@@ -441,7 +441,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public void to(final String topic, final ConfiguredProduced<K, V> produced) {
+    public void to(final String topic, final AutoProduced<K, V> produced) {
         this.to(topic, produced.configure(this.context.getConfigurator()));
     }
 
@@ -456,7 +456,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public void to(final TopicNameExtractor<K, V> topicExtractor, final ConfiguredProduced<K, V> produced) {
+    public void to(final TopicNameExtractor<K, V> topicExtractor, final AutoProduced<K, V> produced) {
         this.to(topicExtractor, produced.configure(this.context.getConfigurator()));
     }
 
@@ -471,7 +471,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public void toOutputTopic(final ConfiguredProduced<K, V> produced) {
+    public void toOutputTopic(final AutoProduced<K, V> produced) {
         this.toOutputTopic(produced.configure(this.context.getConfigurator()));
     }
 
@@ -486,7 +486,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public void toOutputTopic(final String label, final ConfiguredProduced<K, V> produced) {
+    public void toOutputTopic(final String label, final AutoProduced<K, V> produced) {
         this.toOutputTopic(label, produced.configure(this.context.getConfigurator()));
     }
 
@@ -501,7 +501,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public void toErrorTopic(final ConfiguredProduced<K, V> produced) {
+    public void toErrorTopic(final AutoProduced<K, V> produced) {
         this.toErrorTopic(produced.configure(this.context.getConfigurator()));
     }
 
@@ -521,7 +521,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedKTable<K, V> toTable(final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+    public ImprovedKTable<K, V> toTable(final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.toTable(materialized.configure(this.context.getConfigurator()));
     }
 
@@ -533,7 +533,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public ImprovedKTable<K, V> toTable(final Named named,
-            final ConfiguredMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.toTable(named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -550,7 +550,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
-            final ConfiguredGrouped<KR, V> grouped) {
+            final AutoGrouped<KR, V> grouped) {
         return this.groupBy(keySelector, grouped.configure(this.context.getConfigurator()));
     }
 
@@ -565,7 +565,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedKGroupedStream<K, V> groupByKey(final ConfiguredGrouped<K, V> grouped) {
+    public ImprovedKGroupedStream<K, V> groupByKey(final AutoGrouped<K, V> grouped) {
         return this.groupByKey(grouped.configure(this.context.getConfigurator()));
     }
 
@@ -595,7 +595,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
-            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+            final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.join(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
@@ -610,7 +610,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
-            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+            final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.join(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
@@ -640,7 +640,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
-            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+            final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.leftJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
@@ -655,7 +655,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
-            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+            final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.leftJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
@@ -685,7 +685,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
-            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+            final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.outerJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
@@ -700,7 +700,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
-            final ConfiguredStreamJoined<K, V, VO> streamJoined) {
+            final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.outerJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
@@ -727,7 +727,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
-            final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final ConfiguredJoined<K, V, VT> joined) {
+            final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final AutoJoined<K, V, VT> joined) {
         return this.join(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
@@ -742,7 +742,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
-            final ConfiguredJoined<K, V, VT> joined) {
+            final AutoJoined<K, V, VT> joined) {
         return this.join(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
@@ -769,7 +769,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
-            final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final ConfiguredJoined<K, V, VT> joined) {
+            final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final AutoJoined<K, V, VT> joined) {
         return this.leftJoin(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
@@ -784,7 +784,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
-            final ConfiguredJoined<K, V, VT> joined) {
+            final AutoJoined<K, V, VT> joined) {
         return this.leftJoin(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 

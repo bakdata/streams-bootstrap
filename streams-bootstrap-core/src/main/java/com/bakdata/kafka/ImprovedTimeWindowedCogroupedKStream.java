@@ -54,7 +54,7 @@ public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindo
      * @see #aggregate(Initializer, Materialized)
      */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
-            ConfiguredMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+            AutoMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
     @Override
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
@@ -64,5 +64,5 @@ public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindo
      * @see #aggregate(Initializer, Named, Materialized)
      */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
-            ConfiguredMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+            AutoMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 }

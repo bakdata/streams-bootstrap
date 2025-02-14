@@ -42,7 +42,7 @@ import org.apache.kafka.streams.state.DslStoreSuppliers;
  * @see StreamJoined
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfiguredStreamJoined<K, V1, V2> {
+public final class AutoStreamJoined<K, V1, V2> {
 
     @With
     private final @NonNull Preconfigured<Serde<K>> keySerde;
@@ -60,40 +60,40 @@ public final class ConfiguredStreamJoined<K, V1, V2> {
     private final boolean loggingEnabled;
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided key serde
+     * Create an instance of {@code AutoStreamJoined} with provided key serde
      * @param keySerde Serde to use for keys
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code AutoStreamJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> keySerde(
+    public static <K, V1, V2> AutoStreamJoined<K, V1, V2> keySerde(
             final Preconfigured<Serde<K>> keySerde) {
         return with(keySerde, Preconfigured.defaultSerde(), Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided value serde
+     * Create an instance of {@code AutoStreamJoined} with provided value serde
      * @param valueSerde Serde to use for values
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code AutoStreamJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> valueSerde(
+    public static <K, V1, V2> AutoStreamJoined<K, V1, V2> valueSerde(
             final Preconfigured<Serde<V1>> valueSerde) {
         return with(Preconfigured.defaultSerde(), valueSerde, Preconfigured.defaultSerde());
     }
 
     /**
-     * Create an instance of {@code ConfiguredStreamJoined} with provided other value serde
+     * Create an instance of {@code AutoStreamJoined} with provided other value serde
      * @param valueSerde Serde to use for other values
-     * @return a new instance of {@code ConfiguredStreamJoined}
+     * @return a new instance of {@code AutoStreamJoined}
      * @param <K> type of keys
      * @param <V1> this value type
      * @param <V2> other value type
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> otherValueSerde(
+    public static <K, V1, V2> AutoStreamJoined<K, V1, V2> otherValueSerde(
             final Preconfigured<Serde<V2>> valueSerde) {
         return with(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(), valueSerde);
     }
@@ -101,19 +101,19 @@ public final class ConfiguredStreamJoined<K, V1, V2> {
     /**
      * @see StreamJoined#with(Serde, Serde, Serde)
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> with(
+    public static <K, V1, V2> AutoStreamJoined<K, V1, V2> with(
             final Preconfigured<Serde<K>> keySerde,
             final Preconfigured<Serde<V1>> valueSerde,
             final Preconfigured<Serde<V2>> otherValueSerde) {
-        return new ConfiguredStreamJoined<>(keySerde, valueSerde, otherValueSerde, null, null, null, new HashMap<>(),
+        return new AutoStreamJoined<>(keySerde, valueSerde, otherValueSerde, null, null, null, new HashMap<>(),
                 true);
     }
 
     /**
      * @see StreamJoined#as(String)
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> as(final String storeName) {
-        return new ConfiguredStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
+    public static <K, V1, V2> AutoStreamJoined<K, V1, V2> as(final String storeName) {
+        return new AutoStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
                 Preconfigured.defaultSerde(),
                 null, null, storeName, new HashMap<>(), true);
     }
@@ -121,8 +121,8 @@ public final class ConfiguredStreamJoined<K, V1, V2> {
     /**
      * @see StreamJoined#with(DslStoreSuppliers)
      */
-    public static <K, V1, V2> ConfiguredStreamJoined<K, V1, V2> with(final DslStoreSuppliers storeSuppliers) {
-        return new ConfiguredStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
+    public static <K, V1, V2> AutoStreamJoined<K, V1, V2> with(final DslStoreSuppliers storeSuppliers) {
+        return new AutoStreamJoined<>(Preconfigured.defaultSerde(), Preconfigured.defaultSerde(),
                 Preconfigured.defaultSerde(), storeSuppliers,
                 null, null, new HashMap<>(), true);
     }
