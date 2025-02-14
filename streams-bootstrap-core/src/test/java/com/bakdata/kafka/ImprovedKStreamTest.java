@@ -36,6 +36,14 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
+import org.apache.kafka.streams.processor.api.FixedKeyProcessor;
+import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
+import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
+import org.apache.kafka.streams.processor.api.FixedKeyRecord;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.processor.api.Record;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,6 +54,15 @@ import org.mockito.quality.Strictness;
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class ImprovedKStreamTest {
 
+    static <K, V> TestTopology<K, V> startApp(final StreamsApp app, final StreamsTopicConfig topicConfig) {
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(topicConfig));
+        final TestTopology<K, V> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        return topology;
+    }
+
     @Test
     void shouldWriteToOutput() {
         final StreamsApp app = new SimpleApp() {
@@ -55,13 +72,10 @@ class ImprovedKStreamTest {
                 input.toOutputTopic();
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .outputTopic("output")
-                        .build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder()
+                        .outputTopic("output")
+                        .build());
         topology.input().add("foo", "bar");
         topology.streamOutput()
                 .expectNextRecord()
@@ -83,13 +97,10 @@ class ImprovedKStreamTest {
                         Preconfigured.create(Serdes.Long())));
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .outputTopic("output")
-                        .build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder()
+                        .outputTopic("output")
+                        .build());
         topology.input()
                 .withKeySerde(Serdes.Long())
                 .withValueSerde(Serdes.Long())
@@ -113,13 +124,10 @@ class ImprovedKStreamTest {
                 input.toOutputTopic("label");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .labeledOutputTopics(Map.of("label", "output"))
-                        .build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder()
+                        .labeledOutputTopics(Map.of("label", "output"))
+                        .build());
         topology.input().add("foo", "bar");
         topology.streamOutput()
                 .expectNextRecord()
@@ -141,13 +149,10 @@ class ImprovedKStreamTest {
                         Preconfigured.create(Serdes.Long())));
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .labeledOutputTopics(Map.of("label", "output"))
-                        .build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder()
+                        .labeledOutputTopics(Map.of("label", "output"))
+                        .build());
         topology.input()
                 .withKeySerde(Serdes.Long())
                 .withValueSerde(Serdes.Long())
@@ -171,13 +176,10 @@ class ImprovedKStreamTest {
                 input.toErrorTopic();
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .errorTopic("error")
-                        .build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder()
+                        .errorTopic("error")
+                        .build());
         topology.input().add("foo", "bar");
         topology.streamOutput()
                 .expectNextRecord()
@@ -199,13 +201,10 @@ class ImprovedKStreamTest {
                         Preconfigured.create(Serdes.Long())));
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .errorTopic("error")
-                        .build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder()
+                        .errorTopic("error")
+                        .build());
         topology.input()
                 .withKeySerde(Serdes.Long())
                 .withValueSerde(Serdes.Long())
@@ -237,11 +236,8 @@ class ImprovedKStreamTest {
                         .to("error");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder().build());
         topology.input().add("foo", "bar");
         topology.streamOutput("output")
                 .expectNoMoreRecord();
@@ -278,11 +274,8 @@ class ImprovedKStreamTest {
                         .to("error");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder().build());
         topology.input().add("foo", "bar");
         topology.streamOutput("output")
                 .expectNoMoreRecord();
@@ -319,11 +312,8 @@ class ImprovedKStreamTest {
                         .to("error");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder().build());
         topology.input().add("foo", "bar");
         topology.streamOutput("output")
                 .expectNoMoreRecord();
@@ -360,11 +350,8 @@ class ImprovedKStreamTest {
                         .to("error");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder().build());
         topology.input().add("foo", "bar");
         topology.streamOutput("output")
                 .expectNoMoreRecord();
@@ -401,11 +388,8 @@ class ImprovedKStreamTest {
                         .to("error");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder().build());
         topology.input().add("foo", "bar");
         topology.streamOutput("output")
                 .expectNoMoreRecord();
@@ -442,11 +426,118 @@ class ImprovedKStreamTest {
                         .to("error");
             }
         };
-        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder().build()));
         final TestTopology<String, String> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
-        topology.start();
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("success")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldProcessCapturingErrors() {
+        final ProcessorSupplier<String, String, String, String> processor = () -> new Processor<>() {
+            private ProcessorContext<String, String> context = null;
+
+            @Override
+            public void init(final ProcessorContext<String, String> context) {
+                this.context = context;
+            }
+
+            @Override
+            public void process(final Record<String, String> inputRecord) {
+                if ("foo".equals(inputRecord.key()) && "bar".equals(inputRecord.value())) {
+                    throw new RuntimeException("Cannot process");
+                }
+                if ("foo".equals(inputRecord.key()) && "baz".equals(inputRecord.value())) {
+                    this.context.forward(inputRecord.withKey("success_key").withValue("success_value"));
+                    return;
+                }
+                throw new UnsupportedOperationException();
+            }
+        };
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.processCapturingErrors(processor);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input().add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.input().add("foo", "baz");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("success_key")
+                .hasValue("success_value")
+                .expectNoMoreRecord();
+        topology.streamOutput("error")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldProcessValuesCapturingErrors() {
+        final FixedKeyProcessorSupplier<String, String, String> processor = () -> new FixedKeyProcessor<>() {
+            private FixedKeyProcessorContext<String, String> context = null;
+
+            @Override
+            public void init(final FixedKeyProcessorContext<String, String> context) {
+                this.context = context;
+            }
+
+            @Override
+            public void process(final FixedKeyRecord<String, String> inputRecord) {
+                if ("foo".equals(inputRecord.key()) && "bar".equals(inputRecord.value())) {
+                    throw new RuntimeException("Cannot process");
+                }
+                if ("foo".equals(inputRecord.key()) && "baz".equals(inputRecord.value())) {
+                    this.context.forward(inputRecord.withValue("success"));
+                    return;
+                }
+                throw new UnsupportedOperationException();
+            }
+        };
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.processValuesCapturingErrors(processor);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
         topology.input().add("foo", "bar");
         topology.streamOutput("output")
                 .expectNoMoreRecord();
