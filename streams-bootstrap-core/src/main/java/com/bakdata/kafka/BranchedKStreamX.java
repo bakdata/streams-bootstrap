@@ -44,11 +44,21 @@ public interface BranchedKStreamX<K, V> extends BranchedKStream<K, V> {
     @Override
     BranchedKStreamX<K, V> branch(Predicate<? super K, ? super V> predicate, Branched<K, V> branched);
 
+    /**
+     * @see #branch(Predicate, Branched)
+     */
+    BranchedKStreamX<K, V> branch(Predicate<? super K, ? super V> predicate, BranchedX<K, V> branched);
+
     @Override
     Map<String, KStream<K, V>> defaultBranch();
 
     @Override
     Map<String, KStream<K, V>> defaultBranch(Branched<K, V> branched);
+
+    /**
+     * @see #defaultBranch(Branched)
+     */
+    Map<String, KStream<K, V>> defaultBranch(BranchedX<K, V> branched);
 
     @Override
     Map<String, KStream<K, V>> noDefaultBranch();

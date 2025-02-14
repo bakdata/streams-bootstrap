@@ -2391,6 +2391,54 @@ class KStreamXTest {
         topology.stop();
     }
 
+    @Test
+    void shouldPeek() {
+        final ForeachAction<String, String> action = mock();
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.peek(action).to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        verify(action).apply("foo", "bar");
+        verifyNoMoreInteractions(action);
+        topology.stop();
+    }
+
+    @Test
+    void shouldPeekNamed() {
+        final ForeachAction<String, String> action = mock();
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.peek(action, Named.as("peek")).to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input("input")
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        verify(action).apply("foo", "bar");
+        verifyNoMoreInteractions(action);
+        topology.stop();
+    }
+
     private abstract static class SimpleProcessor<KIn, VIn, KOut, VOut> implements Processor<KIn, VIn, KOut, VOut> {
         private ProcessorContext<KOut, VOut> context = null;
 
