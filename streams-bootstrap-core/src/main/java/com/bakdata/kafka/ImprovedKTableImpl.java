@@ -240,8 +240,10 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     @Override
     public <VR> ImprovedKTable<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
-            final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, final String... stateStoreNames) {
-        return this.transformValues(transformerSupplier, materialized.configure(this.context.getConfigurator()), stateStoreNames);
+            final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized,
+            final String... stateStoreNames) {
+        return this.transformValues(transformerSupplier, materialized.configure(this.context.getConfigurator()),
+                stateStoreNames);
     }
 
     @Override
@@ -439,8 +441,10 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
-    public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other, final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+    public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
+            final Function<V, KO> foreignKeyExtractor,
+            final ValueJoiner<V, VO, VR> joiner,
+            final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -454,10 +458,12 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
-    public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other, final Function<V, KO> foreignKeyExtractor,
+    public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
+            final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
             final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.join(other, foreignKeyExtractor, joiner, named, materialized.configure(this.context.getConfigurator()));
+        return this.join(other, foreignKeyExtractor, joiner, named,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -470,10 +476,12 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
-    public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other, final Function<V, KO> foreignKeyExtractor,
+    public <VR, KO, VO> ImprovedKTable<K, VR> join(final KTable<KO, VO> other,
+            final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.join(other, foreignKeyExtractor, joiner, tableJoined, materialized.configure(this.context.getConfigurator()));
+        return this.join(other, foreignKeyExtractor, joiner, tableJoined,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -509,9 +517,12 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
-    public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other, final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.leftJoin(other, foreignKeyExtractor, joiner, materialized.configure(this.context.getConfigurator()));
+    public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
+            final Function<V, KO> foreignKeyExtractor,
+            final ValueJoiner<V, VO, VR> joiner,
+            final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.leftJoin(other, foreignKeyExtractor, joiner,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -524,10 +535,12 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
-    public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other, final Function<V, KO> foreignKeyExtractor,
+    public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
+            final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
             final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.leftJoin(other, foreignKeyExtractor, joiner, named, materialized.configure(this.context.getConfigurator()));
+        return this.leftJoin(other, foreignKeyExtractor, joiner, named,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -541,7 +554,8 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
-    public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other, final Function<V, KO> foreignKeyExtractor,
+    public <VR, KO, VO> ImprovedKTable<K, VR> leftJoin(final KTable<KO, VO> other,
+            final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner, tableJoined,

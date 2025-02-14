@@ -102,7 +102,8 @@ class ImprovedSessionWindowedStreamImpl<K, V> implements ImprovedSessionWindowed
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger,
             final ConfiguredMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
-        return this.aggregate(initializer, aggregator, sessionMerger, materialized.configure(this.context.getConfigurator()));
+        return this.aggregate(initializer, aggregator, sessionMerger,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
@@ -115,7 +116,8 @@ class ImprovedSessionWindowedStreamImpl<K, V> implements ImprovedSessionWindowed
 
     @Override
     public <VR> ImprovedKTable<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
-            final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger, final Named named,
+            final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger,
+            final Named named,
             final ConfiguredMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, sessionMerger, named,
                 materialized.configure(this.context.getConfigurator()));

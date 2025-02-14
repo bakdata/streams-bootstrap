@@ -47,7 +47,8 @@ class ImprovedKGroupedTableImpl<K, V> implements ImprovedKGroupedTable<K, V> {
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(final ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+    public ImprovedKTable<K, Long> count(
+            final ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.count(materialized.configure(this.context.getConfigurator()));
     }
 
@@ -111,7 +112,8 @@ class ImprovedKGroupedTableImpl<K, V> implements ImprovedKGroupedTable<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer, final Aggregator<? super K, ? super V, VR> adder,
+    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+            final Aggregator<? super K, ? super V, VR> adder,
             final Aggregator<? super K, ? super V, VR> subtractor,
             final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, adder, subtractor, materialized.configure(this.context.getConfigurator()));
@@ -126,10 +128,12 @@ class ImprovedKGroupedTableImpl<K, V> implements ImprovedKGroupedTable<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer, final Aggregator<? super K, ? super V, VR> adder,
+    public <VR> ImprovedKTable<K, VR> aggregate(final Initializer<VR> initializer,
+            final Aggregator<? super K, ? super V, VR> adder,
             final Aggregator<? super K, ? super V, VR> subtractor, final Named named,
             final ConfiguredMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.aggregate(initializer, adder, subtractor, named, materialized.configure(this.context.getConfigurator()));
+        return this.aggregate(initializer, adder, subtractor, named,
+                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override

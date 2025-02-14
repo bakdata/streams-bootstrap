@@ -64,7 +64,8 @@ class ImprovedKGroupedStreamImpl<K, V> implements ImprovedKGroupedStream<K, V> {
     }
 
     @Override
-    public ImprovedKTable<K, Long> count(final ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+    public ImprovedKTable<K, Long> count(
+            final ConfiguredMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.count(materialized.configure(this.context.getConfigurator()));
     }
 

@@ -54,24 +54,24 @@ public class StreamsContext {
 
     static <K, V> KStream<K, V> maybeUnwrap(final KStream<K, V> stream) {
         if (stream instanceof ImprovedKStreamImpl) {
-            return ((ImprovedKStreamImpl<K, V>) stream).getWrapped(); // Kafka Streams internally casts KStream to
-            // KStreamImpl in some cases
+            // Kafka Streams internally casts KStream to KStreamImpl in some cases
+            return ((ImprovedKStreamImpl<K, V>) stream).getWrapped();
         }
         return stream;
     }
 
     static <K, V> KGroupedStream<K, V> maybeUnwrap(final KGroupedStream<K, V> stream) {
         if (stream instanceof ImprovedKGroupedStream) {
-            return ((ImprovedKGroupedStreamImpl<K, V>) stream).getWrapped(); // Kafka Streams internally casts
-            // KGroupedStream to KGroupedStreamImpl in some cases
+            // Kafka Streams internally casts KGroupedStream to KGroupedStreamImpl in some cases
+            return ((ImprovedKGroupedStreamImpl<K, V>) stream).getWrapped();
         }
         return stream;
     }
 
     static <K, V> KTable<K, V> maybeUnwrap(final KTable<K, V> table) {
         if (table instanceof ImprovedKTableImpl) {
-            return ((ImprovedKTableImpl<K, V>) table).getWrapped(); // Kafka Streams internally casts KTable to
-            // KTableImpl in some cases
+            // Kafka Streams internally casts KTable to KTableImpl in some cases
+            return ((ImprovedKTableImpl<K, V>) table).getWrapped();
         }
         return table;
     }

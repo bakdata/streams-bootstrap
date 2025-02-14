@@ -35,6 +35,12 @@ import org.apache.kafka.streams.kstream.TimeWindowedKStream;
 import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.WindowStore;
 
+/**
+ * Extends the {@code TimeWindowedKStream} interface by adding methods to simplify Serde configuration,
+ * error handling, and topic access
+ * @param <K> type of keys
+ * @param <V>> type of values
+ */
 public interface ImprovedTimeWindowedKStream<K, V> extends TimeWindowedKStream<K, V> {
 
     @Override

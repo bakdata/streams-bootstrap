@@ -44,6 +44,8 @@ import org.apache.kafka.streams.state.KeyValueStore;
 /**
  * Extends the {@code KTable} interface by adding methods to simplify Serde configuration, error handling, and topic
  * access
+ * @param <K> type of keys
+ * @param <V>> type of values
  */
 public interface ImprovedKTable<K, V> extends KTable<K, V> {
 
