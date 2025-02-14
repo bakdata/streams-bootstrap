@@ -33,7 +33,7 @@ import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.WindowStore;
 
 /**
- * Extends the {@code TimeWindowedCogroupedKStream} interface by adding methods to simplify Serde configuration,
+ * Extends the {@link TimeWindowedCogroupedKStream} interface by adding methods to simplify Serde configuration,
  * error handling, and topic access
  * @param <K> type of keys
  * @param <VOut> type of values

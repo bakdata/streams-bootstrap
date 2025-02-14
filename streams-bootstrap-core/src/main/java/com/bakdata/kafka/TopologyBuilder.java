@@ -114,9 +114,9 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
@@ -126,9 +126,9 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
@@ -138,8 +138,8 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics()}
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics()}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection)
@@ -149,10 +149,10 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param label label of input topics
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
@@ -162,10 +162,10 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param label label of input topics
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
@@ -175,9 +175,9 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param label label of input topics
-     * @return a {@code KStream} for all {@link StreamsTopicConfig#getInputTopics(String)}
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection)
@@ -187,9 +187,9 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
@@ -199,9 +199,9 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
@@ -211,8 +211,8 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern)
@@ -222,10 +222,10 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param label label of input pattern
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
@@ -235,10 +235,10 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param label label of input pattern
      * @param consumed define optional parameters for streaming topics
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
@@ -249,9 +249,9 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code KStream} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param label label of input pattern
-     * @return a {@code KStream} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern)
@@ -278,8 +278,8 @@ public class TopologyBuilder {
     }
 
     /**
-     * Create a {@code StreamsContext} to wrap Kafka Streams interfaces
-     * @return {@code StreamsContext}
+     * Create a {@link StreamsContext} to wrap Kafka Streams interfaces
+     * @return {@link StreamsContext}
      */
     public StreamsContext getContext() {
         return new StreamsContext(this.topics, this.createConfigurator());
@@ -287,7 +287,7 @@ public class TopologyBuilder {
 
     /**
      * Create stores using application context to lazily configures Serdes
-     * @return {@code AutoStores}
+     * @return {@link AutoStores}
      */
     public AutoStores stores() {
         return new AutoStores(this.createConfigurator());

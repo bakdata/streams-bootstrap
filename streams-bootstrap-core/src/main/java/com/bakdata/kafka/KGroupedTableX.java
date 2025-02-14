@@ -34,7 +34,7 @@ import org.apache.kafka.streams.kstream.Reducer;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
- * Extends the {@code KGroupedTable} interface by adding methods to simplify Serde configuration, error handling, and
+ * Extends the {@link KGroupedTable} interface by adding methods to simplify Serde configuration, error handling, and
  * topic access
  * @param <K> type of keys
  * @param <V> type of values

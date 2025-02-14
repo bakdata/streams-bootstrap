@@ -38,7 +38,7 @@ import org.apache.kafka.streams.kstream.Windows;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
- * Extends the {@code CogroupedKStream} interface by adding methods to simplify Serde configuration, error handling,
+ * Extends the {@link CogroupedKStream} interface by adding methods to simplify Serde configuration, error handling,
  * and topic access
  * @param <K> type of keys
  * @param <VOut> type of values
