@@ -47,6 +47,7 @@ import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
+import org.apache.kafka.streams.processor.TopicNameExtractor;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -241,6 +242,10 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     ImprovedKStream<K, V> repartition(Repartitioned<K, V> repartitioned);
 
     ImprovedKStream<K, V> repartition(ConfiguredRepartitioned<K, V> repartitioned);
+
+    void to(String topic, ConfiguredProduced<K, V> produced);
+
+    void to(TopicNameExtractor<K, V> topicExtractor, ConfiguredProduced<K, V> produced);
 
     void toOutputTopic();
 

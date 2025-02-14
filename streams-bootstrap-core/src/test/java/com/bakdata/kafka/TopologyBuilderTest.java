@@ -25,24 +25,26 @@
 package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.kafka.common.serialization.Serdes;
 import org.junit.jupiter.api.Test;
 
-class ImprovedKStreamTest {
+class TopologyBuilderTest {
 
     @Test
-    void shouldWriteToOutput() {
+    void shouldReadFromInput() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                input.toOutputTopic();
+                final ImprovedKStream<String, String> input = builder.streamInput();
+                input.to("output");
             }
         };
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .outputTopic("output")
+                        .inputTopics(List.of("input"))
                         .build()));
         final TestTopology<String, String> topology =
                 TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
@@ -57,20 +59,20 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldWriteToOutputUsingProduced() {
+    void shouldReadFromInputUsingConsumed() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final ImprovedKStream<Long, Long> input = builder.streamInput(
                         ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.toOutputTopic(ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .outputTopic("output")
+                        .inputTopics(List.of("input"))
                         .build()));
         final TestTopology<String, String> topology =
                 TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
@@ -90,17 +92,17 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldWriteToLabeledOutput() {
+    void shouldReadFromLabeledInput() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                input.toOutputTopic("label");
+                final ImprovedKStream<String, String> input = builder.streamInput("label");
+                input.to("output");
             }
         };
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .labeledOutputTopics(Map.of("label", "output"))
+                        .labeledInputTopics(Map.of("label", List.of("input")))
                         .build()));
         final TestTopology<String, String> topology =
                 TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
@@ -115,20 +117,20 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldWriteToLabeledOutputUsingProduced() {
+    void shouldReadFromLabeledInputUsingConsumed() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final ImprovedKStream<Long, Long> input = builder.streamInput("label",
                         ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.toOutputTopic("label", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .labeledOutputTopics(Map.of("label", "output"))
+                        .labeledInputTopics(Map.of("label", List.of("input")))
                         .build()));
         final TestTopology<String, String> topology =
                 TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
@@ -148,22 +150,22 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldWriteToError() {
+    void shouldReadFromPatternInput() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                input.toErrorTopic();
+                final ImprovedKStream<String, String> input = builder.streamInputPattern();
+                input.to("output");
             }
         };
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .errorTopic("error")
+                        .inputPattern(Pattern.compile("input\\d+"))
                         .build()));
         final TestTopology<String, String> topology =
                 TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
         topology.start();
-        topology.input().add("foo", "bar");
+        topology.input("input1").add("foo", "bar");
         topology.streamOutput()
                 .expectNextRecord()
                 .hasKey("foo")
@@ -173,25 +175,25 @@ class ImprovedKStreamTest {
     }
 
     @Test
-    void shouldWriteToErrorUsingProduced() {
+    void shouldReadFromPatternInputUsingConsumed() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final ImprovedKStream<Long, Long> input = builder.streamInputPattern(
                         ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                input.toErrorTopic(ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
                         Preconfigured.create(Serdes.Long())));
             }
         };
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .errorTopic("error")
+                        .inputPattern(Pattern.compile("input\\d+"))
                         .build()));
         final TestTopology<String, String> topology =
                 TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
         topology.start();
-        topology.input()
+        topology.input("input1")
                 .withKeySerde(Serdes.Long())
                 .withValueSerde(Serdes.Long())
                 .add(1L, 2L);
@@ -204,4 +206,63 @@ class ImprovedKStreamTest {
                 .expectNoMoreRecord();
         topology.stop();
     }
+
+    @Test
+    void shouldReadFromLabeledPatternInput() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.streamInputPattern("label");
+                input.to("output");
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
+                        .labeledInputPatterns(Map.of("label", Pattern.compile("input\\d+")))
+                        .build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input("input1").add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldReadFromLabeledPatternInputUsingConsumed() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.streamInputPattern("label",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                input.to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
+                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
+                        .labeledInputPatterns(Map.of("label", Pattern.compile("input\\d+")))
+                        .build()));
+        final TestTopology<String, String> topology =
+                TestTopologyFactory.withoutSchemaRegistry().createTopology(configuredStreamsApp);
+        topology.start();
+        topology.input("input1")
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
 }

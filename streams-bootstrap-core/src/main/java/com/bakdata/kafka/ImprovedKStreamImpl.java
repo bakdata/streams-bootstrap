@@ -434,6 +434,11 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
+    public void to(final String topic, final ConfiguredProduced<K, V> produced) {
+        this.to(topic, produced.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public void to(final TopicNameExtractor<K, V> topicExtractor) {
         this.wrapped.to(topicExtractor);
     }
@@ -441,6 +446,11 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public void to(final TopicNameExtractor<K, V> topicExtractor, final Produced<K, V> produced) {
         this.wrapped.to(topicExtractor, produced);
+    }
+
+    @Override
+    public void to(final TopicNameExtractor<K, V> topicExtractor, final ConfiguredProduced<K, V> produced) {
+        this.to(topicExtractor, produced.configure(this.context.getConfigurator()));
     }
 
     @Override
