@@ -40,7 +40,7 @@ import org.apache.kafka.streams.state.SessionStore;
  * Extends the {@code SessionWindowedKStream} interface by adding methods to simplify Serde configuration, error
  * handling, and topic access
  * @param <K> type of keys
- * @param <V>> type of values
+ * @param <V> type of values
  */
 public interface ImprovedSessionWindowedKStream<K, V> extends SessionWindowedKStream<K, V> {
 

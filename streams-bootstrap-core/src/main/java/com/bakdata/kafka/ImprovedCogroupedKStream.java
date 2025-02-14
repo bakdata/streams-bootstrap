@@ -41,7 +41,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * Extends the {@code CogroupedKStream} interface by adding methods to simplify Serde configuration, error handling,
  * and topic access
  * @param <K> type of keys
- * @param <VOut>> type of values
+ * @param <VOut> type of values
  */
 public interface ImprovedCogroupedKStream<K, VOut> extends CogroupedKStream<K, VOut> {
 

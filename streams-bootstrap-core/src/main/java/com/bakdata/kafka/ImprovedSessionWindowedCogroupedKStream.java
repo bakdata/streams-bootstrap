@@ -37,7 +37,7 @@ import org.apache.kafka.streams.state.SessionStore;
  * Extends the {@code SessionWindowedCogroupedKStream} interface by adding methods to simplify Serde configuration,
  * error handling, and topic access
  * @param <K> type of keys
- * @param <VOut>> type of values
+ * @param <VOut> type of values
  */
 public interface ImprovedSessionWindowedCogroupedKStream<K, VOut> extends SessionWindowedCogroupedKStream<K, VOut> {
 
