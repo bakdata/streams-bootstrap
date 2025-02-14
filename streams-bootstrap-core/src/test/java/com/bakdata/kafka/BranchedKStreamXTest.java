@@ -28,6 +28,7 @@ import static com.bakdata.kafka.KStreamXTest.startApp;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import java.util.Map;
+import java.util.function.Function;
 import org.apache.kafka.streams.kstream.Branched;
 import org.apache.kafka.streams.kstream.KStream;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,8 @@ class BranchedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.split()
-                        .branch((k, v) -> "foo".equals(k), BranchedX.withConsumer(KStreamX::toOutputTopic));
+                        .branch((k, v) -> "foo".equals(k), BranchedX.withConsumer(KStreamX::toOutputTopic))
+                        .defaultBranch(Branched.withConsumer(s -> s.to("default_output")));
             }
         };
         final TestTopology<String, String> topology =
@@ -95,11 +97,17 @@ class BranchedKStreamXTest {
                         .outputTopic("output")
                         .build());
         topology.input()
-                .add("foo", "bar");
-        topology.streamOutput()
+                .add("foo", "bar")
+                .add("baz", "qux");
+        topology.streamOutput("output")
                 .expectNextRecord()
                 .hasKey("foo")
                 .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.streamOutput("default_output")
+                .expectNextRecord()
+                .hasKey("baz")
+                .hasValue("qux")
                 .expectNoMoreRecord();
         topology.stop();
     }
@@ -128,7 +136,32 @@ class BranchedKStreamXTest {
     }
 
     @Test
-    void shouldUseDefaultBranched() {
+    void shouldUseDefaultBranchX() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final Map<String, KStreamX<String, String>> branches = input.split()
+                        .defaultBranchX();
+                branches.values().iterator().next().toOutputTopic();
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder()
+                        .outputTopic("output")
+                        .build());
+        topology.input()
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldUseDefaultBranchBranched() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -150,13 +183,65 @@ class BranchedKStreamXTest {
     }
 
     @Test
-    void shouldUseDefaultBranchedX() {
+    void shouldUseDefaultBranchXBranched() {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                input.split()
-                        .defaultBranch(BranchedX.withConsumer(KStreamX::toOutputTopic));
+                final Map<String, KStreamX<String, String>> branches = input.split()
+                        .defaultBranchX(Branched.withFunction(Function.identity()));
+                branches.values().iterator().next().toOutputTopic();
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder()
+                        .outputTopic("output")
+                        .build());
+        topology.input()
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldUseDefaultBranchBranchedX() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final Map<String, KStreamX<String, String>> branches = input.split()
+                        .defaultBranch(BranchedX.withFunction(Function.identity()));
+                branches.values().iterator().next().toOutputTopic();
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder()
+                        .outputTopic("output")
+                        .build());
+        topology.input()
+                .add("foo", "bar");
+        topology.streamOutput("output")
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldUseNoDefaultBranchX() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final Map<String, KStreamX<String, String>> branches = input.split()
+                        .branch((k, v) -> "foo".equals(k))
+                        .noDefaultBranchX();
+                branches.values().iterator().next().toOutputTopic();
             }
         };
         final TestTopology<String, String> topology =

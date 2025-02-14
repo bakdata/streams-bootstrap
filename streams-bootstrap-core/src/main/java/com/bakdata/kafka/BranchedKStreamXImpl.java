@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,14 @@ class BranchedKStreamXImpl<K, V> implements BranchedKStreamX<K, V> {
     private final @NonNull BranchedKStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
+    private static <K, V, T> Map<String, T> wrap(
+            final Map<String, ? extends KStream<K, V>> streamMap,
+            final Function<? super Entry<String, ? extends KStream<K, V>>, ? extends T> wrapValue) {
+        return streamMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Entry::getKey, wrapValue));
+    }
+
     @Override
     public BranchedKStreamX<K, V> branch(final Predicate<? super K, ? super V> predicate) {
         return this.context.wrap(this.wrapped.branch(predicate));
@@ -52,34 +61,64 @@ class BranchedKStreamXImpl<K, V> implements BranchedKStreamX<K, V> {
     }
 
     @Override
-    public BranchedKStreamX<K, V> branch(final Predicate<? super K, ? super V> predicate, final BranchedX<K, V> branched) {
+    public BranchedKStreamX<K, V> branch(final Predicate<? super K, ? super V> predicate,
+            final BranchedX<K, V> branched) {
         return this.branch(predicate, branched.convert(this.context));
     }
 
     @Override
     public Map<String, KStream<K, V>> defaultBranch() {
-        return this.wrap(this.wrapped.defaultBranch());
+        return this.wrap(this.defaultBranchInternal());
+    }
+
+    @Override
+    public Map<String, KStreamX<K, V>> defaultBranchX() {
+        return this.wrapX(this.defaultBranchInternal());
     }
 
     @Override
     public Map<String, KStream<K, V>> defaultBranch(final Branched<K, V> branched) {
-        return this.wrap(this.wrapped.defaultBranch(branched));
+        return this.wrap(this.defaultBranchInternal(branched));
     }
 
     @Override
-    public Map<String, KStream<K, V>> defaultBranch(final BranchedX<K, V> branched) {
-        return this.defaultBranch(branched.convert(this.context));
+    public Map<String, KStreamX<K, V>> defaultBranchX(final Branched<K, V> branched) {
+        return this.wrapX(this.defaultBranchInternal(branched));
+    }
+
+    @Override
+    public Map<String, KStreamX<K, V>> defaultBranch(final BranchedX<K, V> branched) {
+        return this.wrapX(this.defaultBranchInternal(branched.convert(this.context)));
     }
 
     @Override
     public Map<String, KStream<K, V>> noDefaultBranch() {
-        return this.wrap(this.wrapped.noDefaultBranch());
+        return this.wrap(this.noDefaultBranchInternal());
+    }
+
+    @Override
+    public Map<String, KStreamX<K, V>> noDefaultBranchX() {
+        return this.wrapX(this.noDefaultBranchInternal());
+    }
+
+    private Map<String, KStream<K, V>> noDefaultBranchInternal() {
+        return this.wrapped.noDefaultBranch();
+    }
+
+    private Map<String, KStream<K, V>> defaultBranchInternal() {
+        return this.wrapped.defaultBranch();
+    }
+
+    private Map<String, KStream<K, V>> defaultBranchInternal(final Branched<K, V> branched) {
+        return this.wrapped.defaultBranch(branched);
     }
 
     private Map<String, KStream<K, V>> wrap(final Map<String, ? extends KStream<K, V>> streamMap) {
-        return streamMap.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Entry::getKey, this::wrapValue));
+        return BranchedKStreamXImpl.<K, V, KStream<K, V>>wrap(streamMap, this::wrapValue);
+    }
+
+    private Map<String, KStreamX<K, V>> wrapX(final Map<String, ? extends KStream<K, V>> streamMap) {
+        return BranchedKStreamXImpl.<K, V, KStreamX<K, V>>wrap(streamMap, this::wrapValue);
     }
 
     private KStreamX<K, V> wrapValue(final Entry<String, ? extends KStream<K, V>> entry) {
