@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.ImprovedKStream;
+import com.bakdata.kafka.KStreamX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -36,7 +36,7 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 public class Mirror implements StreamsApp {
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final ImprovedKStream<String, String> input = builder.streamInput();
+        final KStreamX<String, String> input = builder.streamInput();
         input.toOutputTopic();
     }
 

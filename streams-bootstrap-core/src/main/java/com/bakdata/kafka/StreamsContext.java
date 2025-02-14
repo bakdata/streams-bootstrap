@@ -53,9 +53,9 @@ public class StreamsContext {
     Configurator configurator;
 
     static <K, V> KStream<K, V> maybeUnwrap(final KStream<K, V> stream) {
-        if (stream instanceof ImprovedKStreamImpl) {
+        if (stream instanceof KStreamXImpl) {
             // Kafka Streams internally casts KStream to KStreamImpl in some cases
-            return ((ImprovedKStreamImpl<K, V>) stream).getWrapped();
+            return ((KStreamXImpl<K, V>) stream).getWrapped();
         }
         return stream;
     }
@@ -79,15 +79,15 @@ public class StreamsContext {
     /**
      * Wrap a {@link KStream} and add methods to simplify Serde configuration, error handling, and topic access
      * @param stream stream to be wrapped
-     * @return {@link ImprovedKStream}
+     * @return {@link KStreamX}
      * @param <KR> type of keys in the stream
      * @param <VR> type of values in the stream
      */
-    public <KR, VR> ImprovedKStream<KR, VR> wrap(final KStream<KR, VR> stream) {
-        if (stream instanceof ImprovedKStream) {
-            return (ImprovedKStream<KR, VR>) stream;
+    public <KR, VR> KStreamX<KR, VR> wrap(final KStream<KR, VR> stream) {
+        if (stream instanceof KStreamX) {
+            return (KStreamX<KR, VR>) stream;
         }
-        return new ImprovedKStreamImpl<>(stream, this);
+        return new KStreamXImpl<>(stream, this);
     }
 
     /**

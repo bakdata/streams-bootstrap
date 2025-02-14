@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
-import com.bakdata.kafka.ImprovedKStream;
+import com.bakdata.kafka.KStreamX;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -243,7 +243,7 @@ class StreamsRunnerTest extends KafkaTest {
 
         @Override
         public void buildTopology(final TopologyBuilder builder) {
-            final ImprovedKStream<String, String> input = builder.streamInput();
+            final KStreamX<String, String> input = builder.streamInput();
             input.map((k, v) -> {throw new RuntimeException("Error in map");})
                     .toOutputTopic();
         }

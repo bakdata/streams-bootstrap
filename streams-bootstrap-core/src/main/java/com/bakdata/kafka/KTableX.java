@@ -154,16 +154,16 @@ public interface KTableX<K, V> extends KTable<K, V> {
             AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
-    ImprovedKStream<K, V> toStream();
+    KStreamX<K, V> toStream();
 
     @Override
-    ImprovedKStream<K, V> toStream(Named named);
+    KStreamX<K, V> toStream(Named named);
 
     @Override
-    <KR> ImprovedKStream<KR, V> toStream(KeyValueMapper<? super K, ? super V, ? extends KR> mapper);
+    <KR> KStreamX<KR, V> toStream(KeyValueMapper<? super K, ? super V, ? extends KR> mapper);
 
     @Override
-    <KR> ImprovedKStream<KR, V> toStream(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
+    <KR> KStreamX<KR, V> toStream(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
 
     @Override
     KTableX<K, V> suppress(Suppressed<? super K> suppressed);

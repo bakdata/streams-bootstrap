@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.ImprovedKStreamTest.startApp;
+import static com.bakdata.kafka.KStreamXTest.startApp;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import org.apache.kafka.common.serialization.Serdes;
@@ -37,7 +37,7 @@ class KGroupedStreamXTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2);
                 reduced.toStream().to("output");
@@ -64,7 +64,7 @@ class KGroupedStreamXTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
@@ -102,7 +102,7 @@ class KGroupedStreamXTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> aggregated =
                         grouped.aggregate(() -> "", (key, value, aggregate) -> aggregate + value);
@@ -130,7 +130,7 @@ class KGroupedStreamXTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final KGroupedStreamX<Long, Long> grouped = input.groupByKey(

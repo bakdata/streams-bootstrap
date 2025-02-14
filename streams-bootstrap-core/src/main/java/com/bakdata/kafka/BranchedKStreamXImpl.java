@@ -72,7 +72,7 @@ class BranchedKStreamXImpl<K, V> implements BranchedKStreamX<K, V> {
                 .collect(Collectors.toMap(Entry::getKey, this::wrapValue));
     }
 
-    private ImprovedKStream<K, V> wrapValue(final Entry<String, ? extends KStream<K, V>> entry) {
+    private KStreamX<K, V> wrapValue(final Entry<String, ? extends KStream<K, V>> entry) {
         return this.context.wrap(entry.getValue());
     }
 }

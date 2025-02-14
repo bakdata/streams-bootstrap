@@ -190,22 +190,22 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     }
 
     @Override
-    public ImprovedKStream<K, V> toStream() {
+    public KStreamX<K, V> toStream() {
         return this.context.wrap(this.wrapped.toStream());
     }
 
     @Override
-    public ImprovedKStream<K, V> toStream(final Named named) {
+    public KStreamX<K, V> toStream(final Named named) {
         return this.context.wrap(this.wrapped.toStream(named));
     }
 
     @Override
-    public <KR> ImprovedKStream<KR, V> toStream(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper) {
+    public <KR> KStreamX<KR, V> toStream(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper) {
         return this.context.wrap(this.wrapped.toStream(mapper));
     }
 
     @Override
-    public <KR> ImprovedKStream<KR, V> toStream(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper,
+    public <KR> KStreamX<KR, V> toStream(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper,
             final Named named) {
         return this.context.wrap(this.wrapped.toStream(mapper, named));
     }

@@ -56,7 +56,7 @@ import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
-class ImprovedKStreamTest {
+class KStreamXTest {
 
     static <K, V> TestTopology<K, V> startApp(final StreamsApp app, final StreamsTopicConfig topicConfig) {
         final ConfiguredStreamsApp<StreamsApp> configuredStreamsApp =
@@ -72,7 +72,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.toOutputTopic();
             }
         };
@@ -94,7 +94,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.toOutputTopic(AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -124,7 +124,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.toOutputTopic("label");
             }
         };
@@ -146,7 +146,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.toOutputTopic("label", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -176,7 +176,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.toErrorTopic();
             }
         };
@@ -198,7 +198,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.toErrorTopic(AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -230,7 +230,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.map(mapper).to("output");
             }
         };
@@ -252,7 +252,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.mapValues(mapper).to("output");
             }
         };
@@ -274,7 +274,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.mapValues(mapper).to("output");
             }
         };
@@ -296,7 +296,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.flatMap(mapper).to("output");
             }
         };
@@ -318,7 +318,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.flatMapValues(mapper).to("output");
             }
         };
@@ -340,7 +340,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.flatMapValues(mapper).to("output");
             }
         };
@@ -371,8 +371,8 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> processed = input.process(processor);
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> processed = input.process(processor);
                 processed.to("output");
             }
         };
@@ -403,8 +403,8 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> processed = input.processValues(processor);
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> processed = input.processValues(processor);
                 processed.to("output");
             }
         };
@@ -427,7 +427,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.filter(predicate).to("output");
             }
         };
@@ -452,7 +452,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.filterNot(predicate).to("output");
             }
         };
@@ -474,7 +474,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 input.selectKey((k, v) -> v).to("output");
             }
         };
@@ -498,7 +498,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper);
                 processed.values().to("output");
@@ -536,7 +536,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper);
                 processed.values().to("output");
@@ -574,7 +574,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper);
                 processed.values().to("output");
@@ -612,7 +612,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.flatMapCapturingErrors(mapper);
                 processed.values().to("output");
@@ -650,7 +650,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper);
                 processed.values().to("output");
@@ -688,7 +688,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper);
                 processed.values().to("output");
@@ -737,7 +737,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.processCapturingErrors(processor);
                 processed.values().to("output");
@@ -786,7 +786,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KErrorStream<String, String, String, String> processed =
                         input.processValuesCapturingErrors(processor);
                 processed.values().to("output");
@@ -821,8 +821,8 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> repartitioned = input.repartition();
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> repartitioned = input.repartition();
                 repartitioned.to("output");
             }
         };
@@ -843,10 +843,10 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> repartitioned = input.repartition(
+                final KStreamX<Long, Long> repartitioned = input.repartition(
                         AutoRepartitioned.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 repartitioned.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -874,7 +874,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> table = input.toTable();
                 table.toStream().to("output");
             }
@@ -896,7 +896,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final KTableX<Long, Long> table = input.toTable(
@@ -927,9 +927,9 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
-                final ImprovedKStream<String, String> joined = input.join(otherInput,
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> otherInput = builder.stream("other_input");
+                final KStreamX<String, String> joined = input.join(otherInput,
                         (v1, v2) -> v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
                 joined.to("output");
@@ -954,9 +954,9 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
-                final ImprovedKStream<String, String> joined = input.join(otherInput,
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> otherInput = builder.stream("other_input");
+                final KStreamX<String, String> joined = input.join(otherInput,
                         (k, v1, v2) -> v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
                 joined.to("output");
@@ -981,9 +981,9 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
-                final ImprovedKStream<String, String> joined = input.leftJoin(otherInput,
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> otherInput = builder.stream("other_input");
+                final KStreamX<String, String> joined = input.leftJoin(otherInput,
                         (v1, v2) -> v2 == null ? v1 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
                 joined.to("output");
@@ -1015,9 +1015,9 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
-                final ImprovedKStream<String, String> joined = input.leftJoin(otherInput,
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> otherInput = builder.stream("other_input");
+                final KStreamX<String, String> joined = input.leftJoin(otherInput,
                         (k, v1, v2) -> v2 == null ? v1 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
                 joined.to("output");
@@ -1049,9 +1049,9 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
-                final ImprovedKStream<String, String> joined = input.outerJoin(otherInput,
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> otherInput = builder.stream("other_input");
+                final KStreamX<String, String> joined = input.outerJoin(otherInput,
                         (v1, v2) -> v1 == null ? v2 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
                 joined.to("output");
@@ -1083,9 +1083,9 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
-                final ImprovedKStream<String, String> otherInput = builder.stream("other_input");
-                final ImprovedKStream<String, String> joined = input.outerJoin(otherInput,
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> otherInput = builder.stream("other_input");
+                final KStreamX<String, String> joined = input.outerJoin(otherInput,
                         (k, v1, v2) -> v1 == null ? v2 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)));
                 joined.to("output");
@@ -1117,13 +1117,13 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                final KStreamX<Long, Long> otherInput = builder.stream("other_input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> joined = input.join(otherInput,
+                final KStreamX<Long, Long> joined = input.join(otherInput,
                         Long::sum,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
                         AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
@@ -1157,13 +1157,13 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                final KStreamX<Long, Long> otherInput = builder.stream("other_input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> joined = input.join(otherInput,
+                final KStreamX<Long, Long> joined = input.join(otherInput,
                         (k, v1, v2) -> v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
                         AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
@@ -1197,13 +1197,13 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                final KStreamX<Long, Long> otherInput = builder.stream("other_input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> joined = input.leftJoin(otherInput,
+                final KStreamX<Long, Long> joined = input.leftJoin(otherInput,
                         (v1, v2) -> v2 == null ? v1 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
                         AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
@@ -1246,13 +1246,13 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                final KStreamX<Long, Long> otherInput = builder.stream("other_input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> joined = input.leftJoin(otherInput,
+                final KStreamX<Long, Long> joined = input.leftJoin(otherInput,
                         (k, v1, v2) -> v2 == null ? v1 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
                         AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
@@ -1295,13 +1295,13 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                final KStreamX<Long, Long> otherInput = builder.stream("other_input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> joined = input.outerJoin(otherInput,
+                final KStreamX<Long, Long> joined = input.outerJoin(otherInput,
                         (v1, v2) -> v1 == null ? v2 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
                         AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
@@ -1344,13 +1344,13 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> otherInput = builder.stream("other_input",
+                final KStreamX<Long, Long> otherInput = builder.stream("other_input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
-                final ImprovedKStream<Long, Long> joined = input.outerJoin(otherInput,
+                final KStreamX<Long, Long> joined = input.outerJoin(otherInput,
                         (k, v1, v2) -> v1 == null ? v2 : v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
                         AutoStreamJoined.with(Preconfigured.create(Serdes.Long()),
@@ -1393,7 +1393,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, Long> count = grouped.count();
                 count.toStream().to("output");
@@ -1421,7 +1421,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final KGroupedStreamX<Long, Long> grouped = input.groupByKey(
@@ -1457,7 +1457,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.stream("input");
+                final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupBy((k, v) -> v);
                 final KTableX<String, Long> count = grouped.count();
                 count.toStream().to("output");
@@ -1485,7 +1485,7 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                final KStreamX<Long, Long> input = builder.stream("input",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 final KGroupedStreamX<Long, Long> grouped = input.groupBy((k, v) -> v,

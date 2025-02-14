@@ -58,28 +58,28 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * @param <K> type of keys
  * @param <V> type of values
  */
-public interface ImprovedKStream<K, V> extends KStream<K, V> {
+public interface KStreamX<K, V> extends KStream<K, V> {
 
     @Override
-    ImprovedKStream<K, V> filter(Predicate<? super K, ? super V> predicate);
+    KStreamX<K, V> filter(Predicate<? super K, ? super V> predicate);
 
     @Override
-    ImprovedKStream<K, V> filter(Predicate<? super K, ? super V> predicate, Named named);
+    KStreamX<K, V> filter(Predicate<? super K, ? super V> predicate, Named named);
 
     @Override
-    ImprovedKStream<K, V> filterNot(Predicate<? super K, ? super V> predicate);
+    KStreamX<K, V> filterNot(Predicate<? super K, ? super V> predicate);
 
     @Override
-    ImprovedKStream<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named);
+    KStreamX<K, V> filterNot(Predicate<? super K, ? super V> predicate, Named named);
 
     @Override
-    <KR> ImprovedKStream<KR, V> selectKey(KeyValueMapper<? super K, ? super V, ? extends KR> mapper);
+    <KR> KStreamX<KR, V> selectKey(KeyValueMapper<? super K, ? super V, ? extends KR> mapper);
 
     @Override
-    <KR> ImprovedKStream<KR, V> selectKey(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
+    <KR> KStreamX<KR, V> selectKey(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
 
     @Override
-    <KR, VR> ImprovedKStream<KR, VR> map(
+    <KR, VR> KStreamX<KR, VR> map(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper);
 
     /**
@@ -111,7 +111,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
-    <KR, VR> ImprovedKStream<KR, VR> map(
+    <KR, VR> KStreamX<KR, VR> map(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper, Named named);
 
     /**
@@ -145,7 +145,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
-    <VR> ImprovedKStream<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper);
+    <VR> KStreamX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
@@ -172,7 +172,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
-    <VR> ImprovedKStream<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named);
+    <VR> KStreamX<K, VR> mapValues(ValueMapper<? super V, ? extends VR> mapper, Named named);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
@@ -201,7 +201,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
-    <VR> ImprovedKStream<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
+    <VR> KStreamX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
@@ -230,7 +230,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
-    <VR> ImprovedKStream<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
+    <VR> KStreamX<K, VR> mapValues(ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
@@ -261,7 +261,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
-    <KR, VR> ImprovedKStream<KR, VR> flatMap(
+    <KR, VR> KStreamX<KR, VR> flatMap(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper);
 
     /**
@@ -295,7 +295,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
-    <KR, VR> ImprovedKStream<KR, VR> flatMap(
+    <KR, VR> KStreamX<KR, VR> flatMap(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
             Named named);
 
@@ -333,7 +333,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper);
+    <VR> KStreamX<K, VR> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper);
 
     /**
      * Create a new {@link KStream} by transforming the value of each record in this stream into zero or more values
@@ -366,7 +366,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
+    <VR> KStreamX<K, VR> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             Named named);
 
     /**
@@ -379,7 +379,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapper, Named)
-     * @see ErrorCapturingFlatValueMapper#captureErrors(ValueMapper,)
+     * @see ErrorCapturingFlatValueMapper#captureErrors(ValueMapper)
      */
     <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
@@ -403,7 +403,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatMapValues(
+    <VR> KStreamX<K, VR> flatMapValues(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper);
 
     /**
@@ -437,7 +437,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatMapValues(
+    <VR> KStreamX<K, VR> flatMapValues(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
             Named named);
 
@@ -474,16 +474,16 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
-    ImprovedKStream<K, V> peek(ForeachAction<? super K, ? super V> action);
+    KStreamX<K, V> peek(ForeachAction<? super K, ? super V> action);
 
     @Override
-    ImprovedKStream<K, V> peek(ForeachAction<? super K, ? super V> action, Named named);
+    KStreamX<K, V> peek(ForeachAction<? super K, ? super V> action, Named named);
 
     @Override
-    ImprovedKStream<K, V>[] branch(Named named, Predicate<? super K, ? super V>... predicates);
+    KStreamX<K, V>[] branch(Named named, Predicate<? super K, ? super V>... predicates);
 
     @Override
-    ImprovedKStream<K, V>[] branch(Predicate<? super K, ? super V>... predicates);
+    KStreamX<K, V>[] branch(Predicate<? super K, ? super V>... predicates);
 
     @Override
     BranchedKStreamX<K, V> split();
@@ -492,27 +492,27 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     BranchedKStreamX<K, V> split(Named named);
 
     @Override
-    ImprovedKStream<K, V> merge(KStream<K, V> stream);
+    KStreamX<K, V> merge(KStream<K, V> stream);
 
     @Override
-    ImprovedKStream<K, V> merge(KStream<K, V> stream, Named named);
+    KStreamX<K, V> merge(KStream<K, V> stream, Named named);
 
     @Override
-    ImprovedKStream<K, V> through(String topic);
+    KStreamX<K, V> through(String topic);
 
     @Override
-    ImprovedKStream<K, V> through(String topic, Produced<K, V> produced);
+    KStreamX<K, V> through(String topic, Produced<K, V> produced);
 
     @Override
-    ImprovedKStream<K, V> repartition();
+    KStreamX<K, V> repartition();
 
     @Override
-    ImprovedKStream<K, V> repartition(Repartitioned<K, V> repartitioned);
+    KStreamX<K, V> repartition(Repartitioned<K, V> repartitioned);
 
     /**
      * @see #repartition(Repartitioned)
      */
-    ImprovedKStream<K, V> repartition(AutoRepartitioned<K, V> repartitioned);
+    KStreamX<K, V> repartition(AutoRepartitioned<K, V> repartitioned);
 
     /**
      * @see #to(String, Produced)
@@ -634,263 +634,263 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     KGroupedStreamX<K, V> groupByKey(AutoGrouped<K, V> grouped);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             JoinWindows windows);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             JoinWindows windows, StreamJoined<K, V, VO> streamJoined);
 
     /**
      * @see #join(KStream, ValueJoiner, JoinWindows, StreamJoined)
      */
-    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             JoinWindows windows, AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
     /**
      * @see #join(KStream, ValueJoinerWithKey, JoinWindows, StreamJoined)
      */
-    <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
     /**
      * @see #leftJoin(KStream, ValueJoiner, JoinWindows, StreamJoined)
      */
-    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
     /**
      * @see #leftJoin(KStream, ValueJoinerWithKey, JoinWindows, StreamJoined)
      */
-    <VO, VR> ImprovedKStream<K, VR> leftJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
     /**
      * @see #outerJoin(KStream, ValueJoiner, JoinWindows, StreamJoined)
      */
-    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
-    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             StreamJoined<K, V, VO> streamJoined);
 
     /**
      * @see #outerJoin(KStream, ValueJoinerWithKey, JoinWindows, StreamJoined)
      */
-    <VO, VR> ImprovedKStream<K, VR> outerJoin(KStream<K, VO> otherStream,
+    <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
             AutoStreamJoined<K, V, VO> streamJoined);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner);
+    <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
+    <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
             Joined<K, V, VT> joined);
 
     /**
      * @see #join(KTable, ValueJoiner, Joined)
      */
-    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
+    <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
             AutoJoined<K, V, VT> joined);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner, Joined<K, V, VT> joined);
 
     /**
      * @see #join(KTable, ValueJoinerWithKey, Joined)
      */
-    <VT, VR> ImprovedKStream<K, VR> join(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             AutoJoined<K, V, VT> joined);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoiner<? super V, ? super VT, ? extends VR> joiner);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
             Joined<K, V, VT> joined);
 
     /**
      * @see #leftJoin(KTable, ValueJoiner, Joined)
      */
-    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
             AutoJoined<K, V, VT> joined);
 
     @Override
-    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner, Joined<K, V, VT> joined);
 
     /**
      * @see #leftJoin(KTable, ValueJoinerWithKey, Joined)
      */
-    <VT, VR> ImprovedKStream<K, VR> leftJoin(KTable<K, VT> table,
+    <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             AutoJoined<K, V, VT> joined);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> join(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> joiner);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> join(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> join(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> joiner, Named named);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> join(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner, Named named);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner, Named named);
 
     @Override
-    <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
+    <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, Named named);
 
     @Override
-    <K1, V1> ImprovedKStream<K1, V1> transform(
+    <K1, V1> KStreamX<K1, V1> transform(
             TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <K1, V1> ImprovedKStream<K1, V1> transform(
+    <K1, V1> KStreamX<K1, V1> transform(
             TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
             Named named, String... stateStoreNames);
 
     @Override
-    <K1, V1> ImprovedKStream<K1, V1> flatTransform(
+    <K1, V1> KStreamX<K1, V1> flatTransform(
             TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <K1, V1> ImprovedKStream<K1, V1> flatTransform(
+    <K1, V1> KStreamX<K1, V1> flatTransform(
             TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier, Named named,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> transformValues(
+    <VR> KStreamX<K, VR> transformValues(
             ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> transformValues(
+    <VR> KStreamX<K, VR> transformValues(
             ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
             Named named, String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> transformValues(
+    <VR> KStreamX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> transformValues(
+    <VR> KStreamX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier, Named named,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatTransformValues(
+    <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatTransformValues(
+    <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
             Named named, String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatTransformValues(
+    <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
             String... stateStoreNames);
 
     @Override
-    <VR> ImprovedKStream<K, VR> flatTransformValues(
+    <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier, Named named,
             String... stateStoreNames);
 
     @Override
-    <KOut, VOut> ImprovedKStream<KOut, VOut> process(
+    <KOut, VOut> KStreamX<KOut, VOut> process(
             ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             String... stateStoreNames);
 
@@ -927,7 +927,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             String... stateStoreNames);
 
     @Override
-    <KOut, VOut> ImprovedKStream<KOut, VOut> process(
+    <KOut, VOut> KStreamX<KOut, VOut> process(
             ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
@@ -966,7 +966,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             Named named, String... stateStoreNames);
 
     @Override
-    <VOut> ImprovedKStream<K, VOut> processValues(
+    <VOut> KStreamX<K, VOut> processValues(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             String... stateStoreNames);
 
@@ -1005,7 +1005,7 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
             String... stateStoreNames);
 
     @Override
-    <VOut> ImprovedKStream<K, VOut> processValues(
+    <VOut> KStreamX<K, VOut> processValues(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             Named named, String... stateStoreNames);
 

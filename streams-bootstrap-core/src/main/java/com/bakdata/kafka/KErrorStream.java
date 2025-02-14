@@ -27,11 +27,11 @@ package com.bakdata.kafka;
 import org.apache.kafka.streams.kstream.Named;
 
 /**
- * {@link ImprovedKStream} that contains successfully processed records and errors of a previous operation
- * @param <K> type of keys in the original {@link ImprovedKStream}
- * @param <V> type of values in the original {@link ImprovedKStream}
- * @param <KR> type of keys in the processed {@link ImprovedKStream}
- * @param <VR> type of values in the processed {@link ImprovedKStream}
+ * {@link KStreamX} that contains successfully processed records and errors of a previous operation
+ * @param <K> type of keys in the original {@link KStreamX}
+ * @param <V> type of values in the original {@link KStreamX}
+ * @param <KR> type of keys in the processed {@link KStreamX}
+ * @param <VR> type of values in the processed {@link KStreamX}
  */
 public interface KErrorStream<K, V, KR, VR> {
 
@@ -39,25 +39,25 @@ public interface KErrorStream<K, V, KR, VR> {
      * Get the stream of successfully processed values
      * @return stream of processed values
      */
-    ImprovedKStream<KR, VR> values();
+    KStreamX<KR, VR> values();
 
     /**
      * Get the stream of successfully processed values
      * @param named name of the processor
      * @return stream of processed values
      */
-    ImprovedKStream<KR, VR> values(Named named);
+    KStreamX<KR, VR> values(Named named);
 
     /**
      * Get the stream of errors that occurred during processing
      * @return stream of errors
      */
-    ImprovedKStream<K, ProcessingError<V>> errors();
+    KStreamX<K, ProcessingError<V>> errors();
 
     /**
      * Get the stream of errors that occurred during processing
      * @param named name of the processor
      * @return stream of errors
      */
-    ImprovedKStream<K, ProcessingError<V>> errors(Named named);
+    KStreamX<K, ProcessingError<V>> errors(Named named);
 }

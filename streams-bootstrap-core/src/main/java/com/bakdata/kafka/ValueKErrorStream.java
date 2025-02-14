@@ -30,25 +30,25 @@ import org.apache.kafka.streams.kstream.Named;
 
 @RequiredArgsConstructor
 class ValueKErrorStream<K, V, VR> implements KErrorStream<K, V, K, VR> {
-    private final @NonNull ImprovedKStream<K, ProcessedValue<V, VR>> stream;
+    private final @NonNull KStreamX<K, ProcessedValue<V, VR>> stream;
 
     @Override
-    public ImprovedKStream<K, VR> values() {
+    public KStreamX<K, VR> values() {
         return this.stream.flatMapValues(ProcessedValue::getValues);
     }
 
     @Override
-    public ImprovedKStream<K, VR> values(final Named named) {
+    public KStreamX<K, VR> values(final Named named) {
         return this.stream.flatMapValues(ProcessedValue::getValues, named);
     }
 
     @Override
-    public ImprovedKStream<K, ProcessingError<V>> errors() {
+    public KStreamX<K, ProcessingError<V>> errors() {
         return this.stream.flatMapValues(ProcessedValue::getErrors);
     }
 
     @Override
-    public ImprovedKStream<K, ProcessingError<V>> errors(final Named named) {
+    public KStreamX<K, ProcessingError<V>> errors(final Named named) {
         return this.stream.flatMapValues(ProcessedValue::getErrors, named);
     }
 }

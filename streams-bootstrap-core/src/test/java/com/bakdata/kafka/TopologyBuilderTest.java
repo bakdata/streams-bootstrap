@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.ImprovedKStreamTest.startApp;
+import static com.bakdata.kafka.KStreamXTest.startApp;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import java.util.List;
@@ -40,7 +40,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.streamInput();
+                final KStreamX<String, String> input = builder.streamInput();
                 input.to("output");
             }
         };
@@ -62,7 +62,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.streamInput(
+                final KStreamX<Long, Long> input = builder.streamInput(
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -92,7 +92,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.streamInput("label");
+                final KStreamX<String, String> input = builder.streamInput("label");
                 input.to("output");
             }
         };
@@ -114,7 +114,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.streamInput("label",
+                final KStreamX<Long, Long> input = builder.streamInput("label",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -144,7 +144,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.streamInputPattern();
+                final KStreamX<String, String> input = builder.streamInputPattern();
                 input.to("output");
             }
         };
@@ -166,7 +166,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.streamInputPattern(
+                final KStreamX<Long, Long> input = builder.streamInputPattern(
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),
@@ -196,7 +196,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<String, String> input = builder.streamInputPattern("label");
+                final KStreamX<String, String> input = builder.streamInputPattern("label");
                 input.to("output");
             }
         };
@@ -218,7 +218,7 @@ class TopologyBuilderTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final ImprovedKStream<Long, Long> input = builder.streamInputPattern("label",
+                final KStreamX<Long, Long> input = builder.streamInputPattern("label",
                         AutoConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
                 input.to("output", AutoProduced.with(Preconfigured.create(Serdes.Long()),

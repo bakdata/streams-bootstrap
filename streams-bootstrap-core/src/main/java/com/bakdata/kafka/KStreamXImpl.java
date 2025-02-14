@@ -59,45 +59,45 @@ import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 @RequiredArgsConstructor
-class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
+class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Getter(AccessLevel.PACKAGE)
     private final @NonNull KStream<K, V> wrapped;
     private final @NonNull StreamsContext context;
 
     @Override
-    public ImprovedKStream<K, V> filter(final Predicate<? super K, ? super V> predicate) {
+    public KStreamX<K, V> filter(final Predicate<? super K, ? super V> predicate) {
         return this.context.wrap(this.wrapped.filter(predicate));
     }
 
     @Override
-    public ImprovedKStream<K, V> filter(final Predicate<? super K, ? super V> predicate, final Named named) {
+    public KStreamX<K, V> filter(final Predicate<? super K, ? super V> predicate, final Named named) {
         return this.context.wrap(this.wrapped.filter(predicate, named));
     }
 
     @Override
-    public ImprovedKStream<K, V> filterNot(final Predicate<? super K, ? super V> predicate) {
+    public KStreamX<K, V> filterNot(final Predicate<? super K, ? super V> predicate) {
         return this.context.wrap(this.wrapped.filterNot(predicate));
     }
 
     @Override
-    public ImprovedKStream<K, V> filterNot(final Predicate<? super K, ? super V> predicate, final Named named) {
+    public KStreamX<K, V> filterNot(final Predicate<? super K, ? super V> predicate, final Named named) {
         return this.context.wrap(this.wrapped.filterNot(predicate, named));
     }
 
     @Override
-    public <KR> ImprovedKStream<KR, V> selectKey(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper) {
+    public <KR> KStreamX<KR, V> selectKey(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper) {
         return this.context.wrap(this.wrapped.selectKey(mapper));
     }
 
     @Override
-    public <KR> ImprovedKStream<KR, V> selectKey(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper,
+    public <KR> KStreamX<KR, V> selectKey(final KeyValueMapper<? super K, ? super V, ? extends KR> mapper,
             final Named named) {
         return this.context.wrap(this.wrapped.selectKey(mapper, named));
     }
 
     @Override
-    public <KR, VR> ImprovedKStream<KR, VR> map(
+    public <KR, VR> KStreamX<KR, VR> map(
             final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper) {
         return this.context.wrap(this.wrapped.map(mapper));
     }
@@ -116,7 +116,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <KR, VR> ImprovedKStream<KR, VR> map(
+    public <KR, VR> KStreamX<KR, VR> map(
             final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
             final Named named) {
         return this.context.wrap(this.wrapped.map(mapper, named));
@@ -137,7 +137,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper) {
+    public <VR> KStreamX<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper) {
         return this.context.wrap(this.wrapped.mapValues(mapper));
     }
 
@@ -154,7 +154,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper, final Named named) {
+    public <VR> KStreamX<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper, final Named named) {
         return this.context.wrap(this.wrapped.mapValues(mapper, named));
     }
 
@@ -172,7 +172,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper) {
+    public <VR> KStreamX<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper) {
         return this.context.wrap(this.wrapped.mapValues(mapper));
     }
 
@@ -191,7 +191,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
+    public <VR> KStreamX<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             final Named named) {
         return this.context.wrap(this.wrapped.mapValues(mapper, named));
     }
@@ -212,7 +212,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <KR, VR> ImprovedKStream<KR, VR> flatMap(
+    public <KR, VR> KStreamX<KR, VR> flatMap(
             final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
                     extends VR>>> mapper) {
         return this.context.wrap(this.wrapped.flatMap(mapper));
@@ -234,7 +234,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <KR, VR> ImprovedKStream<KR, VR> flatMap(
+    public <KR, VR> KStreamX<KR, VR> flatMap(
             final KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ?
                     extends VR>>> mapper,
             final Named named) {
@@ -259,7 +259,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatMapValues(
+    public <VR> KStreamX<K, VR> flatMapValues(
             final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper) {
         return this.context.wrap(this.wrapped.flatMapValues(mapper));
     }
@@ -279,7 +279,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatMapValues(
+    public <VR> KStreamX<K, VR> flatMapValues(
             final ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             final Named named) {
         return this.context.wrap(this.wrapped.flatMapValues(mapper, named));
@@ -302,7 +302,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatMapValues(
+    public <VR> KStreamX<K, VR> flatMapValues(
             final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper) {
         return this.context.wrap(this.wrapped.flatMapValues(mapper));
     }
@@ -322,7 +322,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatMapValues(
+    public <VR> KStreamX<K, VR> flatMapValues(
             final ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
             final Named named) {
         return this.context.wrap(this.wrapped.flatMapValues(mapper, named));
@@ -360,27 +360,27 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedKStream<K, V> peek(final ForeachAction<? super K, ? super V> action) {
+    public KStreamX<K, V> peek(final ForeachAction<? super K, ? super V> action) {
         return this.context.wrap(this.wrapped.peek(action));
     }
 
     @Override
-    public ImprovedKStream<K, V> peek(final ForeachAction<? super K, ? super V> action, final Named named) {
+    public KStreamX<K, V> peek(final ForeachAction<? super K, ? super V> action, final Named named) {
         return this.context.wrap(this.wrapped.peek(action, named));
     }
 
     @Override
-    public ImprovedKStream<K, V>[] branch(final Predicate<? super K, ? super V>... predicates) {
+    public KStreamX<K, V>[] branch(final Predicate<? super K, ? super V>... predicates) {
         return Arrays.stream(this.wrapped.branch(predicates))
                 .map(this.context::wrap)
-                .toArray(ImprovedKStream[]::new);
+                .toArray(KStreamX[]::new);
     }
 
     @Override
-    public ImprovedKStream<K, V>[] branch(final Named named, final Predicate<? super K, ? super V>... predicates) {
+    public KStreamX<K, V>[] branch(final Named named, final Predicate<? super K, ? super V>... predicates) {
         return Arrays.stream(this.wrapped.branch(named, predicates))
                 .map(this.context::wrap)
-                .toArray(ImprovedKStream[]::new);
+                .toArray(KStreamX[]::new);
     }
 
     @Override
@@ -394,39 +394,39 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public ImprovedKStream<K, V> merge(final KStream<K, V> stream) {
+    public KStreamX<K, V> merge(final KStream<K, V> stream) {
         final KStream<K, V> other = StreamsContext.maybeUnwrap(stream);
         return this.context.wrap(this.wrapped.merge(other));
     }
 
     @Override
-    public ImprovedKStream<K, V> merge(final KStream<K, V> stream, final Named named) {
+    public KStreamX<K, V> merge(final KStream<K, V> stream, final Named named) {
         final KStream<K, V> other = StreamsContext.maybeUnwrap(stream);
         return this.context.wrap(this.wrapped.merge(other, named));
     }
 
     @Override
-    public ImprovedKStream<K, V> through(final String topic) {
+    public KStreamX<K, V> through(final String topic) {
         return this.context.wrap(this.wrapped.through(topic));
     }
 
     @Override
-    public ImprovedKStream<K, V> through(final String topic, final Produced<K, V> produced) {
+    public KStreamX<K, V> through(final String topic, final Produced<K, V> produced) {
         return this.context.wrap(this.wrapped.through(topic, produced));
     }
 
     @Override
-    public ImprovedKStream<K, V> repartition() {
+    public KStreamX<K, V> repartition() {
         return this.context.wrap(this.wrapped.repartition());
     }
 
     @Override
-    public ImprovedKStream<K, V> repartition(final Repartitioned<K, V> repartitioned) {
+    public KStreamX<K, V> repartition(final Repartitioned<K, V> repartitioned) {
         return this.context.wrap(this.wrapped.repartition(repartitioned));
     }
 
     @Override
-    public ImprovedKStream<K, V> repartition(final AutoRepartitioned<K, V> repartitioned) {
+    public KStreamX<K, V> repartition(final AutoRepartitioned<K, V> repartitioned) {
         return this.repartition(repartitioned.configure(this.context.getConfigurator()));
     }
 
@@ -570,14 +570,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
         return this.context.wrap(this.wrapped.join(other, joiner, windows));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -585,7 +585,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -593,14 +593,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.join(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -608,21 +608,21 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> join(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> join(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.join(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
         return this.context.wrap(this.wrapped.leftJoin(other, joiner, windows));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -630,7 +630,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -638,14 +638,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.leftJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -653,21 +653,21 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> leftJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> leftJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.leftJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
         return this.context.wrap(this.wrapped.outerJoin(other, joiner, windows));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner,
             final JoinWindows windows) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -675,7 +675,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -683,14 +683,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.outerJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final StreamJoined<K, V, VO> streamJoined) {
         final KStream<K, VO> other = StreamsContext.maybeUnwrap(otherStream);
@@ -698,41 +698,41 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VO, VR> ImprovedKStream<K, VR> outerJoin(final KStream<K, VO> otherStream,
+    public <VO, VR> KStreamX<K, VR> outerJoin(final KStream<K, VO> otherStream,
             final ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, final JoinWindows windows,
             final AutoStreamJoined<K, V, VO> streamJoined) {
         return this.outerJoin(otherStream, joiner, windows, streamJoined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.join(other, joiner));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.join(other, joiner));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final Joined<K, V, VT> joined) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.join(other, joiner, joined));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> join(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final AutoJoined<K, V, VT> joined) {
         return this.join(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
@@ -740,41 +740,41 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> join(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> join(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final AutoJoined<K, V, VT> joined) {
         return this.join(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.leftJoin(other, joiner));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.leftJoin(other, joiner));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final Joined<K, V, VT> joined) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
         return this.context.wrap(this.wrapped.leftJoin(other, joiner, joined));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoiner<? super V, ? super VT, ? extends VR> joiner, final AutoJoined<K, V, VT> joined) {
         return this.leftJoin(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final Joined<K, V, VT> joined) {
         final KTable<K, VT> other = StreamsContext.maybeUnwrap(table);
@@ -782,91 +782,91 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VT, VR> ImprovedKStream<K, VR> leftJoin(final KTable<K, VT> table,
+    public <VT, VR> KStreamX<K, VR> leftJoin(final KTable<K, VT> table,
             final ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
             final AutoJoined<K, V, VT> joined) {
         return this.leftJoin(table, joiner, joined.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> joiner) {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner) {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> joiner, final Named named) {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> join(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner, final Named named) {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner) {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner) {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
     }
 
     @Override
-    public <GK, GV, RV> ImprovedKStream<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
+    public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
     }
 
     @Override
-    public <K1, V1> ImprovedKStream<K1, V1> transform(
+    public <K1, V1> KStreamX<K1, V1> transform(
             final TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.transform(transformerSupplier, stateStoreNames));
     }
 
     @Override
-    public <K1, V1> ImprovedKStream<K1, V1> transform(
+    public <K1, V1> KStreamX<K1, V1> transform(
             final TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier, final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.transform(transformerSupplier, named, stateStoreNames));
     }
 
     @Override
-    public <K1, V1> ImprovedKStream<K1, V1> flatTransform(
+    public <K1, V1> KStreamX<K1, V1> flatTransform(
             final TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.flatTransform(transformerSupplier, stateStoreNames));
     }
 
     @Override
-    public <K1, V1> ImprovedKStream<K1, V1> flatTransform(
+    public <K1, V1> KStreamX<K1, V1> flatTransform(
             final TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
             final Named named,
             final String... stateStoreNames) {
@@ -874,28 +874,28 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> transformValues(
+    public <VR> KStreamX<K, VR> transformValues(
             final ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> transformValues(
+    public <VR> KStreamX<K, VR> transformValues(
             final ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier, final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> transformValues(
+    public <VR> KStreamX<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> transformValues(
+    public <VR> KStreamX<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
             final Named named,
             final String... stateStoreNames) {
@@ -903,14 +903,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatTransformValues(
+    public <VR> KStreamX<K, VR> flatTransformValues(
             final ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatTransformValues(
+    public <VR> KStreamX<K, VR> flatTransformValues(
             final ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier, final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(
@@ -918,14 +918,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatTransformValues(
+    public <VR> KStreamX<K, VR> flatTransformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
     }
 
     @Override
-    public <VR> ImprovedKStream<K, VR> flatTransformValues(
+    public <VR> KStreamX<K, VR> flatTransformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
             final Named named,
             final String... stateStoreNames) {
@@ -948,7 +948,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <KOut, VOut> ImprovedKStream<KOut, VOut> process(
+    public <KOut, VOut> KStreamX<KOut, VOut> process(
             final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.process(processorSupplier, stateStoreNames));
@@ -973,7 +973,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <KOut, VOut> ImprovedKStream<KOut, VOut> process(
+    public <KOut, VOut> KStreamX<KOut, VOut> process(
             final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier, final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.process(processorSupplier, named, stateStoreNames));
@@ -998,7 +998,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VOut> ImprovedKStream<K, VOut> processValues(
+    public <VOut> KStreamX<K, VOut> processValues(
             final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.processValues(processorSupplier, stateStoreNames));
@@ -1023,7 +1023,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
-    public <VOut> ImprovedKStream<K, VOut> processValues(
+    public <VOut> KStreamX<K, VOut> processValues(
             final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier, final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.processValues(processorSupplier, named, stateStoreNames));
@@ -1049,81 +1049,81 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
 
     private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> mapCapturingErrorsInternal(
             final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper) {
-        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper);
+        final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper);
         return new KeyValueKErrorStream<>(map);
     }
 
     private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> mapCapturingErrorsInternal(
             final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper, final Named named) {
-        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper, named);
+        final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper, named);
         return new KeyValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrorsInternal(
             final ValueMapper<V, ProcessedValue<V, VR>> mapper) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
         return new ValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrorsInternal(
             final ValueMapper<V, ProcessedValue<V, VR>> mapper,
             final Named named) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
         return new ValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, ProcessedValue<V, VR>> mapper) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
         return new ValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> mapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, ProcessedValue<V, VR>> mapper, final Named named) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
         return new ValueKErrorStream<>(map);
     }
 
     private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> flatMapCapturingErrorsInternal(
             final KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>> mapper) {
-        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper);
+        final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper);
         return new KeyValueKErrorStream<>(map);
     }
 
     private <KR, VR> KeyValueKErrorStream<K, V, KR, VR> flatMapCapturingErrorsInternal(
             final KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>> mapper, final Named named) {
-        final ImprovedKStream<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper, named);
+        final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper, named);
         return new KeyValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapper<V, Iterable<ProcessedValue<V, VR>>> mapper) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
         return new ValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapper<V, Iterable<ProcessedValue<V, VR>>> mapper, final Named named) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
         return new ValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> mapper) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
         return new ValueKErrorStream<>(map);
     }
 
     private <VR> ValueKErrorStream<K, V, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> mapper, final Named named) {
-        final ImprovedKStream<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
+        final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
         return new ValueKErrorStream<>(map);
     }
 
     private <KOut, VOut> KeyValueKErrorStream<K, V, KOut, VOut> processCapturingErrorsInternal(
             final ProcessorSupplier<K, V, KOut, ProcessedKeyValue<K, V, VOut>> processorSupplier,
             final String... stateStoreNames) {
-        final ImprovedKStream<KOut, ProcessedKeyValue<K, V, VOut>> map =
+        final KStreamX<KOut, ProcessedKeyValue<K, V, VOut>> map =
                 this.process(processorSupplier, stateStoreNames);
         return new KeyValueKErrorStream<>(map);
     }
@@ -1131,7 +1131,7 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     private <KOut, VOut> KeyValueKErrorStream<K, V, KOut, VOut> processCapturingErrorsInternal(
             final ProcessorSupplier<K, V, KOut, ProcessedKeyValue<K, V, VOut>> processorSupplier, final Named named,
             final String... stateStoreNames) {
-        final ImprovedKStream<KOut, ProcessedKeyValue<K, V, VOut>> map =
+        final KStreamX<KOut, ProcessedKeyValue<K, V, VOut>> map =
                 this.process(processorSupplier, named, stateStoreNames);
         return new KeyValueKErrorStream<>(map);
     }
@@ -1139,14 +1139,14 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     private <VOut> ValueKErrorStream<K, V, VOut> processValuesCapturingErrorsInternal(
             final FixedKeyProcessorSupplier<? super K, V, ProcessedValue<V, VOut>> processorSupplier,
             final String... stateStoreNames) {
-        final ImprovedKStream<K, ProcessedValue<V, VOut>> map = this.processValues(processorSupplier, stateStoreNames);
+        final KStreamX<K, ProcessedValue<V, VOut>> map = this.processValues(processorSupplier, stateStoreNames);
         return new ValueKErrorStream<>(map);
     }
 
     private <VOut> ValueKErrorStream<K, V, VOut> processValuesCapturingErrorsInternal(
             final FixedKeyProcessorSupplier<? super K, V, ProcessedValue<V, VOut>> processorSupplier,
             final Named named, final String... stateStoreNames) {
-        final ImprovedKStream<K, ProcessedValue<V, VOut>> map =
+        final KStreamX<K, ProcessedValue<V, VOut>> map =
                 this.processValues(processorSupplier, named, stateStoreNames);
         return new ValueKErrorStream<>(map);
     }
