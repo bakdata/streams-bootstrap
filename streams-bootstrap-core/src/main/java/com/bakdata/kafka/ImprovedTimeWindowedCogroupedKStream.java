@@ -32,6 +32,10 @@ import org.apache.kafka.streams.kstream.TimeWindowedCogroupedKStream;
 import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.WindowStore;
 
+/**
+ * Extends the {@code TimeWindowedCogroupedKStream} interface by adding methods to simplify Serde configuration,
+ * error handling, and topic access
+ */
 public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindowedCogroupedKStream<K, VOut> {
 
     @Override
@@ -44,6 +48,15 @@ public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindo
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
             Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Aggregate the values of records in this stream by the grouped key and defined windows
+     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
+     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
+     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
+     * represent the
+     * latest (rolling) aggregate for each key within a window
+     * @see #aggregate(Initializer, Materialized)
+     */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
             ConfiguredMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
@@ -51,6 +64,16 @@ public interface ImprovedTimeWindowedCogroupedKStream<K, VOut> extends TimeWindo
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
             Materialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Aggregate the values of records in this stream by the grouped key and defined windows
+     * @param initializer an {@code Initializer} that computes an initial intermediate aggregation result
+     * @param named a {@code Named} config used to name the processor in the topology
+     * @param materialized a {@code ConfiguredMaterialized} config used to materialize a state store
+     * @return a windowed {@code KTable} that contains "update" records with unmodified keys, and values that
+     * represent the
+     * latest (rolling) aggregate for each key within a window
+     * @see #aggregate(Initializer, Named, Materialized)
+     */
     ImprovedKTable<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
             ConfiguredMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 }

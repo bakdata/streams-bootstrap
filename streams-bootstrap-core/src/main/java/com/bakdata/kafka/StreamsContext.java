@@ -39,6 +39,10 @@ import org.apache.kafka.streams.kstream.SessionWindowedKStream;
 import org.apache.kafka.streams.kstream.TimeWindowedCogroupedKStream;
 import org.apache.kafka.streams.kstream.TimeWindowedKStream;
 
+/**
+ * Provides context for the configured Kafka Streams application environment, i.e., topic configuration and
+ * StreamsConfig
+ */
 @Value
 @Getter(AccessLevel.PACKAGE)
 public class StreamsContext {
@@ -72,6 +76,13 @@ public class StreamsContext {
         return table;
     }
 
+    /**
+     * Wrap a {@code KStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedKStream<KR, VR> wrap(final KStream<KR, VR> stream) {
         if (stream instanceof ImprovedKStream) {
             return (ImprovedKStream<KR, VR>) stream;
@@ -79,6 +90,13 @@ public class StreamsContext {
         return new ImprovedKStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code KGroupedStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedKGroupedStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedKGroupedStream<KR, VR> wrap(final KGroupedStream<KR, VR> stream) {
         if (stream instanceof ImprovedKGroupedStream) {
             return (ImprovedKGroupedStream<KR, VR>) stream;
@@ -86,6 +104,14 @@ public class StreamsContext {
         return new ImprovedKGroupedStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code TimeWindowedKStream} and add methods to simplify Serde configuration, error handling, and topic
+     * access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedTimeWindowedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedTimeWindowedKStream<KR, VR> wrap(
             final TimeWindowedKStream<KR, VR> stream) {
         if (stream instanceof ImprovedTimeWindowedKStream) {
@@ -94,6 +120,14 @@ public class StreamsContext {
         return new ImprovedTimeWindowedStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code SessionWindowedKStream} and add methods to simplify Serde configuration, error handling, and
+     * topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedSessionWindowedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedSessionWindowedKStream<KR, VR> wrap(
             final SessionWindowedKStream<KR, VR> stream) {
         if (stream instanceof ImprovedSessionWindowedKStream) {
@@ -102,6 +136,14 @@ public class StreamsContext {
         return new ImprovedSessionWindowedStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code TimeWindowedCogroupedKStream} and add methods to simplify Serde configuration, error handling,
+     * and topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedTimeWindowedCogroupedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedTimeWindowedCogroupedKStream<KR, VR> wrap(
             final TimeWindowedCogroupedKStream<KR, VR> stream) {
         if (stream instanceof ImprovedTimeWindowedCogroupedKStream) {
@@ -110,6 +152,14 @@ public class StreamsContext {
         return new ImprovedTimeWindowedCogroupedStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code SessionWindowedCogroupedKStream} and add methods to simplify Serde configuration, error
+     * handling, and topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedSessionWindowedCogroupedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedSessionWindowedCogroupedKStream<KR, VR> wrap(
             final SessionWindowedCogroupedKStream<KR, VR> stream) {
         if (stream instanceof ImprovedSessionWindowedCogroupedKStream) {
@@ -118,6 +168,13 @@ public class StreamsContext {
         return new ImprovedSessionWindowedCogroupedStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code CogroupedKStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedCogroupedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedCogroupedKStream<KR, VR> wrap(final CogroupedKStream<KR, VR> stream) {
         if (stream instanceof ImprovedCogroupedKStream) {
             return (ImprovedCogroupedKStream<KR, VR>) stream;
@@ -125,6 +182,13 @@ public class StreamsContext {
         return new ImprovedCogroupedStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code BranchedKStream} and add methods to simplify Serde configuration, error handling, and topic access
+     * @param stream stream to be wrapped
+     * @return {@code ImprovedBranchedKStream}
+     * @param <KR> type of keys in the stream
+     * @param <VR> type of values in the stream
+     */
     public <KR, VR> ImprovedBranchedKStream<KR, VR> wrap(final BranchedKStream<KR, VR> stream) {
         if (stream instanceof ImprovedBranchedKStream) {
             return (ImprovedBranchedKStream<KR, VR>) stream;
@@ -132,6 +196,13 @@ public class StreamsContext {
         return new ImprovedBranchedKStreamImpl<>(stream, this);
     }
 
+    /**
+     * Wrap a {@code KTable} and add methods to simplify Serde configuration, error handling, and topic access
+     * @param table table to be wrapped
+     * @return {@code ImprovedKTable}
+     * @param <KR> type of keys in the table
+     * @param <VR> type of values in the table
+     */
     public <KR, VR> ImprovedKTable<KR, VR> wrap(final KTable<KR, VR> table) {
         if (table instanceof ImprovedKTable) {
             return (ImprovedKTable<KR, VR>) table;
@@ -139,6 +210,13 @@ public class StreamsContext {
         return new ImprovedKTableImpl<>(table, this);
     }
 
+    /**
+     * Wrap a {@code KGroupedTable} and add methods to simplify Serde configuration, error handling, and topic access
+     * @param table table to be wrapped
+     * @return {@code ImprovedKGroupedTable}
+     * @param <KR> type of keys in the table
+     * @param <VR> type of values in the table
+     */
     public <KR, VR> ImprovedKGroupedTable<KR, VR> wrap(final KGroupedTable<KR, VR> table) {
         if (table instanceof ImprovedKGroupedTable) {
             return (ImprovedKGroupedTable<KR, VR>) table;

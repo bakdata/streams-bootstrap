@@ -41,6 +41,10 @@ import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
 
+/**
+ * Extends the {@code KTable} interface by adding methods to simplify Serde configuration, error handling, and topic
+ * access
+ */
 public interface ImprovedKTable<K, V> extends KTable<K, V> {
 
     @Override

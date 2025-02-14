@@ -51,6 +51,10 @@ import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
 
+/**
+ * Extends the {@code KStream} interface by adding methods to simplify Serde configuration, error handling, and topic
+ * access
+ */
 public interface ImprovedKStream<K, V> extends KStream<K, V> {
 
     @Override
