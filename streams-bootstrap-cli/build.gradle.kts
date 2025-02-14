@@ -18,6 +18,7 @@ dependencies {
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
     testImplementation(testFixtures(project(":streams-bootstrap-core")))
+    testImplementation(project(":streams-bootstrap-cli-test"))
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
     val confluentVersion: String by project
     testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
