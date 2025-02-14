@@ -549,6 +549,12 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     }
 
     @Override
+    public <KR> ImprovedKGroupedStream<KR, V> groupBy(final KeyValueMapper<? super K, ? super V, KR> keySelector,
+            final ConfiguredGrouped<KR, V> grouped) {
+        return this.groupBy(keySelector, grouped.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public ImprovedKGroupedStream<K, V> groupByKey() {
         return this.context.wrap(this.wrapped.groupByKey());
     }
@@ -556,6 +562,11 @@ class ImprovedKStreamImpl<K, V> implements ImprovedKStream<K, V> {
     @Override
     public ImprovedKGroupedStream<K, V> groupByKey(final Grouped<K, V> grouped) {
         return this.context.wrap(this.wrapped.groupByKey(grouped));
+    }
+
+    @Override
+    public ImprovedKGroupedStream<K, V> groupByKey(final ConfiguredGrouped<K, V> grouped) {
+        return this.groupByKey(grouped.configure(this.context.getConfigurator()));
     }
 
     @Override

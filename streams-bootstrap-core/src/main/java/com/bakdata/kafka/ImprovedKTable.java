@@ -180,6 +180,9 @@ public interface ImprovedKTable<K, V> extends KTable<K, V> {
     <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector,
             Grouped<KR, VR> grouped);
 
+    <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector,
+            ConfiguredGrouped<KR, VR> grouped);
+
     @Override
     <VO, VR> ImprovedKTable<K, VR> join(KTable<K, VO> other, ValueJoiner<? super V, ? super VO, ? extends VR> joiner);
 

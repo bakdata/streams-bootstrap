@@ -277,6 +277,12 @@ class ImprovedKTableImpl<K, V> implements ImprovedKTable<K, V> {
     }
 
     @Override
+    public <KR, VR> ImprovedKGroupedTable<KR, VR> groupBy(
+            final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector, final ConfiguredGrouped<KR, VR> grouped) {
+        return this.groupBy(selector, grouped.configure(this.context.getConfigurator()));
+    }
+
+    @Override
     public <VO, VR> ImprovedKTable<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
         final KTable<K, VO> otherTable = StreamsContext.maybeUnwrap(other);

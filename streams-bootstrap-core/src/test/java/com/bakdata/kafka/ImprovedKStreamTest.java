@@ -552,6 +552,28 @@ class ImprovedKStreamTest {
         final StreamsApp app = new SimpleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKStream<String, String> repartitioned = input.repartition();
+                repartitioned.to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .add("foo", "bar");
+        topology.streamOutput()
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue("bar")
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldRepartitionUsingRepartitioned() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
                 final ImprovedKStream<Long, Long> input = builder.stream("input",
                         ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
                                 Preconfigured.create(Serdes.Long())));
@@ -881,6 +903,134 @@ class ImprovedKStreamTest {
                 .expectNextRecord()
                 .hasKey(1L)
                 .hasValue(5L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldGroupByKey() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKGroupedStream<String, String> grouped = input.groupByKey();
+                final ImprovedKTable<String, Long> count = grouped.count();
+                count.toStream().to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .add("foo", "bar")
+                .add("foo", "baz");
+        topology.streamOutput()
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue(1L)
+                .expectNextRecord()
+                .hasKey("foo")
+                .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldGroupByKeyUsingGrouped() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKGroupedStream<Long, Long> grouped = input.groupByKey(
+                        ConfiguredGrouped.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKTable<Long, Long> count = grouped.count();
+                count.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L)
+                .add(1L, 3L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(1L)
+                .expectNextRecord()
+                .hasKey(1L)
+                .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldGroupBy() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<String, String> input = builder.stream("input");
+                final ImprovedKGroupedStream<String, String> grouped = input.groupBy((k, v) -> v);
+                final ImprovedKTable<String, Long> count = grouped.count();
+                count.toStream().to("output");
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .add("foo", "bar")
+                .add("baz", "bar");
+        topology.streamOutput()
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey("bar")
+                .hasValue(1L)
+                .expectNextRecord()
+                .hasKey("bar")
+                .hasValue(2L)
+                .expectNoMoreRecord();
+        topology.stop();
+    }
+
+    @Test
+    void shouldGroupByUsingGrouped() {
+        final StreamsApp app = new SimpleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final ImprovedKStream<Long, Long> input = builder.stream("input",
+                        ConfiguredConsumed.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKGroupedStream<Long, Long> grouped = input.groupBy((k, v) -> v,
+                        ConfiguredGrouped.with(Preconfigured.create(Serdes.Long()),
+                                Preconfigured.create(Serdes.Long())));
+                final ImprovedKTable<Long, Long> count = grouped.count();
+                count.toStream().to("output", ConfiguredProduced.with(Preconfigured.create(Serdes.Long()),
+                        Preconfigured.create(Serdes.Long())));
+            }
+        };
+        final TestTopology<String, String> topology =
+                startApp(app, StreamsTopicConfig.builder().build());
+        topology.input()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .add(1L, 2L)
+                .add(3L, 2L);
+        topology.streamOutput()
+                .withKeySerde(Serdes.Long())
+                .withValueSerde(Serdes.Long())
+                .expectNextRecord()
+                .hasKey(2L)
+                .hasValue(1L)
+                .expectNextRecord()
+                .hasKey(2L)
+                .hasValue(2L)
                 .expectNoMoreRecord();
         topology.stop();
     }

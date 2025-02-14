@@ -288,11 +288,16 @@ public interface ImprovedKStream<K, V> extends KStream<K, V> {
     <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
             Grouped<KR, V> grouped);
 
+    <KR> ImprovedKGroupedStream<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
+            ConfiguredGrouped<KR, V> grouped);
+
     @Override
     ImprovedKGroupedStream<K, V> groupByKey();
 
     @Override
     ImprovedKGroupedStream<K, V> groupByKey(Grouped<K, V> grouped);
+
+    ImprovedKGroupedStream<K, V> groupByKey(ConfiguredGrouped<K, V> grouped);
 
     @Override
     <VO, VR> ImprovedKStream<K, VR> join(KStream<K, VO> otherStream,
