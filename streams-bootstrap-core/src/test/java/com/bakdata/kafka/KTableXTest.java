@@ -423,7 +423,7 @@ class KTableXTest {
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k),
                         GroupedX.with(Serdes.String(), Serdes.String()));
                 grouped.count().toStream()
-                        .to("output", ProducedX.with(Serdes.String(), Serdes.Long()));
+                        .to("output", ProducedX.keySerde(Serdes.String()));
             }
         };
         try (final TestTopology<Double, Double> topology = app.startApp()) {
@@ -1460,7 +1460,7 @@ class KTableXTest {
                         builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> joined =
                         input.join(otherInput, Function.identity(), (v1, v2) -> v1 + v2, TableJoined.as("join"),
-                                Materialized.with(Serdes.String(), Serdes.String()));
+                                MaterializedX.with(Serdes.String(), Serdes.String()));
                 joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
@@ -1677,5 +1677,8 @@ class KTableXTest {
                     .expectNoMoreRecord();
         }
     }
+
+    //TODO suppress
+    //TODO queryable store name
 
 }

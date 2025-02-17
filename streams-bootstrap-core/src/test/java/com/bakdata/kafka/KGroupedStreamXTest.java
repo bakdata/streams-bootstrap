@@ -101,7 +101,7 @@ class KGroupedStreamXTest {
                         input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, Long> counted =
                         grouped.count(MaterializedX.keySerde(Serdes.String()));
-                counted.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.Long()));
+                counted.toStream().to("output", ProducedX.keySerde(Serdes.String()));
             }
         };
         try (final TestTopology<Double, Double> topology = app.startApp()) {
@@ -134,7 +134,7 @@ class KGroupedStreamXTest {
                         input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, Long> counted = grouped.count(Named.as("count"),
                         MaterializedX.with(Serdes.String(), Serdes.Long()));
-                counted.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.Long()));
+                counted.toStream().to("output", ProducedX.keySerde(Serdes.String()));
             }
         };
         try (final TestTopology<Double, Double> topology = app.startApp()) {
