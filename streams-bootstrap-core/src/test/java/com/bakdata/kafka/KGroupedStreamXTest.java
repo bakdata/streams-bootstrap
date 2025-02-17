@@ -28,7 +28,6 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.Named;
-import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.SessionWindows;
 import org.apache.kafka.streams.kstream.SlidingWindows;
 import org.apache.kafka.streams.kstream.TimeWindows;
@@ -439,13 +438,13 @@ class KGroupedStreamXTest {
                 final KStreamX<String, Long> output = counted.toStream(
                         (k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli() + ":" + k.window().endTime()
                                 .toEpochMilli());
-                output.to("output", Produced.valueSerde(Serdes.Long()));
+                output.to("output");
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input()
-                    .at(Duration.ofSeconds(30L)
-                            .toMillis()) // if time is lower than session size, there is a bug in Kafka Streams
+                    // if time is lower than session size, there is a bug in Kafka Streams
+                    .at(Duration.ofSeconds(30L).toMillis())
                     .add("foo", "bar")
                     .at(Duration.ofSeconds(60L).toMillis())
                     .add("foo", "baz")
@@ -465,6 +464,34 @@ class KGroupedStreamXTest {
                     .expectNextRecord()
                     .hasKey("foo:91000:91000")
                     .hasValue(1L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldCogroup() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final CogroupedKStreamX<String, String> cogrouped =
+                        grouped.cogroup((key, value, aggregate) -> aggregate + value);
+                final KTableX<String, String> aggregated = cogrouped.aggregate(() -> "");
+                aggregated.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .add("foo", "baz");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
                     .expectNoMoreRecord();
         }
     }

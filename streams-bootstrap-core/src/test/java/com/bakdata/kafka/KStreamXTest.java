@@ -32,17 +32,23 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.io.File;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.kstream.Branched;
 import org.apache.kafka.streams.kstream.ForeachAction;
+import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.JoinWindows;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.processor.StateStore;
@@ -62,6 +68,7 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -215,6 +222,63 @@ class KStreamXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldWriteToUsingExtractor() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.to((key, value, recordContext) -> key);
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp(StreamsTopicConfig.builder()
+                .outputTopic("output")
+                .build())) {
+            topology.input().add("foo", "bar");
+            final StreamsConfig streamsConfig = topology.getStreamsConfig();
+            final Serde<String> keySerde = (Serde<String>) streamsConfig.defaultKeySerde();
+            final Serde<String> valueSerde = (Serde<String>) streamsConfig.defaultValueSerde();
+            final TestOutputTopic<String, String> outputTopic = topology.getTestDriver()
+                    .createOutputTopic("foo", keySerde.deserializer(), valueSerde.deserializer());
+            this.softly.assertThat(outputTopic.readRecordsToList())
+                    .hasSize(1)
+                    .anySatisfy(outputRecord -> {
+                        this.softly.assertThat(outputRecord.getKey()).isEqualTo("foo");
+                        this.softly.assertThat(outputRecord.getValue()).isEqualTo("bar");
+                    });
+        }
+    }
+
+    @Test
+    void shouldWriteToUsingExtractorAndProduced() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to((key, value, recordContext) -> key, ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp(StreamsTopicConfig.builder()
+                .outputTopic("output")
+                .build())) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            final Serde<String> keySerde = Serdes.String();
+            final Serde<String> valueSerde = Serdes.String();
+            final TestOutputTopic<String, String> outputTopic = topology.getTestDriver()
+                    .createOutputTopic("foo", keySerde.deserializer(), valueSerde.deserializer());
+            this.softly.assertThat(outputTopic.readRecordsToList())
+                    .hasSize(1)
+                    .anySatisfy(outputRecord -> {
+                        this.softly.assertThat(outputRecord.getKey()).isEqualTo("foo");
+                        this.softly.assertThat(outputRecord.getValue()).isEqualTo("bar");
+                    });
         }
     }
 
@@ -2608,10 +2672,245 @@ class KStreamXTest {
         }
     }
 
-    //TODO TopicNameExtractor
+    @Test
+    void shouldPrint(@TempDir final File tempDir) {
+        final File file = new File(tempDir, "out.txt");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input", ConsumedX.as("read"));
+                input.print(Printed.toFile(file.getAbsolutePath()));
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+        }
+        this.softly.assertThat(file)
+                .exists()
+                .hasContent("[read]: foo, bar");
+    }
+
+    @Test
+    void shouldGlobalTableJoin() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableJoinNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined =
+                        input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2, Named.as("join"));
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableJoinWithKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (k, v1, v2) -> v1 + v2);
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableJoinWithKeyNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined =
+                        input.join(otherInput, (k, v) -> k, (k, v1, v2) -> v1 + v2, Named.as("join"));
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableLeftJoin() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined =
+                        input.leftJoin(otherInput, (k, v) -> k, (v1, v2) -> v2 == null ? v1 : v1 + v2);
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("quxbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableLeftJoinNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined =
+                        input.leftJoin(otherInput, (k, v) -> k, (v1, v2) -> v2 == null ? v1 : v1 + v2,
+                                Named.as("join"));
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("quxbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableLeftJoinWithKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined =
+                        input.leftJoin(otherInput, (k, v) -> k, (k, v1, v2) -> v2 == null ? v1 : v1 + v2);
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("quxbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableLeftJoinWithKeyNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined =
+                        input.leftJoin(otherInput, (k, v) -> k, (k, v1, v2) -> v2 == null ? v1 : v1 + v2,
+                                Named.as("join"));
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("quxbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
     //TODO errorFilter
-    //TODO GlobalKTable joins
-    //TODO printed
 
     private abstract static class SimpleProcessor<KIn, VIn, KOut, VOut> implements Processor<KIn, VIn, KOut, VOut> {
         private ProcessorContext<KOut, VOut> context = null;
