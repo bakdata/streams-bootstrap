@@ -24,9 +24,493 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.time.Duration;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.Windowed;
+import org.junit.jupiter.api.Test;
+
 class TimeWindowedKStreamXTest {
 
-    //TODO count
-    //TODO aggregate
-    //TODO reduce
+    @Test
+    void shouldCount() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, Long> counted = windowed.count();
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue(1L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldCountNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, Long> counted = windowed.count(Named.as("count"));
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue(1L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldCountUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, Long> counted =
+                        windowed.count(MaterializedX.with(Serdes.String(), Serdes.Long()));
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output", ProducedX.keySerde(Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue(1L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldCountNamedUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, Long> counted =
+                        windowed.count(MaterializedX.with(Serdes.String(), Serdes.Long()));
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output", ProducedX.keySerde(Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue(1L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldAggregate() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> aggregated = windowed.aggregate(() -> "", (k, v, a) -> a + v);
+                final KStreamX<String, String> output =
+                        aggregated.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldAggregateNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> aggregated =
+                        windowed.aggregate(() -> "", (k, v, a) -> a + v, Named.as("aggregate"));
+                final KStreamX<String, String> output =
+                        aggregated.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldAggregateUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> aggregated = windowed.aggregate(() -> "", (k, v, a) -> a + v,
+                        MaterializedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> output =
+                        aggregated.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldAggregateNamedUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> aggregated =
+                        windowed.aggregate(() -> "", (k, v, a) -> a + v, Named.as("aggregate"),
+                                MaterializedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> output =
+                        aggregated.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReduce() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> reduced = windowed.reduce((v1, v2) -> v1 + v2);
+                final KStreamX<String, String> output =
+                        reduced.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReduceNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> reduced =
+                        windowed.reduce((v1, v2) -> v1 + v2, Named.as("reduce"));
+                final KStreamX<String, String> output =
+                        reduced.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReduceUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> reduced =
+                        windowed.reduce((v1, v2) -> v1 + v2, MaterializedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> output =
+                        reduced.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReduceNamedUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, String> reduced =
+                        windowed.reduce((v1, v2) -> v1 + v2, Named.as("reduce"),
+                                MaterializedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> output =
+                        reduced.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue("barbaz")
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
 }

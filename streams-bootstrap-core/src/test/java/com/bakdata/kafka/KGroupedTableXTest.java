@@ -119,6 +119,39 @@ class KGroupedTableXTest {
     }
 
     @Test
+    void shouldCountNamedUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedTableX<String, String> grouped =
+                        input.groupBy((k, v) -> KeyValue.pair(v, k), GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, Long> counted =
+                        grouped.count(Named.as("count"), MaterializedX.keySerde(Serdes.String()));
+                counted.toStream().to("output", ProducedX.keySerde(Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("baz", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("bar")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("bar")
+                    .hasValue(2L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
     void shouldReduce() {
         final StringApp app = new StringApp() {
             @Override

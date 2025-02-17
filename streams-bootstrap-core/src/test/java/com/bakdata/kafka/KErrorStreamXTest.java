@@ -32,12 +32,13 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.ValueMapper;
 import org.junit.jupiter.api.Test;
 
 class KErrorStreamXTest {
 
     @Test
-    void shouldGetErrorsAndValues() {
+    void shouldGetErrorsAndValuesWithKey() {
         final KeyValueMapper<String, String, KeyValue<String, String>> mapper = mock();
         doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
         doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
@@ -74,7 +75,7 @@ class KErrorStreamXTest {
     }
 
     @Test
-    void shouldGetErrorsAndValuesNamed() {
+    void shouldGetErrorsAndValuesWithKeyNamed() {
         final KeyValueMapper<String, String, KeyValue<String, String>> mapper = mock();
         doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
         doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
@@ -104,6 +105,80 @@ class KErrorStreamXTest {
                     .expectNextRecord()
                     .hasKey("success_key")
                     .hasValue("success_value")
+                    .expectNoMoreRecord();
+            topology.streamOutput("error")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGetErrorsAndValues() {
+        final ValueMapper<String, String> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("bar");
+        doReturn("success").when(mapper).apply("baz");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.mapValuesCapturingErrors(mapper);
+                processed.values().to("output");
+                processed.errors()
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput("output")
+                    .expectNoMoreRecord();
+            topology.streamOutput("error")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+            topology.input().add("foo", "baz");
+            topology.streamOutput("output")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("success")
+                    .expectNoMoreRecord();
+            topology.streamOutput("error")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGetErrorsAndValuesNamed() {
+        final ValueMapper<String, String> mapper = mock();
+        doThrow(new RuntimeException("Cannot process")).when(mapper).apply("bar");
+        doReturn("success").when(mapper).apply("baz");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KErrorStream<String, String, String, String> processed =
+                        input.mapValuesCapturingErrors(mapper);
+                processed.values(Named.as("value")).to("output");
+                processed.errors(Named.as("errors"))
+                        .mapValues(ProcessingError::getValue)
+                        .to("error");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput("output")
+                    .expectNoMoreRecord();
+            topology.streamOutput("error")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+            topology.input().add("foo", "baz");
+            topology.streamOutput("output")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("success")
                     .expectNoMoreRecord();
             topology.streamOutput("error")
                     .expectNoMoreRecord();
