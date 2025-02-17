@@ -38,10 +38,7 @@ import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.TableJoined;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
-import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
-import org.apache.kafka.streams.processor.ProcessorContext;
-import org.apache.kafka.streams.processor.StateStore;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
@@ -1681,23 +1678,4 @@ class KTableXTest {
         }
     }
 
-    private abstract static class SimpleValueTransformer<KIn, VIn, VOut>
-            implements ValueTransformerWithKey<KIn, VIn, VOut> {
-        private ProcessorContext context = null;
-
-        @Override
-        public void init(final ProcessorContext context) {
-            this.context = context;
-        }
-
-        @Override
-        public void close() {
-            // do nothing
-        }
-
-        protected <S extends StateStore> S getStateStore(final String name) {
-            return this.context.getStateStore(name);
-        }
-
-    }
 }

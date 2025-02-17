@@ -53,13 +53,8 @@ import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
-import org.apache.kafka.streams.processor.StateStore;
-import org.apache.kafka.streams.processor.api.FixedKeyProcessor;
-import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
 import org.apache.kafka.streams.processor.api.FixedKeyRecord;
-import org.apache.kafka.streams.processor.api.Processor;
-import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -236,9 +231,7 @@ class KStreamXTest {
                 input.to((key, value, recordContext) -> key);
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp(StreamsTopicConfig.builder()
-                .outputTopic("output")
-                .build())) {
+        try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input().add("foo", "bar");
             final StreamsConfig streamsConfig = topology.getStreamsConfig();
             final Serde<String> keySerde = (Serde<String>) streamsConfig.defaultKeySerde();
@@ -264,9 +257,7 @@ class KStreamXTest {
                 input.to((key, value, recordContext) -> key, ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<Double, Double> topology = app.startApp(StreamsTopicConfig.builder()
-                .outputTopic("output")
-                .build())) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
                     .withKeySerde(Serdes.String())
                     .withValueSerde(Serdes.String())
@@ -3616,39 +3607,4 @@ class KStreamXTest {
     //TODO transform
     //TODO process (old)
 
-    private abstract static class SimpleProcessor<KIn, VIn, KOut, VOut> implements Processor<KIn, VIn, KOut, VOut> {
-        private ProcessorContext<KOut, VOut> context = null;
-
-        @Override
-        public void init(final ProcessorContext<KOut, VOut> context) {
-            this.context = context;
-        }
-
-        protected void forward(final Record<? extends KOut, ? extends VOut> outputRecord) {
-            this.context.forward(outputRecord);
-        }
-
-        protected <S extends StateStore> S getStateStore(final String name) {
-            return this.context.getStateStore(name);
-        }
-
-    }
-
-    private abstract static class SimpleFixedKeyProcessor<KIn, VIn, VOut> implements FixedKeyProcessor<KIn, VIn, VOut> {
-        private FixedKeyProcessorContext<KIn, VOut> context = null;
-
-        @Override
-        public void init(final FixedKeyProcessorContext<KIn, VOut> context) {
-            this.context = context;
-        }
-
-        protected void forward(final FixedKeyRecord<? extends KIn, ? extends VOut> outputRecord) {
-            this.context.forward(outputRecord);
-        }
-
-        protected <S extends StateStore> S getStateStore(final String name) {
-            return this.context.getStateStore(name);
-        }
-
-    }
 }

@@ -29,7 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.processor.api.Record;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
 import org.junit.jupiter.api.Test;
 
 class TopologyBuilderTest {
@@ -453,7 +459,167 @@ class TopologyBuilderTest {
         }
     }
 
-    //TODO globalTable
-    //TOOD globalStore
+    @Test
+    void shouldReadGlobalTableFromTopic() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
+                joined.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("foo", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReadGlobalTableFromTopicUsingConsumed() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final GlobalKTable<String, String> otherInput =
+                        builder.globalTable("table_input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
+                joined.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("table_input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "baz");
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReadGlobalTableFromTopicUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final GlobalKTable<String, String> otherInput =
+                        builder.globalTable("table_input", MaterializedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
+                joined.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("table_input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "baz");
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldReadGlobalTableFromTopicUsingConsumedAndMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final GlobalKTable<String, String> otherInput =
+                        builder.globalTable("table_input", ConsumedX.with(Serdes.String(), Serdes.String()),
+                                Materialized.as("store"));
+                final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
+                joined.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("table_input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "baz");
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldProcessUsingStore() {
+        final ProcessorSupplier<String, String, String, String> processor = () -> new SimpleProcessor<>() {
+
+            @Override
+            public void process(final Record<String, String> inputRecord) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                final String value = store.get(inputRecord.key());
+                this.forward(inputRecord.withValue(inputRecord.value() + value));
+            }
+        };
+        final ProcessorSupplier<String, String, Void, Void> storeUpdater = () -> new SimpleProcessor<>() {
+            @Override
+            public void process(final Record<String, String> inputRecord) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(inputRecord.key(), inputRecord.value());
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addGlobalStore(store, "global_input",
+                        ConsumedX.with(Preconfigured.defaultSerde(), Preconfigured.defaultSerde()), storeUpdater);
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> processed = input.process(processor);
+                processed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("global_input").add("foo", "baz");
+            topology.input("input").add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
 
 }
