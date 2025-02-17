@@ -25,8 +25,14 @@
 package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.SessionWindows;
+import org.apache.kafka.streams.kstream.SlidingWindows;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.Windowed;
 import org.junit.jupiter.api.Test;
 
 class KGroupedStreamXTest {
@@ -336,6 +342,129 @@ class KGroupedStreamXTest {
                     .expectNextRecord()
                     .hasKey("foo")
                     .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTimeWindow() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, Long> counted = windowed.count();
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:60000")
+                    .hasValue(1L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldSlidingWindow() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(SlidingWindows.ofTimeDifferenceWithNoGrace(Duration.ofSeconds(30L)));
+                final KTableX<Windowed<String>, Long> counted = windowed.count();
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:1")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:30001")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:30000")
+                    .hasValue(2L)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldSessionWindow() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final SessionWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(SessionWindows.ofInactivityGapWithNoGrace(Duration.ofSeconds(30L)));
+                final KTableX<Windowed<String>, Long> counted = windowed.count();
+                final KStreamX<String, Long> output = counted.toStream(
+                        (k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli() + ":" + k.window().endTime()
+                                .toEpochMilli());
+                output.to("output", Produced.valueSerde(Serdes.Long()));
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .at(Duration.ofSeconds(30L)
+                            .toMillis()) // if time is lower than session size, there is a bug in Kafka Streams
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(91L).toMillis())
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:30000:30000")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .hasKey("foo:30000:30000")
+                    .hasValue(null)
+                    .expectNextRecord()
+                    .hasKey("foo:30000:60000")
+                    .hasValue(2L)
+                    .expectNextRecord()
+                    .hasKey("foo:91000:91000")
+                    .hasValue(1L)
                     .expectNoMoreRecord();
         }
     }

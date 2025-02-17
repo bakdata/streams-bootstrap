@@ -2608,6 +2608,11 @@ class KStreamXTest {
         }
     }
 
+    //TODO TopicNameExtractor
+    //TODO errorFilter
+    //TODO GlobalKTable joins
+    //TODO printed
+
     private abstract static class SimpleProcessor<KIn, VIn, KOut, VOut> implements Processor<KIn, VIn, KOut, VOut> {
         private ProcessorContext<KOut, VOut> context = null;
 
