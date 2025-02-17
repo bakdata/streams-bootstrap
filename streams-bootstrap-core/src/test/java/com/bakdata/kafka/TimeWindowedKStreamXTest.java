@@ -163,7 +163,7 @@ class TimeWindowedKStreamXTest {
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, Long> counted =
-                        windowed.count(MaterializedX.with(Serdes.String(), Serdes.Long()));
+                        windowed.count(Named.as("count"), MaterializedX.with(Serdes.String(), Serdes.Long()));
                 final KStreamX<String, Long> output =
                         counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
                 output.to("output", ProducedX.keySerde(Serdes.String()));
@@ -513,4 +513,6 @@ class TimeWindowedKStreamXTest {
                     .expectNoMoreRecord();
         }
     }
+
+    //TODO emitStrategy
 }
