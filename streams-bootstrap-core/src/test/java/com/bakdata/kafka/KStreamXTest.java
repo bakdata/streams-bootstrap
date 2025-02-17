@@ -2847,8 +2847,8 @@ class KStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.selectKey((k, v) -> v) // repartition
+                        .groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, Long> count = grouped.count();
                 count.toStream().to("output", ProducedX.keySerde(Serdes.String()));
             }
@@ -2858,15 +2858,15 @@ class KStreamXTest {
                     .withKeySerde(Serdes.String())
                     .withValueSerde(Serdes.String())
                     .add("foo", "bar")
-                    .add("foo", "baz");
+                    .add("baz", "bar");
             topology.streamOutput()
                     .withKeySerde(Serdes.String())
                     .withValueSerde(Serdes.Long())
                     .expectNextRecord()
-                    .hasKey("foo")
+                    .hasKey("bar")
                     .hasValue(1L)
                     .expectNextRecord()
-                    .hasKey("foo")
+                    .hasKey("bar")
                     .hasValue(2L)
                     .expectNoMoreRecord();
         }

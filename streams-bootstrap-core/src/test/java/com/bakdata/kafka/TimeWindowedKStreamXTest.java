@@ -116,8 +116,7 @@ class TimeWindowedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, Long> counted =
@@ -159,8 +158,7 @@ class TimeWindowedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, Long> counted =
@@ -275,8 +273,7 @@ class TimeWindowedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, String> aggregated = windowed.aggregate(() -> "", (k, v, a) -> a + v,
@@ -318,8 +315,7 @@ class TimeWindowedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, String> aggregated =
@@ -435,8 +431,7 @@ class TimeWindowedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, String> reduced =
@@ -478,8 +473,7 @@ class TimeWindowedKStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
                         grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
                 final KTableX<Windowed<String>, String> reduced =

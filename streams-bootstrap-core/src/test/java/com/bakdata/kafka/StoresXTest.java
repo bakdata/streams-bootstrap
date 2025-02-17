@@ -41,6 +41,7 @@ import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.TimestampedWindowStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.apache.kafka.streams.state.VersionedKeyValueStore;
+import org.apache.kafka.streams.state.VersionedRecord;
 import org.apache.kafka.streams.state.WindowStore;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -262,12 +263,7 @@ class StoresXTest {
                     .add("foo", "bar");
             final VersionedKeyValueStore<String, String> store =
                     topology.getTestDriver().getVersionedKeyValueStore("my-store");
-            this.softly.assertThat(store.get("foo", 0L))
-                    .satisfies(versionedRecord -> {
-                        this.softly.assertThat(versionedRecord.value()).isEqualTo("bar");
-                        this.softly.assertThat(versionedRecord.timestamp()).isEqualTo(0L);
-                        this.softly.assertThat(versionedRecord.validTo()).isNotPresent();
-                    });
+            this.softly.assertThat(store.get("foo", 0L)).isEqualTo(new VersionedRecord<>("bar", 0L));
         }
     }
 

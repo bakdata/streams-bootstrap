@@ -99,8 +99,7 @@ class CogroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final CogroupedKStreamX<String, String> cogrouped =
                         grouped.cogroup((key, value, aggregate) -> aggregate + value);
                 final KTableX<String, String> aggregated =
@@ -134,8 +133,7 @@ class CogroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final CogroupedKStreamX<String, String> cogrouped =
                         grouped.cogroup((key, value, aggregate) -> aggregate + value);
                 final KTableX<String, String> aggregated = cogrouped.aggregate(() -> "", Named.as("cogroup"),

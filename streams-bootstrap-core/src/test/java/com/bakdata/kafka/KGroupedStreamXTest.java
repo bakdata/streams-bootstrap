@@ -97,8 +97,7 @@ class KGroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, Long> counted =
                         grouped.count(MaterializedX.keySerde(Serdes.String()));
                 counted.toStream().to("output", ProducedX.keySerde(Serdes.String()));
@@ -130,8 +129,7 @@ class KGroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, Long> counted = grouped.count(Named.as("count"),
                         MaterializedX.with(Serdes.String(), Serdes.Long()));
                 counted.toStream().to("output", ProducedX.keySerde(Serdes.String()));
@@ -189,8 +187,7 @@ class KGroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2,
                         MaterializedX.with(Serdes.String(), Serdes.String()));
                 reduced.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -222,8 +219,7 @@ class KGroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2,
                         Named.as("reduce"), MaterializedX.with(Serdes.String(), Serdes.String()));
                 reduced.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -282,8 +278,7 @@ class KGroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> aggregated =
                         grouped.aggregate(() -> "", (key, value, aggregate) -> aggregate + value,
                                 MaterializedX.with(Serdes.String(), Serdes.String()));
@@ -317,8 +312,7 @@ class KGroupedStreamXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KGroupedStreamX<String, String> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> aggregated =
                         grouped.aggregate(() -> "", (key, value, aggregate) -> aggregate + value,
                                 Named.as("aggregate"), MaterializedX.with(Serdes.String(), Serdes.String()));
