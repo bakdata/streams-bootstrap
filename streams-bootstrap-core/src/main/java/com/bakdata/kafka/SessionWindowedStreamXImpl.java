@@ -62,7 +62,7 @@ class SessionWindowedStreamXImpl<K, V> implements SessionWindowedKStreamX<K, V> 
 
     @Override
     public KTableX<Windowed<K>, Long> count(
-            final AutoMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, Long, SessionStore<Bytes, byte[]>> materialized) {
         return this.count(materialized.configure(this.context.getConfigurator()));
     }
 
@@ -74,7 +74,7 @@ class SessionWindowedStreamXImpl<K, V> implements SessionWindowedKStreamX<K, V> 
 
     @Override
     public KTableX<Windowed<K>, Long> count(final Named named,
-            final AutoMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, Long, SessionStore<Bytes, byte[]>> materialized) {
         return this.count(named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -101,7 +101,7 @@ class SessionWindowedStreamXImpl<K, V> implements SessionWindowedKStreamX<K, V> 
     @Override
     public <VR> KTableX<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger,
-            final AutoMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, sessionMerger,
                 materialized.configure(this.context.getConfigurator()));
     }
@@ -118,7 +118,7 @@ class SessionWindowedStreamXImpl<K, V> implements SessionWindowedKStreamX<K, V> 
     public <VR> KTableX<Windowed<K>, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Merger<? super K, VR> sessionMerger,
             final Named named,
-            final AutoMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, sessionMerger, named,
                 materialized.configure(this.context.getConfigurator()));
     }
@@ -141,7 +141,7 @@ class SessionWindowedStreamXImpl<K, V> implements SessionWindowedKStreamX<K, V> 
 
     @Override
     public KTableX<Windowed<K>, V> reduce(final Reducer<V> reducer,
-            final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.reduce(reducer, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -153,7 +153,7 @@ class SessionWindowedStreamXImpl<K, V> implements SessionWindowedKStreamX<K, V> 
 
     @Override
     public KTableX<Windowed<K>, V> reduce(final Reducer<V> reducer, final Named named,
-            final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.reduce(reducer, named, materialized.configure(this.context.getConfigurator()));
     }
 

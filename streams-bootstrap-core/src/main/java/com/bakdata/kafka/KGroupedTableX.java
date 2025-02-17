@@ -47,7 +47,7 @@ public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
     /**
      * @see #count(Materialized)
      */
-    KTableX<K, Long> count(AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(MaterializedX<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
@@ -56,7 +56,7 @@ public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
      * @see #count(Named, Materialized)
      */
     KTableX<K, Long> count(Named named,
-            AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, Long> count();
@@ -72,7 +72,7 @@ public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
      * @see #reduce(Reducer, Reducer, Materialized)
      */
     KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor,
-            AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor, Named named,
@@ -82,7 +82,7 @@ public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
      * @see #reduce(Reducer, Reducer, Named, Materialized)
      */
     KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor, Named named,
-            AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, V> reduce(Reducer<V> adder, Reducer<V> subtractor);
@@ -97,7 +97,7 @@ public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
      */
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor,
-            AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
@@ -109,7 +109,7 @@ public interface KGroupedTableX<K, V> extends KGroupedTable<K, V> {
      */
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,
             Aggregator<? super K, ? super V, VR> subtractor, Named named,
-            AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> adder,

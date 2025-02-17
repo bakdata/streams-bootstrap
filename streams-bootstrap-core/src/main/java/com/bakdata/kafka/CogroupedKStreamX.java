@@ -63,7 +63,7 @@ public interface CogroupedKStreamX<K, VOut> extends CogroupedKStream<K, VOut> {
      * @see #aggregate(Initializer, Materialized)
      */
     KTableX<K, VOut> aggregate(Initializer<VOut> initializer,
-            AutoMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
@@ -73,7 +73,7 @@ public interface CogroupedKStreamX<K, VOut> extends CogroupedKStream<K, VOut> {
      * @see #aggregate(Initializer, Named, Materialized)
      */
     KTableX<K, VOut> aggregate(Initializer<VOut> initializer, Named named,
-            AutoMaterialized<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VOut, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <W extends Window> TimeWindowedCogroupedKStreamX<K, VOut> windowedBy(Windows<W> windows);

@@ -70,7 +70,7 @@ class CogroupedStreamXImpl<K, V> implements CogroupedKStreamX<K, V> {
 
     @Override
     public KTableX<K, V> aggregate(final Initializer<V> initializer,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -82,7 +82,7 @@ class CogroupedStreamXImpl<K, V> implements CogroupedKStreamX<K, V> {
 
     @Override
     public KTableX<K, V> aggregate(final Initializer<V> initializer, final Named named,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, named, materialized.configure(this.context.getConfigurator()));
     }
 

@@ -63,7 +63,7 @@ class BranchedKStreamXImpl<K, V> implements BranchedKStreamX<K, V> {
     @Override
     public BranchedKStreamX<K, V> branch(final Predicate<? super K, ? super V> predicate,
             final BranchedX<K, V> branched) {
-        return this.branch(predicate, branched.convert(this.context));
+        return this.branch(predicate, branched.configure(this.context));
     }
 
     @Override
@@ -88,7 +88,7 @@ class BranchedKStreamXImpl<K, V> implements BranchedKStreamX<K, V> {
 
     @Override
     public Map<String, KStreamX<K, V>> defaultBranch(final BranchedX<K, V> branched) {
-        return this.wrapX(this.defaultBranchInternal(branched.convert(this.context)));
+        return this.wrapX(this.defaultBranchInternal(branched.configure(this.context)));
     }
 
     @Override

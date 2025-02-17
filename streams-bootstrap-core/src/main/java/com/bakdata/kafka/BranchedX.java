@@ -26,10 +26,6 @@ package com.bakdata.kafka;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.kstream.Branched;
 import org.apache.kafka.streams.kstream.KStream;
 
@@ -40,24 +36,17 @@ import org.apache.kafka.streams.kstream.KStream;
  * @param <K> type of keys
  * @param <V> type of values
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class BranchedX<K, V> {
+public final class BranchedX<K, V> extends ModifierChain<Branched<K, V>, StreamsContext, BranchedX<K, V>> {
 
-    @Getter(AccessLevel.PROTECTED)
-    private final String name;
+    private BranchedX(final Function<StreamsContext, Branched<K, V>> initializer) {
+        super(initializer);
+    }
 
     /**
      * @see Branched#withConsumer(Consumer)
      */
     public static <K, V> BranchedX<K, V> withConsumer(final Consumer<? super KStreamX<K, V>> chain) {
-        return new ConsumerBranchedX<>(null, chain);
-    }
-
-    /**
-     * @see Branched#withConsumer(Consumer, String)
-     */
-    public static <K, V> BranchedX<K, V> withConsumer(final Consumer<? super KStreamX<K, V>> chain, final String name) {
-        return new ConsumerBranchedX<>(name, chain);
+        return new BranchedX<>(context -> Branched.withConsumer(asConsumer(chain, context)));
     }
 
     /**
@@ -65,54 +54,35 @@ public abstract class BranchedX<K, V> {
      */
     public static <K, V> BranchedX<K, V> withFunction(
             final Function<? super KStreamX<K, V>, ? extends KStream<K, V>> chain) {
-        return new FunctionBranchedX<>(null, chain);
+        return new BranchedX<>(context -> Branched.withFunction(asFunction(chain, context)));
     }
 
     /**
-     * @see Branched#withFunction(Function, String)
+     * @see Branched#as(String)
      */
-    public static <K, V> BranchedX<K, V> withFunction(
-            final Function<? super KStreamX<K, V>, ? extends KStream<K, V>> chain, final String name) {
-        return new FunctionBranchedX<>(name, chain);
+    public static <K, V> BranchedX<K, V> as(final String name) {
+        return new BranchedX<>(context -> Branched.as(name));
     }
 
-    abstract Branched<K, V> convert(StreamsContext context);
-
-    private static final class ConsumerBranchedX<K, V> extends BranchedX<K, V> {
-        private final @NonNull Consumer<? super KStreamX<K, V>> chain;
-
-        private ConsumerBranchedX(final String name, final Consumer<? super KStreamX<K, V>> chain) {
-            super(name);
-            this.chain = chain;
-        }
-
-        @Override
-        Branched<K, V> convert(final StreamsContext context) {
-            return Branched.withConsumer(this.asConsumer(context), this.getName());
-        }
-
-        private Consumer<KStream<K, V>> asConsumer(final StreamsContext context) {
-            return stream -> this.chain.accept(context.wrap(stream));
-        }
+    private static <K, V> Consumer<KStream<K, V>> asConsumer(final Consumer<? super KStreamX<K, V>> chain,
+            final StreamsContext context) {
+        return stream -> chain.accept(context.wrap(stream));
     }
 
-    private static final class FunctionBranchedX<K, V> extends BranchedX<K, V> {
-        private final @NonNull Function<? super KStreamX<K, V>, ? extends KStream<K, V>> chain;
-
-        private FunctionBranchedX(final String name,
-                final Function<? super KStreamX<K, V>, ? extends KStream<K, V>> chain) {
-            super(name);
-            this.chain = chain;
-        }
-
-        @Override
-        Branched<K, V> convert(final StreamsContext context) {
-            return Branched.withFunction(this.asFunction(context), this.getName());
-        }
-
-        private Function<KStream<K, V>, KStream<K, V>> asFunction(final StreamsContext context) {
-            return stream -> this.chain.apply(context.wrap(stream));
-        }
+    private static <K, V> Function<KStream<K, V>, KStream<K, V>> asFunction(
+            final Function<? super KStreamX<K, V>, ? extends KStream<K, V>> chain, final StreamsContext context) {
+        return stream -> chain.apply(context.wrap(stream));
     }
 
+    /**
+     * @see Branched#withName(String)
+     */
+    public BranchedX<K, V> withName(final String name) {
+        return this.modify(branched -> branched.withName(name));
+    }
+
+    @Override
+    protected BranchedX<K, V> newInstance(final Function<StreamsContext, Branched<K, V>> initializer) {
+        return new BranchedX<>(initializer);
+    }
 }

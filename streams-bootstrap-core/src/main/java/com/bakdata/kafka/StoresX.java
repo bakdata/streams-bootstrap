@@ -44,7 +44,7 @@ import org.apache.kafka.streams.state.WindowStore;
  * Use {@link Preconfigured} to lazily configure {@link Serde} for {@link Stores} using {@link Configurator}
  */
 @RequiredArgsConstructor
-public class AutoStores {
+public class StoresX {
 
     private final @NonNull Configurator configurator;
 
@@ -58,6 +58,14 @@ public class AutoStores {
     }
 
     /**
+     * @see Stores#sessionStoreBuilder(SessionBytesStoreSupplier, Serde, Serde)
+     */
+    public <K, V> StoreBuilder<SessionStore<K, V>> sessionStoreBuilder(final SessionBytesStoreSupplier supplier,
+            final Serde<K> keySerde, final Serde<V> valueSerde) {
+        return this.sessionStoreBuilder(supplier, Preconfigured.create(keySerde), Preconfigured.create(valueSerde));
+    }
+
+    /**
      * @see Stores#timestampedWindowStoreBuilder(WindowBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<TimestampedWindowStore<K, V>> timestampedWindowStoreBuilder(
@@ -68,12 +76,29 @@ public class AutoStores {
     }
 
     /**
+     * @see Stores#timestampedWindowStoreBuilder(WindowBytesStoreSupplier, Serde, Serde)
+     */
+    public <K, V> StoreBuilder<TimestampedWindowStore<K, V>> timestampedWindowStoreBuilder(
+            final WindowBytesStoreSupplier supplier, final Serde<K> keySerde, final Serde<V> valueSerde) {
+        return this.timestampedWindowStoreBuilder(supplier, Preconfigured.create(keySerde),
+                Preconfigured.create(valueSerde));
+    }
+
+    /**
      * @see Stores#windowStoreBuilder(WindowBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<WindowStore<K, V>> windowStoreBuilder(final WindowBytesStoreSupplier supplier,
             final Preconfigured<? extends Serde<K>> keySerde, final Preconfigured<? extends Serde<V>> valueSerde) {
         return Stores.windowStoreBuilder(supplier, this.configurator.configureForKeys(keySerde),
                 this.configurator.configureForValues(valueSerde));
+    }
+
+    /**
+     * @see Stores#windowStoreBuilder(WindowBytesStoreSupplier, Serde, Serde)
+     */
+    public <K, V> StoreBuilder<WindowStore<K, V>> windowStoreBuilder(final WindowBytesStoreSupplier supplier,
+            final Serde<K> keySerde, final Serde<V> valueSerde) {
+        return this.windowStoreBuilder(supplier, Preconfigured.create(keySerde), Preconfigured.create(valueSerde));
     }
 
     /**
@@ -87,6 +112,15 @@ public class AutoStores {
     }
 
     /**
+     * @see Stores#versionedKeyValueStoreBuilder(VersionedBytesStoreSupplier, Serde, Serde)
+     */
+    public <K, V> StoreBuilder<VersionedKeyValueStore<K, V>> versionedKeyValueStoreBuilder(
+            final VersionedBytesStoreSupplier supplier, final Serde<K> keySerde, final Serde<V> valueSerde) {
+        return this.versionedKeyValueStoreBuilder(supplier, Preconfigured.create(keySerde),
+                Preconfigured.create(valueSerde));
+    }
+
+    /**
      * @see Stores#timestampedKeyValueStoreBuilder(KeyValueBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<TimestampedKeyValueStore<K, V>> timestampedKeyValueStoreBuilder(
@@ -97,11 +131,29 @@ public class AutoStores {
     }
 
     /**
+     * @see Stores#timestampedKeyValueStoreBuilder(KeyValueBytesStoreSupplier, Serde, Serde)
+     */
+    public <K, V> StoreBuilder<TimestampedKeyValueStore<K, V>> timestampedKeyValueStoreBuilder(
+            final KeyValueBytesStoreSupplier supplier, final Serde<K> keySerde,
+            final Serde<V> valueSerde) {
+        return this.timestampedKeyValueStoreBuilder(supplier, Preconfigured.create(keySerde),
+                Preconfigured.create(valueSerde));
+    }
+
+    /**
      * @see Stores#keyValueStoreBuilder(KeyValueBytesStoreSupplier, Serde, Serde)
      */
     public <K, V> StoreBuilder<KeyValueStore<K, V>> keyValueStoreBuilder(final KeyValueBytesStoreSupplier supplier,
             final Preconfigured<? extends Serde<K>> keySerde, final Preconfigured<? extends Serde<V>> valueSerde) {
         return Stores.keyValueStoreBuilder(supplier, this.configurator.configureForKeys(keySerde),
                 this.configurator.configureForValues(valueSerde));
+    }
+
+    /**
+     * @see Stores#keyValueStoreBuilder(KeyValueBytesStoreSupplier, Serde, Serde)
+     */
+    public <K, V> StoreBuilder<KeyValueStore<K, V>> keyValueStoreBuilder(final KeyValueBytesStoreSupplier supplier,
+            final Serde<K> keySerde, final Serde<V> valueSerde) {
+        return this.keyValueStoreBuilder(supplier, Preconfigured.create(keySerde), Preconfigured.create(valueSerde));
     }
 }

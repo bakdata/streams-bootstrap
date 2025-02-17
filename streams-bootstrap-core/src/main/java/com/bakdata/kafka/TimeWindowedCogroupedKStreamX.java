@@ -54,7 +54,7 @@ public interface TimeWindowedCogroupedKStreamX<K, VOut> extends TimeWindowedCogr
      * @see #aggregate(Initializer, Materialized)
      */
     KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer,
-            AutoMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
@@ -64,5 +64,5 @@ public interface TimeWindowedCogroupedKStreamX<K, VOut> extends TimeWindowedCogr
      * @see #aggregate(Initializer, Named, Materialized)
      */
     KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Named named,
-            AutoMaterialized<K, VOut, WindowStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VOut, WindowStore<Bytes, byte[]>> materialized);
 }

@@ -57,7 +57,7 @@ public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
     /**
      * @see #count(Materialized)
      */
-    KTableX<K, Long> count(AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, Long> count(MaterializedX<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, Long> count(Named named, Materialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
@@ -66,7 +66,7 @@ public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
      * @see #count(Named, Materialized)
      */
     KTableX<K, Long> count(Named named,
-            AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, Long, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, V> reduce(Reducer<V> reducer);
@@ -78,7 +78,7 @@ public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
      * @see #reduce(Reducer, Materialized)
      */
     KTableX<K, V> reduce(Reducer<V> reducer,
-            AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, V> reduce(Reducer<V> reducer, Named named,
@@ -88,7 +88,7 @@ public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
      * @see #reduce(Reducer, Named, Materialized)
      */
     KTableX<K, V> reduce(Reducer<V> reducer, Named named,
-            AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator);
@@ -101,7 +101,7 @@ public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
      * @see #aggregate(Initializer, Aggregator, Materialized)
      */
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
-            AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
@@ -111,7 +111,7 @@ public interface KGroupedStreamX<K, V> extends KGroupedStream<K, V> {
      * @see #aggregate(Initializer, Aggregator, Named, Materialized)
      */
     <VR> KTableX<K, VR> aggregate(Initializer<VR> initializer, Aggregator<? super K, ? super V, VR> aggregator,
-            Named named, AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
+            Named named, MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <W extends Window> TimeWindowedKStreamX<K, V> windowedBy(Windows<W> windows);

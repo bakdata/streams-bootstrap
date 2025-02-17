@@ -65,7 +65,7 @@ class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
 
     @Override
     public KTableX<K, Long> count(
-            final AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.count(materialized.configure(this.context.getConfigurator()));
     }
 
@@ -77,7 +77,7 @@ class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
 
     @Override
     public KTableX<K, Long> count(final Named named,
-            final AutoMaterialized<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, Long, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.count(named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -94,7 +94,7 @@ class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
 
     @Override
     public KTableX<K, V> reduce(final Reducer<V> reducer,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.reduce(reducer, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -106,7 +106,7 @@ class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
 
     @Override
     public KTableX<K, V> reduce(final Reducer<V> reducer, final Named named,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.reduce(reducer, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -126,7 +126,7 @@ class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
     @Override
     public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -140,7 +140,7 @@ class KGroupedStreamXImpl<K, V> implements KGroupedStreamX<K, V> {
     @Override
     public <VR> KTableX<K, VR> aggregate(final Initializer<VR> initializer,
             final Aggregator<? super K, ? super V, VR> aggregator, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, aggregator, named, materialized.configure(this.context.getConfigurator()));
     }
 

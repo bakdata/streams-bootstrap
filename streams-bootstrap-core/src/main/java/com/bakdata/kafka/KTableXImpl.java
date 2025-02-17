@@ -70,7 +70,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public KTableX<K, V> filter(final Predicate<? super K, ? super V> predicate,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.filter(predicate, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -82,7 +82,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public KTableX<K, V> filter(final Predicate<? super K, ? super V> predicate, final Named named,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.filter(predicate, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -104,7 +104,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public KTableX<K, V> filterNot(final Predicate<? super K, ? super V> predicate,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.filterNot(predicate, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -116,7 +116,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public KTableX<K, V> filterNot(final Predicate<? super K, ? super V> predicate, final Named named,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.filterNot(predicate, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -149,7 +149,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR> KTableX<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.mapValues(mapper, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -161,7 +161,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR> KTableX<K, VR> mapValues(final ValueMapper<? super V, ? extends VR> mapper, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.mapValues(mapper, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -173,7 +173,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR> KTableX<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.mapValues(mapper, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -185,7 +185,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR> KTableX<K, VR> mapValues(final ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
-            final Named named, final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final Named named, final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.mapValues(mapper, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -240,7 +240,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VR> KTableX<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized,
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized,
             final String... stateStoreNames) {
         return this.transformValues(transformerSupplier, materialized.configure(this.context.getConfigurator()),
                 stateStoreNames);
@@ -258,7 +258,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VR> KTableX<K, VR> transformValues(
             final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> transformerSupplier,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized, final Named named,
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized, final Named named,
             final String... stateStoreNames) {
         return this.transformValues(transformerSupplier, materialized.configure(this.context.getConfigurator()), named,
                 stateStoreNames);
@@ -278,7 +278,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <KR, VR> KGroupedTableX<KR, VR> groupBy(
-            final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector, final AutoGrouped<KR, VR> grouped) {
+            final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector, final GroupedX<KR, VR> grouped) {
         return this.groupBy(selector, grouped.configure(this.context.getConfigurator()));
     }
 
@@ -307,7 +307,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VO, VR> KTableX<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -322,7 +322,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VO, VR> KTableX<K, VR> join(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, joiner, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -351,7 +351,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VO, VR> KTableX<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -366,7 +366,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VO, VR> KTableX<K, VR> leftJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, joiner, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -395,7 +395,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VO, VR> KTableX<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.outerJoin(other, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -410,7 +410,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VO, VR> KTableX<K, VR> outerJoin(final KTable<K, VO> other,
             final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.outerJoin(other, joiner, named, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -450,7 +450,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -467,7 +467,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, named,
                 materialized.configure(this.context.getConfigurator()));
     }
@@ -485,7 +485,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, tableJoined,
                 materialized.configure(this.context.getConfigurator()));
     }
@@ -526,7 +526,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner,
                 materialized.configure(this.context.getConfigurator()));
     }
@@ -544,7 +544,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final Named named,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner, named,
                 materialized.configure(this.context.getConfigurator()));
     }
@@ -563,7 +563,7 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
-            final AutoMaterialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner, tableJoined,
                 materialized.configure(this.context.getConfigurator()));
     }

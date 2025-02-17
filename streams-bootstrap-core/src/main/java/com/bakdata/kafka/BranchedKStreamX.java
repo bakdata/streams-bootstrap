@@ -50,7 +50,7 @@ public interface BranchedKStreamX<K, V> extends BranchedKStream<K, V> {
     BranchedKStreamX<K, V> branch(Predicate<? super K, ? super V> predicate, BranchedX<K, V> branched);
 
     /**
-     * @deprecated Use {@link #defaultBranchX()}
+     * @deprecated Use {@link #defaultBranchX()} instead.
      */
     @Deprecated(since = "3.6.0")
     @Override
@@ -62,7 +62,7 @@ public interface BranchedKStreamX<K, V> extends BranchedKStream<K, V> {
     Map<String, KStreamX<K, V>> defaultBranchX();
 
     /**
-     * @deprecated Use {@link #defaultBranchX(Branched)}
+     * @deprecated Use {@link #defaultBranchX(Branched)} instead.
      */
     @Deprecated(since = "3.6.0")
     @Override
@@ -79,7 +79,7 @@ public interface BranchedKStreamX<K, V> extends BranchedKStream<K, V> {
     Map<String, KStreamX<K, V>> defaultBranch(BranchedX<K, V> branched);
 
     /**
-     * @deprecated Use {@link #noDefaultBranchX()}
+     * @deprecated Use {@link #noDefaultBranchX()} instead.
      */
     @Deprecated(since = "3.6.0")
     @Override

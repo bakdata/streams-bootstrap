@@ -56,7 +56,7 @@ public interface SessionWindowedCogroupedKStreamX<K, VOut> extends SessionWindow
      * @see #aggregate(Initializer, Merger, Materialized)
      */
     KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
-            AutoMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
@@ -66,5 +66,5 @@ public interface SessionWindowedCogroupedKStreamX<K, VOut> extends SessionWindow
      * @see #aggregate(Initializer, Merger, Named, Materialized)
      */
     KTableX<Windowed<K>, VOut> aggregate(Initializer<VOut> initializer, Merger<? super K, VOut> sessionMerger,
-            Named named, AutoMaterialized<K, VOut, SessionStore<Bytes, byte[]>> materialized);
+            Named named, MaterializedX<K, VOut, SessionStore<Bytes, byte[]>> materialized);
 }

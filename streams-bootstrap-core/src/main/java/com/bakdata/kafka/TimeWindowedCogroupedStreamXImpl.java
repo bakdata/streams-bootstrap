@@ -58,7 +58,7 @@ class TimeWindowedCogroupedStreamXImpl<K, V> implements TimeWindowedCogroupedKSt
 
     @Override
     public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
-            final AutoMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -70,7 +70,7 @@ class TimeWindowedCogroupedStreamXImpl<K, V> implements TimeWindowedCogroupedKSt
 
     @Override
     public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer, final Named named,
-            final AutoMaterialized<K, V, WindowStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, WindowStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, named, materialized.configure(this.context.getConfigurator()));
     }
 }

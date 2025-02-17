@@ -56,7 +56,7 @@ public interface SessionWindowedKStreamX<K, V> extends SessionWindowedKStream<K,
     /**
      * @see #count(Materialized)
      */
-    KTableX<Windowed<K>, Long> count(AutoMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized);
+    KTableX<Windowed<K>, Long> count(MaterializedX<K, Long, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<Windowed<K>, Long> count(Named named,
@@ -66,7 +66,7 @@ public interface SessionWindowedKStreamX<K, V> extends SessionWindowedKStream<K,
      * @see #count(Named, Materialized)
      */
     KTableX<Windowed<K>, Long> count(Named named,
-            AutoMaterialized<K, Long, SessionStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, Long, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR> KTableX<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
@@ -89,7 +89,7 @@ public interface SessionWindowedKStreamX<K, V> extends SessionWindowedKStream<K,
     <VR> KTableX<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
             Aggregator<? super K, ? super V, VR> aggregator,
             Merger<? super K, VR> sessionMerger,
-            AutoMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VR, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR> KTableX<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
@@ -103,7 +103,7 @@ public interface SessionWindowedKStreamX<K, V> extends SessionWindowedKStream<K,
     <VR> KTableX<Windowed<K>, VR> aggregate(Initializer<VR> initializer,
             Aggregator<? super K, ? super V, VR> aggregator,
             Merger<? super K, VR> sessionMerger, Named named,
-            AutoMaterialized<K, VR, SessionStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, VR, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<Windowed<K>, V> reduce(Reducer<V> reducer);
@@ -119,7 +119,7 @@ public interface SessionWindowedKStreamX<K, V> extends SessionWindowedKStream<K,
      * @see #reduce(Reducer, Materialized)
      */
     KTableX<Windowed<K>, V> reduce(Reducer<V> reducer,
-            AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, V, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<Windowed<K>, V> reduce(Reducer<V> reducer, Named named,
@@ -129,7 +129,7 @@ public interface SessionWindowedKStreamX<K, V> extends SessionWindowedKStream<K,
      * @see #reduce(Reducer, Named, Materialized)
      */
     KTableX<Windowed<K>, V> reduce(Reducer<V> reducer, Named named,
-            AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized);
+            MaterializedX<K, V, SessionStore<Bytes, byte[]>> materialized);
 
     @Override
     SessionWindowedKStreamX<K, V> emitStrategy(EmitStrategy emitStrategy);

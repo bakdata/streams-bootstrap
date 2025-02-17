@@ -479,9 +479,11 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     @Override
     KStreamX<K, V> peek(ForeachAction<? super K, ? super V> action, Named named);
 
+    @Deprecated
     @Override
     KStreamX<K, V>[] branch(Named named, Predicate<? super K, ? super V>... predicates);
 
+    @Deprecated
     @Override
     KStreamX<K, V>[] branch(Predicate<? super K, ? super V>... predicates);
 
@@ -497,9 +499,11 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     @Override
     KStreamX<K, V> merge(KStream<K, V> stream, Named named);
 
+    @Deprecated
     @Override
     KStreamX<K, V> through(String topic);
 
+    @Deprecated
     @Override
     KStreamX<K, V> through(String topic, Produced<K, V> produced);
 
@@ -512,17 +516,17 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     /**
      * @see #repartition(Repartitioned)
      */
-    KStreamX<K, V> repartition(AutoRepartitioned<K, V> repartitioned);
+    KStreamX<K, V> repartition(RepartitionedX<K, V> repartitioned);
 
     /**
      * @see #to(String, Produced)
      */
-    void to(String topic, AutoProduced<K, V> produced);
+    void to(String topic, ProducedX<K, V> produced);
 
     /**
      * @see #to(TopicNameExtractor, Produced)
      */
-    void to(TopicNameExtractor<K, V> topicExtractor, AutoProduced<K, V> produced);
+    void to(TopicNameExtractor<K, V> topicExtractor, ProducedX<K, V> produced);
 
     /**
      * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic()}
@@ -542,7 +546,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
-    void toOutputTopic(AutoProduced<K, V> produced);
+    void toOutputTopic(ProducedX<K, V> produced);
 
     /**
      * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic(String)}
@@ -565,7 +569,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
-    void toOutputTopic(String label, AutoProduced<K, V> produced);
+    void toOutputTopic(String label, ProducedX<K, V> produced);
 
     /**
      * Materialize {@link KStream} to {@link StreamsTopicConfig#getErrorTopic()}
@@ -585,7 +589,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
-    void toErrorTopic(AutoProduced<K, V> produced);
+    void toErrorTopic(ProducedX<K, V> produced);
 
     @Override
     KTableX<K, V> toTable();
@@ -599,7 +603,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     /**
      * @see #toTable(Materialized)
      */
-    KTableX<K, V> toTable(AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> toTable(MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     KTableX<K, V> toTable(Named named, Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
@@ -607,7 +611,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     /**
      * @see #toTable(Named, Materialized)
      */
-    KTableX<K, V> toTable(Named named, AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+    KTableX<K, V> toTable(Named named, MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <KR> KGroupedStreamX<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector);
@@ -620,7 +624,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see #groupBy(KeyValueMapper, Grouped)
      */
     <KR> KGroupedStreamX<KR, V> groupBy(KeyValueMapper<? super K, ? super V, KR> keySelector,
-            AutoGrouped<KR, V> grouped);
+            GroupedX<KR, V> grouped);
 
     @Override
     KGroupedStreamX<K, V> groupByKey();
@@ -631,7 +635,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     /**
      * @see #groupByKey(Grouped)
      */
-    KGroupedStreamX<K, V> groupByKey(AutoGrouped<K, V> grouped);
+    KGroupedStreamX<K, V> groupByKey(GroupedX<K, V> grouped);
 
     @Override
     <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
@@ -652,7 +656,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
-            JoinWindows windows, AutoStreamJoined<K, V, VO> streamJoined);
+            JoinWindows windows, StreamJoinedX<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
@@ -664,7 +668,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VO, VR> KStreamX<K, VR> join(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            AutoStreamJoined<K, V, VO> streamJoined);
+            StreamJoinedX<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
@@ -684,7 +688,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            AutoStreamJoined<K, V, VO> streamJoined);
+            StreamJoinedX<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
@@ -696,7 +700,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VO, VR> KStreamX<K, VR> leftJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            AutoStreamJoined<K, V, VO> streamJoined);
+            StreamJoinedX<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
@@ -716,7 +720,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoiner<? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            AutoStreamJoined<K, V, VO> streamJoined);
+            StreamJoinedX<K, V, VO> streamJoined);
 
     @Override
     <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
@@ -728,7 +732,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VO, VR> KStreamX<K, VR> outerJoin(KStream<K, VO> otherStream,
             ValueJoinerWithKey<? super K, ? super V, ? super VO, ? extends VR> joiner, JoinWindows windows,
-            AutoStreamJoined<K, V, VO> streamJoined);
+            StreamJoinedX<K, V, VO> streamJoined);
 
     @Override
     <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner);
@@ -745,7 +749,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see #join(KTable, ValueJoiner, Joined)
      */
     <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table, ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
-            AutoJoined<K, V, VT> joined);
+            JoinedX<K, V, VT> joined);
 
     @Override
     <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table,
@@ -756,7 +760,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VT, VR> KStreamX<K, VR> join(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
-            AutoJoined<K, V, VT> joined);
+            JoinedX<K, V, VT> joined);
 
     @Override
     <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
@@ -776,7 +780,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoiner<? super V, ? super VT, ? extends VR> joiner,
-            AutoJoined<K, V, VT> joined);
+            JoinedX<K, V, VT> joined);
 
     @Override
     <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
@@ -787,7 +791,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      */
     <VT, VR> KStreamX<K, VR> leftJoin(KTable<K, VT> table,
             ValueJoinerWithKey<? super K, ? super V, ? super VT, ? extends VR> joiner,
-            AutoJoined<K, V, VT> joined);
+            JoinedX<K, V, VT> joined);
 
     @Override
     <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
@@ -829,61 +833,73 @@ public interface KStreamX<K, V> extends KStream<K, V> {
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, Named named);
 
+    @Deprecated
     @Override
     <K1, V1> KStreamX<K1, V1> transform(
             TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <K1, V1> KStreamX<K1, V1> transform(
             TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
             Named named, String... stateStoreNames);
 
+    @Deprecated
     @Override
     <K1, V1> KStreamX<K1, V1> flatTransform(
             TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <K1, V1> KStreamX<K1, V1> flatTransform(
             TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier, Named named,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> transformValues(
             ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> transformValues(
             ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
             Named named, String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> transformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier, Named named,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
             Named named, String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
             String... stateStoreNames);
 
+    @Deprecated
     @Override
     <VR> KStreamX<K, VR> flatTransformValues(
             ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier, Named named,

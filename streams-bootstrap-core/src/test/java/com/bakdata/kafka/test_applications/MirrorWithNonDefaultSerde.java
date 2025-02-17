@@ -24,10 +24,10 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.AutoConsumed;
-import com.bakdata.kafka.AutoProduced;
+import com.bakdata.kafka.ConsumedX;
 import com.bakdata.kafka.KStreamX;
 import com.bakdata.kafka.Preconfigured;
+import com.bakdata.kafka.ProducedX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
@@ -54,8 +54,8 @@ public class MirrorWithNonDefaultSerde implements StreamsApp {
         final Preconfigured<Serde<TestRecord>> valueSerde = newValueSerde();
         final Preconfigured<Serde<TestRecord>> keySerde = newKeySerde();
         final KStreamX<TestRecord, TestRecord> input =
-                builder.streamInput(AutoConsumed.with(keySerde, valueSerde));
-        input.toOutputTopic(AutoProduced.with(keySerde, valueSerde));
+                builder.streamInput(ConsumedX.with(keySerde, valueSerde));
+        input.toOutputTopic(ProducedX.with(keySerde, valueSerde));
     }
 
     @Override

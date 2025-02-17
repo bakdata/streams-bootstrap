@@ -64,7 +64,7 @@ class SessionWindowedCogroupedStreamXImpl<K, V> implements SessionWindowedCogrou
     @Override
     public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
-            final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, sessionMerger, materialized.configure(this.context.getConfigurator()));
     }
 
@@ -78,7 +78,7 @@ class SessionWindowedCogroupedStreamXImpl<K, V> implements SessionWindowedCogrou
     @Override
     public KTableX<Windowed<K>, V> aggregate(final Initializer<V> initializer,
             final Merger<? super K, V> sessionMerger,
-            final Named named, final AutoMaterialized<K, V, SessionStore<Bytes, byte[]>> materialized) {
+            final Named named, final MaterializedX<K, V, SessionStore<Bytes, byte[]>> materialized) {
         return this.aggregate(initializer, sessionMerger, named,
                 materialized.configure(this.context.getConfigurator()));
     }

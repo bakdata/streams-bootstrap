@@ -72,7 +72,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#stream(String, Consumed)
      */
-    public <K, V> KStreamX<K, V> stream(final String topic, final AutoConsumed<K, V> consumed) {
+    public <K, V> KStreamX<K, V> stream(final String topic, final ConsumedX<K, V> consumed) {
         return this.stream(topic, consumed.configure(this.createConfigurator()));
     }
 
@@ -94,7 +94,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> KStreamX<K, V> stream(final Collection<String> topics,
-            final AutoConsumed<K, V> consumed) {
+            final ConsumedX<K, V> consumed) {
         return this.stream(topics, consumed.configure(this.createConfigurator()));
     }
 
@@ -115,7 +115,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
-    public <K, V> KStreamX<K, V> stream(final Pattern topicPattern, final AutoConsumed<K, V> consumed) {
+    public <K, V> KStreamX<K, V> stream(final Pattern topicPattern, final ConsumedX<K, V> consumed) {
         return this.stream(topicPattern, consumed.configure(this.createConfigurator()));
     }
 
@@ -139,7 +139,7 @@ public class TopologyBuilder {
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> KStreamX<K, V> streamInput(final AutoConsumed<K, V> consumed) {
+    public <K, V> KStreamX<K, V> streamInput(final ConsumedX<K, V> consumed) {
         return this.streamInput(consumed.configure(this.createConfigurator()));
     }
 
@@ -176,7 +176,7 @@ public class TopologyBuilder {
      * @param <V> type of values
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
-    public <K, V> KStreamX<K, V> streamInput(final String label, final AutoConsumed<K, V> consumed) {
+    public <K, V> KStreamX<K, V> streamInput(final String label, final ConsumedX<K, V> consumed) {
         return this.streamInput(label, consumed.configure(this.createConfigurator()));
     }
 
@@ -212,7 +212,7 @@ public class TopologyBuilder {
      * @param <V> type of values
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
-    public <K, V> KStreamX<K, V> streamInputPattern(final AutoConsumed<K, V> consumed) {
+    public <K, V> KStreamX<K, V> streamInputPattern(final ConsumedX<K, V> consumed) {
         return this.streamInputPattern(consumed.configure(this.createConfigurator()));
     }
 
@@ -250,7 +250,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final String label,
-            final AutoConsumed<K, V> consumed) {
+            final ConsumedX<K, V> consumed) {
         return this.streamInputPattern(label, consumed.configure(this.createConfigurator()));
     }
 
@@ -283,7 +283,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#table(String, Consumed)
      */
-    public <K, V> KTableX<K, V> table(final String topic, final AutoConsumed<K, V> consumed) {
+    public <K, V> KTableX<K, V> table(final String topic, final ConsumedX<K, V> consumed) {
         return this.table(topic, consumed.configure(this.createConfigurator()));
     }
 
@@ -299,7 +299,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#table(String, Materialized)
      */
     public <K, V> KTableX<K, V> table(final String topic,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.table(topic, materialized.configure(this.createConfigurator()));
     }
 
@@ -314,10 +314,10 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#table(String, Consumed, Materialized)
      */
-    public <K, V> KTableX<K, V> table(final String topic, final AutoConsumed<K, V> consumed,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+    public <K, V> KTableX<K, V> table(final String topic, final ConsumedX<K, V> consumed,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         final Configurator configurator = this.createConfigurator();
-        return this.table(topic, consumed.configure(configurator), materialized.configure(configurator));
+        return this.table(topic, consumed.configure(configurator), materialized);
     }
 
     /**
@@ -337,7 +337,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#globalTable(String, Consumed)
      */
-    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final AutoConsumed<K, V> consumed) {
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final ConsumedX<K, V> consumed) {
         return this.globalTable(topic, consumed.configure(this.createConfigurator()));
     }
 
@@ -353,7 +353,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#globalTable(String, Materialized)
      */
     public <K, V> GlobalKTable<K, V> globalTable(final String topic,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+            final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.globalTable(topic, materialized.configure(this.createConfigurator()));
     }
 
@@ -368,10 +368,10 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#globalTable(String, Consumed, Materialized)
      */
-    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final AutoConsumed<K, V> consumed,
-            final AutoMaterialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+    public <K, V> GlobalKTable<K, V> globalTable(final String topic, final ConsumedX<K, V> consumed,
+            final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         final Configurator configurator = this.createConfigurator();
-        return this.globalTable(topic, consumed.configure(configurator), materialized.configure(configurator));
+        return this.globalTable(topic, consumed.configure(configurator), materialized);
     }
 
     /**
@@ -395,7 +395,7 @@ public class TopologyBuilder {
      * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
      */
     public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
-            final AutoConsumed<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
+            final ConsumedX<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
         return this.addGlobalStore(storeBuilder, topic, consumed.configure(this.createConfigurator()),
                 stateUpdateSupplier);
     }
@@ -427,10 +427,10 @@ public class TopologyBuilder {
 
     /**
      * Create stores using application context to lazily configures Serdes
-     * @return {@link AutoStores}
+     * @return {@link StoresX}
      */
-    public AutoStores stores() {
-        return new AutoStores(this.createConfigurator());
+    public StoresX stores() {
+        return new StoresX(this.createConfigurator());
     }
 
     Topology build() {
