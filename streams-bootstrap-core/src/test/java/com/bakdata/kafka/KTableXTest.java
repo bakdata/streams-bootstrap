@@ -33,6 +33,8 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.kstream.ValueMapper;
+import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.junit.jupiter.api.Test;
 
 class KTableXTest {
@@ -799,6 +801,214 @@ class KTableXTest {
                     .expectNextRecord()
                     .hasKey("foo")
                     .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValues() {
+        final ValueMapper<String, String> mapper = mock();
+        when(mapper.apply("bar")).thenReturn("baz");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> mapped = input.mapValues(mapper);
+                mapped.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesNamed() {
+        final ValueMapper<String, String> mapper = mock();
+        when(mapper.apply("bar")).thenReturn("baz");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("map"));
+                mapped.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesUsingMaterialized() {
+        final ValueMapper<String, String> mapper = mock();
+        when(mapper.apply("bar")).thenReturn("baz");
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> mapped =
+                        input.mapValues(mapper, MaterializedX.with(Serdes.String(), Serdes.String()));
+                mapped.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesNamedUsingMaterialized() {
+        final ValueMapper<String, String> mapper = mock();
+        when(mapper.apply("bar")).thenReturn("baz");
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("mapped"),
+                        MaterializedX.with(Serdes.String(), Serdes.String()));
+                mapped.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesWithKey() {
+        final ValueMapperWithKey<String, String, String> mapper = mock();
+        when(mapper.apply("foo", "bar")).thenReturn("baz");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> mapped = input.mapValues(mapper);
+                mapped.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesWithKeyNamed() {
+        final ValueMapperWithKey<String, String, String> mapper = mock();
+        when(mapper.apply("foo", "bar")).thenReturn("baz");
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("map"));
+                mapped.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesWithKeyUsingMaterialized() {
+        final ValueMapperWithKey<String, String, String> mapper = mock();
+        when(mapper.apply("foo", "bar")).thenReturn("baz");
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> mapped =
+                        input.mapValues(mapper, MaterializedX.with(Serdes.String(), Serdes.String()));
+                mapped.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldMapValuesWithKeyNamedUsingMaterialized() {
+        final ValueMapperWithKey<String, String, String> mapper = mock();
+        when(mapper.apply("foo", "bar")).thenReturn("baz");
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("mapped"),
+                        MaterializedX.with(Serdes.String(), Serdes.String()));
+                mapped.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
                     .expectNoMoreRecord();
         }
     }
