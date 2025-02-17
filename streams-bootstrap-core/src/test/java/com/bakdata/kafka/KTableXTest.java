@@ -24,10 +24,12 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.time.Duration;
 import java.util.function.Function;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
@@ -35,6 +37,8 @@ import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.kstream.Suppressed;
+import org.apache.kafka.streams.kstream.Suppressed.BufferConfig;
 import org.apache.kafka.streams.kstream.TableJoined;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
@@ -1678,7 +1682,36 @@ class KTableXTest {
         }
     }
 
-    //TODO suppress
-    //TODO queryable store name
+    @Test
+    void shouldSuppress() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> suppressed =
+                        input.suppress(Suppressed.untilTimeLimit(Duration.ofSeconds(60L), BufferConfig.unbounded()));
+                suppressed.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .add("foo", "baz")
+                    .at(60000L)
+                    .add("baz", "qux"); // trigger flush
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldHaveQueryableStoreName() {
+        final TopologyBuilder builder = new TopologyBuilder(StreamsTopicConfig.builder().build(), emptyMap());
+        final KTableX<Object, Object> table = builder.stream("input").toTable(Materialized.as("store"));
+        this.softly.assertThat(table.queryableStoreName()).isEqualTo("store");
+    }
 
 }

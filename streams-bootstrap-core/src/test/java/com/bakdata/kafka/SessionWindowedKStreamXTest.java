@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.kstream.EmitStrategy;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.SessionWindows;
 import org.apache.kafka.streams.kstream.Windowed;
@@ -588,5 +589,38 @@ class SessionWindowedKStreamXTest {
         }
     }
 
-    //TODO emitStrategy
+    @Test
+    void shouldUseEmitStrategy() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final SessionWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(SessionWindows.ofInactivityGapWithNoGrace(Duration.ofSeconds(30L)));
+                final KTableX<Windowed<String>, Long> counted =
+                        windowed.emitStrategy(EmitStrategy.onWindowClose()).count();
+                final KStreamX<String, Long> output = counted.toStream(
+                        (k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli() + ":" + k.window().endTime()
+                                .toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    // if time is lower than session size, there is a bug in Kafka Streams
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(60L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(91L).toMillis()) // trigger flush
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:30000:60000")
+                    .hasValue(2L)
+                    .expectNoMoreRecord();
+        }
+    }
 }

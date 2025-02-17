@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.kstream.EmitStrategy;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.kstream.Windowed;
@@ -514,5 +515,35 @@ class TimeWindowedKStreamXTest {
         }
     }
 
-    //TODO emitStrategy
+    @Test
+    void shouldUseEmitStrategy() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60L)));
+                final KTableX<Windowed<String>, Long> counted =
+                        windowed.emitStrategy(EmitStrategy.onWindowClose()).count();
+                final KStreamX<String, Long> output =
+                        counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli());
+                output.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar")
+                    .at(Duration.ofSeconds(30L).toMillis())
+                    .add("foo", "baz")
+                    .at(Duration.ofSeconds(60L).toMillis()) // trigger flush
+                    .add("foo", "qux");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(2L)
+                    .expectNoMoreRecord();
+        }
+    }
 }

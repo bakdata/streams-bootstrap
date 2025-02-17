@@ -51,6 +51,7 @@ import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Printed;
+import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
@@ -3109,6 +3110,48 @@ class KStreamXTest {
     }
 
     @Test
+    void shouldBranch() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String>[] branches = input.branch((k, v) -> true);
+                branches[0].to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldBranchNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String>[] branches = input.branch(Named.as("branch"), (k, v) -> true);
+                branches[0].to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
     void shouldTableJoin() {
         final StringApp app = new StringApp() {
             @Override
@@ -3602,8 +3645,66 @@ class KStreamXTest {
         }
     }
 
-    //TODO branch
-    //TODO through
+    @Test
+    void shouldRouteThrough() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> through = input.through("intermediate");
+                through.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput("intermediate")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+            topology.streamOutput("output")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldRouteThroughUsingProduced() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KStreamX<String, String> through =
+                        input.through("intermediate", Produced.with(Serdes.String(), Serdes.String()));
+                through.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.streamOutput("intermediate")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+            topology.streamOutput("output")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
     //TODO transform
     //TODO process (old)
 
