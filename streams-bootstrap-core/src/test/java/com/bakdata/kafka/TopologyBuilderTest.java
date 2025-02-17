@@ -57,27 +57,27 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromInputUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.streamInput(ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.streamInput(ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp(StreamsTopicConfig.builder()
+        try (final TestTopology<Double, Double> topology = app.startApp(StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build())) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -105,27 +105,27 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromLabeledInputUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input = builder.streamInput("label",
-                        ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input = builder.streamInput("label",
+                        ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp(StreamsTopicConfig.builder()
+        try (final TestTopology<Double, Double> topology = app.startApp(StreamsTopicConfig.builder()
                 .labeledInputTopics(Map.of("label", List.of("input")))
                 .build())) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -153,27 +153,27 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromPatternInputUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input = builder.streamInputPattern(
-                        ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input = builder.streamInputPattern(
+                        ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp(StreamsTopicConfig.builder()
+        try (final TestTopology<Double, Double> topology = app.startApp(StreamsTopicConfig.builder()
                 .inputPattern(Pattern.compile("input\\d+"))
                 .build())) {
             topology.input("input1")
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -201,27 +201,27 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromLabeledPatternInputUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input = builder.streamInputPattern("label",
-                        ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input = builder.streamInputPattern("label",
+                        ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp(StreamsTopicConfig.builder()
+        try (final TestTopology<Double, Double> topology = app.startApp(StreamsTopicConfig.builder()
                 .labeledInputPatterns(Map.of("label", Pattern.compile("input\\d+")))
                 .build())) {
             topology.input("input1")
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -247,25 +247,25 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromTopicUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -291,25 +291,25 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromTopicsUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input = builder.stream(List.of("input"),
-                        ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input = builder.stream(List.of("input"),
+                        ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -335,25 +335,25 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadFromTopicPatternUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input = builder.stream(Pattern.compile("input\\d+"),
-                        ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input = builder.stream(Pattern.compile("input\\d+"),
+                        ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input("input1")
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
@@ -379,76 +379,76 @@ class TopologyBuilderTest {
 
     @Test
     void shouldReadTableFromTopicUsingConsumed() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KTableX<Long, Long> input =
-                        builder.table("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                input.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
 
     @Test
     void shouldReadTableFromTopicUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KTableX<Long, Long> input = builder.table("input",
-                        MaterializedX.with(Serdes.Long(), Serdes.Long()));
-                input.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KTableX<String, String> input = builder.table("input",
+                        MaterializedX.with(Serdes.String(), Serdes.String()));
+                input.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }
 
     @Test
     void shouldReadTableFromTopicUsingConsumedAndMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KTableX<Long, Long> input =
-                        builder.table("input", ConsumedX.with(Serdes.Long(), Serdes.Long()),
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()),
                                 Materialized.as("store"));
-                input.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                input.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNoMoreRecord();
         }
     }

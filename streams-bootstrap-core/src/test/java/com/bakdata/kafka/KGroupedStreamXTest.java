@@ -87,32 +87,32 @@ class KGroupedStreamXTest {
 
     @Test
     void shouldCountUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                final KGroupedStreamX<Long, Long> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
-                final KTableX<Long, Long> counted =
-                        grouped.count(MaterializedX.with(Serdes.Long(), Serdes.Long()));
-                counted.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, Long> counted =
+                        grouped.count(MaterializedX.keySerde(Serdes.String()));
+                counted.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.Long()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L)
-                    .add(1L, 3L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("foo", "baz");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
                     .withValueSerde(Serdes.Long())
                     .expectNextRecord()
-                    .hasKey(1L)
+                    .hasKey("foo")
                     .hasValue(1L)
                     .expectNextRecord()
-                    .hasKey(1L)
+                    .hasKey("foo")
                     .hasValue(2L)
                     .expectNoMoreRecord();
         }
@@ -120,32 +120,32 @@ class KGroupedStreamXTest {
 
     @Test
     void shouldCountNamedUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                final KGroupedStreamX<Long, Long> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
-                final KTableX<Long, Long> counted = grouped.count(Named.as("count"),
-                        MaterializedX.with(Serdes.Long(), Serdes.Long()));
-                counted.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, Long> counted = grouped.count(Named.as("count"),
+                        MaterializedX.with(Serdes.String(), Serdes.Long()));
+                counted.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.Long()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L)
-                    .add(1L, 3L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("foo", "baz");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
                     .withValueSerde(Serdes.Long())
                     .expectNextRecord()
-                    .hasKey(1L)
+                    .hasKey("foo")
                     .hasValue(1L)
                     .expectNextRecord()
-                    .hasKey(1L)
+                    .hasKey("foo")
                     .hasValue(2L)
                     .expectNoMoreRecord();
         }
@@ -179,66 +179,66 @@ class KGroupedStreamXTest {
 
     @Test
     void shouldReduceUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                final KGroupedStreamX<Long, Long> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
-                final KTableX<Long, Long> reduced = grouped.reduce(Long::sum,
-                        MaterializedX.with(Serdes.Long(), Serdes.Long()));
-                reduced.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2,
+                        MaterializedX.with(Serdes.String(), Serdes.String()));
+                reduced.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L)
-                    .add(1L, 3L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("foo", "baz");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(5L)
+                    .hasKey("foo")
+                    .hasValue("barbaz")
                     .expectNoMoreRecord();
         }
     }
 
     @Test
     void shouldReduceNamedUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                final KGroupedStreamX<Long, Long> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
-                final KTableX<Long, Long> reduced = grouped.reduce(Long::sum, Named.as("reduce"),
-                        MaterializedX.with(Serdes.Long(), Serdes.Long()));
-                reduced.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2,
+                        Named.as("reduce"), MaterializedX.with(Serdes.String(), Serdes.String()));
+                reduced.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L)
-                    .add(1L, 3L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("foo", "baz");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(5L)
+                    .hasKey("foo")
+                    .hasValue("barbaz")
                     .expectNoMoreRecord();
         }
     }
@@ -272,70 +272,70 @@ class KGroupedStreamXTest {
 
     @Test
     void shouldAggregateUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                final KGroupedStreamX<Long, Long> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
-                final KTableX<Long, Long> aggregated =
-                        grouped.aggregate(() -> 0L, (key, value, aggregate) -> aggregate + value,
-                                MaterializedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> aggregated =
+                        grouped.aggregate(() -> "", (key, value, aggregate) -> aggregate + value,
+                                MaterializedX.with(Serdes.String(), Serdes.String()));
                 aggregated.toStream()
-                        .to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                        .to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L)
-                    .add(1L, 3L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("foo", "baz");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(5L)
+                    .hasKey("foo")
+                    .hasValue("barbaz")
                     .expectNoMoreRecord();
         }
     }
 
     @Test
     void shouldAggregateNamedUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, Long> input =
-                        builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                final KGroupedStreamX<Long, Long> grouped =
-                        input.groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
-                final KTableX<Long, Long> aggregated =
-                        grouped.aggregate(() -> 0L, (key, value, aggregate) -> aggregate + value, Named.as("aggregate"),
-                                MaterializedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<String, String> input =
+                        builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KGroupedStreamX<String, String> grouped =
+                        input.groupByKey(GroupedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> aggregated =
+                        grouped.aggregate(() -> "", (key, value, aggregate) -> aggregate + value,
+                                Named.as("aggregate"), MaterializedX.with(Serdes.String(), Serdes.String()));
                 aggregated.toStream()
-                        .to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                        .to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
             topology.input()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
-                    .add(1L, 2L)
-                    .add(1L, 3L);
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar")
+                    .add("foo", "baz");
             topology.streamOutput()
-                    .withKeySerde(Serdes.Long())
-                    .withValueSerde(Serdes.Long())
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(2L)
+                    .hasKey("foo")
+                    .hasValue("bar")
                     .expectNextRecord()
-                    .hasKey(1L)
-                    .hasValue(5L)
+                    .hasKey("foo")
+                    .hasValue("barbaz")
                     .expectNoMoreRecord();
         }
     }
