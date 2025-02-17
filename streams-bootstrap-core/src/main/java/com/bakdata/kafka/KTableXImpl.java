@@ -466,15 +466,6 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
             final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final Named named,
-            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.join(other, foreignKeyExtractor, joiner, named,
-                materialized.configure(this.context.getConfigurator()));
-    }
-
-    @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
             final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
@@ -538,15 +529,6 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, named, materialized));
-    }
-
-    @Override
-    public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final Named named,
-            final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.leftJoin(other, foreignKeyExtractor, joiner, named,
-                materialized.configure(this.context.getConfigurator()));
     }
 
     @Override

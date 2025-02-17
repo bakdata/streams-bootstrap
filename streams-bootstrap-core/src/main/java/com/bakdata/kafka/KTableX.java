@@ -337,13 +337,6 @@ public interface KTableX<K, V> extends KTable<K, V> {
     <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
-    /**
-     * @see #join(KTable, Function, ValueJoiner, Named, Materialized)
-     */
-    <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
-            ValueJoiner<V, VO, VR> joiner, Named named,
-            MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
-
     @Override
     <VR, KO, VO> KTableX<K, VR> join(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
@@ -383,13 +376,6 @@ public interface KTableX<K, V> extends KTable<K, V> {
     @Override
     <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, Named named, Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
-
-    /**
-     * @see #leftJoin(KTable, Function, ValueJoiner, Named, Materialized)
-     */
-    <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
-            ValueJoiner<V, VO, VR> joiner, Named named,
-            MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
     @Override
     <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, Function<V, KO> foreignKeyExtractor,
