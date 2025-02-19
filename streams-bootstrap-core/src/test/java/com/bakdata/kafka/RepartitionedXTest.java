@@ -24,14 +24,9 @@
 
 package com.bakdata.kafka;
 
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
-
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.util.TopologyInformation;
-import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.TopologyDescription.Node;
-import org.apache.kafka.streams.TopologyDescription.Sink;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -186,12 +181,9 @@ class RepartitionedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final List<Node> nodes = TopologyInformation.getNodes(topology.getTopologyDescription());
-            this.softly.assertThat(nodes)
-                    .anySatisfy(node -> this.softly.assertThat(node)
-                            .asInstanceOf(type(Sink.class))
-                            .satisfies(
-                                    sink -> this.softly.assertThat(sink.topic()).isEqualTo("repartition-repartition")));
+            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            this.softly.assertThat(information.getInternalTopics())
+                    .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("repartition-repartition"));
         }
     }
 
@@ -214,12 +206,9 @@ class RepartitionedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final List<Node> nodes = TopologyInformation.getNodes(topology.getTopologyDescription());
-            this.softly.assertThat(nodes)
-                    .anySatisfy(node -> this.softly.assertThat(node)
-                            .asInstanceOf(type(Sink.class))
-                            .satisfies(
-                                    sink -> this.softly.assertThat(sink.topic()).isEqualTo("repartition-repartition")));
+            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            this.softly.assertThat(information.getInternalTopics())
+                    .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("repartition-repartition"));
         }
     }
 

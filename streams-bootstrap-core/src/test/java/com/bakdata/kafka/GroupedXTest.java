@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.util.TopologyInformation;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.TopologyDescription.Node;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -35,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SoftAssertionsExtension.class)
-class ProducedXTest {
+class GroupedXTest {
 
     @InjectSoftAssertions
     private SoftAssertions softly;
@@ -46,7 +45,10 @@ class ProducedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
-                input.to("output", ProducedX.keySerde(Serdes.Long()));
+                final KGroupedStreamX<Long, String> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(GroupedX.keySerde(Serdes.Long()));
+                final KStreamX<Long, Long> counted = grouped.count().toStream();
+                counted.to("output", ProducedX.keySerde(Serdes.Long()));
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -55,9 +57,10 @@ class ProducedXTest {
                     .add(1L, "foo");
             topology.streamOutput()
                     .withKeySerde(Serdes.Long())
+                    .withValueSerde(Serdes.Long())
                     .expectNextRecord()
                     .hasKey(1L)
-                    .hasValue("foo")
+                    .hasValue(1L)
                     .expectNoMoreRecord();
         }
     }
@@ -67,9 +70,11 @@ class ProducedXTest {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<Long, String> input =
-                        builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
-                input.to("output", ProducedX.<Long, String>as("output").withKeySerde(Serdes.Long()));
+                final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
+                final KGroupedStreamX<Long, String> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(GroupedX.<Long, String>as("grouped").withKeySerde(Serdes.Long()));
+                final KStreamX<Long, Long> counted = grouped.count().toStream();
+                counted.to("output", ProducedX.keySerde(Serdes.Long()));
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -78,9 +83,10 @@ class ProducedXTest {
                     .add(1L, "foo");
             topology.streamOutput()
                     .withKeySerde(Serdes.Long())
+                    .withValueSerde(Serdes.Long())
                     .expectNextRecord()
                     .hasKey(1L)
-                    .hasValue("foo")
+                    .hasValue(1L)
                     .expectNoMoreRecord();
         }
     }
@@ -91,7 +97,10 @@ class ProducedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
-                input.to("output", ProducedX.valueSerde(Serdes.Long()));
+                final KGroupedStreamX<String, Long> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(GroupedX.valueSerde(Serdes.Long()));
+                final KStreamX<String, Long> counted = grouped.count().toStream();
+                counted.to("output");
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -112,9 +121,11 @@ class ProducedXTest {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<String, Long> input =
-                        builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
-                input.to("output", ProducedX.<String, Long>as("output").withValueSerde(Serdes.Long()));
+                final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
+                final KGroupedStreamX<String, Long> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(GroupedX.<String, Long>as("grouped").withValueSerde(Serdes.Long()));
+                final KStreamX<String, Long> counted = grouped.count().toStream();
+                counted.to("output");
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -137,7 +148,10 @@ class ProducedXTest {
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<Long, Long> input =
                         builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
-                input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
+                final KGroupedStreamX<Long, Long> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(GroupedX.with(Serdes.Long(), Serdes.Long()));
+                final KStreamX<Long, Long> counted = grouped.count().toStream();
+                counted.to("output", ProducedX.keySerde(Serdes.Long()));
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -150,7 +164,7 @@ class ProducedXTest {
                     .withValueSerde(Serdes.Long())
                     .expectNextRecord()
                     .hasKey(1L)
-                    .hasValue(2L)
+                    .hasValue(1L)
                     .expectNoMoreRecord();
         }
     }
@@ -161,21 +175,24 @@ class ProducedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                input.to("output", ProducedX.as("output"));
+                final KGroupedStreamX<String, String> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(GroupedX.as("grouped"));
+                final KStreamX<String, Long> counted = grouped.count().toStream();
+                counted.to("output");
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input()
                     .add("foo", "bar");
             topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
                     .expectNextRecord()
                     .hasKey("foo")
-                    .hasValue("bar")
+                    .hasValue(1L)
                     .expectNoMoreRecord();
             final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
-            this.softly.assertThat(information.getSinks())
-                    .extracting(Node::name)
-                    .contains("output");
+            this.softly.assertThat(information.getInternalTopics())
+                    .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("grouped-repartition"));
         }
     }
 
@@ -185,66 +202,25 @@ class ProducedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                input.to("output", ProducedX.<String, String>keySerde(Preconfigured.defaultSerde()).withName("output"));
+                final KGroupedStreamX<String, String> grouped = input.selectKey((k, v) -> k)
+                        .groupByKey(
+                                GroupedX.<String, String>keySerde(Preconfigured.defaultSerde()).withName("grouped"));
+                final KStreamX<String, Long> counted = grouped.count().toStream();
+                counted.to("output");
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input()
                     .add("foo", "bar");
             topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
                     .expectNextRecord()
                     .hasKey("foo")
-                    .hasValue("bar")
+                    .hasValue(1L)
                     .expectNoMoreRecord();
             final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
-            this.softly.assertThat(information.getSinks())
-                    .extracting(Node::name)
-                    .contains("output");
-        }
-    }
-
-    @Test
-    void shouldUseStreamPartitioner() {
-        final StringApp app = new StringApp() {
-            @Override
-            public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<String, String> input = builder.stream("input");
-                input.to("output", ProducedX.streamPartitioner((topic, key, value, numPartitions) -> 1));
-            }
-        };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input()
-                    .at(0L)
-                    .add("foo", "bar");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("bar")
-                    .expectNoMoreRecord();
-            // TODO test partition. TestDriver does not expose it
-        }
-    }
-
-    @Test
-    void shouldUseStreamPartitionerModifier() {
-        final StringApp app = new StringApp() {
-            @Override
-            public void buildTopology(final TopologyBuilder builder) {
-                final KStreamX<String, String> input = builder.stream("input");
-                input.to("output", ProducedX.<String, String>as("output")
-                        .withStreamPartitioner((topic, key, value, numPartitions) -> 1));
-            }
-        };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input()
-                    .at(0L)
-                    .add("foo", "bar");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("bar")
-                    .expectNoMoreRecord();
-            // TODO test partition. TestDriver does not expose it
+            this.softly.assertThat(information.getInternalTopics())
+                    .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("grouped-repartition"));
         }
     }
 }

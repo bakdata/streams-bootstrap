@@ -175,8 +175,8 @@ class ConsumedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final List<Node> nodes = TopologyInformation.getNodes(topology.getTopologyDescription());
-            this.softly.assertThat(nodes)
+            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            this.softly.assertThat(information.getSources())
                     .extracting(Node::name)
                     .contains("stream");
         }
@@ -200,8 +200,8 @@ class ConsumedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final List<Node> nodes = TopologyInformation.getNodes(topology.getTopologyDescription());
-            this.softly.assertThat(nodes)
+            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            this.softly.assertThat(information.getSources())
                     .extracting(Node::name)
                     .contains("stream");
         }
