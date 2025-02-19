@@ -24,11 +24,11 @@
 
 package com.bakdata.kafka;
 
-import org.apache.kafka.streams.kstream.ValueTransformer;
+import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.StateStore;
 
-abstract class SimpleValueTransformer<V, VR> implements ValueTransformer<V, VR> {
+abstract class SimpleValueTransformerWithKey<K, V, VR> implements ValueTransformerWithKey<K, V, VR> {
     private ProcessorContext context = null;
 
     @Override

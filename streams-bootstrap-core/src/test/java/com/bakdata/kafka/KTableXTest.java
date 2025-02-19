@@ -1035,7 +1035,7 @@ class KTableXTest {
     @Test
     void shouldTransformValues() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1066,7 +1066,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesNamed() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1097,7 +1097,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesUsingMaterialized() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1135,7 +1135,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesNamedUsingMaterialized() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1174,7 +1174,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesUsingStore() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1206,7 +1206,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesNamedUsingStore() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1239,7 +1239,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesUsingStoreAndMaterialized() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {
@@ -1277,7 +1277,7 @@ class KTableXTest {
     @Test
     void shouldTransformValuesNamedUsingStoreAndMaterialized() {
         final ValueTransformerWithKeySupplier<String, String, String> transformer =
-                () -> new SimpleValueTransformer<>() {
+                () -> new SimpleValueTransformerWithKey<>() {
 
                     @Override
                     public String transform(final String readOnlyKey, final String value) {

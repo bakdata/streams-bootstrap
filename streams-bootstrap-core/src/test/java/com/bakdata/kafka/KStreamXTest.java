@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -52,8 +53,11 @@ import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.TransformerSupplier;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
+import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
+import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
 import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
@@ -3705,7 +3709,745 @@ class KStreamXTest {
         }
     }
 
-    //TODO transform
+    @Test
+    void shouldTransform() {
+        final TransformerSupplier<String, String, KeyValue<String, String>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public KeyValue<String, String> transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return KeyValue.pair("baz", "qux");
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.transform(transformer);
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("baz")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTransformNamed() {
+        final TransformerSupplier<String, String, KeyValue<String, String>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public KeyValue<String, String> transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return KeyValue.pair("baz", "qux");
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.transform(transformer, Named.as("transform"));
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("baz")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTransformUsingStore() {
+        final TransformerSupplier<String, String, KeyValue<String, String>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public KeyValue<String, String> transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return null;
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.transform(transformer, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldTransformNamedUsingStore() {
+        final TransformerSupplier<String, String, KeyValue<String, String>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public KeyValue<String, String> transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return null;
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.transform(transformer, Named.as("transform"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldFlatTransform() {
+        final TransformerSupplier<String, String, Iterable<KeyValue<String, String>>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public Iterable<KeyValue<String, String>> transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return List.of(KeyValue.pair("baz", "qux"));
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.flatTransform(transformer);
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("baz")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFlatTransformNamed() {
+        final TransformerSupplier<String, String, Iterable<KeyValue<String, String>>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public Iterable<KeyValue<String, String>> transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return List.of(KeyValue.pair("baz", "qux"));
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed =
+                        input.flatTransform(transformer, Named.as("flatTransform"));
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("baz")
+                    .hasValue("qux")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFlatTransformUsingStore() {
+        final TransformerSupplier<String, String, Iterable<KeyValue<String, String>>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public Iterable<KeyValue<String, String>> transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return null;
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.flatTransform(transformer, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldFlatTransformNamedUsingStore() {
+        final TransformerSupplier<String, String, Iterable<KeyValue<String, String>>> transformer =
+                () -> new SimpleTransformer<>() {
+
+                    @Override
+                    public Iterable<KeyValue<String, String>> transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return null;
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.flatTransform(transformer, Named.as("flatTransform"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldTransformValues() {
+        final ValueTransformerSupplier<String, String> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public String transform(final String value) {
+                if ("bar".equals(value)) {
+                    return "baz";
+                }
+                throw new UnsupportedOperationException();
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.transformValues(transformer);
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTransformValuesNamed() {
+        final ValueTransformerSupplier<String, String> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public String transform(final String value) {
+                if ("bar".equals(value)) {
+                    return "baz";
+                }
+                throw new UnsupportedOperationException();
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.transformValues(transformer, Named.as("transform"));
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTransformValuesUsingStore() {
+        final ValueTransformerSupplier<String, String> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public String transform(final String value) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(value, value);
+                return null;
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.transformValues(transformer, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("bar")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldTransformValuesNamedUsingStore() {
+        final ValueTransformerSupplier<String, String> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public String transform(final String value) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(value, value);
+                return null;
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.transformValues(transformer, Named.as("transform"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("bar")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValues() {
+        final ValueTransformerSupplier<String, Iterable<String>> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public Iterable<String> transform(final String value) {
+                if ("bar".equals(value)) {
+                    return List.of("baz");
+                }
+                throw new UnsupportedOperationException();
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.flatTransformValues(transformer);
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesNamed() {
+        final ValueTransformerSupplier<String, Iterable<String>> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public Iterable<String> transform(final String value) {
+                if ("bar".equals(value)) {
+                    return List.of("baz");
+                }
+                throw new UnsupportedOperationException();
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed =
+                        input.flatTransformValues(transformer, Named.as("flatTransform"));
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesUsingStore() {
+        final ValueTransformerSupplier<String, Iterable<String>> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public Iterable<String> transform(final String value) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(value, value);
+                return emptyList();
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.flatTransformValues(transformer, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("bar")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesNamedUsingStore() {
+        final ValueTransformerSupplier<String, Iterable<String>> transformer = () -> new SimpleValueTransformer<>() {
+
+            @Override
+            public Iterable<String> transform(final String value) {
+                final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                store.put(value, value);
+                return emptyList();
+            }
+        };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.flatTransformValues(transformer, Named.as("flatTransform"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("bar")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldTransformValuesWithKey() {
+        final ValueTransformerWithKeySupplier<String, String, String> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public String transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return "baz";
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.transformValues(transformer);
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTransformValuesWithKeyNamed() {
+        final ValueTransformerWithKeySupplier<String, String, String> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public String transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return "baz";
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.transformValues(transformer, Named.as("transform"));
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldTransformValuesWithKeyUsingStore() {
+        final ValueTransformerWithKeySupplier<String, String, String> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public String transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return null;
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.transformValues(transformer, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldTransformValuesWithKeyNamedUsingStore() {
+        final ValueTransformerWithKeySupplier<String, String, String> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public String transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return null;
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.transformValues(transformer, Named.as("transform"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesWithKey() {
+        final ValueTransformerWithKeySupplier<String, String, Iterable<String>> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public Iterable<String> transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return List.of("baz");
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed = input.flatTransformValues(transformer);
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesWithKeyNamed() {
+        final ValueTransformerWithKeySupplier<String, String, Iterable<String>> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public Iterable<String> transform(final String key, final String value) {
+                        if ("foo".equals(key) && "bar".equals(value)) {
+                            return List.of("baz");
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KStreamX<String, String> transformed =
+                        input.flatTransformValues(transformer, Named.as("flatTransform"));
+                transformed.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("baz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesWithKeyUsingStore() {
+        final ValueTransformerWithKeySupplier<String, String, Iterable<String>> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public Iterable<String> transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return emptyList();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.flatTransformValues(transformer, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldFlatTransformValuesWithKeyNamedUsingStore() {
+        final ValueTransformerWithKeySupplier<String, String, Iterable<String>> transformer =
+                () -> new SimpleValueTransformerWithKey<>() {
+
+                    @Override
+                    public Iterable<String> transform(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                        return emptyList();
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.flatTransformValues(transformer, Named.as("flatTransform"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
     //TODO process (old)
 
 }
