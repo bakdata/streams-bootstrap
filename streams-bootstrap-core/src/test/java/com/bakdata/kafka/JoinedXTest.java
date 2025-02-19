@@ -25,8 +25,10 @@
 package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.kafka.util.TopologyInformation;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.state.Stores;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -254,6 +256,10 @@ class JoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
+            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            this.softly.assertThat(information.getProcessors())
+                    .extracting(Node::name)
+                    .contains("join");
         }
     }
 
@@ -279,6 +285,10 @@ class JoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
+            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            this.softly.assertThat(information.getProcessors())
+                    .extracting(Node::name)
+                    .contains("join");
         }
     }
 
@@ -301,14 +311,13 @@ class JoinedXTest {
                     .at(0L)
                     .add("foo", "baz");
             topology.input("input")
-                    .at(1000L)  //advance stream time
-                    .add("", "");
-            topology.input("table_input")
-                    .at(1000L)
-                    .add("foo", "qux");
-            topology.input("input")
                     .at(0L)
                     .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNoMoreRecord();
+            topology.input("input")
+                    .at(1000L)  //advance stream time
+                    .add("", "");
             topology.streamOutput()
                     .expectNextRecord()
                     .hasKey("foo")

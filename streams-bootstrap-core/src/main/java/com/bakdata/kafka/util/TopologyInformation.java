@@ -117,7 +117,8 @@ public class TopologyInformation {
 
     private static Stream<String> getAllStores(final Collection<Node> nodes) {
         return getAllProcessors(nodes)
-                .flatMap(processor -> processor.stores().stream());
+                .flatMap(processor -> processor.stores().stream())
+                .distinct();
     }
 
     private static Stream<Processor> getAllProcessors(final Collection<Node> nodes) {
@@ -200,6 +201,11 @@ public class TopologyInformation {
                 .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
                 .filter(sinks::contains)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getStores() {
+        return getAllStores(this.nodes)
                 .collect(Collectors.toList());
     }
 
