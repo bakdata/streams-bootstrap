@@ -509,6 +509,39 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
+    void shouldDeleteSchemaOfIntermediateTopics()
+            throws IOException, RestClientException {
+        try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
+                final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
+            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+            final String inputTopic = app.getTopics().getInputTopics().get(0);
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .to(app.getTopics().getInputTopics().get(0), List.of(
+                            new SimpleProducerRecord<>("key 1", testRecord)
+                    ));
+
+            run(executableApp);
+
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            awaitClosed(executableApp);
+            final String inputSubject = inputTopic + "-value";
+            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
+            this.softly.assertThat(client.getAllSubjects())
+                    .contains(inputSubject, manualSubject);
+            clean(executableApp);
+
+            this.softly.assertThat(client.getAllSubjects())
+                    .doesNotContain(manualSubject)
+                    .contains(inputSubject);
+        }
+    }
+
+    @Test
     void shouldCallCleanupHookForInternalTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
@@ -543,39 +576,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createMirrorKeyApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
             this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
-        }
-    }
-
-    @Test
-    void shouldDeleteSchemaOfIntermediateTopics()
-            throws IOException, RestClientException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getTopics().getOutputTopic());
-            testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>("key 1", testRecord)
-                    ));
-
-            run(executableApp);
-
-            // Wait until all stream applications are completely stopped before triggering cleanup
-            awaitClosed(executableApp);
-            final String inputSubject = inputTopic + "-value";
-            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(inputSubject, manualSubject);
-            clean(executableApp);
-
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(manualSubject)
-                    .contains(inputSubject);
         }
     }
 

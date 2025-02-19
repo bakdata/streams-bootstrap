@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.integration;
 
+import static com.bakdata.kafka.TestHelper.run;
 import static com.bakdata.kafka.TestTopologyFactory.createStreamsTestConfig;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +42,6 @@ import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
 import com.bakdata.kafka.TopologyBuilder;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
@@ -109,7 +109,7 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            TestHelper.run(runner);
+            run(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -135,7 +135,7 @@ class StreamsRunnerTest extends KafkaTest {
             testClient.createTopic(inputTopic1);
             testClient.createTopic(inputTopic2);
             testClient.createTopic(outputTopic);
-            TestHelper.run(runner);
+            run(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -161,7 +161,7 @@ class StreamsRunnerTest extends KafkaTest {
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
-            final Thread thread = TestHelper.run(runner);
+            final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
             awaitThreadIsDead(thread);
@@ -184,7 +184,7 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            final Thread thread = TestHelper.run(runner);
+            final Thread thread = run(runner);
             final CapturingUncaughtExceptionHandler handler =
                     (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
             testClient.send()
