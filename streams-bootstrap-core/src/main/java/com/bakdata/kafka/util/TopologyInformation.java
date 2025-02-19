@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyDescription;
 import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyDescription.Processor;
 import org.apache.kafka.streams.TopologyDescription.Sink;
@@ -69,11 +70,16 @@ public class TopologyInformation {
         this.streamsId = streamsId;
     }
 
-    private static List<Node> getNodes(final Topology topology) {
-        return topology.describe().subtopologies()
+    public static List<Node> getNodes(final TopologyDescription description) {
+        return description.subtopologies()
                 .stream()
                 .flatMap(subtopology -> subtopology.nodes().stream())
                 .collect(Collectors.toList());
+    }
+
+    private static List<Node> getNodes(final Topology topology) {
+        final TopologyDescription description = topology.describe();
+        return getNodes(description);
     }
 
     private static Stream<TopicSubscription> getAllSources(final Collection<Node> nodes) {
