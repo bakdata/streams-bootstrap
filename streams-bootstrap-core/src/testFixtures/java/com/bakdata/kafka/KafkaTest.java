@@ -42,7 +42,7 @@ public abstract class KafkaTest {
 
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
-                .withTag("3.8.1"));
+                .withTag("3.9.0"));
     }
 
     private static ConditionFactory await() {
