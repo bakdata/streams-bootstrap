@@ -25,12 +25,14 @@
 package com.bakdata.kafka;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
+import static java.util.Collections.emptyMap;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.processor.StateStore;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
+import org.apache.kafka.streams.state.WindowStore;
 import org.apache.kafka.streams.state.internals.CachingKeyValueStore;
 import org.apache.kafka.streams.state.internals.WrappedStateStore;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -58,6 +61,7 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.kafka.KafkaContainer;
 
 @ExtendWith(SoftAssertionsExtension.class)
@@ -350,7 +354,7 @@ class MaterializedXTest {
     }
 
     @Test
-    void shouldDisableLogging() {
+    void shouldDisableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -369,7 +373,7 @@ class MaterializedXTest {
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig());
+                    TestTopologyFactory.createStreamsTestConfig(stateDir));
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
@@ -397,7 +401,7 @@ class MaterializedXTest {
     }
 
     @Test
-    void shouldEnableLogging() {
+    void shouldEnableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -416,7 +420,7 @@ class MaterializedXTest {
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig());
+                    TestTopologyFactory.createStreamsTestConfig(stateDir));
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
@@ -498,5 +502,50 @@ class MaterializedXTest {
         }
     }
 
-    //TODO retention
+    @Test
+    void shouldUseRetention() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final TimeWindowedKStreamX<String, String> windowed =
+                        grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1L)));
+                final KTableX<Windowed<String>, Long> counted = windowed.count(
+                        MaterializedX.<String, Long, WindowStore<Bytes, byte[]>>as("store")
+                                .withRetention(Duration.ofMinutes(1L)));
+                counted.toStream((k, v) -> k.key() + ":" + k.window().startTime().toEpochMilli()).to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar")
+                    .at(Duration.ofMinutes(2L).toMillis())
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .withValueSerde(Serdes.Long())
+                    .expectNextRecord()
+                    .hasKey("foo:0")
+                    .hasValue(1L)
+                    .expectNextRecord()
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldThrowIfRetentionIsTooShort() {
+        final TopologyBuilder builder = new TopologyBuilder(StreamsTopicConfig.builder().build(), emptyMap());
+        final KStreamX<String, String> input = builder.stream("input");
+        final KGroupedStreamX<String, String> grouped = input.groupByKey();
+        final TimeWindowedKStreamX<String, String> windowed =
+                grouped.windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1L)));
+        final MaterializedX<String, Long, WindowStore<Bytes, byte[]>> materialized =
+                MaterializedX.<String, Long, WindowStore<Bytes, byte[]>>as("store")
+                        .withRetention(Duration.ofSeconds(1L));
+        this.softly.assertThatThrownBy(() -> windowed.count(materialized))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(
+                        "The retention period of the window store store must be no smaller than its window size plus "
+                        + "the grace period");
+    }
 }

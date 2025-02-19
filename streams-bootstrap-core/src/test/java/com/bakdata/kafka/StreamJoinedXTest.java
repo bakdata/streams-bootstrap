@@ -31,6 +31,7 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.kafka.KafkaContainer;
 
 @ExtendWith(SoftAssertionsExtension.class)
@@ -524,7 +526,7 @@ class StreamJoinedXTest {
     }
 
     @Test
-    void shouldDisableLogging() {
+    void shouldDisableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -546,7 +548,7 @@ class StreamJoinedXTest {
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig());
+                    TestTopologyFactory.createStreamsTestConfig(stateDir));
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
@@ -581,7 +583,7 @@ class StreamJoinedXTest {
     }
 
     @Test
-    void shouldEnableLogging() {
+    void shouldEnableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
@@ -603,7 +605,7 @@ class StreamJoinedXTest {
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig());
+                    TestTopologyFactory.createStreamsTestConfig(stateDir));
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
