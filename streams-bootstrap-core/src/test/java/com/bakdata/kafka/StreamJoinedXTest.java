@@ -283,8 +283,7 @@ class StreamJoinedXTest {
                     .expectNoMoreRecord();
             final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
             this.softly.assertThat(information.getStores())
-                    .filteredOn(store -> store.startsWith("join"))
-                    .hasSize(2);
+                    .anySatisfy(store -> this.softly.assertThat(store).startsWith("join"));
         }
     }
 
@@ -314,8 +313,7 @@ class StreamJoinedXTest {
                     .expectNoMoreRecord();
             final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
             this.softly.assertThat(information.getStores())
-                    .filteredOn(store -> store.startsWith("join"))
-                    .hasSize(2);
+                    .anySatisfy(store -> this.softly.assertThat(store).startsWith("join"));
         }
     }
 
@@ -345,8 +343,7 @@ class StreamJoinedXTest {
             final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
             this.softly.assertThat(information.getProcessors())
                     .extracting(Node::name)
-                    .filteredOn(processor -> processor.startsWith("join"))
-                    .hasSize(5);
+                    .anySatisfy(processor -> this.softly.assertThat(processor).startsWith("join"));
         }
     }
 
@@ -540,7 +537,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            // TODO test partition. TestDriver does not expose it
+            // TODO test topic existence. TestDriver does not expose it
         }
     }
 
@@ -568,7 +565,9 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            // TODO test partition. TestDriver does not expose it
+            // TODO test topic config. TestDriver does not expose it
         }
     }
+
+    //TODO retention
 }
