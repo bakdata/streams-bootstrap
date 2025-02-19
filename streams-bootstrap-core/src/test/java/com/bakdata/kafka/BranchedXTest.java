@@ -86,7 +86,7 @@ class BranchedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final Map<String, KStreamX<String, String>> branches = input.split()
+                input.split()
                         .defaultBranch(BranchedX.withConsumer(KStreamX::toOutputTopic));
             }
         };

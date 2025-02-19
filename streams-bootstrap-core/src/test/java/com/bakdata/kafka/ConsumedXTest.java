@@ -221,7 +221,7 @@ class ConsumedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input",
-                        ConsumedX.with((record, partitionTime) -> 1L));
+                        ConsumedX.with((consumerRecord, partitionTime) -> 1L));
                 input.to("output");
             }
         };
@@ -246,7 +246,7 @@ class ConsumedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KStreamX<String, String> input = builder.stream("input", ConsumedX.<String, String>as("stream")
-                        .withTimestampExtractor((record, partitionTime) -> 1L));
+                        .withTimestampExtractor((consumerRecord, partitionTime) -> 1L));
                 input.to("output");
             }
         };
