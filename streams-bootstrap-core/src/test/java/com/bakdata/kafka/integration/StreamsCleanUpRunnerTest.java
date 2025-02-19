@@ -43,6 +43,7 @@ import com.bakdata.kafka.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.StreamsCleanUpRunner;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
+import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
@@ -110,6 +111,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         return StreamsRunnerTest.configureApp(app, topics, this.stateDir);
     }
 
+    public static void run(final ExecutableStreamsApp<?> app) {
+        try (final StreamsRunner runner = app.createRunner()) {
+            TestHelper.run(runner);
+            // Wait until stream application has consumed all data
+            awaitProcessing(app);
+        }
+    }
+
     @Test
     void shouldDeleteTopic() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createWordCountApplication();
@@ -132,11 +141,11 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", 2L)
                     );
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             clean(executableApp);
 
             try (final ImprovedAdminClient admin = testClient.admin();
@@ -170,7 +179,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", 2L)
                     );
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
@@ -181,7 +190,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .isTrue();
             }
 
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             clean(executableApp);
 
             try (final ImprovedAdminClient adminClient = testClient.admin();
@@ -215,7 +224,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", 2L)
                     );
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
@@ -226,7 +235,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                         .isTrue();
             }
 
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
 
             try (final ImprovedAdminClient adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
@@ -254,7 +263,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
 
             final List<String> inputTopics = app.getTopics().getInputTopics();
             final String uniqueAppId = app.getUniqueAppId();
@@ -274,7 +283,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
 
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             reset(executableApp);
 
             try (final ImprovedAdminClient admin = testClient.admin();
@@ -304,7 +313,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
 
             final List<String> inputTopics = app.getTopics().getInputTopics();
             final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
@@ -317,7 +326,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
 
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             clean(executableApp);
 
             try (final ImprovedAdminClient admin = testClient.admin();
@@ -352,14 +361,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", 2L)
                     );
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "All entries are once in the input topic after the 1st run");
 
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             reset(executableApp);
 
-            this.run(executableApp);
+            run(executableApp);
             final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
                     .collect(Collectors.toList());
@@ -384,16 +393,16 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>(null, "c")
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
-            this.run(executableApp);
+            run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             reset(executableApp);
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 6);
         }
     }
@@ -416,10 +425,10 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>(null, testRecord)
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             final String outputTopic = app.getTopics().getOutputTopic();
             this.softly.assertThat(client.getAllSubjects())
                     .contains(outputTopic + "-value", inputTopic + "-value");
@@ -447,10 +456,10 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>(testRecord, "val")
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             final String outputTopic = app.getTopics().getOutputTopic();
             this.softly.assertThat(client.getAllSubjects())
                     .contains(outputTopic + "-key", inputTopic + "-key");
@@ -478,10 +487,10 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             final String inputSubject = inputTopic + "-value";
             final String uniqueAppId = app.getUniqueAppId();
             final String internalSubject =
@@ -496,39 +505,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(internalSubject, backingSubject)
                     .contains(inputSubject, manualSubject);
-        }
-    }
-
-    @Test
-    void shouldDeleteSchemaOfIntermediateTopics()
-            throws IOException, RestClientException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getTopics().getOutputTopic());
-            testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>("key 1", testRecord)
-                    ));
-
-            this.run(executableApp);
-
-            // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(executableApp);
-            final String inputSubject = inputTopic + "-value";
-            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(inputSubject, manualSubject);
-            clean(executableApp);
-
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(manualSubject)
-                    .contains(inputSubject);
         }
     }
 
@@ -571,15 +547,48 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
+    void shouldDeleteSchemaOfIntermediateTopics()
+            throws IOException, RestClientException {
+        try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
+                final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
+                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
+            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+            final String inputTopic = app.getTopics().getInputTopics().get(0);
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getOutputTopic());
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .to(app.getTopics().getInputTopics().get(0), List.of(
+                            new SimpleProducerRecord<>("key 1", testRecord)
+                    ));
+
+            run(executableApp);
+
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            awaitClosed(executableApp);
+            final String inputSubject = inputTopic + "-value";
+            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
+            this.softly.assertThat(client.getAllSubjects())
+                    .contains(inputSubject, manualSubject);
+            clean(executableApp);
+
+            this.softly.assertThat(client.getAllSubjects())
+                    .doesNotContain(manualSubject)
+                    .contains(inputSubject);
+        }
+    }
+
+    @Test
     void shouldThrowExceptionOnResetterError() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createMirrorKeyApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint());
                 final StreamsRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
-            StreamsRunnerTest.run(runner);
+            TestHelper.run(runner);
             // Wait until stream application has consumed all data
-            this.awaitActive(executableApp);
+            awaitActive(executableApp);
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
                     .isInstanceOf(CleanUpException.class)
@@ -608,16 +617,16 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>(null, "c")
                     ));
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
-            this.run(executableApp);
+            run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
 
             // Wait until all streams application are completely stopped before triggering cleanup
-            this.awaitClosed(executableApp);
+            awaitClosed(executableApp);
             reset(executableApp);
 
-            this.run(executableApp);
+            run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 6);
         }
     }
@@ -648,14 +657,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
-    }
-
-    private void run(final ExecutableStreamsApp<?> app) {
-        try (final StreamsRunner runner = app.createRunner()) {
-            StreamsRunnerTest.run(runner);
-            // Wait until stream application has consumed all data
-            this.awaitProcessing(app);
-        }
     }
 
     private ConfiguredStreamsApp<StreamsApp> createComplexApplication() {

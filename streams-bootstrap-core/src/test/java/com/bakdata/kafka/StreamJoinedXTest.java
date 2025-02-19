@@ -24,14 +24,23 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
+import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.JoinWindows;
@@ -43,6 +52,7 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.kafka.KafkaContainer;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class StreamJoinedXTest {
@@ -522,22 +532,51 @@ class StreamJoinedXTest {
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        StreamJoinedX.<String, String, String>keySerde(Preconfigured.defaultSerde())
+                        StreamJoinedX.<String, String, String>as("store")
                                 .withLoggingDisabled());
                 joined.to("output");
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input("other_input")
-                    .add("foo", "baz");
-            topology.input("input")
-                    .add("foo", "bar");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("barbaz")
-                    .expectNoMoreRecord();
-            // TODO test topic existence. TestDriver does not expose it
+        try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
+            kafkaCluster.start();
+            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build();
+            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            testClient.createTopic("input");
+            testClient.createTopic("output");
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
+                    TestTopologyFactory.createStreamsTestConfig());
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+                    final StreamsRunner runner = executableApp.createRunner()) {
+                testClient.send()
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .to("other_input", List.of(new SimpleProducerRecord<>("foo", "baz")));
+                testClient.send()
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
+                TestHelper.run(runner);
+                KafkaTest.awaitProcessing(executableApp);
+                this.softly.assertThat(testClient.read()
+                                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .from("output", POLL_TIMEOUT))
+                        .hasSize(1)
+                        .anySatisfy(outputRecord -> {
+                            this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
+                            this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
+                        });
+                try (final ImprovedAdminClient admin = testClient.admin();
+                        final TopicClient topicClient = admin.getTopicClient()) {
+                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    this.softly.assertThat(topicClient.listTopics())
+                            .noneSatisfy(topic -> this.softly.assertThat(topic)
+                                    .startsWith(appId)
+                                    .endsWith("-store-changelog"));
+                }
+            }
         }
     }
 
@@ -550,24 +589,54 @@ class StreamJoinedXTest {
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1L)),
-                        StreamJoinedX.<String, String, String>keySerde(Preconfigured.defaultSerde())
-                                .withLoggingEnabled(emptyMap()));
+                        StreamJoinedX.<String, String, String>as("store")
+                                .withLoggingEnabled(Map.of(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1")));
                 joined.to("output");
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input("other_input")
-                    .add("foo", "baz");
-            topology.input("input")
-                    .add("foo", "bar");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("barbaz")
-                    .expectNoMoreRecord();
-            // TODO test topic config. TestDriver does not expose it
+        try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
+            kafkaCluster.start();
+            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build();
+            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            testClient.createTopic("input");
+            testClient.createTopic("output");
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
+                    TestTopologyFactory.createStreamsTestConfig());
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+                    final StreamsRunner runner = executableApp.createRunner()) {
+                testClient.send()
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .to("other_input", List.of(new SimpleProducerRecord<>("foo", "baz")));
+                testClient.send()
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
+                TestHelper.run(runner);
+                KafkaTest.awaitProcessing(executableApp);
+                this.softly.assertThat(testClient.read()
+                                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .from("output", POLL_TIMEOUT))
+                        .hasSize(1)
+                        .anySatisfy(outputRecord -> {
+                            this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
+                            this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
+                        });
+                try (final ImprovedAdminClient admin = testClient.admin();
+                        final TopicClient topicClient = admin.getTopicClient()) {
+                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    this.softly.assertThat(topicClient.listTopics())
+                            .filteredOn(topic -> topic.startsWith(appId) && topic.endsWith("-store-changelog"))
+                            .allSatisfy(topic -> {
+                                final Map<String, String> config = topicClient.getConfig(topic);
+                                this.softly.assertThat(config)
+                                        .containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
+                            });
+                }
+            }
         }
     }
-
-    //TODO retention
 }

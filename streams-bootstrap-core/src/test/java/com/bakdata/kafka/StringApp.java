@@ -25,17 +25,10 @@
 package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 abstract class StringApp implements StreamsApp {
-
-    TestTopology<String, String> startApp(final StreamsTopicConfig topicConfig) {
-        return TestHelper.startApp(this, topicConfig);
-    }
-
-    TestTopology<String, String> startApp() {
-        return TestHelper.startApp(this, StreamsTopicConfig.builder().build());
-    }
 
     @Override
     public String getUniqueAppId(final StreamsTopicConfig topics) {
@@ -45,5 +38,18 @@ abstract class StringApp implements StreamsApp {
     @Override
     public SerdeConfig defaultSerializationConfig() {
         return new SerdeConfig(StringSerde.class, StringSerde.class);
+    }
+
+    TestTopology<String, String> startApp(final StreamsTopicConfig topicConfig) {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = TestHelper.configureApp(this, topicConfig);
+        return TestHelper.startApp(configuredApp);
+    }
+
+    TestTopology<String, String> startApp() {
+        return this.startApp(StreamsTopicConfig.builder().build());
+    }
+
+    ConfiguredStreamsApp<StreamsApp> configureApp(final Map<String, String> config) {
+        return TestHelper.configureApp(this, StreamsTopicConfig.builder().build(), config);
     }
 }

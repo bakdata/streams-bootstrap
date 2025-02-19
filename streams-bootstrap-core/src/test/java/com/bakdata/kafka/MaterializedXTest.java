@@ -24,14 +24,23 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
+import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.Materialized.StoreType;
@@ -42,7 +51,6 @@ import org.apache.kafka.streams.processor.StateStore;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.internals.CachingKeyValueStore;
-import org.apache.kafka.streams.state.internals.MeteredTimestampedKeyValueStore;
 import org.apache.kafka.streams.state.internals.WrappedStateStore;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.SoftAssertions;
@@ -50,6 +58,7 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.kafka.KafkaContainer;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class MaterializedXTest {
@@ -346,20 +355,44 @@ class MaterializedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KTableX<String, String> table = builder.table("input",
-                        MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>keySerde(
-                                Preconfigured.defaultSerde()).withLoggingDisabled());
+                        MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store")
+                                .withLoggingDisabled());
                 table.toStream().to("output");
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input("input")
-                    .add("foo", "bar");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("bar")
-                    .expectNoMoreRecord();
-            // TODO test topic existence. TestDriver does not expose it
+        try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
+            kafkaCluster.start();
+            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build();
+            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            testClient.createTopic("input");
+            testClient.createTopic("output");
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
+                    TestTopologyFactory.createStreamsTestConfig());
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+                    final StreamsRunner runner = executableApp.createRunner()) {
+                testClient.send()
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
+                TestHelper.run(runner);
+                KafkaTest.awaitProcessing(executableApp);
+                this.softly.assertThat(testClient.read()
+                                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .from("output", POLL_TIMEOUT))
+                        .hasSize(1)
+                        .anySatisfy(outputRecord -> {
+                            this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
+                            this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
+                        });
+                try (final ImprovedAdminClient admin = testClient.admin();
+                        final TopicClient topicClient = admin.getTopicClient()) {
+                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    this.softly.assertThat(topicClient.exists(appId + "-store-changelog")).isFalse();
+                }
+            }
         }
     }
 
@@ -369,20 +402,47 @@ class MaterializedXTest {
             @Override
             public void buildTopology(final TopologyBuilder builder) {
                 final KTableX<String, String> table = builder.table("input",
-                        MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>keySerde(
-                                Preconfigured.defaultSerde()).withLoggingEnabled(emptyMap()));
+                        MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store")
+                                .withLoggingEnabled(Map.of(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1")));
                 table.toStream().to("output");
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input("input")
-                    .add("foo", "bar");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("bar")
-                    .expectNoMoreRecord();
-            // TODO test topic config. TestDriver does not expose it
+        try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
+            kafkaCluster.start();
+            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
+                    .bootstrapServers(kafkaCluster.getBootstrapServers())
+                    .build();
+            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            testClient.createTopic("input");
+            testClient.createTopic("output");
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
+                    TestTopologyFactory.createStreamsTestConfig());
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+                    final StreamsRunner runner = executableApp.createRunner()) {
+                testClient.send()
+                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
+                TestHelper.run(runner);
+                KafkaTest.awaitProcessing(executableApp);
+                this.softly.assertThat(testClient.read()
+                                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .from("output", POLL_TIMEOUT))
+                        .hasSize(1)
+                        .anySatisfy(outputRecord -> {
+                            this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
+                            this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
+                        });
+                try (final ImprovedAdminClient admin = testClient.admin();
+                        final TopicClient topicClient = admin.getTopicClient()) {
+                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String topicName = appId + "-store-changelog";
+                    this.softly.assertThat(topicClient.exists(topicName)).isTrue();
+                    final Map<String, String> config = topicClient.getConfig(topicName);
+                    this.softly.assertThat(config).containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
+                }
+            }
         }
     }
 
@@ -406,7 +466,7 @@ class MaterializedXTest {
                     .expectNoMoreRecord();
             final TopologyTestDriver testDriver = topology.getTestDriver();
             this.softly.assertThat(testDriver.getTimestampedKeyValueStore("store"))
-                    .asInstanceOf(InstanceOfAssertFactories.type(MeteredTimestampedKeyValueStore.class))
+                    .asInstanceOf(InstanceOfAssertFactories.type(WrappedStateStore.class))
                     .extracting(WrappedStateStore::wrapped)
                     .isNotInstanceOf(CachingKeyValueStore.class);
         }
@@ -432,9 +492,11 @@ class MaterializedXTest {
                     .expectNoMoreRecord();
             final TopologyTestDriver testDriver = topology.getTestDriver();
             this.softly.assertThat(testDriver.getTimestampedKeyValueStore("store"))
-                    .asInstanceOf(InstanceOfAssertFactories.type(MeteredTimestampedKeyValueStore.class))
+                    .asInstanceOf(InstanceOfAssertFactories.type(WrappedStateStore.class))
                     .extracting(WrappedStateStore::wrapped)
                     .isInstanceOf(CachingKeyValueStore.class);
         }
     }
+
+    //TODO retention
 }
