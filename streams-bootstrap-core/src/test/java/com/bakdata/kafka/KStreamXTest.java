@@ -4448,6 +4448,64 @@ class KStreamXTest {
         }
     }
 
-    //TODO process (old)
+    @Test
+    void shouldLegacyProcess() {
+        final org.apache.kafka.streams.processor.ProcessorSupplier<String, String> processor =
+                () -> new SimpleLegacyProcessor<>() {
+
+                    @Override
+                    public void process(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.process(processor, "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
+
+    @Test
+    void shouldLegacyProcessNamed() {
+        final org.apache.kafka.streams.processor.ProcessorSupplier<String, String> processor =
+                () -> new SimpleLegacyProcessor<>() {
+
+                    @Override
+                    public void process(final String key, final String value) {
+                        final KeyValueStore<String, String> store = this.getStateStore("my-store");
+                        store.put(key, value);
+                    }
+                };
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final TopologyBuilder builder) {
+                final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
+                        .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
+                                Preconfigured.defaultSerde());
+                builder.addStateStore(store);
+                final KStreamX<String, String> input = builder.stream("input");
+                input.process(processor, Named.as("process"), "my-store");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final KeyValueStore<String, String> store =
+                    topology.getTestDriver().getKeyValueStore("my-store");
+            this.softly.assertThat(store.get("foo")).isEqualTo("bar");
+        }
+    }
 
 }
