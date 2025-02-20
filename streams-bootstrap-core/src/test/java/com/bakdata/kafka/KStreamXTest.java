@@ -38,11 +38,8 @@ import java.io.File;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.kstream.Branched;
 import org.apache.kafka.streams.kstream.ForeachAction;
@@ -238,17 +235,12 @@ class KStreamXTest {
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input().add("foo", "bar");
-            final StreamsConfig streamsConfig = topology.getStreamsConfig();
-            final Serde<String> keySerde = (Serde<String>) streamsConfig.defaultKeySerde();
-            final Serde<String> valueSerde = (Serde<String>) streamsConfig.defaultValueSerde();
-            final TestOutputTopic<String, String> outputTopic = topology.getTestDriver()
-                    .createOutputTopic("foo", keySerde.deserializer(), valueSerde.deserializer());
-            this.softly.assertThat(outputTopic.readRecordsToList())
-                    .hasSize(1)
-                    .anySatisfy(outputRecord -> {
-                        this.softly.assertThat(outputRecord.getKey()).isEqualTo("foo");
-                        this.softly.assertThat(outputRecord.getValue()).isEqualTo("bar");
-                    });
+            topology.getOutputTopics().add("foo");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
         }
     }
 
@@ -267,16 +259,14 @@ class KStreamXTest {
                     .withKeySerde(Serdes.String())
                     .withValueSerde(Serdes.String())
                     .add("foo", "bar");
-            final Serde<String> keySerde = Serdes.String();
-            final Serde<String> valueSerde = Serdes.String();
-            final TestOutputTopic<String, String> outputTopic = topology.getTestDriver()
-                    .createOutputTopic("foo", keySerde.deserializer(), valueSerde.deserializer());
-            this.softly.assertThat(outputTopic.readRecordsToList())
-                    .hasSize(1)
-                    .anySatisfy(outputRecord -> {
-                        this.softly.assertThat(outputRecord.getKey()).isEqualTo("foo");
-                        this.softly.assertThat(outputRecord.getValue()).isEqualTo("bar");
-                    });
+            topology.getOutputTopics().add("foo");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
         }
     }
 
