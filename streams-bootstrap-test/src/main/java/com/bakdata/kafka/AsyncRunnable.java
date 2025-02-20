@@ -33,11 +33,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AsyncRunner {
+public final class AsyncRunnable {
     private final @NonNull CountDownLatch countDownLatch;
     private final @NonNull CapturingUncaughtExceptionHandler handler;
 
-    public static AsyncRunner run(final Runnable app) {
+    public static AsyncRunnable runAsync(final Runnable app) {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final Thread thread = new Thread(() -> {
             app.run();
@@ -46,13 +46,13 @@ public final class AsyncRunner {
         final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler(countDownLatch);
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
-        return new AsyncRunner(countDownLatch, handler);
+        return new AsyncRunnable(countDownLatch, handler);
     }
 
     public void await(final Duration timeout) {
         try {
-            final boolean success = this.countDownLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (!success) {
+            final boolean timedOut = !this.countDownLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            if (timedOut) {
                 throw new RuntimeException("Timeout awaiting application shutdown");
             }
         } catch (final InterruptedException e) {

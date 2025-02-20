@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static java.util.Collections.emptyList;
 
 import com.google.common.collect.ImmutableList;
@@ -56,9 +57,9 @@ public final class TestApplicationRunner {
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
-    public AsyncRunner run(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public AsyncRunnable run(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.prepareExecution(app);
-        return AsyncRunner.run(app);
+        return runAsync(app);
     }
 
     public void clean(final KafkaStreamsApplication<? extends StreamsApp> app) {
