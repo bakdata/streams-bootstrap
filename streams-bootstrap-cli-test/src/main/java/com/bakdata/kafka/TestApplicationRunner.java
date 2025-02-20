@@ -28,7 +28,6 @@ import static java.util.Collections.emptyList;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
@@ -57,13 +56,9 @@ public final class TestApplicationRunner {
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
-    public Thread run(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public AsyncRunner run(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.prepareExecution(app);
-        final Thread thread = new Thread(app);
-        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return thread;
+        return AsyncRunner.run(app);
     }
 
     public void clean(final KafkaStreamsApplication<? extends StreamsApp> app) {

@@ -24,14 +24,14 @@
 
 package com.bakdata.kafka.integration;
 
+import static com.bakdata.kafka.AsyncRunner.run;
 import static com.bakdata.kafka.TestTopologyFactory.createStreamsTestConfig;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
-import com.bakdata.kafka.CapturingUncaughtExceptionHandler;
+import com.bakdata.kafka.AsyncRunner;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
@@ -44,7 +44,6 @@ import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -76,6 +75,7 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsRunnerTest extends KafkaTest {
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @Mock
     private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
     @Mock
@@ -85,24 +85,11 @@ class StreamsRunnerTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
-    static Thread run(final StreamsRunner runner) {
-        // run in Thread because the application blocks indefinitely
-        final Thread thread = new Thread(runner);
-        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return thread;
-    }
-
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics,
             final Path stateDir) {
         final AppConfiguration<StreamsTopicConfig> configuration =
                 new AppConfiguration<>(topics, createStreamsTestConfig(stateDir));
         return new ConfiguredStreamsApp<>(app, configuration);
-    }
-
-    private static void awaitThreadIsDead(final Thread thread) {
-        await("Thread is dead").atMost(Duration.ofSeconds(10)).until(() -> !thread.isAlive());
     }
 
     ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
@@ -170,11 +157,9 @@ class StreamsRunnerTest extends KafkaTest {
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
-            final Thread thread = run(runner);
-            final CapturingUncaughtExceptionHandler handler =
-                    (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            awaitThreadIsDead(thread);
-            this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
+            final AsyncRunner asyncRunner = run(runner);
+            this.softly.assertThatThrownBy(() -> asyncRunner.await(TIMEOUT))
+                    .isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
         }
@@ -193,15 +178,12 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            final Thread thread = run(runner);
-            final CapturingUncaughtExceptionHandler handler =
-                    (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
+            final AsyncRunner asyncRunner = run(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            awaitThreadIsDead(thread);
-            this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
+            this.softly.assertThatThrownBy(() -> asyncRunner.await(TIMEOUT)).isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
