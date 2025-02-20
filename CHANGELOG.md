@@ -1,8 +1,15 @@
 # Change Log
 
-## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.1)
+## [3.5.2](https://github.com/bakdata/streams-bootstrap/tree/3.5.2) (2025-02-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.2...3.5.2)
 
+
+## [3.5.2](https://github.com/bakdata/streams-bootstrap/tree/3.5.2) (2025-02-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.2)
+
+**Merged pull requests:**
+
+- Retry topic verification [\#278](https://github.com/bakdata/streams-bootstrap/pull/278) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.1)
