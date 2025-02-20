@@ -34,24 +34,24 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AsyncRunnable {
-    private final @NonNull CountDownLatch countDownLatch;
-    private final @NonNull CapturingUncaughtExceptionHandler handler;
+    private final @NonNull CountDownLatch shutdown;
+    private final @NonNull CapturingUncaughtExceptionHandler exceptionHandler;
 
     public static AsyncRunnable runAsync(final Runnable app) {
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final CountDownLatch shutdown = new CountDownLatch(1);
         final Thread thread = new Thread(() -> {
             app.run();
-            countDownLatch.countDown();
+            shutdown.countDown();
         });
-        final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler(countDownLatch);
+        final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler(shutdown);
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
-        return new AsyncRunnable(countDownLatch, handler);
+        return new AsyncRunnable(shutdown, handler);
     }
 
     public void await(final Duration timeout) {
         try {
-            final boolean timedOut = !this.countDownLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (timedOut) {
                 throw new RuntimeException("Timeout awaiting application shutdown");
             }
@@ -59,7 +59,7 @@ public final class AsyncRunnable {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Error awaiting application shutdown", e);
         }
-        this.handler.throwException();
+        this.exceptionHandler.throwException();
     }
 
     @RequiredArgsConstructor
