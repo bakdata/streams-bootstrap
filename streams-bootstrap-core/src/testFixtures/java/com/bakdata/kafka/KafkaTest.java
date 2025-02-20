@@ -46,6 +46,28 @@ public abstract class KafkaTest {
                 .withTag(KAFKA_VERSION));
     }
 
+    protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
+        awaitActive(app);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group has finished processing")
+                .until(verifier::hasFinishedProcessing);
+    }
+
+    protected static void awaitActive(final ExecutableStreamsApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is active")
+                .until(verifier::isActive);
+    }
+
+    protected static void awaitClosed(final ExecutableStreamsApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is closed")
+                .until(verifier::isClosed);
+    }
+
     private static ConditionFactory await() {
         return Awaitility.await()
                 .pollInterval(Duration.ofSeconds(2L))
@@ -79,28 +101,6 @@ public abstract class KafkaTest {
 
     protected SchemaRegistryClient getSchemaRegistryClient() {
         return this.testTopologyFactory.getSchemaRegistryClient();
-    }
-
-    protected void awaitProcessing(final ExecutableStreamsApp<?> app) {
-        this.awaitActive(app);
-        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
-        await()
-                .alias("Consumer group has finished processing")
-                .until(verifier::hasFinishedProcessing);
-    }
-
-    protected void awaitActive(final ExecutableStreamsApp<?> app) {
-        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
-        await()
-                .alias("Consumer group is active")
-                .until(verifier::isActive);
-    }
-
-    protected void awaitClosed(final ExecutableStreamsApp<?> app) {
-        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
-        await()
-                .alias("Consumer group is closed")
-                .until(verifier::isClosed);
     }
 
 }

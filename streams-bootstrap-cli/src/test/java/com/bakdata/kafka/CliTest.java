@@ -192,7 +192,7 @@ class CliTest {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
-                        builder.streamInput().to(builder.getTopics().getOutputTopic());
+                        builder.streamInput().toOutputTopic();
                     }
 
                     @Override
@@ -265,7 +265,7 @@ class CliTest {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
-                                .to(builder.getTopics().getOutputTopic());
+                                .toOutputTopic();
                     }
 
                     @Override

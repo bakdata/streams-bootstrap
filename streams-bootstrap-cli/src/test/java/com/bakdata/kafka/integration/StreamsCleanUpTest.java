@@ -83,7 +83,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(app.createExecutableApp());
+            awaitClosed(app.createExecutableApp());
             app.clean();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -119,7 +119,7 @@ class StreamsCleanUpTest extends KafkaTest {
             this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
             // Wait until all stream applications are completely stopped before triggering cleanup
-            this.awaitClosed(app.createExecutableApp());
+            awaitClosed(app.createExecutableApp());
             app.reset();
 
             try (final ImprovedAdminClient admin = testClient.admin()) {
@@ -158,7 +158,7 @@ class StreamsCleanUpTest extends KafkaTest {
         // run in Thread because the application blocks indefinitely
         new Thread(app).start();
         // Wait until stream application has consumed all data
-        this.awaitProcessing(app.createExecutableApp());
+        awaitProcessing(app.createExecutableApp());
     }
 
     private CloseFlagApp createCloseFlagApplication() {
