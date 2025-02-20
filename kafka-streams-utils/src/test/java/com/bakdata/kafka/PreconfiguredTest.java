@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,23 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.util;
+package com.bakdata.kafka;
 
-import java.util.Collection;
-import java.util.regex.Pattern;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.jooq.lambda.Seq;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RequiredArgsConstructor
-class PatternTopicSubscription implements TopicSubscription {
-    private final @NonNull Pattern pattern;
+import org.junit.jupiter.api.Test;
 
-    @Override
-    public Collection<String> resolveTopics(final Collection<String> allTopics) {
-        return Seq.seq(allTopics)
-                .filter(this.pattern.asMatchPredicate())
-                .toList();
+class PreconfiguredTest {
+
+    @Test
+    void shouldCreateDefaultSerde() {
+        assertThat(Preconfigured.defaultSerde().configureForValues(emptyMap())).isNull();
     }
+
+    @Test
+    void shouldCreateDefaultSerializer() {
+        assertThat(Preconfigured.defaultSerializer().configureForValues(emptyMap())).isNull();
+    }
+
 }

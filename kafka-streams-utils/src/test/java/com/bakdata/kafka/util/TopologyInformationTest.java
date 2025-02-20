@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,69 +26,75 @@ package com.bakdata.kafka.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.AppConfiguration;
-import com.bakdata.kafka.ConfiguredStreamsApp;
-import com.bakdata.kafka.KafkaEndpointConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
+import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.kstream.TableJoined;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.Windowed;
 import org.junit.jupiter.api.Test;
 
 class TopologyInformationTest {
 
-    private StreamsApp app = null;
-    private StreamsTopicConfig topics;
-    private TopologyInformation topologyInformation = null;
+    private static final String THROUGH_TOPIC = "through-topic";
+    private static final String OUTPUT_TOPIC = "output";
+    private static final List<String> INPUT_TOPICS = List.of("input1", "input2");
 
-    @BeforeEach
-    void setup() {
-        this.app = new ComplexTopologyApplication();
-        this.topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of("input", "input2"))
-                .outputTopic("output")
-                .build();
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(this.topics);
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this.app, configuration);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(
-                KafkaEndpointConfig.builder()
-                        .bootstrapServers("localhost:9092")
-                        .build());
-        this.topologyInformation =
-                new TopologyInformation(configuredApp.createTopology(kafkaProperties),
-                        this.app.getUniqueAppId(this.topics));
+    private static Topology buildComplexTopology() {
+        final StreamsBuilder builder = new StreamsBuilder();
+        final KStream<String, String> input = builder.stream(INPUT_TOPICS);
+
+        input.to(THROUGH_TOPIC);
+        final KStream<String, String> through = builder.stream(THROUGH_TOPIC);
+        final KTable<Windowed<String>, String> reduce = through
+                .groupByKey()
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(5L)))
+                .reduce((a, b) -> a);
+
+        reduce.toStream()
+                .map((k, v) -> KeyValue.pair(v, ""))
+                .groupByKey()
+                .count(Materialized.with(Serdes.String(), Serdes.Long()))
+                .toStream()
+                .to(OUTPUT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+        return builder.build();
     }
 
     @Test
     void shouldReturnAllExternalSinkTopics() {
-        assertThat(this.topologyInformation.getExternalSinkTopics())
-                .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC,
-                        this.topics.getOutputTopic());
+        final TopologyInformation topologyInformation =
+                new TopologyInformation(buildComplexTopology(), "id");
+        assertThat(topologyInformation.getExternalSinkTopics())
+                .containsExactly(THROUGH_TOPIC, OUTPUT_TOPIC);
     }
 
     @Test
     void shouldReturnAllExternalSourceTopics() {
-        assertThat(this.topologyInformation.getExternalSourceTopics(List.of()))
+        final TopologyInformation topologyInformation =
+                new TopologyInformation(buildComplexTopology(), "id");
+        assertThat(topologyInformation.getExternalSourceTopics(List.of()))
                 .hasSize(2)
-                .containsAll(this.topics.getInputTopics())
-                .doesNotContain(ComplexTopologyApplication.THROUGH_TOPIC);
+                .containsAll(INPUT_TOPICS)
+                .doesNotContain(THROUGH_TOPIC);
     }
 
     @Test
     void shouldReturnAllIntermediateTopics() {
-        assertThat(this.topologyInformation.getIntermediateTopics(List.of()))
+        final TopologyInformation topologyInformation =
+                new TopologyInformation(buildComplexTopology(), "id");
+        assertThat(topologyInformation.getIntermediateTopics(List.of()))
                 .hasSize(1)
-                .containsExactly(ComplexTopologyApplication.THROUGH_TOPIC)
-                .doesNotContainAnyElementsOf(this.topics.getInputTopics());
+                .containsExactly(THROUGH_TOPIC)
+                .doesNotContainAnyElementsOf(INPUT_TOPICS);
     }
 
     @Test
@@ -139,15 +145,19 @@ class TopologyInformationTest {
 
     @Test
     void shouldNotReturnInputTopics() {
-        assertThat(this.topologyInformation.getExternalSinkTopics())
-                .doesNotContainAnyElementsOf(this.topics.getInputTopics());
+        final TopologyInformation topologyInformation =
+                new TopologyInformation(buildComplexTopology(), "id");
+        assertThat(topologyInformation.getExternalSinkTopics())
+                .doesNotContainAnyElementsOf(INPUT_TOPICS);
     }
 
     @Test
     void shouldReturnAllInternalTopics() {
-        assertThat(this.topologyInformation.getInternalTopics())
+        final TopologyInformation topologyInformation =
+                new TopologyInformation(buildComplexTopology(), "id");
+        assertThat(topologyInformation.getInternalTopics())
                 .hasSize(3)
-                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith(this.app.getUniqueAppId(this.topics))
+                .allMatch(topic -> topic.contains("-KSTREAM-") && topic.startsWith("id")
                         || topic.startsWith("KSTREAM-"))
                 .allMatch(topic -> topic.endsWith("-changelog") || topic.endsWith("-repartition"));
     }

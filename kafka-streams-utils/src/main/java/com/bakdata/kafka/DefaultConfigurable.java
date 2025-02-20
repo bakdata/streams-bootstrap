@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,19 +25,10 @@
 package com.bakdata.kafka;
 
 import java.util.Map;
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.serialization.Serializer;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class ConfigurableSerializer<S extends Serializer<T>, T> implements Configurable<S> {
-
-    private final @NonNull S serializer;
-
+class DefaultConfigurable<T> implements Configurable<T> {
     @Override
-    public S configure(final Map<String, Object> config, final boolean isKey) {
-        this.serializer.configure(config, isKey);
-        return this.serializer;
+    public T configure(final Map<String, Object> config, final boolean isKey) {
+        return null;
     }
 }

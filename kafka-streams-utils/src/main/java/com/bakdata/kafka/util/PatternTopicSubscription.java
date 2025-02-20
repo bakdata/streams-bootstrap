@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,22 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.util;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.regex.Pattern;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.jooq.lambda.Seq;
 
-class DefaultConfigurable<T> implements Configurable<T> {
+@RequiredArgsConstructor
+class PatternTopicSubscription implements TopicSubscription {
+    private final @NonNull Pattern pattern;
+
     @Override
-    public T configure(final Map<String, Object> config, final boolean isKey) {
-        return null;
+    public Collection<String> resolveTopics(final Collection<String> allTopics) {
+        return Seq.seq(allTopics)
+                .filter(this.pattern.asMatchPredicate())
+                .toList();
     }
 }

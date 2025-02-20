@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,17 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.util;
+package com.bakdata.kafka;
 
-import java.util.Collection;
+import java.util.Map;
 
-/**
- * Interface to represent different types of subscribing to topics.
- */
 @FunctionalInterface
-interface TopicSubscription {
-
+interface Configurable<T> {
     /**
-     * Resolve the topics of the subscription
-     *
-     * @param allTopics list of all topics that exists in the Kafka cluster
-     * @return topics subscribed to
+     * Configure this class
+     * @param config configs in key/value pairs
+     * @param isKey whether is for key or value
+     * @return configured instance
      */
-    Collection<String> resolveTopics(Collection<String> allTopics);
+    T configure(Map<String, Object> config, boolean isKey);
 }

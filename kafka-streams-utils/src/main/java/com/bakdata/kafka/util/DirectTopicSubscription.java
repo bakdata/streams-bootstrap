@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,18 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.util;
 
-import java.util.Map;
-import lombok.AccessLevel;
+import java.util.Collection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.serialization.Serde;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class ConfigurableSerde<S extends Serde<T>, T> implements Configurable<S> {
-
-    private final @NonNull S serde;
+@RequiredArgsConstructor
+class DirectTopicSubscription implements TopicSubscription {
+    private final @NonNull Collection<String> topics;
 
     @Override
-    public S configure(final Map<String, Object> config, final boolean isKey) {
-        this.serde.configure(config, isKey);
-        return this.serde;
+    public Collection<String> resolveTopics(final Collection<String> allTopics) {
+        return this.topics;
     }
-
 }

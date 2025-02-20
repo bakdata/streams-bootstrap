@@ -10,6 +10,7 @@ dependencies {
 
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
     api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
+    api(project(":kafka-streams-utils"))
     val confluentVersion: String by project
     implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
     api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)

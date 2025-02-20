@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,20 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.serialization.Serializer;
 
-import org.junit.jupiter.api.Test;
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+final class ConfigurableSerializer<S extends Serializer<T>, T> implements Configurable<S> {
 
-class PreconfiguredTest {
+    private final @NonNull S serializer;
 
-    @Test
-    void shouldCreateDefaultSerde() {
-        assertThat(Preconfigured.defaultSerde().configureForValues(emptyMap())).isNull();
+    @Override
+    public S configure(final Map<String, Object> config, final boolean isKey) {
+        this.serializer.configure(config, isKey);
+        return this.serializer;
     }
-
-    @Test
-    void shouldCreateDefaultSerializer() {
-        assertThat(Preconfigured.defaultSerializer().configureForValues(emptyMap())).isNull();
-    }
-
 }
