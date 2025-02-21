@@ -44,6 +44,7 @@ spec:
       {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
       {{- range $key, $value := .Values.podAnnotations }}
