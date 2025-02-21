@@ -234,7 +234,7 @@ spec:
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:MaxRAMPercentage=90.0 -XshowSettings:vm"
+              value: "-XX:MaxRAMPercentage=90.0"
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
           resources:
