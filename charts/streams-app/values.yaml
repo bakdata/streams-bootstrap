@@ -94,7 +94,7 @@ readinessProbe: {}
 jmx:
   port: 5555
   metricRules:
-    - ".*"
+    - pattern: ".*"
 
 autoscaling:
   enabled: false

@@ -79,10 +79,10 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### JMX Configuration
 
-| Parameter         | Description                                       | Default  |
-| ----------------- | ------------------------------------------------- | -------- |
-| `jmx.port`        | The jmx port which JMX style metrics are exposed. | `5555`   |
-| `jmx.metricRules` | List of JMX metric rules.                         | `[".*"]` |
+| Parameter         | Description                                       | Default           |
+|-------------------|---------------------------------------------------|-------------------|
+| `jmx.port`        | The jmx port which JMX style metrics are exposed. | `5555`            |
+| `jmx.metricRules` | List of JMX metric rules.                         | `[pattern: ".*"]` |
 
 ### Prometheus JMX Exporter Configuration
 
