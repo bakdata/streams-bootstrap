@@ -44,6 +44,7 @@ spec:
       {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
         prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
         prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
       {{- range $key, $value := .Values.podAnnotations }}
@@ -229,16 +230,12 @@ spec:
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter
           image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
-          command:
-            - java
-            - -XX:+UnlockExperimentalVMOptions
-            - -XX:+UseCGroupMemoryLimitForHeap
-            - -XX:MaxRAMFraction=1
-            - -XshowSettings:vm
-            - -jar
-            - jmx_prometheus_httpserver.jar
+          args:
             - {{ .Values.prometheus.jmx.port | quote }}
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=90.0"
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
           resources:
