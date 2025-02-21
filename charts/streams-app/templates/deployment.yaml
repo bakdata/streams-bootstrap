@@ -229,7 +229,7 @@ spec:
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter
           image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
-          command:
+          args:
             - {{ .Values.prometheus.jmx.port | quote }}
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
           env:
