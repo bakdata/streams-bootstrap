@@ -15,5 +15,5 @@ data:
     lowercaseOutputName: true
     lowercaseOutputLabelNames: true
     ssl: false
-    rules: {{ .Values.jmx.metricRules | quote }}
+    rules: {{ toYaml .Values.jmx.metricRules | nindent 6 }}
 {{- end }}
