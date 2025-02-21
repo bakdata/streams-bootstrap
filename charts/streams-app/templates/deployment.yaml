@@ -230,15 +230,11 @@ spec:
         - name: prometheus-jmx-exporter
           image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
           command:
-            - java
-            - -XX:+UnlockExperimentalVMOptions
-            - -XX:+UseCGroupMemoryLimitForHeap
-            - -XX:MaxRAMFraction=1
-            - -XshowSettings:vm
-            - -jar
-            - jmx_prometheus_httpserver.jar
             - {{ .Values.prometheus.jmx.port | quote }}
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=90.0 -XshowSettings:vm"
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
           resources:
