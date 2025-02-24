@@ -11,9 +11,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   jmx-kafka-streams-app-prometheus.yml: |+
-    jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:{{ .Values.jmx.port }}/jmxrmi
     lowercaseOutputName: true
     lowercaseOutputLabelNames: true
-    ssl: false
-    rules: {{ toYaml .Values.jmx.metricRules | nindent 4 }}
+    rules: {{ toYaml .Values.prometheus.jmx.metricRules | nindent 4 }}
 {{- end }}

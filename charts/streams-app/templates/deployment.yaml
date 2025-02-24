@@ -74,12 +74,26 @@ spec:
       imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
+      {{- if .Values.prometheus.jmx.enabled }}
+      initContainers:
+        - name: jmx-agent-downloader
+          image: curlimages/curl:8.12.1
+          args:
+            - "-o"
+            - "/jmx/jmx_prometheus_javaagent.jar"
+            - "https://github.com/prometheus/jmx_exporter/releases/download/{{ .Values.prometheus.jmx.version }}/jmx_prometheus_javaagent-{{ .Values.prometheus.jmx.version }}.jar"
+          volumeMounts:
+            - name: jmx-agent
+              mountPath: /jmx
+      {{- end }}
       containers:
         - name: {{ template "streams-app.name" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          args:
+            - -javaagent:/jmx/jmx_prometheus_javaagent.jar={{ .Values.prometheus.jmx.port }}:/etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
@@ -102,10 +116,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- end }}
-          {{- if .Values.prometheus.jmx.enabled }}
-            - name: KAFKA_JMX_PORT
-              value: "{{ .Values.jmx.port }}"
           {{- end }}
           {{- if not .Values.statefulSet }}
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
@@ -176,8 +186,6 @@ spec:
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
-                -Dcom.sun.management.jmxremote.authenticate=false
-                -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
@@ -201,6 +209,12 @@ spec:
             - name: datadir
               mountPath: /tmp/kafka-streams
             {{- end }}
+            {{- if .Values.prometheus.jmx.enabled }}
+            - name: jmx-config
+              mountPath: /etc/jmx-streams-app
+            - name: jmx-agent
+              mountPath: /jmx
+            {{- end }}
         {{- end }}
         {{- if or (.Values.prometheus.jmx.enabled) (.Values.ports) }}
           ports:
@@ -211,9 +225,13 @@ spec:
               protocol: {{ .protocol | quote }}
               {{- end }}
             {{- end }}
-            {{- if .Values.prometheus.jmx.enabled }}
+            {{- if .Values.jmx.enabled }}
             - containerPort: {{ .Values.jmx.port }}
               name: jmx
+            {{- end }}
+            {{- if .Values.prometheus.jmx.enabled }}
+            - containerPort: {{ .Values.prometheus.jmx.port }}
+              name: prometheus
             {{- end }}
         {{- end }}
           {{- if .Values.livenessProbe }}
@@ -224,29 +242,14 @@ spec:
           readinessProbe:
           {{- .Values.readinessProbe | toYaml | nindent 12 }}
           {{- end }}
-      {{- if .Values.prometheus.jmx.enabled }}
-        - name: prometheus-jmx-exporter
-          image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
-          args:
-            - {{ .Values.prometheus.jmx.port | quote }}
-            - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:MaxRAMPercentage=90.0"
-          ports:
-            - containerPort: {{ .Values.prometheus.jmx.port }}
-          resources:
-{{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
-          volumeMounts:
-            - name: jmx-config
-              mountPath: /etc/jmx-streams-app
-      {{- end }}
       {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
             name: {{ template "streams-app.name" . }}-jmx-configmap
+        - name: jmx-agent
+          emptyDir: {}
         {{- end }}
         {{- if .Values.files }}
         - name: config
