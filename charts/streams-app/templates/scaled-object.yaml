@@ -6,7 +6,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ template "streams-app.fullname" . }}-so
+  name: {{ include "streams-app.fullname" . }}-so
   {{- include "streams-app.annotations" . }}
   labels:
     {{- include "streams-app.labels" . | nindent 4 }}
@@ -22,7 +22,7 @@ spec:
     {{- else }}
     kind: Deployment
     {{- end }}
-    name: {{ template "streams-app.fullname" . }}
+    name: {{ include "streams-app.fullname" . }}
   pollingInterval: {{ .Values.autoscaling.pollingInterval }}
   cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}

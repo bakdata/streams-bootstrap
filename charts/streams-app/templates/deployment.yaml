@@ -14,7 +14,7 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ template "streams-app.fullname" . }}
+  name: {{ include "streams-app.fullname" . }}
   {{- include "streams-app.deployment-annotations" . }}
   labels:
     {{- include "streams-app.labels" . | nindent 4 }}
@@ -23,7 +23,7 @@ metadata:
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
-  serviceName: {{ template "streams-app.name" . }}
+  serviceName: {{ include "streams-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
@@ -73,7 +73,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app.name" . }}
+        - name: {{ include "streams-app.fullname" . }}
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -154,7 +154,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app.fullname" $ }}
+                  name: {{ include "streams-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.secretRefs }}
@@ -248,12 +248,12 @@ spec:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ template "streams-app.name" . }}-jmx-configmap
+            name: {{ include "streams-app.fullname" . }}-jmx-configmap
         {{- end }}
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "streams-app.name" . }}
+            name: {{ include "streams-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}

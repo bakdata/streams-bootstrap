@@ -12,7 +12,7 @@ apiVersion: batch/v1
 kind: Job
   {{- end }}
 metadata:
-  name: {{ template "producer-app.fullname" . }}
+  name: {{ include "producer-app.fullname" . }}
   {{- include "producer-app.annotations" . }}
   labels:
     {{- include "producer-app.labels" . | nindent 4 }}

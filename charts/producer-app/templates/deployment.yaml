@@ -7,7 +7,7 @@ apiVersion: apps/v1beta1
 {{- end }}
 kind: Deployment
 metadata:
-  name: {{ template "producer-app.fullname" . }}
+  name: {{ include "producer-app.fullname" . }}
   {{- include "producer-app.annotations" . }}
   labels:
     {{- include "producer-app.labels" . | nindent 4 }}
