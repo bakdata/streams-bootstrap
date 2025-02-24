@@ -81,6 +81,7 @@ spec:
           args:
             - "-o"
             - "/jmx/jmx_prometheus_javaagent.jar"
+            - "-L"
             - "https://github.com/prometheus/jmx_exporter/releases/download/{{ .Values.prometheus.jmx.version }}/jmx_prometheus_javaagent-{{ .Values.prometheus.jmx.version }}.jar"
           volumeMounts:
             - name: jmx-agent
