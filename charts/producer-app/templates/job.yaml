@@ -29,7 +29,7 @@ spec:
   concurrencyPolicy: Replace
   jobTemplate:
     metadata:
-      {{- include "producer-app.annotations" . }}
+      {{- include "producer-app.annotations" . | indent 4 }}
       labels:
         {{- include "producer-app.labels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
