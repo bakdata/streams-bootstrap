@@ -186,6 +186,8 @@ spec:
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
+                -Dcom.sun.management.jmxremote.authenticate=false
+                -Dcom.sun.management.jmxremote.ssl=false
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
