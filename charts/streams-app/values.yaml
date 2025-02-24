@@ -160,11 +160,11 @@ prometheus:
     ## See the `resources` documentation above for details.
     resources:
       requests:
-        cpu: 100m
-        memory: 500Mi
+        cpu: 10m
+        memory: 100Mi
       limits:
-        cpu: 300m
-        memory: 2G
+        cpu: 100m
+        memory: 100Mi
 
 # priorityClass
 # priorityClassName: ""
