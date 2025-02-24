@@ -12,8 +12,5 @@ data:
     lowercaseOutputName: true
     lowercaseOutputLabelNames: true
     ssl: false
-    rules:
-      {{- range .Values.jmx.metricRules}}
-      - pattern: {{ . | quote }}
-      {{- end}}
+    rules: {{ toYaml .Values.prometheus.jmx.metricRules | nindent 4 }}
 {{- end }}

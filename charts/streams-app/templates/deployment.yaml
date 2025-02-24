@@ -18,6 +18,7 @@ metadata:
   {{- include "streams-app.deployment-annotations" . }}
   labels:
     {{- include "streams-app.labels" . | nindent 4 }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
@@ -34,14 +35,10 @@ spec:
       {{- include "streams-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations .Values.files }}
+    {{- if or .Values.podAnnotations .Values.files }}
       annotations:
       {{- if .Values.files }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      {{- end }}
-      {{- if .Values.prometheus.jmx.enabled }}
-        prometheus.io/scrape: "true"
-        prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
       {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
@@ -49,6 +46,7 @@ spec:
     {{- end }}
       labels:
         {{- include "streams-app.labels" . | nindent 8 }}
+        streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
@@ -100,10 +98,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- end }}
-          {{- if .Values.prometheus.jmx.enabled }}
-            - name: KAFKA_JMX_PORT
-              value: "{{ .Values.jmx.port }}"
           {{- end }}
           {{- if not .Values.statefulSet }}
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
@@ -225,18 +219,16 @@ spec:
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter
           image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
-          command:
-            - java
-            - -XX:+UnlockExperimentalVMOptions
-            - -XX:+UseCGroupMemoryLimitForHeap
-            - -XX:MaxRAMFraction=1
-            - -XshowSettings:vm
-            - -jar
-            - jmx_prometheus_httpserver.jar
+          imagePullPolicy: "{{ .Values.prometheus.jmx.imagePullPolicy }}"
+          args:
             - {{ .Values.prometheus.jmx.port | quote }}
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=90.0"
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
+              name: prometheus
           resources:
 {{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
           volumeMounts:

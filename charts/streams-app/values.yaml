@@ -94,8 +94,6 @@ readinessProbe: {}
 ## ref: https://kafka.apache.org/documentation/#connect_monitoring
 jmx:
   port: 5555
-  metricRules:
-    - ".*"
 
 autoscaling:
   enabled: false
@@ -151,20 +149,23 @@ prometheus:
   ## JMX Exporter Configuration
   ## ref: https://github.com/prometheus/jmx_exporter
   jmx:
-    enabled: true
-    image: solsson/kafka-prometheus-jmx-exporter@sha256
-    imageTag: 6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
+    enabled: false
+    image: bitnami/jmx-exporter
+    imageTag: 1.1.0
+    imagePullPolicy: Always
     port: 5556
+    metricRules:
+      - pattern: ".*"
 
     ## Resources configuration for the JMX exporter container.
     ## See the `resources` documentation above for details.
     resources:
       requests:
-        cpu: 100m
-        memory: 500Mi
+        cpu: 10m
+        memory: 100Mi
       limits:
-        cpu: 300m
-        memory: 2G
+        cpu: 100m
+        memory: 100Mi
 
 # priorityClass
 # priorityClassName: ""
