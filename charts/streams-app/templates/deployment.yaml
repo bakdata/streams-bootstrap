@@ -92,8 +92,6 @@ spec:
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-          args:
-            - -javaagent:/jmx/jmx_prometheus_javaagent.jar={{ .Values.prometheus.jmx.port }}:/etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
@@ -186,8 +184,7 @@ spec:
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
-                -Dcom.sun.management.jmxremote.authenticate=false
-                -Dcom.sun.management.jmxremote.ssl=false
+                -javaagent:/jmx/jmx_prometheus_javaagent.jar={{ .Values.prometheus.jmx.port }}:/etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
