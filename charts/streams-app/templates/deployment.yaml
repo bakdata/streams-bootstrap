@@ -231,6 +231,7 @@ spec:
               value: "-XX:MaxRAMPercentage=90.0"
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
+              name: prometheus
           resources:
 {{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
           volumeMounts:
