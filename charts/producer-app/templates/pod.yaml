@@ -12,6 +12,7 @@ metadata:
 {{- end }}
   labels:
     app: {{ template "producer-app.name" . }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
     release: {{ .Release.Name }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
