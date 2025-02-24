@@ -15,5 +15,5 @@ data:
     lowercaseOutputName: true
     lowercaseOutputLabelNames: true
     ssl: false
-    rules: {{ toYaml .Values.jmx.metricRules | nindent 4 }}
+    rules: {{ toYaml .Values.prometheus.jmx.metricRules | nindent 4 }}
 {{- end }}

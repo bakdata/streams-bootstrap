@@ -103,10 +103,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
           {{- end }}
-          {{- if .Values.prometheus.jmx.enabled }}
-            - name: KAFKA_JMX_PORT
-              value: "{{ .Values.jmx.port }}"
-          {{- end }}
           {{- if not .Values.statefulSet }}
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
               value: "true"

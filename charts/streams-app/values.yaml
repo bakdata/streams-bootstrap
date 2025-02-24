@@ -93,8 +93,6 @@ readinessProbe: {}
 ## ref: https://kafka.apache.org/documentation/#connect_monitoring
 jmx:
   port: 5555
-  metricRules:
-    - pattern: ".*"
 
 autoscaling:
   enabled: false
@@ -154,6 +152,8 @@ prometheus:
     image: bitnami/jmx-exporter
     imageTag: 1.1.0
     port: 5556
+    metricRules:
+      - pattern: ".*"
 
     ## Resources configuration for the JMX exporter container.
     ## See the `resources` documentation above for details.
