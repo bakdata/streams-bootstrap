@@ -36,9 +36,9 @@ spec:
   {{- end }}
   containers:
     - name: {{ include "producer-app.fullname" . }}
-    image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-    imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-    resources:
+      image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+      imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+      resources:
 {{ toYaml .Values.resources | indent 6 }}
     env:
       - name: ENV_PREFIX
