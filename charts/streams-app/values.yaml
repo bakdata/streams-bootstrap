@@ -1,4 +1,5 @@
-nameOverride: bakdata-streams-app
+nameOverride: ""
+fullnameOverride: ""
 
 replicaCount: 1
 
