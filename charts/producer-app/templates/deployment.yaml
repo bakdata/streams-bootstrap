@@ -10,18 +10,15 @@ metadata:
   name: {{ template "producer-app.fullname" . }}
   {{- include "producer-app.annotations" . }}
   labels:
-    app: {{ template "producer-app.name" . }}
-    chart: {{ template "producer-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "producer-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "producer-app.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "producer-app.selectorLabels" . | nindent 6 }}
   template:
 {{ include "producer-app.podTemplate" . | indent 4 }}
 {{- end }}

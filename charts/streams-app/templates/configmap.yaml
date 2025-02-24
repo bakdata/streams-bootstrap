@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: {{ template "streams-app.name" . }}
   {{- include "streams-app.annotations" . }}
+  labels:
+    {{- include "streams-app.labels" . | nindent 4 }}
 data:
   {{- range $key, $value := .Values.files }}
   {{ $key }}: {{ $value.content | quote }}

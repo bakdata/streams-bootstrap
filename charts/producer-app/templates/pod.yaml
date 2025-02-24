@@ -11,8 +11,7 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    app: {{ template "producer-app.name" . }}
-    release: {{ .Release.Name }}
+    {{- include "producer-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
     {{- end }}

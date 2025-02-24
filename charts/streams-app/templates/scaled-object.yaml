@@ -8,6 +8,8 @@ kind: ScaledObject
 metadata:
   name: {{ template "streams-app.fullname" . }}-so
   {{- include "streams-app.annotations" . }}
+  labels:
+    {{- include "streams-app.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     {{- if .Capabilities.APIVersions.Has "apps/v1" }}

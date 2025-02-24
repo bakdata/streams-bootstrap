@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: {{ template "producer-app.name" . }}
   {{- include "producer-app.annotations" . }}
+  labels:
+    {{- include "producer-app.labels" . | nindent 4 }}
 data:
   {{- range $key, $value := .Values.files }}
   {{ $key }}: {{ $value.content | quote }}

@@ -5,11 +5,9 @@ metadata:
   name: {{ template "producer-app.fullname" . }}
   {{- include "producer-app.annotations" . }}
   labels:
-    app: {{ template "producer-app.name" . }}
-    chart: {{ template "producer-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "producer-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   ttlSecondsAfterFinished: 30
@@ -22,8 +20,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "producer-app.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "producer-app.labels" . | nindent 8 }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}

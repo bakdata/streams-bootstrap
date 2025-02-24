@@ -5,10 +5,7 @@ metadata:
   name: {{ template "streams-app.name" . }}-jmx-configmap
   {{- include "streams-app.annotations" . }}
   labels:
-    app: {{ template "streams-app.name" . }}
-    chart: {{ template "streams-app.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "streams-app.labels" . | nindent 4 }}
 data:
   jmx-kafka-streams-app-prometheus.yml: |+
     jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:{{ .Values.jmx.port }}/jmxrmi

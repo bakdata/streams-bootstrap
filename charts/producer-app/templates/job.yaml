@@ -15,11 +15,9 @@ metadata:
   name: {{ template "producer-app.fullname" . }}
   {{- include "producer-app.annotations" . }}
   labels:
-    app: {{ template "producer-app.name" . }}
-    chart: {{ template "producer-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "producer-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.schedule }}
@@ -29,6 +27,13 @@ spec:
   failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
   concurrencyPolicy: Replace
   jobTemplate:
+    metadata:
+      {{- include "producer-app.annotations" . }}
+      labels:
+        {{- include "producer-app.labels" . | nindent 8 }}
+        {{- range $key, $value := .Values.labels }}
+        {{ $key | quote }}: {{ $value | quote }}
+        {{- end }}
     spec:
       {{- if .Values.ttlSecondsAfterFinished }}
       ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}

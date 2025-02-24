@@ -17,11 +17,9 @@ metadata:
   name: {{ template "streams-app.fullname" . }}
   {{- include "streams-app.deployment-annotations" . }}
   labels:
-    app: {{ template "streams-app.name" . }}
-    chart: {{ template "streams-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "streams-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
@@ -33,8 +31,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ template "streams-app.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "streams-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations .Values.files }}
@@ -51,8 +48,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "streams-app.labels" . | nindent 8 }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
