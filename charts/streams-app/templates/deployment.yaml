@@ -19,6 +19,7 @@ metadata:
   labels:
     app: {{ template "streams-app.name" . }}
     chart: {{ template "streams-app.chart" . }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
     release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key }}: {{ $value }}
@@ -37,15 +38,10 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations .Values.files }}
+    {{- if or .Values.podAnnotations .Values.files }}
       annotations:
       {{- if .Values.files }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      {{- end }}
-      {{- if .Values.prometheus.jmx.enabled }}
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
       {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
@@ -53,6 +49,7 @@ spec:
     {{- end }}
       labels:
         app: {{ template "streams-app.name" . }}
+        streams-bootstrap/kind: {{ .Chart.Name }}
         release: {{ .Release.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}

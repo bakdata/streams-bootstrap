@@ -88,12 +88,23 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 | Parameter                        | Description                                                                                                    | Default                                    |
 |----------------------------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------|
-| `prometheus.jmx.enabled`         | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `true`                                     |
+| `prometheus.jmx.enabled`         | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `false`                                    |
 | `prometheus.jmx.image`           | Docker Image for Prometheus JMX Exporter container.                                                            | `bitnami/jmx-exporter`                     |
-| `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `latest`                                   |
+| `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `1.1.0`                                    |
 | `prometheus.jmx.imagePullPolicy` | Docker Image Pull Policy for Prometheus JMX Exporter container.                                                | `IfNotPresent`                             |
 | `prometheus.jmx.port`            | JMX Exporter Port which exposes metrics in Prometheus format for scraping.                                     | `5556`                                     |
 | `prometheus.jmx.resources`       | JMX Exporter resources configuration.                                                                          | see [values.yaml](values.yaml) for details |
+
+Prometheus can scrape your metrics by deploying
+a [PodMonitor](https://github.com/bakdata/streams-bootstrap/blob/master/monitoring/pod_monitor.yaml) or adding pod
+annotations
+
+```yaml
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: 5556 # needs to match prometheus.jmx.port
+```
 
 ### Auto-Scaling
 

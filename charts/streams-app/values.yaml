@@ -150,9 +150,9 @@ prometheus:
   ## JMX Exporter Configuration
   ## ref: https://github.com/prometheus/jmx_exporter
   jmx:
-    enabled: true
+    enabled: false
     image: bitnami/jmx-exporter
-    imageTag: latest
+    imageTag: 1.1.0
     port: 5556
 
     ## Resources configuration for the JMX exporter container.
