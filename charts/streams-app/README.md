@@ -79,9 +79,11 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### JMX Configuration
 
-| Parameter  | Description                                       | Default |
-|------------|---------------------------------------------------|---------|
-| `jmx.port` | The jmx port which JMX style metrics are exposed. | `5555`  |
+| Parameter     | Description                                                             | Default     |
+|---------------|-------------------------------------------------------------------------|-------------|
+| `jmx.enabled` | Whether or not to open JMX port for remote access (e.g., for debugging) | `false`     |
+| `jmx.port`    | The JMX port which JMX style metrics are exposed.                       | `5555`      |
+| `jmx.host`    | The host to use for JMX remote access.                                  | `localhost` |
 
 ### Prometheus JMX Exporter Configuration
 
