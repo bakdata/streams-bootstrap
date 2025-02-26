@@ -1,8 +1,15 @@
 # Change Log
 
-## [3.6.0](https://github.com/bakdata/streams-bootstrap/tree/3.6.0) (2025-02-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.0...3.6.0)
+## [3.6.1](https://github.com/bakdata/streams-bootstrap/tree/3.6.1) (2025-02-26)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.1...3.6.1)
 
+
+## [3.6.1](https://github.com/bakdata/streams-bootstrap/tree/3.6.1) (2025-02-26)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.0...3.6.1)
+
+**Merged pull requests:**
+
+- Configure JMX for remote access [\#282](https://github.com/bakdata/streams-bootstrap/pull/282) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.6.0](https://github.com/bakdata/streams-bootstrap/tree/3.6.0) (2025-02-24)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.2...3.6.0)
