@@ -174,6 +174,10 @@ spec:
               value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
                 -Dcom.sun.management.jmxremote.authenticate=false
                 -Dcom.sun.management.jmxremote.ssl=false
+                {{- if .Values.jmx.enabled }}
+                -Djava.rmi.server.hostname={{ .Values.jmx.host }}
+                -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.port }}
+                {{- end }}
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
@@ -207,7 +211,7 @@ spec:
               protocol: {{ .protocol | quote }}
               {{- end }}
             {{- end }}
-            {{- if .Values.prometheus.jmx.enabled }}
+            {{- if .Values.jmx.enabled }}
             - containerPort: {{ .Values.jmx.port }}
               name: jmx
             {{- end }}

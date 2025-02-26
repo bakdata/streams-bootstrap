@@ -92,7 +92,9 @@ readinessProbe: {}
 ## Kafka Connect JMX Settings
 ## ref: https://kafka.apache.org/documentation/#connect_monitoring
 jmx:
+  enabled: false
   port: 5555
+  host: localhost
 
 autoscaling:
   enabled: false
