@@ -6,6 +6,9 @@ metadata:
   {{- include "streams-app.annotations" . }}
   labels:
     {{- include "streams-app.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key | quote }}: {{ $value | quote }}
+    {{- end }}
 data:
   jmx-kafka-streams-app-prometheus.yml: |+
     jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:{{ .Values.jmx.port }}/jmxrmi
