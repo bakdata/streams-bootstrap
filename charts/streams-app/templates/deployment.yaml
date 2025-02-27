@@ -198,7 +198,7 @@ spec:
               mountPath: /tmp/kafka-streams
             {{- end }}
         {{- end }}
-        {{- if or (.Values.prometheus.jmx.enabled) (.Values.ports) }}
+        {{- if or (.Values.jmx.enabled) (.Values.ports) }}
           ports:
             {{- range .Values.ports }}
             - containerPort: {{ .containerPort }}
