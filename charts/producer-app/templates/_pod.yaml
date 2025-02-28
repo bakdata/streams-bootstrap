@@ -11,9 +11,8 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    app: {{ template "producer-app.name" . }}
+    {{- include "producer-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
-    release: {{ .Release.Name }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
     {{- end }}
@@ -37,7 +36,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
   {{- end }}
   containers:
-  - name: {{ template "producer-app.name" . }}
+  - name: "kafka-app"
     image: "{{ .Values.image }}:{{ .Values.imageTag }}"
     imagePullPolicy: "{{ .Values.imagePullPolicy }}"
     resources:
@@ -69,7 +68,7 @@ spec:
       - name: "{{ $key }}"
         valueFrom:
           secretKeyRef:
-            name: {{ template "producer-app.fullname" $ }}
+            name: {{ include "producer-app.fullname" . }}
             key: "{{ $key }}"
         {{- end }}
         {{- range $key, $value := .Values.secretRefs }}
@@ -129,7 +128,7 @@ spec:
     {{- if .Values.files }}
     - name: config
       configMap:
-        name: {{ template "producer-app.name" . }}
+        name: {{ include "producer-app.fullname" . }}
     {{- end }}
     {{- range .Values.secretFilesRefs }}
     - name: {{ .volume }}
