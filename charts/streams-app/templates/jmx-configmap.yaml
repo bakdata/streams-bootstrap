@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "streams-app.fullname" . }}-jmx-configmap
+  name: {{ include "streams-app.fullname" . }}-jmx
   {{- include "streams-app.annotations" . }}
   labels:
     {{- include "streams-app.labels" . | nindent 4 }}

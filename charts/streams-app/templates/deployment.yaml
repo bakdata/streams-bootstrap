@@ -244,7 +244,7 @@ spec:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ include "streams-app.fullname" . }}-jmx-configmap
+            name: {{ include "streams-app.fullname" . }}-jmx
         {{- end }}
         {{- if .Values.files }}
         - name: config
