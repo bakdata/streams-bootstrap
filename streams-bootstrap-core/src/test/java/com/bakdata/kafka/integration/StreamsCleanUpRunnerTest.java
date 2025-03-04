@@ -25,6 +25,7 @@
 package com.bakdata.kafka.integration;
 
 
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -577,7 +578,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final StreamsRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
-            StreamsRunnerTest.run(runner);
+            runAsync(runner);
             // Wait until stream application has consumed all data
             this.awaitActive(executableApp);
             // should throw exception because consumer group is still active
@@ -652,7 +653,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private void run(final ExecutableStreamsApp<?> app) {
         try (final StreamsRunner runner = app.createRunner()) {
-            StreamsRunnerTest.run(runner);
+            runAsync(runner);
             // Wait until stream application has consumed all data
             this.awaitProcessing(app);
         }
