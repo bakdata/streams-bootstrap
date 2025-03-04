@@ -2,14 +2,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "streams-app.fullname" . }}
+  name: {{ include "streams-app.fullname" . }}
   {{- include "streams-app.annotations" . }}
   labels:
-    app: {{ template "streams-app.name" . }}
-    chart: {{ template "streams-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "streams-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   ttlSecondsAfterFinished: 30
@@ -22,8 +20,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "streams-app.labels" . | nindent 8 }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
@@ -45,7 +42,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app.name" . }}
+        - name: "kafka-app"
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -108,7 +105,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app.fullname" $ }}
+                  name: {{ include "streams-app.fullname" . }}
                   key: "{{ $key }}"
             {{- end }}
             {{- range $key, $value := .Values.secretRefs }}
@@ -152,7 +149,7 @@ spec:
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "streams-app.name" . }}
+            name: {{ include "streams-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}

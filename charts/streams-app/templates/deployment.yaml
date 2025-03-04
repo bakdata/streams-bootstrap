@@ -14,19 +14,17 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ template "streams-app.fullname" . }}
+  name: {{ include "streams-app.fullname" . }}
   {{- include "streams-app.deployment-annotations" . }}
   labels:
-    app: {{ template "streams-app.name" . }}
-    chart: {{ template "streams-app.chart" . }}
+    {{- include "streams-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
-    release: {{ .Release.Name }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
-  serviceName: {{ template "streams-app.name" . }}
+  serviceName: {{ include "streams-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
@@ -34,8 +32,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ template "streams-app.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "streams-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- if or .Values.podAnnotations .Values.files }}
@@ -48,9 +45,8 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app.name" . }}
+        {{- include "streams-app.labels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
-        release: {{ .Release.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
@@ -75,7 +71,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app.name" . }}
+        - name: "kafka-app"
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -152,7 +148,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app.fullname" $ }}
+                  name: {{ include "streams-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.secretRefs }}
@@ -202,7 +198,7 @@ spec:
               mountPath: /tmp/kafka-streams
             {{- end }}
         {{- end }}
-        {{- if or (.Values.prometheus.jmx.enabled) (.Values.ports) }}
+        {{- if or (.Values.jmx.enabled) (.Values.ports) }}
           ports:
             {{- range .Values.ports }}
             - containerPort: {{ .containerPort }}
@@ -248,12 +244,12 @@ spec:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ template "streams-app.name" . }}-jmx-configmap
+            name: {{ include "streams-app.fullname" . }}-jmx
         {{- end }}
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "streams-app.name" . }}
+            name: {{ include "streams-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
