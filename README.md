@@ -80,7 +80,7 @@ public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
 
           // your topology
 
-          input.toOutput();
+          input.toOutputTopic();
         }
 
         @Override
