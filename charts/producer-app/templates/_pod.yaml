@@ -11,7 +11,7 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    {{- include "producer-app.labels" . | nindent 4 }}
+    {{- include "producer-app.selectorLabels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}

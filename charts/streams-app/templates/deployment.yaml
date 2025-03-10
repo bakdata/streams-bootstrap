@@ -45,7 +45,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        {{- include "streams-app.labels" . | nindent 8 }}
+        {{- include "streams-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}

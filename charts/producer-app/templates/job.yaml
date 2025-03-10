@@ -31,7 +31,7 @@ spec:
     metadata:
       {{- include "producer-app.annotations" . | indent 4 }}
       labels:
-        {{- include "producer-app.labels" . | nindent 8 }}
+        {{- include "producer-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.labels }}
         {{ $key | quote }}: {{ $value | quote }}
