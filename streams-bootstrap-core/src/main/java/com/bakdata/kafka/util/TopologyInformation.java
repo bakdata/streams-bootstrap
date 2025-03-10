@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyDescription;
 import org.apache.kafka.streams.TopologyDescription.Node;
 import org.apache.kafka.streams.TopologyDescription.Processor;
 import org.apache.kafka.streams.TopologyDescription.Sink;
@@ -65,46 +66,31 @@ public class TopologyInformation {
      * @param streamsId unique app id to represent auto-created topics
      */
     public TopologyInformation(final Topology topology, final String streamsId) {
-        this.nodes = getNodes(topology);
+        this(topology.describe(), streamsId);
+    }
+
+    /**
+     * Create a new TopologyInformation of a topology and the unique app id
+     *
+     * @param description topology description to extract nodes from
+     * @param streamsId unique app id to represent auto-created topics
+     */
+    public TopologyInformation(final TopologyDescription description, final String streamsId) {
+        this.nodes = getNodes(description);
         this.streamsId = streamsId;
     }
 
-    private static List<Node> getNodes(final Topology topology) {
-        return topology.describe().subtopologies()
+    private static List<Node> getNodes(final TopologyDescription description) {
+        return description.subtopologies()
                 .stream()
                 .flatMap(subtopology -> subtopology.nodes().stream())
                 .collect(Collectors.toList());
     }
 
-    private static Stream<TopicSubscription> getAllSources(final Collection<Node> nodes) {
-        return nodes.stream()
-                .filter(Source.class::isInstance)
-                .map(Source.class::cast)
-                .map(TopologyInformation::getAllSources);
-    }
-
-    private static TopicSubscription getAllSources(final Source source) {
+    private static TopicSubscription toSubscription(final Source source) {
         final Set<String> topicSet = source.topicSet();
         return topicSet == null ? new PatternTopicSubscription(source.topicPattern())
                 : new DirectTopicSubscription(topicSet);
-    }
-
-    private static Stream<String> getAllSinks(final Collection<Node> nodes) {
-        return nodes.stream()
-                .filter(Sink.class::isInstance)
-                .map(Sink.class::cast)
-                .map(Sink::topic);
-    }
-
-    private static Stream<String> getAllStores(final Collection<Node> nodes) {
-        return getAllProcessors(nodes)
-                .flatMap(processor -> processor.stores().stream());
-    }
-
-    private static Stream<Processor> getAllProcessors(final Collection<Node> nodes) {
-        return nodes.stream()
-                .filter(Processor.class::isInstance)
-                .map(Processor.class::cast);
     }
 
     private static Stream<String> createPseudoTopics(final String topic) {
@@ -146,7 +132,7 @@ public class TopologyInformation {
      * @return list of external sink topics
      */
     public List<String> getExternalSinkTopics() {
-        return getAllSinks(this.nodes)
+        return this.getAllTopics()
                 .filter(this::isExternalTopic)
                 .collect(Collectors.toList());
     }
@@ -159,7 +145,7 @@ public class TopologyInformation {
      */
     public List<String> getExternalSourceTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
-        return getAllSources(this.nodes)
+        return this.getAllSubscriptions()
                 .map(subscription -> subscription.resolveTopics(allTopics))
                 .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
@@ -176,12 +162,86 @@ public class TopologyInformation {
      */
     public List<String> getIntermediateTopics(final Collection<String> allTopics) {
         final List<String> sinks = this.getExternalSinkTopics();
-        return getAllSources(this.nodes)
+        return this.getAllSubscriptions()
                 .map(subscription -> subscription.resolveTopics(allTopics))
                 .flatMap(Collection::stream)
                 .filter(this::isExternalTopic)
                 .filter(sinks::contains)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve all stores associated with this topology
+     *
+     * @return list of stores
+     */
+    public List<String> getStores() {
+        return this.getAllStores()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve all processors associated with this topology
+     *
+     * @return list of processors
+     */
+    public List<Processor> getProcessors() {
+        return this.getAllProcessors()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve all sources associated with this topology
+     *
+     * @return list of sources
+     */
+    public List<Source> getSources() {
+        return this.getAllSources()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve all sinks associated with this topology
+     *
+     * @return list of sinks
+     */
+    public List<Sink> getSinks() {
+        return this.getAllSinks()
+                .collect(Collectors.toList());
+    }
+
+    private Stream<TopicSubscription> getAllSubscriptions() {
+        return this.getAllSources()
+                .map(TopologyInformation::toSubscription);
+    }
+
+    private Stream<Source> getAllSources() {
+        return this.nodes.stream()
+                .filter(Source.class::isInstance)
+                .map(Source.class::cast);
+    }
+
+    private Stream<String> getAllTopics() {
+        return this.getAllSinks()
+                .map(Sink::topic);
+    }
+
+    private Stream<Sink> getAllSinks() {
+        return this.nodes.stream()
+                .filter(Sink.class::isInstance)
+                .map(Sink.class::cast);
+    }
+
+    private Stream<String> getAllStores() {
+        return this.getAllProcessors()
+                .flatMap(processor -> processor.stores().stream())
+                .distinct();
+    }
+
+    private Stream<Processor> getAllProcessors() {
+        return this.nodes.stream()
+                .filter(Processor.class::isInstance)
+                .map(Processor.class::cast);
     }
 
     private boolean isInternalTopic(final String topic) {
@@ -207,19 +267,19 @@ public class TopologyInformation {
     }
 
     private Stream<String> getInternalSinks() {
-        return getAllSinks(this.nodes)
+        return this.getAllTopics()
                 .filter(this::isInternalTopic)
                 .flatMap(topic -> Seq.of(topic).concat(createPseudoTopics(topic)))
                 .map(topic -> String.format("%s-%s", this.streamsId, topic));
     }
 
     private Stream<String> getChangelogTopics() {
-        return getAllStores(this.nodes)
+        return this.getAllStores()
                 .map(store -> String.format("%s-%s%s", this.streamsId, store, CHANGELOG_SUFFIX));
     }
 
     private Stream<String> getRepartitionTopics() {
-        return getAllProcessors(this.nodes)
+        return this.getAllProcessors()
                 // internal repartitioning creates one processor that ends with "-repartition-filter",
                 // one sink node, and one source node
                 .filter(processor -> processor.name().endsWith(REPARTITION_SUFFIX + FILTER_SUFFIX))
