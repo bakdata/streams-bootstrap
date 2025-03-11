@@ -1,6 +1,7 @@
 description = "Base classes to create standalone Java applications using picocli"
 
 plugins {
+    id("java-library")
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 

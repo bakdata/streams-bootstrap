@@ -1,6 +1,7 @@
 description = "Collection of commonly used modules when writing a Kafka Streams Application"
 
 plugins {
+    id("java-library")
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 
@@ -20,7 +21,8 @@ dependencies {
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
     implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1")
-    api(group = "com.bakdata.kafka", name = "error-handling-core", version = "1.6.1")
+    api(platform("com.bakdata.kafka:error-handling-bom:1.6.2-SNAPSHOT"))
+    api(group = "com.bakdata.kafka", name = "error-handling-core")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
