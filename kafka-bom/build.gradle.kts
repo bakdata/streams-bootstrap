@@ -34,7 +34,6 @@ dependencies {
         api(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-streams-protobuf-serde", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-streams-json-schema-serde", version = confluentVersion)
-        api(group = "io.confluent", name = "kafka-connect-schema-converter", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-connect-avro-converter", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-connect-protobuf-converter", version = confluentVersion)
         api(group = "io.confluent", name = "kafka-connect-json-schema-converter", version = confluentVersion)
