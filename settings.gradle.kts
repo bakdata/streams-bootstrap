@@ -12,5 +12,5 @@ include(
         ":streams-bootstrap-large-messages",
         ":streams-bootstrap-cli",
         ":streams-bootstrap-bom",
-        ":kafka-bom",
+        ":streams-bootstrap-kafka-bom",
 )
