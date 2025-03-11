@@ -33,7 +33,7 @@ import org.apache.kafka.streams.kstream.Named;
  * @param <KR> type of keys in the processed {@link KStreamX}
  * @param <VR> type of values in the processed {@link KStreamX}
  */
-public interface KErrorStream<K, V, KR, VR> {
+public interface KErrorStreamX<K, V, KR, VR> {
 
     /**
      * Get the stream of successfully processed values

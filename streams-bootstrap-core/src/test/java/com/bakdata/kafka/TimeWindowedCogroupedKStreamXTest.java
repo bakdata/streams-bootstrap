@@ -38,7 +38,7 @@ class TimeWindowedCogroupedKStreamXTest {
     void shouldAggregate() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final CogroupedKStreamX<String, String> cogrouped =
@@ -74,7 +74,7 @@ class TimeWindowedCogroupedKStreamXTest {
     void shouldAggregateNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final CogroupedKStreamX<String, String> cogrouped =
@@ -111,7 +111,7 @@ class TimeWindowedCogroupedKStreamXTest {
     void shouldAggregateUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -154,7 +154,7 @@ class TimeWindowedCogroupedKStreamXTest {
     void shouldAggregateNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();

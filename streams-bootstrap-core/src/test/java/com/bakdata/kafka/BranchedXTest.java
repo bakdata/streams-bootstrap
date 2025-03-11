@@ -36,7 +36,7 @@ class BranchedXTest {
     void shouldUseName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split(Named.as("split-"))
                         .defaultBranch(BranchedX.as("default"));
@@ -60,7 +60,7 @@ class BranchedXTest {
     void shouldUseNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split(Named.as("split-"))
                         .defaultBranch(BranchedX.<String, String>withFunction(Function.identity()).withName("default"));
@@ -84,7 +84,7 @@ class BranchedXTest {
     void shouldUseConsumer() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.split()
                         .defaultBranch(BranchedX.withConsumer(KStreamX::toOutputTopic));
@@ -107,7 +107,7 @@ class BranchedXTest {
     void shouldUseFunction() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split()
                         .defaultBranch(BranchedX.withFunction(s -> s.mapValues(v -> "baz")));

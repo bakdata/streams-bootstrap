@@ -30,9 +30,9 @@ import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.ProducedX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
@@ -50,7 +50,7 @@ public class MirrorWithNonDefaultSerde implements StreamsApp {
     }
 
     @Override
-    public void buildTopology(final TopologyBuilder builder) {
+    public void buildTopology(final StreamsBuilderX builder) {
         final Preconfigured<Serde<TestRecord>> valueSerde = newValueSerde();
         final Preconfigured<Serde<TestRecord>> keySerde = newKeySerde();
         final KStreamX<TestRecord, TestRecord> input =

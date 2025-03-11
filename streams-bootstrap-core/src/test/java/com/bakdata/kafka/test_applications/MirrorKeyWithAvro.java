@@ -29,7 +29,7 @@ import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
+import com.bakdata.kafka.StreamsBuilderX;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -37,7 +37,7 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 @NoArgsConstructor
 public class MirrorKeyWithAvro implements StreamsApp {
     @Override
-    public void buildTopology(final TopologyBuilder builder) {
+    public void buildTopology(final StreamsBuilderX builder) {
         final KStreamX<TestRecord, String> input = builder.streamInput();
         input.toOutputTopic();
     }

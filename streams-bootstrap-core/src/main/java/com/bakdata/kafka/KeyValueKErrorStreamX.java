@@ -29,26 +29,26 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.kstream.Named;
 
 @RequiredArgsConstructor
-class ValueKErrorStream<K, V, VR> implements KErrorStream<K, V, K, VR> {
-    private final @NonNull KStreamX<K, ProcessedValue<V, VR>> stream;
+class KeyValueKErrorStreamX<K, V, KR, VR> implements KErrorStreamX<K, V, KR, VR> {
+    private final @NonNull KStreamX<KR, ProcessedKeyValue<K, V, VR>> stream;
 
     @Override
-    public KStreamX<K, VR> values() {
-        return this.stream.flatMapValues(ProcessedValue::getValues);
+    public KStreamX<KR, VR> values() {
+        return this.stream.flatMapValues(ProcessedKeyValue::getValues);
     }
 
     @Override
-    public KStreamX<K, VR> values(final Named named) {
-        return this.stream.flatMapValues(ProcessedValue::getValues, named);
+    public KStreamX<KR, VR> values(final Named named) {
+        return this.stream.flatMapValues(ProcessedKeyValue::getValues, named);
     }
 
     @Override
     public KStreamX<K, ProcessingError<V>> errors() {
-        return this.stream.flatMapValues(ProcessedValue::getErrors);
+        return this.stream.flatMap(ProcessedKeyValue::getErrors);
     }
 
     @Override
     public KStreamX<K, ProcessingError<V>> errors(final Named named) {
-        return this.stream.flatMapValues(ProcessedValue::getErrors, named);
+        return this.stream.flatMap(ProcessedKeyValue::getErrors, named);
     }
 }

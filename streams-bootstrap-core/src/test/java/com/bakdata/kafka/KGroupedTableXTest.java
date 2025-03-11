@@ -36,7 +36,7 @@ class KGroupedTableXTest {
     void shouldCount() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k));
                 final KTableX<String, Long> counted = grouped.count();
@@ -63,7 +63,7 @@ class KGroupedTableXTest {
     void shouldCountNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k));
                 final KTableX<String, Long> counted = grouped.count(Named.as("count"));
@@ -90,7 +90,7 @@ class KGroupedTableXTest {
     void shouldCountUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped =
@@ -122,7 +122,7 @@ class KGroupedTableXTest {
     void shouldCountNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped =
@@ -155,7 +155,7 @@ class KGroupedTableXTest {
     void shouldReduce() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k));
                 final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2,
@@ -189,7 +189,7 @@ class KGroupedTableXTest {
     void shouldReduceUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped =
@@ -230,7 +230,7 @@ class KGroupedTableXTest {
     void shouldReduceNamedMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped =
@@ -271,7 +271,7 @@ class KGroupedTableXTest {
     void shouldAggregate() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k));
                 final KTableX<String, String> reduced =
@@ -305,7 +305,7 @@ class KGroupedTableXTest {
     void shouldAggregateNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k));
                 final KTableX<String, String> reduced =
@@ -340,7 +340,7 @@ class KGroupedTableXTest {
     void shouldAggregateUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped =
@@ -381,7 +381,7 @@ class KGroupedTableXTest {
     void shouldAggregateNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped =

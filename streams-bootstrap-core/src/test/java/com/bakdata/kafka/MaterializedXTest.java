@@ -74,7 +74,7 @@ class MaterializedXTest {
     void shouldUseKeySerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<Long, String> table = builder.table("input", MaterializedX.keySerde(Serdes.Long()));
                 table.toStream().to("output", ProducedX.keySerde(Serdes.Long()));
             }
@@ -96,7 +96,7 @@ class MaterializedXTest {
     void shouldUseKeySerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<Long, String> table = builder.table("input",
                         MaterializedX.<Long, String, KeyValueStore<Bytes, byte[]>>as("store")
                                 .withKeySerde(Serdes.Long()));
@@ -120,7 +120,7 @@ class MaterializedXTest {
     void shouldUseValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, Long> table = builder.table("input", MaterializedX.valueSerde(Serdes.Long()));
                 table.toStream().to("output", ProducedX.valueSerde(Serdes.Long()));
             }
@@ -142,7 +142,7 @@ class MaterializedXTest {
     void shouldUseValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, Long> table = builder.table("input",
                         MaterializedX.<String, Long, KeyValueStore<Bytes, byte[]>>as("store")
                                 .withValueSerde(Serdes.Long()));
@@ -166,7 +166,7 @@ class MaterializedXTest {
     void shouldUseSerdes() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<Long, Long> table =
                         builder.table("input", MaterializedX.with(Serdes.Long(), Serdes.Long()));
                 table.toStream().to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
@@ -191,7 +191,7 @@ class MaterializedXTest {
     void shouldUseName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input", MaterializedX.as("store"));
                 table.toStream().to("output");
             }
@@ -214,7 +214,7 @@ class MaterializedXTest {
     void shouldUseStoreType() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input", MaterializedX.as(StoreType.IN_MEMORY));
                 table.toStream().to("output");
             }
@@ -242,7 +242,7 @@ class MaterializedXTest {
     void shouldUseStoreTypeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input",
                         MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>keySerde(
                                 Preconfigured.defaultSerde()).withStoreType(StoreType.IN_MEMORY));
@@ -272,7 +272,7 @@ class MaterializedXTest {
     void shouldUseKeyValueStoreSupplier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input",
                         MaterializedX.as(Stores.inMemoryKeyValueStore("store")));
                 table.toStream().to("output");
@@ -297,7 +297,7 @@ class MaterializedXTest {
     void shouldUseWindowStoreSupplier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
@@ -327,7 +327,7 @@ class MaterializedXTest {
     void shouldUseSessionStoreSupplier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final SessionWindowedKStreamX<String, String> windowed =
@@ -357,7 +357,7 @@ class MaterializedXTest {
     void shouldDisableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input",
                         MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store")
                                 .withLoggingDisabled());
@@ -404,7 +404,7 @@ class MaterializedXTest {
     void shouldEnableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input",
                         MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store")
                                 .withLoggingEnabled(Map.of(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1")));
@@ -454,7 +454,7 @@ class MaterializedXTest {
     void shouldDisableCaching() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input",
                         MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store").withCachingDisabled());
                 table.toStream().to("output");
@@ -480,7 +480,7 @@ class MaterializedXTest {
     void shouldEnableCaching() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> table = builder.table("input",
                         MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store").withCachingEnabled());
                 table.toStream().to("output");
@@ -506,7 +506,7 @@ class MaterializedXTest {
     void shouldUseRetention() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
@@ -534,7 +534,7 @@ class MaterializedXTest {
 
     @Test
     void shouldThrowIfRetentionIsTooShort() {
-        final TopologyBuilder builder = new TopologyBuilder(StreamsTopicConfig.builder().build(), emptyMap());
+        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
         final KStreamX<String, String> input = builder.stream("input");
         final KGroupedStreamX<String, String> grouped = input.groupByKey();
         final TimeWindowedKStreamX<String, String> windowed =

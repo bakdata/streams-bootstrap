@@ -62,7 +62,7 @@ class KTableXTest {
     void shouldConvertToStream() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 input.toStream().to("output");
             }
@@ -82,7 +82,7 @@ class KTableXTest {
     void shouldConvertToStreamNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 input.toStream(Named.as("toStream")).to("output");
             }
@@ -104,7 +104,7 @@ class KTableXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 input.toStream(mapper).to("output");
             }
@@ -126,7 +126,7 @@ class KTableXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 input.toStream(mapper, Named.as("toStream")).to("output");
             }
@@ -149,7 +149,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(false);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> filtered = input.filter(predicate);
                 filtered.toStream().to("output");
@@ -177,7 +177,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(false);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> filtered = input.filter(predicate, Named.as("filter"));
                 filtered.toStream().to("output");
@@ -205,7 +205,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(false);
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> filtered = input.filter(predicate,
@@ -239,7 +239,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(false);
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> filtered = input.filter(predicate, Named.as("filter"),
@@ -273,7 +273,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(true);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> filtered = input.filterNot(predicate);
                 filtered.toStream().to("output");
@@ -301,7 +301,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(true);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> filtered = input.filterNot(predicate, Named.as("filter"));
                 filtered.toStream().to("output");
@@ -329,7 +329,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(true);
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> filtered = input.filterNot(predicate,
@@ -363,7 +363,7 @@ class KTableXTest {
         when(predicate.test("baz", "qux")).thenReturn(true);
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> filtered = input.filterNot(predicate, Named.as("filter"),
@@ -394,7 +394,7 @@ class KTableXTest {
     void shouldGroupBy() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KGroupedTableX<String, String> grouped =
                         input.groupBy((k, v) -> KeyValue.pair(v, k));
@@ -421,7 +421,7 @@ class KTableXTest {
     void shouldGroupByUsingGrouped() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedTableX<String, String> grouped = input.groupBy((k, v) -> KeyValue.pair(v, k),
@@ -453,7 +453,7 @@ class KTableXTest {
     void shouldJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.join(otherInput, (v1, v2) -> v1 + v2);
@@ -477,7 +477,7 @@ class KTableXTest {
     void shouldJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.join(otherInput, (v1, v2) -> v1 + v2, Named.as("join"));
@@ -501,7 +501,7 @@ class KTableXTest {
     void shouldJoinUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput = builder.table("other_input",
@@ -534,7 +534,7 @@ class KTableXTest {
     void shouldJoinNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput = builder.table("other_input",
@@ -567,7 +567,7 @@ class KTableXTest {
     void shouldLeftJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.leftJoin(otherInput,
@@ -595,7 +595,7 @@ class KTableXTest {
     void shouldLeftJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.leftJoin(otherInput,
@@ -623,7 +623,7 @@ class KTableXTest {
     void shouldLeftJoinUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput = builder.table("other_input",
@@ -659,7 +659,7 @@ class KTableXTest {
     void shouldLeftJoinNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput = builder.table("other_input",
@@ -697,7 +697,7 @@ class KTableXTest {
     void shouldOuterJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.outerJoin(otherInput,
@@ -725,7 +725,7 @@ class KTableXTest {
     void shouldOuterJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.outerJoin(otherInput,
@@ -753,7 +753,7 @@ class KTableXTest {
     void shouldOuterJoinUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput = builder.table("other_input",
@@ -790,7 +790,7 @@ class KTableXTest {
     void shouldOuterJoinNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput = builder.table("other_input",
@@ -830,7 +830,7 @@ class KTableXTest {
         when(mapper.apply("bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> mapped = input.mapValues(mapper);
                 mapped.toStream().to("output");
@@ -853,7 +853,7 @@ class KTableXTest {
         when(mapper.apply("bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("map"));
                 mapped.toStream().to("output");
@@ -876,7 +876,7 @@ class KTableXTest {
         when(mapper.apply("bar")).thenReturn("baz");
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> mapped =
@@ -905,7 +905,7 @@ class KTableXTest {
         when(mapper.apply("bar")).thenReturn("baz");
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("mapped"),
@@ -934,7 +934,7 @@ class KTableXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> mapped = input.mapValues(mapper);
                 mapped.toStream().to("output");
@@ -957,7 +957,7 @@ class KTableXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("map"));
                 mapped.toStream().to("output");
@@ -980,7 +980,7 @@ class KTableXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> mapped =
@@ -1009,7 +1009,7 @@ class KTableXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> mapped = input.mapValues(mapper, Named.as("mapped"),
@@ -1047,7 +1047,7 @@ class KTableXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> transformed = input.transformValues(transformer);
                 transformed.toStream().to("output");
@@ -1078,7 +1078,7 @@ class KTableXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> transformed = input.transformValues(transformer, Named.as("transform"));
                 transformed.toStream().to("output");
@@ -1109,7 +1109,7 @@ class KTableXTest {
                 };
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> transformed =
@@ -1147,7 +1147,7 @@ class KTableXTest {
                 };
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> transformed =
@@ -1185,7 +1185,7 @@ class KTableXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -1217,7 +1217,7 @@ class KTableXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -1250,7 +1250,7 @@ class KTableXTest {
                 };
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Serdes.String(),
                                 Serdes.String());
@@ -1288,7 +1288,7 @@ class KTableXTest {
                 };
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Serdes.String(),
                                 Serdes.String());
@@ -1316,7 +1316,7 @@ class KTableXTest {
     void shouldFKeyJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.join(otherInput, Function.identity(), (v1, v2) -> v1 + v2);
@@ -1340,7 +1340,7 @@ class KTableXTest {
     void shouldFKeyJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined =
@@ -1365,7 +1365,7 @@ class KTableXTest {
     void shouldFKeyJoinTableJoined() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined =
@@ -1390,7 +1390,7 @@ class KTableXTest {
     void shouldFKeyJoinUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -1423,7 +1423,7 @@ class KTableXTest {
     void shouldFKeyJoinNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -1457,7 +1457,7 @@ class KTableXTest {
     void shouldFKeyJoinTableJoinedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -1491,7 +1491,7 @@ class KTableXTest {
     void shouldLeftFKeyJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.leftJoin(otherInput, Function.identity(),
@@ -1519,7 +1519,7 @@ class KTableXTest {
     void shouldLeftFKeyJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.leftJoin(otherInput, Function.identity(),
@@ -1547,7 +1547,7 @@ class KTableXTest {
     void shouldLeftFKeyJoinTableJoined() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> otherInput = builder.table("other_input");
                 final KTableX<String, String> joined = input.leftJoin(otherInput, Function.identity(),
@@ -1575,7 +1575,7 @@ class KTableXTest {
     void shouldLeftFKeyJoinUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -1612,7 +1612,7 @@ class KTableXTest {
     void shouldLeftFKeyJoinNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -1649,7 +1649,7 @@ class KTableXTest {
     void shouldLeftFKeyJoinTableJoinedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -1686,7 +1686,7 @@ class KTableXTest {
     void shouldSuppress() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 final KTableX<String, String> suppressed =
                         input.suppress(Suppressed.untilTimeLimit(Duration.ofSeconds(60L), BufferConfig.unbounded()));
@@ -1709,7 +1709,7 @@ class KTableXTest {
 
     @Test
     void shouldHaveQueryableStoreName() {
-        final TopologyBuilder builder = new TopologyBuilder(StreamsTopicConfig.builder().build(), emptyMap());
+        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
         final KTableX<Object, Object> table = builder.stream("input").toTable(Materialized.as("store"));
         this.softly.assertThat(table.queryableStoreName()).isEqualTo("store");
     }

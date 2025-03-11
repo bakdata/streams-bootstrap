@@ -55,7 +55,7 @@ class RepartitionedXTest {
     void shouldUseKeySerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 final KStreamX<Long, String> repartitioned = input.repartition(RepartitionedX.keySerde(Serdes.Long()));
                 repartitioned.to("output", ProducedX.keySerde(Serdes.Long()));
@@ -78,7 +78,7 @@ class RepartitionedXTest {
     void shouldUseKeySerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 final KStreamX<Long, String> repartitioned =
                         input.repartition(RepartitionedX.<Long, String>as("repartition").withKeySerde(Serdes.Long()));
@@ -102,7 +102,7 @@ class RepartitionedXTest {
     void shouldUseValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 final KStreamX<String, Long> repartitioned =
                         input.repartition(RepartitionedX.valueSerde(Serdes.Long()));
@@ -126,7 +126,7 @@ class RepartitionedXTest {
     void shouldUseValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input =
                         builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 final KStreamX<String, Long> repartitioned =
@@ -151,7 +151,7 @@ class RepartitionedXTest {
     void shouldUseSerdes() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, Long> input =
                         builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
                 final KStreamX<Long, Long> repartitioned =
@@ -179,7 +179,7 @@ class RepartitionedXTest {
     void shouldUseName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition(RepartitionedX.as("repartition"));
                 repartitioned.to("output");
@@ -203,7 +203,7 @@ class RepartitionedXTest {
     void shouldUseNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition(
                         RepartitionedX.<String, String>keySerde(Preconfigured.defaultSerde()).withName("repartition"));
@@ -228,7 +228,7 @@ class RepartitionedXTest {
     void shouldUseStreamPartitioner() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition(RepartitionedX
                         .<String, String>streamPartitioner(
@@ -296,7 +296,7 @@ class RepartitionedXTest {
     void shouldUseStreamPartitionerModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition(
                         RepartitionedX.<String, String>as("repartition")
@@ -364,7 +364,7 @@ class RepartitionedXTest {
     void shouldUseNumberOfPartitions() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition(
                         RepartitionedX.<String, String>numberOfPartitions(2).withName("repartition"));
@@ -412,7 +412,7 @@ class RepartitionedXTest {
     void shouldUseNumberOfPartitionsModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned =
                         input.repartition(RepartitionedX.<String, String>as("repartition").withNumberOfPartitions(2));

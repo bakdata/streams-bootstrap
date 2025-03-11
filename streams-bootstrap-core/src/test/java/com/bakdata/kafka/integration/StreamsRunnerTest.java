@@ -39,11 +39,11 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
-import com.bakdata.kafka.TopologyBuilder;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -223,7 +223,7 @@ class StreamsRunnerTest extends KafkaTest {
     private static class ErrorApplication implements StreamsApp {
 
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
+        public void buildTopology(final StreamsBuilderX builder) {
             final KStreamX<String, String> input = builder.streamInput();
             input.map((k, v) -> {throw new RuntimeException("Error in map");})
                     .toOutputTopic();

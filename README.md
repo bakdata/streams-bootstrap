@@ -62,7 +62,7 @@ import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TopologyBuilder;
+import com.bakdata.kafka.StreamsBuilderX;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
@@ -75,7 +75,7 @@ public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
     public StreamsApp createApp() {
       return new StreamsApp() {
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
+        public void buildTopology(final StreamsBuilderX builder) {
           final KStreamX<String, String> input = builder.streamInput();
 
           // your topology

@@ -116,7 +116,7 @@ class ExecutableStreamsAppTest {
         }
 
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
+        public void buildTopology(final StreamsBuilderX builder) {
             builder.streamInput()
                     .toOutputTopic();
         }
