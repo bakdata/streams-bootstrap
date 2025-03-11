@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,18 @@
 
 package com.bakdata.kafka.test_applications;
 
+import com.bakdata.kafka.KStreamX;
+import com.bakdata.kafka.KTableX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.TimeWindows;
@@ -46,12 +46,12 @@ public class ComplexTopologyApplication implements StreamsApp {
     public static final String THROUGH_TOPIC = "through-topic";
 
     @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final KStream<String, TestRecord> input = builder.streamInput();
+    public void buildTopology(final StreamsBuilderX builder) {
+        final KStreamX<String, TestRecord> input = builder.streamInput();
 
         input.to(THROUGH_TOPIC);
-        final KStream<String, TestRecord> through = builder.getStreamsBuilder().stream(THROUGH_TOPIC);
-        final KTable<Windowed<String>, TestRecord> reduce = through
+        final KStreamX<String, TestRecord> through = builder.stream(THROUGH_TOPIC);
+        final KTableX<Windowed<String>, TestRecord> reduce = through
                 .groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(5L)))
                 .reduce((a, b) -> a);
@@ -61,7 +61,7 @@ public class ComplexTopologyApplication implements StreamsApp {
                 .groupByKey()
                 .count(Materialized.with(Serdes.String(), Serdes.Long()))
                 .toStream()
-                .to(builder.getTopics().getOutputTopic(), Produced.with(Serdes.String(), Serdes.Long()));
+                .toOutputTopic(Produced.with(Serdes.String(), Serdes.Long()));
     }
 
     @Override

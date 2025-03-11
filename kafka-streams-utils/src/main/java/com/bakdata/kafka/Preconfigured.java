@@ -28,6 +28,7 @@ import static java.util.Collections.emptyMap;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -116,10 +117,12 @@ public final class Preconfigured<T> {
     }
 
     private static <S extends Serde<T>, T> ConfigurableSerde<S, T> configurable(final S serde) {
+        Objects.requireNonNull(serde, "Use Preconfigured#defaultSerde instead");
         return new ConfigurableSerde<>(serde);
     }
 
     private static <S extends Serializer<T>, T> ConfigurableSerializer<S, T> configurable(final S serializer) {
+        Objects.requireNonNull(serializer, "Use Preconfigured#defaultSerializer instead");
         return new ConfigurableSerializer<>(serializer);
     }
 

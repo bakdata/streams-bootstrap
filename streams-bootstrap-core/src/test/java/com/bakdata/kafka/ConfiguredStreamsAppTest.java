@@ -170,7 +170,7 @@ class ConfiguredStreamsAppTest {
     private static class TestApplication implements StreamsApp {
 
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
+        public void buildTopology(final StreamsBuilderX builder) {
             throw new UnsupportedOperationException();
         }
 

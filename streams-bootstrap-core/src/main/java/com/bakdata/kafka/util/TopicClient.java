@@ -36,11 +36,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.OffsetSpec;
@@ -48,6 +51,8 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.ConfigResource.Type;
 import org.jooq.lambda.Seq;
 
 /**
@@ -83,6 +88,10 @@ public final class TopicClient implements AutoCloseable {
 
     private static KafkaAdminException failedToRetrieveTopicDescription(final String topicName, final Throwable e) {
         return new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
+    }
+
+    private static KafkaAdminException failedToRetrieveTopicConfig(final String topicName, final Throwable e) {
+        return new KafkaAdminException("Failed to retrieve config of topic " + topicName, e);
     }
 
     private static KafkaAdminException failedToListTopics(final Throwable ex) {
@@ -175,6 +184,33 @@ public final class TopicClient implements AutoCloseable {
                 .replicationFactor((short) replicationFactor)
                 .partitions(partitions.size())
                 .build();
+    }
+
+    /**
+     * Describes the current configuration of a Kafka topic.
+     *
+     * @param topicName the topic name
+     * @return settings of topic including number of partitions and replicationFactor
+     */
+    public Map<String, String> getConfig(final String topicName) {
+        try {
+            final ConfigResource configResource = new ConfigResource(Type.TOPIC, topicName);
+            final Map<ConfigResource, KafkaFuture<Config>> kafkaTopicMap =
+                    this.adminClient.describeConfigs(List.of(configResource)).values();
+            final Config config = kafkaTopicMap.get(configResource).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+            return config.entries().stream()
+                    .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw failedToRetrieveTopicConfig(topicName, e);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw failedToRetrieveTopicConfig(topicName, e);
+        } catch (final TimeoutException e) {
+            throw failedToRetrieveTopicConfig(topicName, e);
+        }
     }
 
     @Override
