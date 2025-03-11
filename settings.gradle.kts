@@ -1,7 +1,6 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
     }
 }
 
@@ -13,4 +12,5 @@ include(
         ":streams-bootstrap-large-messages",
         ":streams-bootstrap-cli",
         ":streams-bootstrap-bom",
+        ":kafka-bom",
 )
