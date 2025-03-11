@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.integration;
 
+import static com.bakdata.kafka.TestHelper.run;
 import static com.bakdata.kafka.TestTopologyFactory.createStreamsTestConfig;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,23 +33,23 @@ import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
+import com.bakdata.kafka.KStreamX;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TopologyBuilder;
+import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -60,7 +61,6 @@ import org.apache.kafka.streams.errors.MissingSourceTopicException;
 import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
-import org.apache.kafka.streams.kstream.KStream;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -84,15 +84,6 @@ class StreamsRunnerTest extends KafkaTest {
     private SoftAssertions softly;
     @TempDir
     private Path stateDir;
-
-    static Thread run(final StreamsRunner runner) {
-        // run in Thread because the application blocks indefinitely
-        final Thread thread = new Thread(runner);
-        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return thread;
-    }
 
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics,
             final Path stateDir) {
@@ -229,23 +220,13 @@ class StreamsRunnerTest extends KafkaTest {
                 .build());
     }
 
-    @Getter
-    private static class CapturingUncaughtExceptionHandler implements UncaughtExceptionHandler {
-        private Throwable lastException;
-
-        @Override
-        public void uncaughtException(final Thread t, final Throwable e) {
-            this.lastException = e;
-        }
-    }
-
     private static class ErrorApplication implements StreamsApp {
 
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
-            final KStream<String, String> input = builder.streamInput();
+        public void buildTopology(final StreamsBuilderX builder) {
+            final KStreamX<String, String> input = builder.streamInput();
             input.map((k, v) -> {throw new RuntimeException("Error in map");})
-                    .to(builder.getTopics().getOutputTopic());
+                    .toOutputTopic();
         }
 
         @Override

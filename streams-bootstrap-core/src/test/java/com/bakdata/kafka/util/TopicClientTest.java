@@ -33,6 +33,7 @@ import com.bakdata.kafka.ApacheKafkaContainerCluster;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.common.config.TopicConfig;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -97,6 +98,20 @@ class TopicClientTest {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
                         assertThat(info.getPartitions()).isEqualTo(5);
                     });
+        }
+    }
+
+    @Test
+    void shouldGetTopicConfig() {
+        try (final TopicClient client = this.createClient()) {
+            final Map<String, String> config = Map.of(
+                    TopicConfig.CLEANUP_POLICY_CONFIG,
+                    TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE
+            );
+            client.createTopic("foo", defaultTopicSettings().build(), config);
+            assertThat(client.getConfig("foo"))
+                    .containsEntry(TopicConfig.CLEANUP_POLICY_CONFIG,
+                            TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE);
         }
     }
 
