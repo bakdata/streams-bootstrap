@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    api(platform(project(":kafka-bom")))
+    api(platform(project(":streams-bootstrap-kafka-bom")))
     implementation(group = "org.apache.kafka", name = "kafka-tools")
 
     api(group = "org.apache.kafka", name = "kafka-streams")
