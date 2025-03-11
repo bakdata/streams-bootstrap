@@ -24,92 +24,45 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
+import static com.bakdata.kafka.KafkaTest.KAFKA_VERSION;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.ApacheKafkaContainerCluster;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.common.config.TopicConfig;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-class TopicClientTest extends KafkaTest {
+@Testcontainers
+class TopicClientClusterTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
+    @Container
+    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster(KAFKA_VERSION, 3, 2);
 
     @Test
-    void shouldNotFindTopic() {
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.exists("does_not_exist")).isFalse();
-        }
-    }
-
-    @Test
-    void shouldFindTopic() {
-        try (final TopicClient client = this.createClient()) {
-            client.createTopic("exists", defaultTopicSettings().build());
-            assertThat(client.exists("exists")).isTrue();
-        }
-    }
-
-    @Test
-    void shouldListTopics() {
-        try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings().build());
-            client.createTopic("bar", defaultTopicSettings().build());
-            assertThat(client.listTopics())
-                    .hasSize(2)
-                    .containsExactlyInAnyOrder("foo", "bar");
-        }
-    }
-
-    @Test
-    void shouldDeleteTopic() {
-        try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings().build());
-            assertThat(client.exists("foo")).isTrue();
-            client.deleteTopic("foo");
-            assertThat(client.listTopics())
-                    .isEmpty();
-        }
-    }
-
-    @Test
-    void shouldCreateTopic() {
+    void shouldCreateTopicWithReplication() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
-                    .replicationFactor((short) 1)
+                    .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
-                        assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
+                        assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
                         assertThat(info.getPartitions()).isEqualTo(5);
                     });
         }
     }
 
-    @Test
-    void shouldGetTopicConfig() {
-        try (final TopicClient client = this.createClient()) {
-            final Map<String, String> config = Map.of(
-                    TopicConfig.CLEANUP_POLICY_CONFIG,
-                    TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE
-            );
-            client.createTopic("foo", defaultTopicSettings().build(), config);
-            assertThat(client.getConfig("foo"))
-                    .containsEntry(TopicConfig.CLEANUP_POLICY_CONFIG,
-                            TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE);
-        }
-    }
-
     private TopicClient createClient() {
-        final String brokerList = this.getBootstrapServers();
+        final String brokerList = this.kafkaCluster.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         return TopicClient.create(config, CLIENT_TIMEOUT);
     }
