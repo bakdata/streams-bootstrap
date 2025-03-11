@@ -43,7 +43,7 @@ class GroupedXTest {
     void shouldUseKeySerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 final KGroupedStreamX<Long, String> grouped = input.selectKey((k, v) -> k)
                         .groupByKey(GroupedX.keySerde(Serdes.Long()));
@@ -69,7 +69,7 @@ class GroupedXTest {
     void shouldUseKeySerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 final KGroupedStreamX<Long, String> grouped = input.selectKey((k, v) -> k)
                         .groupByKey(GroupedX.<Long, String>as("grouped").withKeySerde(Serdes.Long()));
@@ -95,7 +95,7 @@ class GroupedXTest {
     void shouldUseValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 final KGroupedStreamX<String, Long> grouped = input.selectKey((k, v) -> k)
                         .groupByKey(GroupedX.valueSerde(Serdes.Long()));
@@ -120,7 +120,7 @@ class GroupedXTest {
     void shouldUseValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 final KGroupedStreamX<String, Long> grouped = input.selectKey((k, v) -> k)
                         .groupByKey(GroupedX.<String, Long>as("grouped").withValueSerde(Serdes.Long()));
@@ -145,7 +145,7 @@ class GroupedXTest {
     void shouldUseSerdes() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, Long> input =
                         builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
                 final KGroupedStreamX<Long, Long> grouped = input.selectKey((k, v) -> k)
@@ -173,7 +173,7 @@ class GroupedXTest {
     void shouldUseName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.selectKey((k, v) -> k)
                         .groupByKey(GroupedX.as("grouped"));
@@ -200,7 +200,7 @@ class GroupedXTest {
     void shouldUseNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.selectKey((k, v) -> k)
                         .groupByKey(

@@ -86,13 +86,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * Transform each record of the input stream into a new record in the output stream. Errors in the mapper are
      * captured
      * @param mapper a {@link KeyValueMapper} that computes a new output record
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #map(KeyValueMapper)
      * @see ErrorCapturingKeyValueMapper#captureErrors(KeyValueMapper)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> mapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper);
 
     /**
@@ -100,13 +100,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * captured
      * @param mapper a {@link KeyValueMapper} that computes a new output record
      * @param errorFilter expression that filters errors which should be thrown and not captured
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #map(KeyValueMapper)
      * @see ErrorCapturingKeyValueMapper#captureErrors(KeyValueMapper, java.util.function.Predicate)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> mapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
             java.util.function.Predicate<Exception> errorFilter);
 
@@ -119,13 +119,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * captured
      * @param mapper a {@link KeyValueMapper} that computes a new output record
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #map(KeyValueMapper, Named)
      * @see ErrorCapturingKeyValueMapper#captureErrors(KeyValueMapper)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> mapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper, Named named);
 
     /**
@@ -134,13 +134,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param mapper a {@link KeyValueMapper} that computes a new output record
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #map(KeyValueMapper, Named)
      * @see ErrorCapturingKeyValueMapper#captureErrors(KeyValueMapper, java.util.function.Predicate)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> mapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> mapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper,
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
@@ -150,25 +150,25 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes a new output value
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapper)
      * @see ErrorCapturingValueMapper#captureErrors(ValueMapper)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper);
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes a new output value
      * @param errorFilter expression that filters errors which should be thrown and not captured
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapper)
      * @see ErrorCapturingValueMapper#captureErrors(ValueMapper, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper,
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper,
             java.util.function.Predicate<Exception> errorFilter);
 
     @Override
@@ -178,26 +178,26 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes a new output value
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapper, Named)
      * @see ErrorCapturingValueMapper#captureErrors(ValueMapper)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper, Named named);
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper, Named named);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes a new output value
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapper, Named)
      * @see ErrorCapturingValueMapper#captureErrors(ValueMapper, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper,
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(ValueMapper<? super V, ? extends VR> mapper,
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
     @Override
@@ -206,26 +206,26 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapperWithKey} that computes a new output value
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapperWithKey)
      * @see ErrorCapturingValueMapperWithKey#captureErrors(ValueMapperWithKey)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper);
 
     /**
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapperWithKey} that computes a new output value
      * @param errorFilter expression that filters errors which should be thrown and not captured
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapperWithKey)
      * @see ErrorCapturingValueMapperWithKey#captureErrors(ValueMapperWithKey, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             java.util.function.Predicate<Exception> errorFilter);
 
@@ -236,13 +236,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * Transform the value of each input record into a new value of the output record. Errors in the mapper are captured
      * @param mapper a {@link ValueMapperWithKey} that computes a new output value
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapperWithKey, Named)
      * @see ErrorCapturingValueMapperWithKey#captureErrors(ValueMapperWithKey)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper, Named named);
 
     /**
@@ -250,13 +250,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param mapper a {@link ValueMapperWithKey} that computes a new output value
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VR> the value type of the result stream
      * @see #mapValues(ValueMapperWithKey, Named)
      * @see ErrorCapturingValueMapperWithKey#captureErrors(ValueMapperWithKey, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> mapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends VR> mapper,
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
@@ -268,14 +268,14 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * Transform each record of the input stream into zero or more records in the output stream. Errors in the mapper
      * are captured
      * @param mapper a {@link KeyValueMapper} that computes the new output records
-     * @return a {@link KErrorStream} that contains more or less records with new key and value as well as captured
+     * @return a {@link KErrorStreamX} that contains more or less records with new key and value as well as captured
      * errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #flatMap(KeyValueMapper)
      * @see ErrorCapturingFlatKeyValueMapper#captureErrors(KeyValueMapper)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> flatMapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper);
 
     /**
@@ -283,14 +283,14 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * are captured
      * @param mapper a {@link KeyValueMapper} that computes the new output records
      * @param errorFilter expression that filters errors which should be thrown and not captured
-     * @return a {@link KErrorStream} that contains more or less records with new key and value as well as captured
+     * @return a {@link KErrorStreamX} that contains more or less records with new key and value as well as captured
      * errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #flatMap(KeyValueMapper)
      * @see ErrorCapturingFlatKeyValueMapper#captureErrors(KeyValueMapper, java.util.function.Predicate)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> flatMapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
             java.util.function.Predicate<Exception> errorFilter);
 
@@ -304,14 +304,14 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * are captured
      * @param mapper a {@link KeyValueMapper} that computes the new output records
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains more or less records with new key and value as well as captured
+     * @return a {@link KErrorStreamX} that contains more or less records with new key and value as well as captured
      * errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #flatMap(KeyValueMapper, Named)
      * @see ErrorCapturingFlatKeyValueMapper#captureErrors(KeyValueMapper)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> flatMapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
             Named named);
 
@@ -321,14 +321,14 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param mapper a {@link KeyValueMapper} that computes the new output records
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains more or less records with new key and value as well as captured
+     * @return a {@link KErrorStreamX} that contains more or less records with new key and value as well as captured
      * errors
      * @param <KR> the key type of the result stream
      * @param <VR> the value type of the result stream
      * @see #flatMap(KeyValueMapper, Named)
      * @see ErrorCapturingFlatKeyValueMapper#captureErrors(KeyValueMapper, java.util.function.Predicate)
      */
-    <KR, VR> KErrorStream<K, V, KR, VR> flatMapCapturingErrors(
+    <KR, VR> KErrorStreamX<K, V, KR, VR> flatMapCapturingErrors(
             KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends KR, ? extends VR>>> mapper,
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
@@ -340,13 +340,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * with
      * the same key in the new stream. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes the new output values
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapper)
      * @see ErrorCapturingFlatValueMapper#captureErrors(ValueMapper)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper);
 
     /**
@@ -355,13 +355,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * the same key in the new stream. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes the new output values
      * @param errorFilter expression that filters errors which should be thrown and not captured
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapper)
      * @see ErrorCapturingFlatValueMapper#captureErrors(ValueMapper, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             java.util.function.Predicate<Exception> errorFilter);
 
@@ -375,13 +375,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * the same key in the new stream. Errors in the mapper are captured
      * @param mapper a {@link ValueMapper} that computes the new output values
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapper, Named)
      * @see ErrorCapturingFlatValueMapper#captureErrors(ValueMapper)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             Named named);
 
@@ -392,13 +392,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param mapper a {@link ValueMapper} that computes the new output values
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapper, Named)
      * @see ErrorCapturingFlatValueMapper#captureErrors(ValueMapper, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapper<? super V, ? extends Iterable<? extends VR>> mapper,
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
@@ -411,13 +411,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * with
      * the same key in the new stream. Errors in the mapper are captured
      * @param mapper a {@link ValueMapperWithKey} that computes the new output values
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapperWithKey)
      * @see ErrorCapturingFlatValueMapperWithKey#captureErrors(ValueMapperWithKey)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper);
 
     /**
@@ -426,13 +426,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * the same key in the new stream. Errors in the mapper are captured
      * @param mapper a {@link ValueMapperWithKey} that computes the new output values
      * @param errorFilter expression that filters errors which should be thrown and not captured
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapperWithKey)
      * @see ErrorCapturingFlatValueMapperWithKey#captureErrors(ValueMapperWithKey, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
             java.util.function.Predicate<Exception> errorFilter);
 
@@ -447,13 +447,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * the same key in the new stream. Errors in the mapper are captured
      * @param mapper a {@link ValueMapperWithKey} that computes the new output values
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapperWithKey, Named)
      * @see ErrorCapturingFlatValueMapperWithKey#captureErrors(ValueMapperWithKey)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper, Named named);
 
     /**
@@ -463,13 +463,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param mapper a {@link ValueMapperWithKey} that computes the new output values
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
-     * @return a {@link KErrorStream} that contains more or less records with unmodified keys and new values as well
+     * @return a {@link KErrorStreamX} that contains more or less records with unmodified keys and new values as well
      * as captured errors
      * @param <VR> the value type of the result stream
      * @see #flatMapValues(ValueMapperWithKey, Named)
      * @see ErrorCapturingFlatValueMapperWithKey#captureErrors(ValueMapperWithKey, java.util.function.Predicate)
      */
-    <VR> KErrorStream<K, V, K, VR> flatMapValuesCapturingErrors(
+    <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrors(
             ValueMapperWithKey<? super K, ? super V, ? extends Iterable<? extends VR>> mapper,
             java.util.function.Predicate<Exception> errorFilter, Named named);
 
@@ -916,13 +916,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param processorSupplier an instance of {@link ProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.Processor}
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
      * @see #process(ProcessorSupplier, String...)
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier)
      */
-    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+    <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
             ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             String... stateStoreNames);
 
@@ -933,13 +933,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.Processor}
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
      * @see #process(ProcessorSupplier, String...)
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier, java.util.function.Predicate)
      */
-    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+    <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
             ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             String... stateStoreNames);
@@ -956,13 +956,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.Processor}
      * @param named a {@link Named} config used to name the processor in the topology
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
      * @see #process(ProcessorSupplier, Named, String...)
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier)
      */
-    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+    <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
             ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
@@ -974,13 +974,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with new key and value as well as captured errors
+     * @return a {@link KErrorStreamX} that contains records with new key and value as well as captured errors
      * @param <KOut> the key type of the result stream
      * @param <VOut> the value type of the result stream
      * @see #process(ProcessorSupplier, Named, String...)
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier, java.util.function.Predicate)
      */
-    <KOut, VOut> KErrorStream<K, V, KOut, VOut> processCapturingErrors(
+    <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
             ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
@@ -997,13 +997,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param processorSupplier an instance of {@link FixedKeyProcessorSupplier} that generates a newly constructed
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
      * @see #processValues(FixedKeyProcessorSupplier, String...)
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier)
      */
-    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+    <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             String... stateStoreNames);
 
@@ -1015,13 +1015,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
      * @see #processValues(FixedKeyProcessorSupplier, String...)
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier, java.util.function.Predicate)
      */
-    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+    <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             String... stateStoreNames);
@@ -1039,13 +1039,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * {@link org.apache.kafka.streams.processor.api.FixedKeyProcessor}
      * @param named a {@link Named} config used to name the processor in the topology
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
      * @see #processValues(FixedKeyProcessorSupplier, Named, String...)
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier)
      */
-    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+    <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
@@ -1058,13 +1058,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @param errorFilter expression that filters errors which should be thrown and not captured
      * @param named a {@link Named} config used to name the processor in the topology
      * @param stateStoreNames the names of the state store used by the processor
-     * @return a {@link KErrorStream} that contains records with unmodified key and new values as well as captured
+     * @return a {@link KErrorStreamX} that contains records with unmodified key and new values as well as captured
      * errors
      * @param <VOut> the value type of the result stream
      * @see #processValues(FixedKeyProcessorSupplier, Named, String...)
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier, java.util.function.Predicate)
      */
-    <VOut> KErrorStream<K, V, K, VOut> processValuesCapturingErrors(
+    <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);

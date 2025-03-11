@@ -66,7 +66,7 @@ class StreamJoinedXTest {
     void shouldUseKeySerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> stream = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 final KStreamX<Long, String> otherInput =
                         builder.stream("other_input", ConsumedX.keySerde(Serdes.Long()));
@@ -97,7 +97,7 @@ class StreamJoinedXTest {
     void shouldUseKeySerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> stream = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 final KStreamX<Long, String> otherInput =
                         builder.stream("other_input", ConsumedX.keySerde(Serdes.Long()));
@@ -127,7 +127,7 @@ class StreamJoinedXTest {
     void shouldUseValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> stream = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined =
@@ -155,7 +155,7 @@ class StreamJoinedXTest {
     void shouldUseValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> stream = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -182,7 +182,7 @@ class StreamJoinedXTest {
     void shouldUseOtherValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, Long> otherInput =
                         builder.stream("other_input", ConsumedX.valueSerde(Serdes.Long()));
@@ -211,7 +211,7 @@ class StreamJoinedXTest {
     void shouldUseOtherValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, Long> otherInput =
                         builder.stream("other_input", ConsumedX.valueSerde(Serdes.Long()));
@@ -239,7 +239,7 @@ class StreamJoinedXTest {
     void shouldUseSerdes() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, Long> stream =
                         builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
                 final KStreamX<Long, Long> table =
@@ -274,7 +274,7 @@ class StreamJoinedXTest {
     void shouldUseStoreName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -303,7 +303,7 @@ class StreamJoinedXTest {
     void shouldUseStoreNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -333,7 +333,7 @@ class StreamJoinedXTest {
     void shouldUseNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -363,7 +363,7 @@ class StreamJoinedXTest {
     void shouldUseDslStoreSupplier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -397,7 +397,7 @@ class StreamJoinedXTest {
     void shouldUseDslStoreSupplierModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -432,7 +432,7 @@ class StreamJoinedXTest {
     void shouldUseStoreSuppliers() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -465,7 +465,7 @@ class StreamJoinedXTest {
     void shouldUseThisStoreSuppliersModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -497,7 +497,7 @@ class StreamJoinedXTest {
     void shouldUseOtherStoreSuppliersModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -529,7 +529,7 @@ class StreamJoinedXTest {
     void shouldDisableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,
@@ -586,7 +586,7 @@ class StreamJoinedXTest {
     void shouldEnableLogging(@TempDir final Path stateDir) {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> stream = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = stream.join(otherInput, (v1, v2) -> v1 + v2,

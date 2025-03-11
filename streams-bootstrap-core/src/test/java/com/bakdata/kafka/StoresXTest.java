@@ -59,7 +59,7 @@ class StoresXTest {
     void shouldCreateKeyValueStore() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.<String, String>process(new ProcessorSupplier<>() {
@@ -99,7 +99,7 @@ class StoresXTest {
     void shouldCreateSessionStore() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<Windowed<String>, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()))
                                 .groupByKey()
@@ -143,7 +143,7 @@ class StoresXTest {
     void shouldCreateTimestampedWindowStore() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.<String, String>process(new ProcessorSupplier<>() {
@@ -188,7 +188,7 @@ class StoresXTest {
     void shouldCreateWindowStore() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.<String, String>process(new ProcessorSupplier<>() {
@@ -229,7 +229,7 @@ class StoresXTest {
     void shouldCreateVersionedKeyValueStore() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.<String, String>process(new ProcessorSupplier<>() {
@@ -271,7 +271,7 @@ class StoresXTest {
     void shouldCreateTimestampedKeyValueStore() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.<String, String>process(new ProcessorSupplier<>() {

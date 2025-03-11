@@ -37,7 +37,7 @@ class BranchedKStreamXTest {
     void shouldBranch() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStream<String, String>> branches = input.split()
                         .branch((k, v) -> "foo".equals(k))
@@ -60,7 +60,7 @@ class BranchedKStreamXTest {
     void shouldBranchBranched() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.split()
                         .branch((k, v) -> "foo".equals(k), Branched.withConsumer(branch -> branch.to("output")));
@@ -81,7 +81,7 @@ class BranchedKStreamXTest {
     void shouldBranchBranchedX() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.split()
                         .branch((k, v) -> "foo".equals(k), BranchedX.withConsumer(KStreamX::toOutputTopic))
@@ -111,7 +111,7 @@ class BranchedKStreamXTest {
     void shouldUseDefaultBranch() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStream<String, String>> branches = input.split()
                         .defaultBranch();
@@ -133,7 +133,7 @@ class BranchedKStreamXTest {
     void shouldUseDefaultBranchX() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split()
                         .defaultBranchX();
@@ -157,7 +157,7 @@ class BranchedKStreamXTest {
     void shouldUseDefaultBranchBranched() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.split()
                         .defaultBranch(Branched.withConsumer(branch -> branch.to("output")));
@@ -178,7 +178,7 @@ class BranchedKStreamXTest {
     void shouldUseDefaultBranchXBranched() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split()
                         .defaultBranchX(Branched.withFunction(Function.identity()));
@@ -202,7 +202,7 @@ class BranchedKStreamXTest {
     void shouldUseDefaultBranchBranchedX() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split()
                         .defaultBranch(BranchedX.withFunction(Function.identity()));
@@ -226,7 +226,7 @@ class BranchedKStreamXTest {
     void shouldUseNoDefaultBranchX() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final Map<String, KStreamX<String, String>> branches = input.split()
                         .branch((k, v) -> "foo".equals(k))

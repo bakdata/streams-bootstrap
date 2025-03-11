@@ -29,7 +29,7 @@ import com.bakdata.kafka.KTableX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TopologyBuilder;
+import com.bakdata.kafka.StreamsBuilderX;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
@@ -43,7 +43,7 @@ import org.apache.kafka.streams.kstream.Produced;
 public class WordCountPattern implements StreamsApp {
 
     @Override
-    public void buildTopology(final TopologyBuilder builder) {
+    public void buildTopology(final StreamsBuilderX builder) {
         final KStreamX<String, String> textLines = builder.streamInputPattern();
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);

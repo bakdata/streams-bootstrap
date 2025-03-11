@@ -40,7 +40,7 @@ class KGroupedStreamXTest {
     void shouldCount() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, Long> counted = grouped.count();
@@ -67,7 +67,7 @@ class KGroupedStreamXTest {
     void shouldCountNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, Long> counted = grouped.count(Named.as("count"));
@@ -94,7 +94,7 @@ class KGroupedStreamXTest {
     void shouldCountUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -126,7 +126,7 @@ class KGroupedStreamXTest {
     void shouldCountNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -158,7 +158,7 @@ class KGroupedStreamXTest {
     void shouldReduce() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> reduced = grouped.reduce((value1, value2) -> value1 + value2);
@@ -184,7 +184,7 @@ class KGroupedStreamXTest {
     void shouldReduceUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -216,7 +216,7 @@ class KGroupedStreamXTest {
     void shouldReduceNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -248,7 +248,7 @@ class KGroupedStreamXTest {
     void shouldAggregate() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, String> aggregated =
@@ -275,7 +275,7 @@ class KGroupedStreamXTest {
     void shouldAggregateUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -309,7 +309,7 @@ class KGroupedStreamXTest {
     void shouldAggregateNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
@@ -343,7 +343,7 @@ class KGroupedStreamXTest {
     void shouldTimeWindow() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
@@ -380,7 +380,7 @@ class KGroupedStreamXTest {
     void shouldSlidingWindow() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final TimeWindowedKStreamX<String, String> windowed =
@@ -423,7 +423,7 @@ class KGroupedStreamXTest {
     void shouldSessionWindow() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final SessionWindowedKStreamX<String, String> windowed =
@@ -466,7 +466,7 @@ class KGroupedStreamXTest {
     void shouldCogroup() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final CogroupedKStreamX<String, String> cogrouped =

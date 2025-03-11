@@ -38,13 +38,13 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.junit.jupiter.api.Test;
 
-class TopologyBuilderTest {
+class StreamsBuilderXTest {
 
     @Test
     void shouldReadFromInput() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInput();
                 input.to("output");
             }
@@ -65,7 +65,7 @@ class TopologyBuilderTest {
     void shouldReadFromInputUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.streamInput(ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -92,7 +92,7 @@ class TopologyBuilderTest {
     void shouldReadFromLabeledInput() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInput("label");
                 input.to("output");
             }
@@ -113,7 +113,7 @@ class TopologyBuilderTest {
     void shouldReadFromLabeledInputUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInput("label",
                         ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -140,7 +140,7 @@ class TopologyBuilderTest {
     void shouldReadFromPatternInput() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInputPattern();
                 input.to("output");
             }
@@ -161,7 +161,7 @@ class TopologyBuilderTest {
     void shouldReadFromPatternInputUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInputPattern(
                         ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -188,7 +188,7 @@ class TopologyBuilderTest {
     void shouldReadFromLabeledPatternInput() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInputPattern("label");
                 input.to("output");
             }
@@ -209,7 +209,7 @@ class TopologyBuilderTest {
     void shouldReadFromLabeledPatternInputUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInputPattern("label",
                         ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -236,7 +236,7 @@ class TopologyBuilderTest {
     void shouldReadFromTopic() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output");
             }
@@ -255,7 +255,7 @@ class TopologyBuilderTest {
     void shouldReadFromTopicUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -280,7 +280,7 @@ class TopologyBuilderTest {
     void shouldReadFromTopics() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream(List.of("input"));
                 input.to("output");
             }
@@ -299,7 +299,7 @@ class TopologyBuilderTest {
     void shouldReadFromTopicsUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream(List.of("input"),
                         ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -324,7 +324,7 @@ class TopologyBuilderTest {
     void shouldReadFromTopicPattern() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream(Pattern.compile("input\\d+"));
                 input.to("output");
             }
@@ -343,7 +343,7 @@ class TopologyBuilderTest {
     void shouldReadFromTopicPatternUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream(Pattern.compile("input\\d+"),
                         ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -368,7 +368,7 @@ class TopologyBuilderTest {
     void shouldReadTableFromTopic() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input");
                 input.toStream().to("output");
             }
@@ -387,7 +387,7 @@ class TopologyBuilderTest {
     void shouldReadTableFromTopicUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -412,7 +412,7 @@ class TopologyBuilderTest {
     void shouldReadTableFromTopicUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input = builder.table("input",
                         MaterializedX.with(Serdes.String(), Serdes.String()));
                 input.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -437,7 +437,7 @@ class TopologyBuilderTest {
     void shouldReadTableFromTopicUsingConsumedAndMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KTableX<String, String> input =
                         builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()),
                                 Materialized.as("store"));
@@ -463,7 +463,7 @@ class TopologyBuilderTest {
     void shouldReadGlobalTableFromTopic() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
@@ -487,7 +487,7 @@ class TopologyBuilderTest {
     void shouldReadGlobalTableFromTopicUsingConsumed() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final GlobalKTable<String, String> otherInput =
@@ -519,7 +519,7 @@ class TopologyBuilderTest {
     void shouldReadGlobalTableFromTopicUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final GlobalKTable<String, String> otherInput =
@@ -551,7 +551,7 @@ class TopologyBuilderTest {
     void shouldReadGlobalTableFromTopicUsingConsumedAndMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final GlobalKTable<String, String> otherInput =
@@ -600,7 +600,7 @@ class TopologyBuilderTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());

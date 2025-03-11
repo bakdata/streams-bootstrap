@@ -53,7 +53,7 @@ class ProducedXTest {
     void shouldUseKeySerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 input.to("output", ProducedX.keySerde(Serdes.Long()));
             }
@@ -75,7 +75,7 @@ class ProducedXTest {
     void shouldUseKeySerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input =
                         builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 input.to("output", ProducedX.<Long, String>as("output").withKeySerde(Serdes.Long()));
@@ -98,7 +98,7 @@ class ProducedXTest {
     void shouldUseValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 input.to("output", ProducedX.valueSerde(Serdes.Long()));
             }
@@ -120,7 +120,7 @@ class ProducedXTest {
     void shouldUseValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input =
                         builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 input.to("output", ProducedX.<String, Long>as("output").withValueSerde(Serdes.Long()));
@@ -143,7 +143,7 @@ class ProducedXTest {
     void shouldUseSerdes() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, Long> input =
                         builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
                 input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
@@ -168,7 +168,7 @@ class ProducedXTest {
     void shouldUseName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output", ProducedX.as("output"));
             }
@@ -192,7 +192,7 @@ class ProducedXTest {
     void shouldUseNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output", ProducedX.<String, String>keySerde(Preconfigured.defaultSerde()).withName("output"));
             }
@@ -216,7 +216,7 @@ class ProducedXTest {
     void shouldUseStreamPartitioner() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output",
                         ProducedX.streamPartitioner((topic, key, value, numPartitions) -> "bar".equals(value) ? 0 : 1));
@@ -266,7 +266,7 @@ class ProducedXTest {
     void shouldUseStreamPartitionerModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output", ProducedX.<String, String>as("output")
                         .withStreamPartitioner((topic, key, value, numPartitions) -> "bar".equals(value) ? 0 : 1));

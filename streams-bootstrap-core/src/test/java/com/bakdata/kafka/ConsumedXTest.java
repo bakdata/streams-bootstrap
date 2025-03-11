@@ -55,7 +55,7 @@ class ConsumedXTest {
     void shouldUseKeySerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input = builder.stream("input", ConsumedX.keySerde(Serdes.Long()));
                 input.to("output", ProducedX.keySerde(Serdes.Long()));
             }
@@ -77,7 +77,7 @@ class ConsumedXTest {
     void shouldUseKeySerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, String> input =
                         builder.stream("input", ConsumedX.<Long, String>as("stream").withKeySerde(Serdes.Long()));
                 input.to("output", ProducedX.keySerde(Serdes.Long()));
@@ -100,7 +100,7 @@ class ConsumedXTest {
     void shouldUseValueSerde() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input = builder.stream("input", ConsumedX.valueSerde(Serdes.Long()));
                 input.to("output", ProducedX.valueSerde(Serdes.Long()));
             }
@@ -122,7 +122,7 @@ class ConsumedXTest {
     void shouldUseValueSerdeModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, Long> input =
                         builder.stream("input", ConsumedX.<String, Long>as("stream").withValueSerde(Serdes.Long()));
                 input.to("output", ProducedX.valueSerde(Serdes.Long()));
@@ -145,7 +145,7 @@ class ConsumedXTest {
     void shouldUseSerdes() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<Long, Long> input =
                         builder.stream("input", ConsumedX.with(Serdes.Long(), Serdes.Long()));
                 input.to("output", ProducedX.with(Serdes.Long(), Serdes.Long()));
@@ -170,7 +170,7 @@ class ConsumedXTest {
     void shouldUseName() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input", ConsumedX.as("stream"));
                 input.to("output");
             }
@@ -194,7 +194,7 @@ class ConsumedXTest {
     void shouldUseNameModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input",
                         ConsumedX.<String, String>keySerde(Preconfigured.defaultSerde()).withName("stream"));
                 input.to("output");
@@ -219,7 +219,7 @@ class ConsumedXTest {
     void shouldUseTimestampExtractor() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input",
                         ConsumedX.with((consumerRecord, partitionTime) -> 1L));
                 input.to("output");
@@ -244,7 +244,7 @@ class ConsumedXTest {
     void shouldUseTimestampExtractorModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input", ConsumedX.<String, String>as("stream")
                         .withTimestampExtractor((consumerRecord, partitionTime) -> 1L));
                 input.to("output");
@@ -269,7 +269,7 @@ class ConsumedXTest {
     void shouldUseOffsetResetPolicy() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(AutoOffsetReset.LATEST));
                 input.to("output");
@@ -315,7 +315,7 @@ class ConsumedXTest {
     void shouldUseOffsetResetPolicyModifier() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input",
                         ConsumedX.<String, String>as("stream").withOffsetResetPolicy(AutoOffsetReset.LATEST));
                 input.to("output");

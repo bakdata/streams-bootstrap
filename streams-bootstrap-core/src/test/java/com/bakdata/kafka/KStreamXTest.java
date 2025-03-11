@@ -84,7 +84,7 @@ class KStreamXTest {
     void shouldWriteToOutput() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.toOutputTopic();
             }
@@ -105,7 +105,7 @@ class KStreamXTest {
     void shouldWriteToOutputUsingProduced() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.toOutputTopic(ProducedX.with(Serdes.String(), Serdes.String()));
@@ -132,7 +132,7 @@ class KStreamXTest {
     void shouldWriteToLabeledOutput() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.toOutputTopic("label");
             }
@@ -153,7 +153,7 @@ class KStreamXTest {
     void shouldWriteToLabeledOutputUsingProduced() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.toOutputTopic("label", ProducedX.with(Serdes.String(), Serdes.String()));
@@ -180,7 +180,7 @@ class KStreamXTest {
     void shouldWriteToError() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.toErrorTopic();
             }
@@ -201,7 +201,7 @@ class KStreamXTest {
     void shouldWriteToErrorUsingProduced() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.toErrorTopic(ProducedX.with(Serdes.String(), Serdes.String()));
@@ -228,7 +228,7 @@ class KStreamXTest {
     void shouldWriteToUsingExtractor() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to((key, value, recordContext) -> key);
             }
@@ -248,7 +248,7 @@ class KStreamXTest {
     void shouldWriteToUsingExtractorAndProduced() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 input.to((key, value, recordContext) -> key, ProducedX.with(Serdes.String(), Serdes.String()));
@@ -276,7 +276,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn(new KeyValue<>("baz", "qux"));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.map(mapper).to("output");
             }
@@ -297,7 +297,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn(new KeyValue<>("baz", "qux"));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.map(mapper, Named.as("map")).to("output");
             }
@@ -318,7 +318,7 @@ class KStreamXTest {
         when(mapper.apply("bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.mapValues(mapper).to("output");
             }
@@ -339,7 +339,7 @@ class KStreamXTest {
         when(mapper.apply("bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.mapValues(mapper, Named.as("map")).to("output");
             }
@@ -360,7 +360,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.mapValues(mapper).to("output");
             }
@@ -381,7 +381,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.mapValues(mapper, Named.as("map")).to("output");
             }
@@ -402,7 +402,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn(List.of(new KeyValue<>("baz", "qux")));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.flatMap(mapper).to("output");
             }
@@ -423,7 +423,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn(List.of(new KeyValue<>("baz", "qux")));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.flatMap(mapper, Named.as("flatMap")).to("output");
             }
@@ -444,7 +444,7 @@ class KStreamXTest {
         when(mapper.apply("bar")).thenReturn(List.of("baz"));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.flatMapValues(mapper).to("output");
             }
@@ -465,7 +465,7 @@ class KStreamXTest {
         when(mapper.apply("bar")).thenReturn(List.of("baz"));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.flatMapValues(mapper, Named.as("flatMap")).to("output");
             }
@@ -486,7 +486,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn(List.of("baz"));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.flatMapValues(mapper).to("output");
             }
@@ -507,7 +507,7 @@ class KStreamXTest {
         when(mapper.apply("foo", "bar")).thenReturn(List.of("baz"));
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.flatMapValues(mapper, Named.as("flatMap")).to("output");
             }
@@ -537,7 +537,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> processed = input.process(processor);
                 processed.to("output");
@@ -568,7 +568,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> processed = input.process(processor, Named.as("process"));
                 processed.to("output");
@@ -596,7 +596,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -625,7 +625,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -657,7 +657,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> processed = input.processValues(processor);
                 processed.to("output");
@@ -688,7 +688,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> processed = input.processValues(processor, Named.as("process"));
                 processed.to("output");
@@ -716,7 +716,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -745,7 +745,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -769,7 +769,7 @@ class KStreamXTest {
         when(predicate.test("foo", "baz")).thenReturn(false);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.filter(predicate).to("output");
             }
@@ -793,7 +793,7 @@ class KStreamXTest {
         when(predicate.test("foo", "baz")).thenReturn(false);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.filter(predicate, Named.as("filter")).to("output");
             }
@@ -817,7 +817,7 @@ class KStreamXTest {
         when(predicate.test("foo", "baz")).thenReturn(true);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.filterNot(predicate).to("output");
             }
@@ -841,7 +841,7 @@ class KStreamXTest {
         when(predicate.test("foo", "baz")).thenReturn(true);
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.filterNot(predicate, Named.as("filterNot")).to("output");
             }
@@ -862,7 +862,7 @@ class KStreamXTest {
     void shouldSelectKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.selectKey((k, v) -> v).to("output");
             }
@@ -882,7 +882,7 @@ class KStreamXTest {
     void shouldSelectKeyNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.selectKey((k, v) -> v, Named.as("select")).to("output");
             }
@@ -905,9 +905,9 @@ class KStreamXTest {
         doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -943,9 +943,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -982,9 +982,9 @@ class KStreamXTest {
         doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper, Named.as("map"));
                 processed.values().to("output");
                 processed.errors()
@@ -1020,9 +1020,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()), Named.as("map"));
                 processed.values().to("output");
                 processed.errors()
@@ -1059,9 +1059,9 @@ class KStreamXTest {
         doReturn("success").when(mapper).apply("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -1097,9 +1097,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -1136,9 +1136,9 @@ class KStreamXTest {
         doReturn("success").when(mapper).apply("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper, Named.as("map"));
                 processed.values().to("output");
                 processed.errors()
@@ -1174,9 +1174,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("map"));
                 processed.values().to("output");
@@ -1214,9 +1214,9 @@ class KStreamXTest {
         doReturn("success").when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -1252,9 +1252,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -1291,9 +1291,9 @@ class KStreamXTest {
         doReturn("success").when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper, Named.as("map"));
                 processed.values().to("output");
                 processed.errors()
@@ -1329,9 +1329,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("map"));
                 processed.values().to("output");
@@ -1369,9 +1369,9 @@ class KStreamXTest {
         doReturn(List.of(KeyValue.pair("success_key", "success_value"))).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -1407,9 +1407,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -1446,9 +1446,9 @@ class KStreamXTest {
         doReturn(List.of(KeyValue.pair("success_key", "success_value"))).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapCapturingErrors(mapper, Named.as("flatMap"));
                 processed.values().to("output");
                 processed.errors()
@@ -1484,9 +1484,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("flatMap"));
                 processed.values().to("output");
@@ -1524,9 +1524,9 @@ class KStreamXTest {
         doReturn(List.of("success")).when(mapper).apply("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -1562,9 +1562,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -1601,9 +1601,9 @@ class KStreamXTest {
         doReturn(List.of("success")).when(mapper).apply("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper, Named.as("flatMap"));
                 processed.values().to("output");
                 processed.errors()
@@ -1639,9 +1639,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("flatMap"));
                 processed.values().to("output");
@@ -1679,9 +1679,9 @@ class KStreamXTest {
         doReturn(List.of("success")).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -1717,9 +1717,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -1756,9 +1756,9 @@ class KStreamXTest {
         doReturn(List.of("success")).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper, Named.as("flatMap"));
                 processed.values().to("output");
                 processed.errors()
@@ -1794,9 +1794,9 @@ class KStreamXTest {
         doThrow(new RuntimeException("Recoverable")).when(mapper).apply("foo", "qux");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.flatMapValuesCapturingErrors(mapper, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("flatMap"));
                 processed.values().to("output");
@@ -1845,9 +1845,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processCapturingErrors(processor);
                 processed.values().to("output");
                 processed.errors()
@@ -1896,9 +1896,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processCapturingErrors(processor, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -1946,9 +1946,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processCapturingErrors(processor, Named.as("process"));
                 processed.values().to("output");
                 processed.errors()
@@ -1997,9 +1997,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processCapturingErrors(processor, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("process"));
                 processed.values().to("output");
@@ -2048,9 +2048,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processValuesCapturingErrors(processor);
                 processed.values().to("output");
                 processed.errors()
@@ -2099,9 +2099,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processValuesCapturingErrors(processor, e -> "Recoverable".equals(e.getMessage()));
                 processed.values().to("output");
                 processed.errors()
@@ -2149,9 +2149,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processValuesCapturingErrors(processor, Named.as("process"));
                 processed.values().to("output");
                 processed.errors()
@@ -2200,9 +2200,9 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.processValuesCapturingErrors(processor, e -> "Recoverable".equals(e.getMessage()),
                                 Named.as("process"));
                 processed.values().to("output");
@@ -2237,7 +2237,7 @@ class KStreamXTest {
     void shouldRepartition() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition();
                 repartitioned.to("output");
@@ -2258,7 +2258,7 @@ class KStreamXTest {
     void shouldRepartitionUsingRepartitioned() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> repartitioned =
@@ -2285,7 +2285,7 @@ class KStreamXTest {
     void shouldConvertToTable() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> table = input.toTable();
                 table.toStream().to("output");
@@ -2306,7 +2306,7 @@ class KStreamXTest {
     void shouldConvertToTableNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> table = input.toTable(Named.as("toTable"));
                 table.toStream().to("output");
@@ -2327,7 +2327,7 @@ class KStreamXTest {
     void shouldConvertToTableUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> table =
@@ -2354,7 +2354,7 @@ class KStreamXTest {
     void shouldConvertToTableNamedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> table = input.toTable(Named.as("toTable"),
@@ -2381,7 +2381,7 @@ class KStreamXTest {
     void shouldJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = input.join(otherInput,
@@ -2407,7 +2407,7 @@ class KStreamXTest {
     void shouldJoinUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input",
@@ -2442,7 +2442,7 @@ class KStreamXTest {
     void shouldJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = input.join(otherInput,
@@ -2468,7 +2468,7 @@ class KStreamXTest {
     void shouldJoinWithKeyUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input",
@@ -2503,7 +2503,7 @@ class KStreamXTest {
     void shouldLeftJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = input.leftJoin(otherInput,
@@ -2536,7 +2536,7 @@ class KStreamXTest {
     void shouldLeftJoinUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input",
@@ -2580,7 +2580,7 @@ class KStreamXTest {
     void shouldLeftJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = input.leftJoin(otherInput,
@@ -2613,7 +2613,7 @@ class KStreamXTest {
     void shouldLeftJoinWithKeyUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input",
@@ -2657,7 +2657,7 @@ class KStreamXTest {
     void shouldOuterJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = input.outerJoin(otherInput,
@@ -2690,7 +2690,7 @@ class KStreamXTest {
     void shouldOuterJoinUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input",
@@ -2734,7 +2734,7 @@ class KStreamXTest {
     void shouldOuterJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> otherInput = builder.stream("other_input");
                 final KStreamX<String, String> joined = input.outerJoin(otherInput,
@@ -2767,7 +2767,7 @@ class KStreamXTest {
     void shouldOuterJoinWithKeyUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> otherInput = builder.stream("other_input",
@@ -2811,7 +2811,7 @@ class KStreamXTest {
     void shouldGroupByKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupByKey();
                 final KTableX<String, Long> count = grouped.count();
@@ -2838,7 +2838,7 @@ class KStreamXTest {
     void shouldGroupByKeyUsingGrouped() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped = input.selectKey((k, v) -> v) // repartition
@@ -2870,7 +2870,7 @@ class KStreamXTest {
     void shouldGroupBy() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KGroupedStreamX<String, String> grouped = input.groupBy((k, v) -> v);
                 final KTableX<String, Long> count = grouped.count();
@@ -2897,7 +2897,7 @@ class KStreamXTest {
     void shouldGroupByUsingGrouped() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KGroupedStreamX<String, String> grouped =
@@ -2929,7 +2929,7 @@ class KStreamXTest {
     void shouldMerge() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input1 = builder.stream("input1");
                 final KStreamX<String, String> input2 = builder.stream("input2");
                 final KStreamX<String, String> grouped = input1.merge(input2);
@@ -2956,7 +2956,7 @@ class KStreamXTest {
     void shouldMergeNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input1 = builder.stream("input1");
                 final KStreamX<String, String> input2 = builder.stream("input2");
                 final KStreamX<String, String> grouped = input1.merge(input2, Named.as("merge"));
@@ -2984,7 +2984,7 @@ class KStreamXTest {
         final ForeachAction<String, String> action = mock();
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.foreach(action);
             }
@@ -3002,7 +3002,7 @@ class KStreamXTest {
         final ForeachAction<String, String> action = mock();
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.foreach(action, Named.as("forEach"));
             }
@@ -3020,7 +3020,7 @@ class KStreamXTest {
         final ForeachAction<String, String> action = mock();
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.peek(action).to("output");
             }
@@ -3043,7 +3043,7 @@ class KStreamXTest {
         final ForeachAction<String, String> action = mock();
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.peek(action, Named.as("peek")).to("output");
             }
@@ -3065,7 +3065,7 @@ class KStreamXTest {
     void shouldSplit() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final BranchedKStreamX<String, String> branches = input.split();
                 branches.defaultBranch(Branched.withConsumer(s -> s.to("output")));
@@ -3086,7 +3086,7 @@ class KStreamXTest {
     void shouldSplitNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final BranchedKStreamX<String, String> branches = input.split(Named.as("split"));
                 branches.defaultBranch(Branched.withConsumer(s -> s.to("output")));
@@ -3107,7 +3107,7 @@ class KStreamXTest {
     void shouldBranch() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String>[] branches = input.branch((k, v) -> true);
                 branches[0].to("output");
@@ -3128,7 +3128,7 @@ class KStreamXTest {
     void shouldBranchNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String>[] branches = input.branch(Named.as("branch"), (k, v) -> true);
                 branches[0].to("output");
@@ -3149,7 +3149,7 @@ class KStreamXTest {
     void shouldTableJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> otherInput = builder.table("table_input");
                 final KStreamX<String, String> joined = input.join(otherInput, (v1, v2) -> v1 + v2);
@@ -3173,7 +3173,7 @@ class KStreamXTest {
     void shouldTableJoinUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -3206,7 +3206,7 @@ class KStreamXTest {
     void shouldTableJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> otherInput = builder.table("table_input");
                 final KStreamX<String, String> joined = input.join(otherInput, (k, v1, v2) -> v1 + v2);
@@ -3230,7 +3230,7 @@ class KStreamXTest {
     void shouldTableJoinWithKeyUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -3263,7 +3263,7 @@ class KStreamXTest {
     void shouldTableLeftJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> otherInput = builder.table("table_input");
                 final KStreamX<String, String> joined =
@@ -3293,7 +3293,7 @@ class KStreamXTest {
     void shouldTableLeftJoinUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -3334,7 +3334,7 @@ class KStreamXTest {
     void shouldTableLeftJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KTableX<String, String> otherInput = builder.table("table_input");
                 final KStreamX<String, String> joined =
@@ -3364,7 +3364,7 @@ class KStreamXTest {
     void shouldTableLeftJoinWithKeyUsingJoined() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> otherInput =
@@ -3406,7 +3406,7 @@ class KStreamXTest {
         final File file = new File(tempDir, "out.txt");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input", ConsumedX.as("read"));
                 input.print(Printed.toFile(file.getAbsolutePath()));
             }
@@ -3423,7 +3423,7 @@ class KStreamXTest {
     void shouldGlobalTableJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
@@ -3447,7 +3447,7 @@ class KStreamXTest {
     void shouldGlobalTableJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined =
@@ -3472,7 +3472,7 @@ class KStreamXTest {
     void shouldGlobalTableJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (k, v1, v2) -> v1 + v2);
@@ -3496,7 +3496,7 @@ class KStreamXTest {
     void shouldGlobalTableJoinWithKeyNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined =
@@ -3521,7 +3521,7 @@ class KStreamXTest {
     void shouldGlobalTableLeftJoin() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined =
@@ -3551,7 +3551,7 @@ class KStreamXTest {
     void shouldGlobalTableLeftJoinNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined =
@@ -3582,7 +3582,7 @@ class KStreamXTest {
     void shouldGlobalTableLeftJoinWithKey() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined =
@@ -3612,7 +3612,7 @@ class KStreamXTest {
     void shouldGlobalTableLeftJoinWithKeyNamed() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
                 final KStreamX<String, String> joined =
@@ -3643,7 +3643,7 @@ class KStreamXTest {
     void shouldRouteThrough() {
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> through = input.through("intermediate");
                 through.to("output");
@@ -3669,7 +3669,7 @@ class KStreamXTest {
     void shouldRouteThroughUsingProduced() {
         final DoubleApp app = new DoubleApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KStreamX<String, String> through =
@@ -3714,7 +3714,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.transform(transformer);
                 transformed.to("output");
@@ -3745,7 +3745,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.transform(transformer, Named.as("transform"));
                 transformed.to("output");
@@ -3775,7 +3775,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -3806,7 +3806,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -3838,7 +3838,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.flatTransform(transformer);
                 transformed.to("output");
@@ -3869,7 +3869,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed =
                         input.flatTransform(transformer, Named.as("flatTransform"));
@@ -3900,7 +3900,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -3931,7 +3931,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -3962,7 +3962,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.transformValues(transformer);
                 transformed.to("output");
@@ -3992,7 +3992,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.transformValues(transformer, Named.as("transform"));
                 transformed.to("output");
@@ -4021,7 +4021,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4051,7 +4051,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4082,7 +4082,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.flatTransformValues(transformer);
                 transformed.to("output");
@@ -4112,7 +4112,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed =
                         input.flatTransformValues(transformer, Named.as("flatTransform"));
@@ -4142,7 +4142,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4172,7 +4172,7 @@ class KStreamXTest {
         };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4204,7 +4204,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.transformValues(transformer);
                 transformed.to("output");
@@ -4235,7 +4235,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.transformValues(transformer, Named.as("transform"));
                 transformed.to("output");
@@ -4265,7 +4265,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4296,7 +4296,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4328,7 +4328,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed = input.flatTransformValues(transformer);
                 transformed.to("output");
@@ -4359,7 +4359,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> transformed =
                         input.flatTransformValues(transformer, Named.as("flatTransform"));
@@ -4390,7 +4390,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4421,7 +4421,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4451,7 +4451,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());
@@ -4481,7 +4481,7 @@ class KStreamXTest {
                 };
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final StoreBuilder<KeyValueStore<String, String>> store = builder.stores()
                         .keyValueStoreBuilder(Stores.inMemoryKeyValueStore("my-store"), Preconfigured.defaultSerde(),
                                 Preconfigured.defaultSerde());

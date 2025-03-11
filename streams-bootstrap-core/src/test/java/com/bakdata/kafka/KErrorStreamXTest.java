@@ -44,9 +44,9 @@ class KErrorStreamXTest {
         doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -81,9 +81,9 @@ class KErrorStreamXTest {
         doReturn(KeyValue.pair("success_key", "success_value")).when(mapper).apply("foo", "baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapCapturingErrors(mapper);
                 processed.values(Named.as("values")).to("output");
                 processed.errors(Named.as("errors"))
@@ -118,9 +118,9 @@ class KErrorStreamXTest {
         doReturn("success").when(mapper).apply("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper);
                 processed.values().to("output");
                 processed.errors()
@@ -155,9 +155,9 @@ class KErrorStreamXTest {
         doReturn("success").when(mapper).apply("baz");
         final StringApp app = new StringApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
-                final KErrorStream<String, String, String, String> processed =
+                final KErrorStreamX<String, String, String, String> processed =
                         input.mapValuesCapturingErrors(mapper);
                 processed.values(Named.as("value")).to("output");
                 processed.errors(Named.as("errors"))

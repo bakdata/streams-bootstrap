@@ -28,9 +28,9 @@ import com.bakdata.kafka.KStreamX;
 import com.bakdata.kafka.KTableX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.TopologyBuilder;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
@@ -46,7 +46,7 @@ public class ComplexTopologyApplication implements StreamsApp {
     public static final String THROUGH_TOPIC = "through-topic";
 
     @Override
-    public void buildTopology(final TopologyBuilder builder) {
+    public void buildTopology(final StreamsBuilderX builder) {
         final KStreamX<String, TestRecord> input = builder.streamInput();
 
         input.to(THROUGH_TOPIC);

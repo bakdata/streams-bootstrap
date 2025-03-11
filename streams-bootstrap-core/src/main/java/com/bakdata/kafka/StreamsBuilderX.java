@@ -43,11 +43,11 @@ import org.apache.kafka.streams.state.StoreBuilder;
 /**
  * Provides all runtime configurations and supports building a {@link Topology} of a {@link StreamsApp}
  *
- * @see StreamsApp#buildTopology(TopologyBuilder)
+ * @see StreamsApp#buildTopology(StreamsBuilderX)
  */
 @RequiredArgsConstructor
 @Value
-public class TopologyBuilder {
+public class StreamsBuilderX {
 
     StreamsBuilder streamsBuilder = new StreamsBuilder();
     @NonNull
@@ -377,7 +377,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#addStateStore(StoreBuilder)
      */
-    public TopologyBuilder addStateStore(final StoreBuilder<?> builder) {
+    public StreamsBuilderX addStateStore(final StoreBuilder<?> builder) {
         this.streamsBuilder.addStateStore(builder);
         return this;
     }
@@ -385,7 +385,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
      */
-    public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
+    public <KIn, VIn> StreamsBuilderX addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
             final Consumed<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
         this.streamsBuilder.addGlobalStore(storeBuilder, topic, consumed, stateUpdateSupplier);
         return this;
@@ -394,7 +394,7 @@ public class TopologyBuilder {
     /**
      * @see StreamsBuilder#addGlobalStore(StoreBuilder, String, Consumed, ProcessorSupplier)
      */
-    public <KIn, VIn> TopologyBuilder addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
+    public <KIn, VIn> StreamsBuilderX addGlobalStore(final StoreBuilder<?> storeBuilder, final String topic,
             final ConsumedX<KIn, VIn> consumed, final ProcessorSupplier<KIn, VIn, Void, Void> stateUpdateSupplier) {
         return this.addGlobalStore(storeBuilder, topic, consumed.configure(this.createConfigurator()),
                 stateUpdateSupplier);

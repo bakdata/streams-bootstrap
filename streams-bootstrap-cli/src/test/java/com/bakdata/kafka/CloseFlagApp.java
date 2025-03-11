@@ -47,7 +47,7 @@ public class CloseFlagApp extends KafkaStreamsApplication<StreamsApp> {
     public StreamsApp createApp() {
         return new StreamsApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInput();
                 input.toOutputTopic();
             }
