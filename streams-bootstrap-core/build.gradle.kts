@@ -5,12 +5,12 @@ plugins {
 }
 
 dependencies {
+    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.0-SNAPSHOT")
     val kafkaVersion: String by project
-    implementation(group = "org.apache.kafka", name = "kafka-tools", version = kafkaVersion)
+    implementation(group = "org.apache.kafka", name = "kafka-tools")
 
     api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
     api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
-    api(project(":kafka-streams-utils"))
     val confluentVersion: String by project
     implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
     api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
