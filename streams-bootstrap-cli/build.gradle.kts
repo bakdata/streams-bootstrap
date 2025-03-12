@@ -20,7 +20,8 @@ dependencies {
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
     testImplementation(testFixtures(project(":streams-bootstrap-core")))
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde")
+    val confluentVersion: String by project
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }
