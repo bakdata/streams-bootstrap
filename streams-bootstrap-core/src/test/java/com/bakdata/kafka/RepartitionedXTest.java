@@ -193,7 +193,7 @@ class RepartitionedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getInternalTopics())
                     .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("repartition-repartition"));
         }
@@ -218,7 +218,7 @@ class RepartitionedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getInternalTopics())
                     .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("repartition-repartition"));
         }

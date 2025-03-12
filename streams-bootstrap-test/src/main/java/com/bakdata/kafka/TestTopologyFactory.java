@@ -28,7 +28,6 @@ import static java.util.Collections.emptyMap;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import com.bakdata.kafka.util.TopologyInformation;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
@@ -82,22 +81,6 @@ public final class TestTopologyFactory {
      */
     public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
         return new TestTopologyFactory(schemaRegistryUrl);
-    }
-
-    /**
-     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
-     * {@link org.apache.kafka.common.serialization.Serializer} using the {@code TestTopology} properties.
-     * @param testTopology {@code TestTopology} to use properties of
-     * @return {@code Configurator}
-     * @see TestTopology#getProperties()
-     */
-    public static Configurator createConfigurator(final TestTopology<?, ?> testTopology) {
-        return new Configurator(testTopology.getProperties());
-    }
-
-    public static TopologyInformation getTopologyInformation(final TestTopology<?, ?> topology) {
-        final ImprovedStreamsConfig streamsConfig = new ImprovedStreamsConfig(topology.getStreamsConfig());
-        return new TopologyInformation(topology.getTopologyDescription(), streamsConfig.getAppId());
     }
 
     /**

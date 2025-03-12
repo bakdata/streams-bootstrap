@@ -181,7 +181,7 @@ class ProducedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getSinks())
                     .extracting(Node::name)
                     .contains("output");
@@ -205,7 +205,7 @@ class ProducedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getSinks())
                     .extracting(Node::name)
                     .contains("output");

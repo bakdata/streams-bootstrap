@@ -256,7 +256,7 @@ class JoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getProcessors())
                     .extracting(Node::name)
                     .contains("join");
@@ -285,7 +285,7 @@ class JoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getProcessors())
                     .extracting(Node::name)
                     .contains("join");

@@ -190,7 +190,7 @@ class GroupedXTest {
                     .hasKey("foo")
                     .hasValue(1L)
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getInternalTopics())
                     .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("grouped-repartition"));
         }
@@ -218,7 +218,7 @@ class GroupedXTest {
                     .hasKey("foo")
                     .hasValue(1L)
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getInternalTopics())
                     .anySatisfy(topic -> this.softly.assertThat(topic).endsWith("grouped-repartition"));
         }
