@@ -204,7 +204,7 @@ class MaterializedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getStores())
                     .contains("store");
         }
@@ -228,7 +228,7 @@ class MaterializedXTest {
                     .hasValue("bar")
                     .expectNoMoreRecord();
             final TopologyTestDriver testDriver = topology.getTestDriver();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             final List<StateStore> stateStores = stores.stream()
                     .map(testDriver::getKeyValueStore)
@@ -258,7 +258,7 @@ class MaterializedXTest {
                     .hasValue("bar")
                     .expectNoMoreRecord();
             final TopologyTestDriver testDriver = topology.getTestDriver();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             final List<StateStore> stateStores = stores.stream()
                     .map(testDriver::getKeyValueStore)
@@ -286,7 +286,7 @@ class MaterializedXTest {
                     .hasKey("foo")
                     .hasValue("bar")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             this.softly.assertThat(stores)
                     .contains("store");
@@ -316,7 +316,7 @@ class MaterializedXTest {
                     .hasKey("foo:0")
                     .hasValue(1L)
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             this.softly.assertThat(stores)
                     .contains("store");
@@ -346,7 +346,7 @@ class MaterializedXTest {
                     .hasKey("foo:0")
                     .hasValue(1L)
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             this.softly.assertThat(stores)
                     .contains("store");

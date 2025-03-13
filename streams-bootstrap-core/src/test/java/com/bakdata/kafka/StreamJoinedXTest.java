@@ -293,7 +293,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getStores())
                     .anySatisfy(store -> this.softly.assertThat(store).startsWith("join"));
         }
@@ -323,7 +323,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getStores())
                     .anySatisfy(store -> this.softly.assertThat(store).startsWith("join"));
         }
@@ -352,7 +352,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             this.softly.assertThat(information.getProcessors())
                     .extracting(Node::name)
                     .anySatisfy(processor -> this.softly.assertThat(processor).startsWith("join"));
@@ -383,7 +383,7 @@ class StreamJoinedXTest {
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
             final TopologyTestDriver testDriver = topology.getTestDriver();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             final List<StateStore> stateStores = stores.stream()
                     .map(testDriver::getWindowStore)
@@ -418,7 +418,7 @@ class StreamJoinedXTest {
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
             final TopologyTestDriver testDriver = topology.getTestDriver();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             final List<StateStore> stateStores = stores.stream()
                     .map(testDriver::getWindowStore)
@@ -454,7 +454,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             this.softly.assertThat(stores)
                     .contains("this-store", "other-store");
@@ -486,7 +486,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             this.softly.assertThat(stores)
                     .contains("store");
@@ -518,7 +518,7 @@ class StreamJoinedXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
-            final TopologyInformation information = TestTopologyFactory.getTopologyInformation(topology);
+            final TopologyInformation information = topology.getTopologyInformation();
             final List<String> stores = information.getStores();
             this.softly.assertThat(stores)
                     .contains("store");
