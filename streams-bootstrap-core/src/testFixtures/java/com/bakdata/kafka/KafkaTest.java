@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
 import org.apache.kafka.common.utils.AppInfoParser;
+import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
 import org.testcontainers.junit.jupiter.Container;
@@ -43,7 +44,9 @@ public abstract class KafkaTest {
 
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
-                .withTag(AppInfoParser.getVersion()));
+                .withTag(AppInfoParser.getVersion()))
+                .withEnv("KAFKA_LISTENERS",
+                        "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094"); //TODO remove with 3.9.1 https://issues.apache.org/jira/browse/KAFKA-18281
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {

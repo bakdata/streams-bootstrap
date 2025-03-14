@@ -26,6 +26,7 @@ package com.bakdata.kafka.util;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import com.bakdata.kafka.ApacheKafkaContainerCluster;
 import java.time.Duration;
@@ -52,11 +53,18 @@ class TopicClientClusterTest {
                     .replicationFactor((short) 2)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            assertThat(client.exists("topic")).isTrue();
-            assertThat(client.describe("topic"))
-                    .satisfies(info -> {
-                        assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
-                        assertThat(info.getPartitions()).isEqualTo(5);
+            // topic needs to be propagated to all KRaft controllers
+            // topic creation only verifies existence on one controller
+            await()
+                    .pollDelay(Duration.ofSeconds(1L))
+                    .atMost(Duration.ofSeconds(20L))
+                    .untilAsserted(() -> {
+                        assertThat(client.exists("topic")).isTrue();
+                        assertThat(client.describe("topic"))
+                                .satisfies(info -> {
+                                    assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
+                                    assertThat(info.getPartitions()).isEqualTo(5);
+                                });
                     });
         }
     }
