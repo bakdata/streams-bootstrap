@@ -6,7 +6,9 @@ plugins {
 }
 
 dependencies {
-    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.1-SNAPSHOT")
+    api(platform("com.bakdata.kafka:kafka-utils-bom:1.0.1-SNAPSHOT"))
+    api(group = "com.bakdata.kafka", name = "kafka-streams-utils")
+    api(platform("com.bakdata.kafka:confluent-bom"))
     implementation(group = "org.apache.kafka", name = "kafka-tools")
 
     api(group = "org.apache.kafka", name = "kafka-streams")
@@ -20,7 +22,7 @@ dependencies {
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
     implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1")
-    api(platform("com.bakdata.kafka:error-handling-bom:1.7.0"))
+    api(platform("com.bakdata.kafka:error-handling-bom:1.7.1-SNAPSHOT"))
     api(group = "com.bakdata.kafka", name = "error-handling-core")
 
     val junitVersion: String by project
