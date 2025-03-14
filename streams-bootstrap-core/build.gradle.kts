@@ -1,18 +1,18 @@
 description = "Collection of commonly used modules when writing a Kafka Streams Application"
 
 plugins {
+    id("java-library")
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 
 dependencies {
-    val kafkaVersion: String by project
-    implementation(group = "org.apache.kafka", name = "kafka-tools", version = kafkaVersion)
+    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.0")
+    implementation(group = "org.apache.kafka", name = "kafka-tools")
 
-    api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
-    api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
-    val confluentVersion: String by project
-    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
-    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
+    api(group = "org.apache.kafka", name = "kafka-streams")
+    api(group = "org.apache.kafka", name = "kafka-clients")
+    implementation(group = "io.confluent", name = "kafka-schema-serializer")
+    api(group = "io.confluent", name = "kafka-schema-registry-client")
     implementation(
         group = "org.slf4j",
         name = "slf4j-api",
@@ -20,6 +20,8 @@ dependencies {
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
     implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1")
+    api(platform("com.bakdata.kafka:error-handling-bom:1.7.0"))
+    api(group = "com.bakdata.kafka", name = "error-handling-core")
 
     val junitVersion: String by project
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
@@ -36,7 +38,7 @@ dependencies {
     val testContainersVersion: String by project
     testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
     testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde")
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
     val awaitilityVersion: String by project

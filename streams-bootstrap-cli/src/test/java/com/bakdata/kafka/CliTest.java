@@ -61,7 +61,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -93,7 +93,7 @@ class CliTest {
     void shouldExitWithErrorCodeOnRunError() {
         KafkaApplication.startApplication(new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
             @Override
-            public void buildTopology(final TopologyBuilder builder) {
+            public void buildTopology(final StreamsBuilderX builder) {
                 throw new UnsupportedOperationException();
             }
 
@@ -121,7 +121,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -157,7 +157,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -191,8 +191,8 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
-                        builder.streamInput().to(builder.getTopics().getOutputTopic());
+                    public void buildTopology(final StreamsBuilderX builder) {
+                        builder.streamInput().toOutputTopic();
                     }
 
                     @Override
@@ -222,7 +222,7 @@ class CliTest {
         try (final KafkaContainer kafkaCluster = newCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
                                 .peek((k, v) -> {
                                     throw new RuntimeException();
@@ -263,9 +263,9 @@ class CliTest {
         try (final KafkaContainer kafkaCluster = newCluster();
                 final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         builder.streamInput(Consumed.with(Serdes.ByteArray(), Serdes.ByteArray()))
-                                .to(builder.getTopics().getOutputTopic());
+                                .toOutputTopic();
                     }
 
                     @Override
@@ -314,7 +314,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -344,7 +344,7 @@ class CliTest {
             public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
-                    public void buildTopology(final TopologyBuilder builder) {
+                    public void buildTopology(final StreamsBuilderX builder) {
                         throw new UnsupportedOperationException();
                     }
 

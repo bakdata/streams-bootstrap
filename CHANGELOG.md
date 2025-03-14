@@ -1,8 +1,39 @@
 # Change Log
 
-## [3.5.2](https://github.com/bakdata/streams-bootstrap/tree/3.5.2) (2025-02-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.2...3.5.2)
+## [4.0.0](https://github.com/bakdata/streams-bootstrap/tree/4.0.0) (2025-03-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.0...4.0.0)
 
+
+## [4.0.0](https://github.com/bakdata/streams-bootstrap/tree/4.0.0) (2025-03-13)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.1...4.0.0)
+
+**Closed issues:**
+
+- Use recommended standard labels in Helm charts [\#170](https://github.com/bakdata/streams-bootstrap/issues/170)
+
+**Merged pull requests:**
+
+- Use Kafka Streams utils [\#285](https://github.com/bakdata/streams-bootstrap/pull/285) ([@philipp94831](https://github.com/philipp94831))
+- Create BOM [\#284](https://github.com/bakdata/streams-bootstrap/pull/284) ([@philipp94831](https://github.com/philipp94831))
+- Test topic client with single broker [\#286](https://github.com/bakdata/streams-bootstrap/pull/286) ([@philipp94831](https://github.com/philipp94831))
+- Use custom streams implementation to simplify error handling, writing to topics and serde configuration [\#265](https://github.com/bakdata/streams-bootstrap/pull/265) ([@philipp94831](https://github.com/philipp94831))
+- Do not add Helm labels to templates [\#283](https://github.com/bakdata/streams-bootstrap/pull/283) ([@philipp94831](https://github.com/philipp94831))
+- Use Helm best practices [\#281](https://github.com/bakdata/streams-bootstrap/pull/281) ([@philipp94831](https://github.com/philipp94831))
+
+## [3.6.1](https://github.com/bakdata/streams-bootstrap/tree/3.6.1) (2025-02-26)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.0...3.6.1)
+
+**Merged pull requests:**
+
+- Configure JMX for remote access [\#282](https://github.com/bakdata/streams-bootstrap/pull/282) ([@philipp94831](https://github.com/philipp94831))
+
+## [3.6.0](https://github.com/bakdata/streams-bootstrap/tree/3.6.0) (2025-02-24)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.2...3.6.0)
+
+**Merged pull requests:**
+
+- Allow flexible configuration of JMX rules [\#280](https://github.com/bakdata/streams-bootstrap/pull/280) ([@philipp94831](https://github.com/philipp94831))
+- Test topic client using multiple brokers [\#277](https://github.com/bakdata/streams-bootstrap/pull/277) ([@philipp94831](https://github.com/philipp94831))
 
 ## [3.5.2](https://github.com/bakdata/streams-bootstrap/tree/3.5.2) (2025-02-13)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.2)
@@ -211,7 +242,7 @@
 
 **Merged pull requests:**
 
-- Bump fluent\-kafka\-streams\-tests [\#208](https://github.com/bakdata/streams-bootstrap/pull/208) ([@JakobEdding](https://github.com/JakobEdding))
+- Bump fluent\-kafka\-streams\-tests [\#208](https://github.com/bakdata/streams-bootstrap/pull/208) ([@jkbe](https://github.com/jkbe))
 
 ## [2.17.0](https://github.com/bakdata/streams-bootstrap/tree/2.17.0) (2024-03-01)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.1...2.17.0)
@@ -308,7 +339,7 @@
 **Merged pull requests:**
 
 - Create method to register topic clean up hooks [\#183](https://github.com/bakdata/streams-bootstrap/pull/183) ([@philipp94831](https://github.com/philipp94831))
-- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@JakobEdding](https://github.com/JakobEdding))
+- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@jkbe](https://github.com/jkbe))
 
 ## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) (2023-04-19)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2)
@@ -453,7 +484,7 @@
 - Update documentation [\#144](https://github.com/bakdata/streams-bootstrap/pull/144) ([@philipp94831](https://github.com/philipp94831))
 - Remove default schedule for producer jobs [\#143](https://github.com/bakdata/streams-bootstrap/pull/143) ([@philipp94831](https://github.com/philipp94831))
 - Fix key\-value pairs indentation inside pod.yaml file [\#141](https://github.com/bakdata/streams-bootstrap/pull/141) ([@irux](https://github.com/irux))
-- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@JakobEdding](https://github.com/JakobEdding))
+- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@jkbe](https://github.com/jkbe))
 
 ## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) (2022-03-02)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1)
