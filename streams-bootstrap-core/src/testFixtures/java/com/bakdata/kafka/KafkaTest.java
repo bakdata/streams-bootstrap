@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
 import org.apache.kafka.common.utils.AppInfoParser;
-import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
 import org.testcontainers.junit.jupiter.Container;
