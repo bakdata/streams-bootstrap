@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> kafkaConfig = emptyMap();
 
     /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
+     * <p>This method needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>
      * <p>This method calls System exit</p>
      *
@@ -109,7 +109,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * <p>This methods needs to be called in the executable custom application class inheriting from
+     * <p>This method needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>
      *
      * @param app An instance of the custom application class.
@@ -296,9 +296,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     private int execute(final ParseResult parseResult) {
         this.startApplication();
-        final int exitCode = new CommandLine.RunLast().execute(parseResult);
-        this.close();
-        return exitCode;
+        return new CommandLine.RunLast().execute(parseResult);
     }
 
     @FunctionalInterface

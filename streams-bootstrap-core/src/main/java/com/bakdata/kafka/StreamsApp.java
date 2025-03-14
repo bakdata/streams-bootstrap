@@ -35,7 +35,7 @@ public interface StreamsApp extends App<StreamsTopicConfig, StreamsCleanUpConfig
      * @param builder provides all runtime application configurations and supports building the
      * {@link org.apache.kafka.streams.Topology}
      */
-    void buildTopology(TopologyBuilder builder);
+    void buildTopology(StreamsBuilderX builder);
 
     /**
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal

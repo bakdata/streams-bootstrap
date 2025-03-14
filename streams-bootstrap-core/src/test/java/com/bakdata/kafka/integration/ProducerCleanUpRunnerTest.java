@@ -35,6 +35,7 @@ import com.bakdata.kafka.EffectiveAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableProducerApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
+import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.ProducerTopicConfig;
@@ -46,10 +47,11 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -109,7 +111,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = this.newContainerHelper().admin()) {
+            try (final ImprovedAdminClient admin = this.newTestClient().admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();
@@ -173,8 +175,10 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, String>> records =
-                this.newContainerHelper().read().from(outputTopic, Duration.ofSeconds(1L));
+        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
+                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
                 .collect(Collectors.toList());

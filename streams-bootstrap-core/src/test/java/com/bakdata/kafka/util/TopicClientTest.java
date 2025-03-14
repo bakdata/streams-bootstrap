@@ -24,25 +24,20 @@
 
 package com.bakdata.kafka.util;
 
-import static com.bakdata.kafka.KafkaContainerHelper.DEFAULT_TOPIC_SETTINGS;
-import static com.bakdata.kafka.TestUtil.newKafkaCluster;
+import static com.bakdata.kafka.KafkaTestClient.defaultTopicSettings;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bakdata.kafka.KafkaTest;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.common.config.TopicConfig;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
 
-@Testcontainers
-class TopicClientTest {
+class TopicClientTest extends KafkaTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
-    @Container
-    private final KafkaContainer kafkaCluster = newKafkaCluster();
 
     @Test
     void shouldNotFindTopic() {
@@ -52,24 +47,18 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldFindTopic() throws InterruptedException {
+    void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("exists", DEFAULT_TOPIC_SETTINGS, emptyMap());
-        }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
+            client.createTopic("exists", defaultTopicSettings().build());
             assertThat(client.exists("exists")).isTrue();
         }
     }
 
     @Test
-    void shouldListTopics() throws InterruptedException {
+    void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", DEFAULT_TOPIC_SETTINGS, emptyMap());
-            client.createTopic("bar", DEFAULT_TOPIC_SETTINGS, emptyMap());
-        }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
+            client.createTopic("foo", defaultTopicSettings().build());
+            client.createTopic("bar", defaultTopicSettings().build());
             assertThat(client.listTopics())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -77,15 +66,10 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldDeleteTopic() throws InterruptedException {
+    void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", DEFAULT_TOPIC_SETTINGS, emptyMap());
-        }
-        Thread.sleep(CLIENT_TIMEOUT.toMillis());
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.listTopics())
-                    .hasSize(1)
-                    .containsExactlyInAnyOrder("foo");
+            client.createTopic("foo", defaultTopicSettings().build());
+            assertThat(client.exists("foo")).isTrue();
             client.deleteTopic("foo");
             assertThat(client.listTopics())
                     .isEmpty();
@@ -93,16 +77,14 @@ class TopicClientTest {
     }
 
     @Test
-    void shouldCreateTopic() throws InterruptedException {
+    void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
             assertThat(client.exists("topic")).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
-//                    .replicationFactor((short) 2) // FIXME setup testcontainers with multiple brokers
                     .replicationFactor((short) 1)
                     .build();
             client.createTopic("topic", settings, emptyMap());
-            Thread.sleep(CLIENT_TIMEOUT.toMillis());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
                     .satisfies(info -> {
@@ -112,8 +94,22 @@ class TopicClientTest {
         }
     }
 
+    @Test
+    void shouldGetTopicConfig() {
+        try (final TopicClient client = this.createClient()) {
+            final Map<String, String> config = Map.of(
+                    TopicConfig.CLEANUP_POLICY_CONFIG,
+                    TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE
+            );
+            client.createTopic("foo", defaultTopicSettings().build(), config);
+            assertThat(client.getConfig("foo"))
+                    .containsEntry(TopicConfig.CLEANUP_POLICY_CONFIG,
+                            TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE);
+        }
+    }
+
     private TopicClient createClient() {
-        final String brokerList = this.kafkaCluster.getBootstrapServers();
+        final String brokerList = this.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         return TopicClient.create(config, CLIENT_TIMEOUT);
     }

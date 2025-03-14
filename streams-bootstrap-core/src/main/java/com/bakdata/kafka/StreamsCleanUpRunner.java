@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -204,7 +204,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private void reset() {
             final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
             final List<String> inputTopics =
-                    StreamsCleanUpRunner.this.topologyInformation.getExternalSourceTopics(allTopics);
+                    StreamsCleanUpRunner.this.topologyInformation.getInputTopics(allTopics);
             final List<String> intermediateTopics =
                     StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
             runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.config);

@@ -148,9 +148,9 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @return topology of the Kafka Streams app
      */
     public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        final TopologyBuilder topologyBuilder = new TopologyBuilder(this.getTopics(), kafkaProperties);
-        this.app.buildTopology(topologyBuilder);
-        return topologyBuilder.build();
+        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
+        this.app.buildTopology(streamsBuilder);
+        return streamsBuilder.build();
     }
 
     @Override
