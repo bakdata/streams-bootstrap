@@ -6,9 +6,7 @@ plugins {
 }
 
 dependencies {
-    val kafkaUtilsVersion = "1.0.1-SNAPSHOT"
-    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = kafkaUtilsVersion)
-    api(platform("com.bakdata.kafka:confluent-bom:$kafkaUtilsVersion"))
+    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.1-SNAPSHOT")
     implementation(group = "org.apache.kafka", name = "kafka-tools")
 
     api(group = "org.apache.kafka", name = "kafka-streams")
