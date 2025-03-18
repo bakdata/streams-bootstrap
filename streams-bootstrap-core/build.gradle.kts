@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.0")
+    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.1")
     implementation(group = "org.apache.kafka", name = "kafka-tools")
 
     api(group = "org.apache.kafka", name = "kafka-streams")
