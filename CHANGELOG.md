@@ -1,8 +1,15 @@
 # Change Log
 
-## [4.0.0](https://github.com/bakdata/streams-bootstrap/tree/4.0.0) (2025-03-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.0...4.0.0)
+## [4.0.1](https://github.com/bakdata/streams-bootstrap/tree/4.0.1) (2025-03-18)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.1...4.0.1)
 
+
+## [4.0.1](https://github.com/bakdata/streams-bootstrap/tree/4.0.1) (2025-03-18)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.0...4.0.1)
+
+**Merged pull requests:**
+
+- Update kafka\-streams\-utils [\#287](https://github.com/bakdata/streams-bootstrap/pull/287) ([@philipp94831](https://github.com/philipp94831))
 
 ## [4.0.0](https://github.com/bakdata/streams-bootstrap/tree/4.0.0) (2025-03-13)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.1...4.0.0)
