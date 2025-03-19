@@ -33,5 +33,8 @@
         <Logger additivity="false" level="warn" name="org.apache.kafka.common.config.AbstractConfig">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.admin.internals.AdminMetadataManager">
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>
