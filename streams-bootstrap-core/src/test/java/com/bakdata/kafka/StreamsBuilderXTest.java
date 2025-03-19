@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
@@ -523,7 +524,10 @@ class StreamsBuilderXTest {
                 final KStreamX<String, String> input =
                         builder.stream("input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final GlobalKTable<String, String> otherInput =
-                        builder.globalTable("table_input", MaterializedX.with(Serdes.String(), Serdes.String()));
+                        builder.globalTable("table_input",
+                                MaterializedX.<String, String, KeyValueStore<Bytes, byte[]>>as("store")
+                                        .withKeySerde(Serdes.String())
+                                        .withValueSerde(                                        Serdes.String()));
                 final KStreamX<String, String> joined = input.join(otherInput, (k, v) -> k, (v1, v2) -> v1 + v2);
                 joined.to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
