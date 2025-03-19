@@ -24,3 +24,15 @@ dependencies {
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
 }
+
+tasks.withType<Test> {
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "-javaagent:${
+                configurations.testRuntimeClasspath.get().files.find {
+                    it.name.contains("junit5-system-exit")
+                }
+            }"
+        )
+    })
+}
