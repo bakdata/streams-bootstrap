@@ -70,7 +70,7 @@ public class KafkaTestClient {
      */
     public ReaderBuilder read() {
         return new ReaderBuilder(this.endpointConfig.createKafkaProperties())
-                .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.toString());
+                .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.type().toString());
     }
 
     /**
