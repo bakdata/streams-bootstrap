@@ -11,8 +11,12 @@ dependencies {
 
     api(group = "org.apache.kafka", name = "kafka-streams")
     api(group = "org.apache.kafka", name = "kafka-clients")
-    implementation(group = "io.confluent", name = "kafka-schema-serializer")
-    api(group = "io.confluent", name = "kafka-schema-registry-client")
+    implementation(group = "io.confluent", name = "kafka-schema-serializer") {
+        exclude(group = "org.apache.kafka", module = "kafka-clients")
+    }
+    api(group = "io.confluent", name = "kafka-schema-registry-client") {
+        exclude(group = "org.apache.kafka", module = "kafka-clients")
+    }
     implementation(
         group = "org.slf4j",
         name = "slf4j-api",
