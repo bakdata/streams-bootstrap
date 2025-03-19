@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.ConsumerGroupState;
+import org.apache.kafka.common.GroupState;
 import org.apache.kafka.common.TopicPartition;
 
 /**
@@ -61,30 +61,31 @@ public class ConsumerGroupVerifier {
     }
 
     /**
-     * Check whether consumer group has state {@link ConsumerGroupState#STABLE}
-     * @return true if consumer group has state {@link ConsumerGroupState#STABLE}
+     * Check whether consumer group has state {@link GroupState#STABLE}
+     * @return true if consumer group has state {@link GroupState#STABLE}
      */
     public boolean isActive() {
-        return this.getState() == ConsumerGroupState.STABLE;
+        return this.getState() == GroupState.STABLE;
     }
 
     /**
-     * Check whether consumer group has state {@link ConsumerGroupState#EMPTY}
-     * @return true if consumer group has state {@link ConsumerGroupState#EMPTY}
+     * Check whether consumer group has state {@link GroupState#EMPTY}
+     * @return true if consumer group has state {@link GroupState#EMPTY}
      */
     public boolean isClosed() {
-        return this.getState() == ConsumerGroupState.EMPTY;
+        return this.getState() == GroupState.EMPTY;
     }
 
     /**
      * Get current state of consumer group
+     *
      * @return current state of consumer group
      */
-    public ConsumerGroupState getState() {
+    public GroupState getState() {
         try (final ImprovedAdminClient admin = this.adminClientSupplier.get();
                 final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient()) {
             final ConsumerGroupDescription description = consumerGroupClient.describe(this.group);
-            final ConsumerGroupState state = description.state();
+            final GroupState state = description.groupState();
             log.debug("Consumer group '{}' has state {}", this.group, state);
             return state;
         }
