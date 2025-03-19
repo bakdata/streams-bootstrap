@@ -30,6 +30,8 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -219,7 +221,10 @@ class ProducedXTest {
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output",
-                        ProducedX.streamPartitioner((topic, key, value, numPartitions) -> "bar".equals(value) ? 0 : 1));
+                        ProducedX.streamPartitioner((topic, key, value, numPartitions) -> {
+                            final int partition = "bar".equals(value) ? 0 : 1;
+                            return Optional.of(Set.of(partition));
+                        }));
             }
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
@@ -269,7 +274,10 @@ class ProducedXTest {
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 input.to("output", ProducedX.<String, String>as("output")
-                        .withStreamPartitioner((topic, key, value, numPartitions) -> "bar".equals(value) ? 0 : 1));
+                        .withStreamPartitioner((topic, key, value, numPartitions) -> {
+                            final int partition = "bar".equals(value) ? 0 : 1;
+                            return Optional.of(Set.of(partition));
+                        }));
             }
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {

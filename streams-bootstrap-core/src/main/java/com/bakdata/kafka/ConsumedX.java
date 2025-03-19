@@ -26,7 +26,8 @@ package com.bakdata.kafka;
 
 import java.util.function.Function;
 import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.streams.Topology.AutoOffsetReset;
+import org.apache.kafka.streams.AutoOffsetReset;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.processor.TimestampExtractor;
 
@@ -110,6 +111,14 @@ public final class ConsumedX<K, V> extends ModifierChain<Consumed<K, V>, Configu
     }
 
     /**
+     * @see Consumed#with(Topology.AutoOffsetReset)
+     */
+    @Deprecated(since = "5.0.0")
+    public static <K, V> ConsumedX<K, V> with(final Topology.AutoOffsetReset resetPolicy) {
+        return new ConsumedX<>(configurator -> Consumed.with(resetPolicy));
+    }
+
+    /**
      * @see Consumed#with(AutoOffsetReset)
      */
     public static <K, V> ConsumedX<K, V> with(final AutoOffsetReset resetPolicy) {
@@ -156,6 +165,14 @@ public final class ConsumedX<K, V> extends ModifierChain<Consumed<K, V>, Configu
      * @see Consumed#withOffsetResetPolicy(AutoOffsetReset)
      */
     public ConsumedX<K, V> withOffsetResetPolicy(final AutoOffsetReset offsetResetPolicy) {
+        return this.modify(consumed -> consumed.withOffsetResetPolicy(offsetResetPolicy));
+    }
+
+    /**
+     * @see Consumed#withOffsetResetPolicy(Topology.AutoOffsetReset)
+     */
+    @Deprecated(since = "5.0.0")
+    public ConsumedX<K, V> withOffsetResetPolicy(final Topology.AutoOffsetReset offsetResetPolicy) {
         return this.modify(consumed -> consumed.withOffsetResetPolicy(offsetResetPolicy));
     }
 

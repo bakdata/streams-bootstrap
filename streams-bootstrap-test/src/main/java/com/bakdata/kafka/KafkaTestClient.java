@@ -34,7 +34,7 @@ import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.OffsetResetStrategy;
+import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
 
 /**
  * Client that supports communication with Kafka clusters in test setups, including topic management, reading from
@@ -65,12 +65,12 @@ public class KafkaTestClient {
 
     /**
      * Prepare reading data from the cluster. {@link ConsumerConfig#AUTO_OFFSET_RESET_CONFIG} is configured to
-     * {@link OffsetResetStrategy#EARLIEST}
+     * {@link AutoOffsetResetStrategy#EARLIEST}
      * @return configured {@code ReaderBuilder}
      */
     public ReaderBuilder read() {
         return new ReaderBuilder(this.endpointConfig.createKafkaProperties())
-                .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.EARLIEST.toString());
+                .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.type().toString());
     }
 
     /**

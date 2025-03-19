@@ -36,7 +36,7 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers
 public abstract class KafkaTest {
     protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
-    public static final String KAFKA_VERSION = "3.8.1";
+    public static final String KAFKA_VERSION = "4.0.0";
     private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
