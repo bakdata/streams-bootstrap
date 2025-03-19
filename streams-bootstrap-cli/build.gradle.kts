@@ -19,10 +19,22 @@ dependencies {
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
     testImplementation(testFixtures(project(":streams-bootstrap-core")))
-    testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
+    testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "2.0.2")
     testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde") {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
+}
+
+tasks.withType<Test> {
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "-javaagent:${
+                configurations.testRuntimeClasspath.get().files.find {
+                    it.name.contains("junit5-system-exit")
+                }
+            }"
+        )
+    })
 }
