@@ -8,10 +8,6 @@ plugins {
 allprojects {
     group = "com.bakdata.kafka"
 
-    tasks.withType<Test> {
-        maxParallelForks = 1
-    }
-
     repositories {
         mavenCentral()
         maven(url = "https://packages.confluent.io/maven/")
