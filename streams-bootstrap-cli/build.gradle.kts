@@ -18,7 +18,7 @@ dependencies {
     val mockitoVersion: String by project
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
-    testImplementation(testFixtures(project(":streams-bootstrap-core")))
+    testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
     testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde") {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients

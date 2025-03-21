@@ -38,17 +38,12 @@ dependencies {
     testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
     testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
 
-    testFixturesApi(project(":streams-bootstrap-test"))
-    val testContainersVersion: String by project
-    testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
-    testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
+    testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde") {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
-    val awaitilityVersion: String by project
-    testFixturesApi(group = "org.awaitility", name = "awaitility", version = awaitilityVersion)
 }
 
 tasks.withType<Test> {

@@ -20,10 +20,10 @@ dependencies {
     val assertJVersion: String by project
     testImplementation(group = "org.assertj", name = "assertj-core", version = assertJVersion)
     val testContainersVersion: String by project
-    testImplementation(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
-    testImplementation(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
+    testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
+    testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
     val awaitilityVersion: String by project
-    testImplementation(group = "org.awaitility", name = "awaitility", version = awaitilityVersion)
+    testFixturesApi(group = "org.awaitility", name = "awaitility", version = awaitilityVersion)
 }
