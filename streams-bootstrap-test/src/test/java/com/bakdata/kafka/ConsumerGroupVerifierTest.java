@@ -34,28 +34,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.common.utils.AppInfoParser;
-import org.awaitility.Awaitility;
-import org.awaitility.core.ConditionFactory;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.utility.DockerImageName;
 
-@Testcontainers
-class ConsumerGroupVerifierTest {
-
-    @Container
-    private final KafkaContainer kafkaCluster =
-            new KafkaContainer(DockerImageName.parse("apache/kafka") //FIXME native image is flaky
-                    .withTag(AppInfoParser.getVersion()));
-
-    private static ConditionFactory await() {
-        return Awaitility.await()
-                .pollInterval(Duration.ofSeconds(2L))
-                .atMost(Duration.ofSeconds(20L));
-    }
+class ConsumerGroupVerifierTest extends KafkaTest {
 
     @Test
     void shouldVerify() {
@@ -82,12 +63,11 @@ class ConsumerGroupVerifierTest {
                         .outputTopic("output")
                         .build(), TestTopologyFactory.createStreamsTestConfig()));
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers(this.kafkaCluster.getBootstrapServers())
+                .bootstrapServers(this.getBootstrapServers())
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
         testClient.createTopic("input");
-        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(executableApp);
         try (final StreamsRunner runner = executableApp.createRunner()) {
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -96,14 +76,15 @@ class ConsumerGroupVerifierTest {
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             new Thread(runner).start();
-            await().untilAsserted(() -> assertThat(verifier.isActive()).isTrue());
-            await().untilAsserted(() -> assertThat(verifier.hasFinishedProcessing()).isTrue());
+            awaitActive(executableApp);
+            awaitProcessing(executableApp);
             testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from("input", Duration.ofSeconds(10L));
         }
-        await().untilAsserted(() -> assertThat(verifier.isClosed()).isTrue());
+        awaitClosed(executableApp);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(executableApp);
         assertThat(verifier.isActive()).isFalse();
     }
 
