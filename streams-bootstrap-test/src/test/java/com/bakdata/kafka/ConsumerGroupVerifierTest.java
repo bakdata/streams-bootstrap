@@ -107,6 +107,7 @@ class ConsumerGroupVerifierTest {
                     .from("input", Duration.ofSeconds(10L));
         }
         await().untilAsserted(() -> assertThat(verifier.isClosed()).isTrue());
+        assertThat(verifier.isActive()).isFalse();
     }
 
 }
