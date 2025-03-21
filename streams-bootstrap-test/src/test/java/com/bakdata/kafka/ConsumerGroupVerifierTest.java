@@ -30,8 +30,8 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import java.time.Duration;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -40,23 +40,7 @@ class ConsumerGroupVerifierTest extends KafkaTest {
 
     @Test
     void shouldVerify() {
-        final StreamsApp app = new StreamsApp() {
-
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                builder.streamInput().toOutputTopic();
-            }
-
-            @Override
-            public String getUniqueAppId(final StreamsTopicConfig topics) {
-                return "group";
-            }
-
-            @Override
-            public SerdeConfig defaultSerializationConfig() {
-                return new SerdeConfig(StringSerde.class, StringSerde.class);
-            }
-        };
+        final StreamsApp app = new SimpleStreamsApp();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
                         .inputTopics(List.of("input"))
@@ -78,10 +62,16 @@ class ConsumerGroupVerifierTest extends KafkaTest {
             new Thread(runner).start();
             awaitActive(executableApp);
             awaitProcessing(executableApp);
-            testClient.read()
+            final List<ConsumerRecord<String, String>> records = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from("input", Duration.ofSeconds(10L));
+            assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        assertThat(rekord.key()).isEqualTo("foo");
+                        assertThat(rekord.value()).isEqualTo("bar");
+                    });
         }
         awaitClosed(executableApp);
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(executableApp);
