@@ -6,13 +6,17 @@ plugins {
 }
 
 dependencies {
-    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.0.1")
+    api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.0")
     implementation(group = "org.apache.kafka", name = "kafka-tools")
 
     api(group = "org.apache.kafka", name = "kafka-streams")
     api(group = "org.apache.kafka", name = "kafka-clients")
-    implementation(group = "io.confluent", name = "kafka-schema-serializer")
-    api(group = "io.confluent", name = "kafka-schema-registry-client")
+    implementation(group = "io.confluent", name = "kafka-schema-serializer") {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
+    api(group = "io.confluent", name = "kafka-schema-registry-client") {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
     implementation(
         group = "org.slf4j",
         name = "slf4j-api",
@@ -20,7 +24,7 @@ dependencies {
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
     implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "2.3.0")
-    api(platform("com.bakdata.kafka:error-handling-bom:1.7.0"))
+    api(platform("com.bakdata.kafka:error-handling-bom:1.8.0"))
     api(group = "com.bakdata.kafka", name = "error-handling-core")
 
     val junitVersion: String by project
@@ -38,7 +42,9 @@ dependencies {
     val testContainersVersion: String by project
     testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
     testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde")
+    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde") {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
     val log4jVersion: String by project
     testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
     val awaitilityVersion: String by project
