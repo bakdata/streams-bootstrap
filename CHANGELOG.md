@@ -1,8 +1,15 @@
 # Change Log
 
-## [4.1.0](https://github.com/bakdata/streams-bootstrap/tree/4.1.0) (2025-03-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.0...4.1.0)
+## [4.1.1](https://github.com/bakdata/streams-bootstrap/tree/4.1.1) (2025-03-21)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.1...4.1.1)
 
+
+## [4.1.1](https://github.com/bakdata/streams-bootstrap/tree/4.1.1) (2025-03-21)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.0...4.1.1)
+
+**Merged pull requests:**
+
+- Use OSS Kafka clients [\#272](https://github.com/bakdata/streams-bootstrap/pull/272) ([@philipp94831](https://github.com/philipp94831))
 
 ## [4.1.0](https://github.com/bakdata/streams-bootstrap/tree/4.1.0) (2025-03-21)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.1...4.1.0)
