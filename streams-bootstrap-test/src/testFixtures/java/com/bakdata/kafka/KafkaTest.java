@@ -42,10 +42,10 @@ public abstract class KafkaTest {
     private final KafkaContainer kafkaCluster = newCluster();
 
     public static KafkaContainer newCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
+        return new KafkaContainer(DockerImageName.parse("apache/kafka") //FIXME native image is flaky
                 .withTag(AppInfoParser.getVersion()))
-                .withEnv("KAFKA_LISTENERS",
-                        "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094"); //TODO remove with 3.9.1 https://issues.apache.org/jira/browse/KAFKA-18281
+                .withEnv("KAFKA_GROUP_CONSUMER_SESSION_TIMEOUT_MS", "10000")
+                .withEnv("KAFKA_GROUP_CONSUMER_MIN_SESSION_TIMEOUT_MS", "10000");
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
