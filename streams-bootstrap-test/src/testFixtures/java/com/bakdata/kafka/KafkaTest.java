@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
 import org.apache.kafka.common.utils.AppInfoParser;
-import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
 import org.testcontainers.junit.jupiter.Container;
@@ -44,7 +43,8 @@ public abstract class KafkaTest {
 
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka") //FIXME native image is flaky
-                .withTag(AppInfoParser.getVersion()));
+                .withTag(AppInfoParser.getVersion()))
+                .withEnv("KAFKA_GROUP_CONSUMER_SESSION_TIMEOUT_MS", "10000");
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
