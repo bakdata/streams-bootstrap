@@ -30,6 +30,8 @@ import java.util.Objects;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.GroupProtocol;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -56,8 +58,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         // compression
         kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "gzip");
 
-        //TODO enable
-//        kafkaConfig.put(StreamsConfig.consumerPrefix(ConsumerConfig.GROUP_PROTOCOL_CONFIG), GroupProtocol.CONSUMER);
+        kafkaConfig.put(StreamsConfig.consumerPrefix(ConsumerConfig.GROUP_PROTOCOL_CONFIG),
+                GroupProtocol.CONSUMER.toString());
 
         return kafkaConfig;
     }

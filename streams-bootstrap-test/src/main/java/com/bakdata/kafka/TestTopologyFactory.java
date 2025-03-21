@@ -51,9 +51,7 @@ public final class TestTopologyFactory {
     private static final String MOCK_URL_PREFIX = "mock://";
     private static final Map<String, String> STREAMS_TEST_CONFIG = Map.of(
             // Disable caching to allow immediate aggregations
-            StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
-            //TODO remove with new protocol
-            ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
+            StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L)
     );
     private final String schemaRegistryUrl;
 
