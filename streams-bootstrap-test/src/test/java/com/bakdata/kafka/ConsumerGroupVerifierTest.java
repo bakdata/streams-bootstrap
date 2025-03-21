@@ -34,6 +34,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ class ConsumerGroupVerifierTest {
     @Container
     private final KafkaContainer kafkaCluster =
             new KafkaContainer(DockerImageName.parse("apache/kafka") //FIXME native image is flaky
-                    .withTag("4.0.0")); // TODO use single point of truth
+                    .withTag(AppInfoParser.getVersion()));
 
     private static ConditionFactory await() {
         return Awaitility.await()
