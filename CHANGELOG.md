@@ -1,8 +1,15 @@
 # Change Log
 
-## [4.0.1](https://github.com/bakdata/streams-bootstrap/tree/4.0.1) (2025-03-18)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.1...4.0.1)
+## [4.1.0](https://github.com/bakdata/streams-bootstrap/tree/4.1.0) (2025-03-21)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.0...4.1.0)
 
+
+## [4.1.0](https://github.com/bakdata/streams-bootstrap/tree/4.1.0) (2025-03-21)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.1...4.1.0)
+
+**Merged pull requests:**
+
+- Upgrade to Kafka 3.9 [\#279](https://github.com/bakdata/streams-bootstrap/pull/279) ([@philipp94831](https://github.com/philipp94831))
 
 ## [4.0.1](https://github.com/bakdata/streams-bootstrap/tree/4.0.1) (2025-03-18)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.0...4.0.1)
