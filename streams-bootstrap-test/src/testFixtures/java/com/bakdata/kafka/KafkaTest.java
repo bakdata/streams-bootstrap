@@ -44,7 +44,8 @@ public abstract class KafkaTest {
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka") //FIXME native image is flaky
                 .withTag(AppInfoParser.getVersion()))
-                .withEnv("KAFKA_GROUP_CONSUMER_SESSION_TIMEOUT_MS", "10000");
+                .withEnv("KAFKA_GROUP_CONSUMER_SESSION_TIMEOUT_MS", "10000")
+                .withEnv("KAFKA_GROUP_CONSUMER_MIN_SESSION_TIMEOUT_MS", "10000");
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
