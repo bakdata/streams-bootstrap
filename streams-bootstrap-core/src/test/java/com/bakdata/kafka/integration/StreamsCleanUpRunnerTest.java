@@ -91,7 +91,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
-    static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<K, V> consumerRecord) {
+    static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<? extends K, ? extends V> consumerRecord) {
         return new KeyValue<>(consumerRecord.key(), consumerRecord.value());
     }
 
@@ -327,7 +327,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             }
 
             awaitClosed(executableApp);
-            clean(executableApp);
+            reset(executableApp);
 
             try (final ImprovedAdminClient admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
@@ -533,7 +533,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
             this.softly.assertThat(client.getAllSubjects())
                     .contains(inputSubject, manualSubject);
-            clean(executableApp);
+            reset(executableApp);
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(manualSubject)
