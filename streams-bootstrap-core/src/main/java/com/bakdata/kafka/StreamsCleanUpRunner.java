@@ -111,6 +111,8 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
         final Collection<String> existingIntermediateTopics = filterExistingTopics(intermediateTopics, allTopics);
         if (!existingIntermediateTopics.isEmpty()) {
+            //TODO intermediate topics are deprecated. Consider resetting offsets to latest manually or delete them
+            // on reset
             argList.addAll(List.of("--intermediate-topics", String.join(",", existingIntermediateTopics)));
         }
         final String[] args = argList.toArray(String[]::new);
