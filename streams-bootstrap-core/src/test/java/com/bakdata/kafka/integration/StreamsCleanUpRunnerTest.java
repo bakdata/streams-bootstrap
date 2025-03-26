@@ -538,7 +538,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldCallCleanupHookForInternalTopics() {
+    void shouldCallCleanupHookForInternalAndIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
             reset(executableApp);
@@ -546,6 +546,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
+            verify(this.topicHook).deleted(ComplexTopologyApplication.THROUGH_TOPIC);
             verify(this.topicHook).close();
             verifyNoMoreInteractions(this.topicHook);
         }
