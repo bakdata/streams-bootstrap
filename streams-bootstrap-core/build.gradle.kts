@@ -7,7 +7,9 @@ plugins {
 
 dependencies {
     api(group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.0")
-    implementation(group = "org.apache.kafka", name = "kafka-tools")
+    implementation(group = "org.apache.kafka", name = "kafka-tools") {
+        exclude(group = "org.slf4j", module = "slf4j-reload4j")
+    }
 
     api(group = "org.apache.kafka", name = "kafka-streams")
     api(group = "org.apache.kafka", name = "kafka-clients")

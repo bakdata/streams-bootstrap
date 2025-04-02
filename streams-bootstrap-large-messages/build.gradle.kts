@@ -6,6 +6,6 @@ plugins {
 
 dependencies {
     api(project(":streams-bootstrap-core"))
-    api(platform("com.bakdata.kafka:large-message-bom:2.12.0"))
+    api(platform("com.bakdata.kafka:large-message-bom:2.12.1"))
     implementation(group = "com.bakdata.kafka", name = "large-message-core")
 }
