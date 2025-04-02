@@ -19,10 +19,10 @@ dependencies {
     api(group = "io.confluent", name = "kafka-schema-registry-client") {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
-    api(platform("org.slf4j:slf4j-bom:2.0.16"))
     implementation(
         group = "org.slf4j",
         name = "slf4j-api",
+        version = "2.0.16"
     )
     implementation(group = "org.jooq", name = "jool", version = "0.9.15")
     implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1")
