@@ -11,10 +11,10 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Check out repository
-        uses: bakdata/ci-templates/actions/checkout@1.32.0
+        uses: bakdata/ci-templates/actions/checkout@1.64.0
 
       - name: Set up Gradle with version ${{ inputs.gradle-version }}
-        uses: bakdata/ci-templates/actions/java-gradle-setup@1.54.1
+        uses: bakdata/ci-templates/actions/java-gradle-setup@1.64.0
         with:
           java-distribution: "microsoft"
           java-version: "11"
@@ -32,7 +32,7 @@ jobs:
 
   helm-publish:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.54.1
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.64.0
     needs: get-gradle-version
     with:
       charts-path: "./charts"
