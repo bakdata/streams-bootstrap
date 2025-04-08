@@ -1,8 +1,16 @@
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
+
 plugins {
     alias(libs.plugins.release)
     alias(libs.plugins.sonar)
     alias(libs.plugins.sonatype)
     alias(libs.plugins.lombok)
+    id("nl.littlerobots.version-catalog-update") version "1.0.0"
+}
+
+versionCatalogUpdate {
+    sortByKey.set(false)
+    versionSelector(VersionSelectors.STABLE)
 }
 
 allprojects {

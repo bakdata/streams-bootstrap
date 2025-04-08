@@ -1,42 +1,41 @@
 [versions]
-junit = "5.11.4"
-mockito = "5.15.2"
-testcontainers = "1.20.5"
+junit = "5.12.1"
+mockito = "5.17.0"
+testcontainers = "1.20.6"
 
 [libraries]
-kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.0" }
-kafka-tools = { group = "org.apache.kafka", name = "kafka-tools" }
-kafka-streams = { group = "org.apache.kafka", name = "kafka-streams" }
-kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }
-kafka-schema-serializer = { group = "io.confluent", name = "kafka-schema-serializer" }
-kafka-schema-registry-client = { group = "io.confluent", name = "kafka-schema-registry-client" }
-kafka-streams-avro-serde = { group = "io.confluent", name = "kafka-streams-avro-serde" }
-largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "2.12.1" }
-largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
-errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "1.8.0" }
-errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
-picocli = { group = "info.picocli", name = "picocli", version = "4.7.6" }
-slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.16" }
-jool = { group = "org.jooq", name = "jool", version = "0.9.15" }
-resilience4j-retry = { group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1" }
-
-junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
-junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
-junit-pioneer = { group = "org.junit-pioneer", name = "junit-pioneer", version = "2.3.0" }
-junit-systemExit = { group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2" }
-assertj = { group = "org.assertj", name = "assertj-core", version = "3.27.2" }
-mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
-testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
-testcontainers-kafka = { group = "org.testcontainers", name = "kafka", version.ref = "testcontainers" }
-fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.3.0" }
-log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.24.3" }
-awaitility = { group = "org.awaitility", name = "awaitility", version = "4.2.2" }
+kafka-streams-utils = "com.bakdata.kafka:kafka-streams-utils:1.1.0"
+kafka-tools = { module = "org.apache.kafka:kafka-tools" }
+kafka-streams = { module = "org.apache.kafka:kafka-streams" }
+kafka-clients = { module = "org.apache.kafka:kafka-clients" }
+kafka-schema-serializer = { module = "io.confluent:kafka-schema-serializer" }
+kafka-schema-registry-client = { module = "io.confluent:kafka-schema-registry-client" }
+kafka-streams-avro-serde = { module = "io.confluent:kafka-streams-avro-serde" }
+largeMessage-bom = "com.bakdata.kafka:large-message-bom:2.12.1"
+largeMessage-core = { module = "com.bakdata.kafka:large-message-core" }
+errorHandling-bom = "com.bakdata.kafka:error-handling-bom:1.8.0"
+errorHandling-core = { module = "com.bakdata.kafka:error-handling-core" }
+picocli = "info.picocli:picocli:4.7.6"
+slf4j = "org.slf4j:slf4j-api:2.0.17"
+jool = "org.jooq:jool:0.9.15"
+resilience4j-retry = "io.github.resilience4j:resilience4j-retry:2.3.0"
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+junit-pioneer = "org.junit-pioneer:junit-pioneer:2.3.0"
+junit-systemExit = "com.ginsberg:junit5-system-exit:2.0.2"
+assertj = "org.assertj:assertj-core:3.27.3"
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers" }
+fluentKafkaStreamsTests = "com.bakdata.fluent-kafka-streams-tests:fluent-kafka-streams-tests-junit5:3.3.0"
+log4j-slf4j2 = "org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3"
+awaitility = "org.awaitility:awaitility:4.3.0"
 
 [plugins]
-release = { id = "com.bakdata.release", version = "1.8.1" }
-sonar = { id = "com.bakdata.sonar", version = "1.8.1" }
-sonatype = { id = "com.bakdata.sonatype", version = "1.9.0" }
-lombok = { id = "io.freefair.lombok", version = "8.12.2.1" }
-avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
+release = "com.bakdata.release:1.9.1"
+sonar = "com.bakdata.sonar:1.9.1"
+sonatype = "com.bakdata.sonatype:1.9.1"
+lombok = "io.freefair.lombok:8.13.1"
+avro = "com.github.davidmc24.gradle.plugin.avro:1.9.1"
