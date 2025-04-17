@@ -5,5 +5,9 @@
     <configuration>
         <verify-metadata>true</verify-metadata>
         <verify-signatures>false</verify-signatures>
+        <trusted-artifacts>
+            <trust group="org.gradle" name="github-dependency-graph-gradle-plugin"
+                reason="We trust Gradle dependency graph plugin"/>
+        </trusted-artifacts>
     </configuration>
 </verification-metadata>
