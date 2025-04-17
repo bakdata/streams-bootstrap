@@ -20,9 +20,8 @@ slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.17" }
 jool = { group = "org.jooq", name = "jool", version = "0.9.15" }
 resilience4j-retry = { group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1" }
 
-junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
-junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
 junit-pioneer = { group = "org.junit-pioneer", name = "junit-pioneer", version = "2.3.0" }
 junit-systemExit = { group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2" }
 assertj = { group = "org.assertj", name = "assertj-core", version = "3.27.2" }
@@ -38,5 +37,5 @@ awaitility = { group = "org.awaitility", name = "awaitility", version = "4.2.2" 
 release = { id = "com.bakdata.release", version = "1.9.1" }
 sonar = { id = "com.bakdata.sonar", version = "1.9.1" }
 sonatype = { id = "com.bakdata.sonatype", version = "1.9.1" }
-lombok = { id = "io.freefair.lombok", version = "8.12.2.1" }
+lombok = { id = "io.freefair.lombok", version = "8.13.1" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
