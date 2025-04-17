@@ -2,8 +2,11 @@
 <verification-metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://schema.gradle.org/dependency-verification"
     xsi:schemaLocation="https://schema.gradle.org/dependency-verification https://schema.gradle.org/dependency-verification/dependency-verification-1.3.xsd">
-   <configuration>
-      <verify-metadata>false</verify-metadata>
-      <verify-signatures>false</verify-signatures>
-   </configuration>
+    <configuration>
+        <trusted-artifacts>
+            <trust group="org.gradle" name="github-dependency-graph-gradle-plugin"/>
+        </trusted-artifacts>
+        <verify-metadata>false</verify-metadata>
+        <verify-signatures>false</verify-signatures>
+    </configuration>
 </verification-metadata>
