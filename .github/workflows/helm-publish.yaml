@@ -11,10 +11,10 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Check out repository
-        uses: bakdata/ci-templates/actions/checkout@1.32.0
+        uses: bakdata/ci-templates/actions/checkout@1.66.1
 
       - name: Set up Gradle with version ${{ inputs.gradle-version }}
-        uses: bakdata/ci-templates/actions/java-gradle-setup@1.54.1
+        uses: bakdata/ci-templates/actions/java-gradle-setup@1.66.1
         with:
           java-distribution: "microsoft"
           java-version: "11"
