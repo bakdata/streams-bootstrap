@@ -1,8 +1,15 @@
 # Change Log
 
-## [4.1.1](https://github.com/bakdata/streams-bootstrap/tree/4.1.1) (2025-03-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.1...4.1.1)
+## [4.1.2](https://github.com/bakdata/streams-bootstrap/tree/4.1.2) (2025-04-02)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.2...4.1.2)
 
+
+## [4.1.2](https://github.com/bakdata/streams-bootstrap/tree/4.1.2) (2025-04-02)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.1...4.1.2)
+
+**Merged pull requests:**
+
+- Use Slf4j logging for large\-messages [\#291](https://github.com/bakdata/streams-bootstrap/pull/291) ([@philipp94831](https://github.com/philipp94831))
 
 ## [4.1.1](https://github.com/bakdata/streams-bootstrap/tree/4.1.1) (2025-03-21)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.0...4.1.1)
