@@ -9,9 +9,8 @@ dependencies {
     api(project(":streams-bootstrap-core"))
     api(libs.picocli)
 
-    testRuntimeOnly(libs.junit.engine)
-    testImplementation(libs.junit.api)
-    testImplementation(libs.junit.params)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.junit)
