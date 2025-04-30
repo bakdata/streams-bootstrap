@@ -19,7 +19,7 @@ dependencies {
     api(libs.kafka.schema.registry.client) {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
-    implementation(libs.slf4j)
+    api(libs.slf4j)
     implementation(libs.jool)
     implementation(libs.resilience4j.retry)
     api(platform(libs.errorHandling.bom))
