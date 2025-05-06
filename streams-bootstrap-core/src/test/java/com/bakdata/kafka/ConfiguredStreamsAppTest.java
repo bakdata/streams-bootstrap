@@ -44,15 +44,10 @@ class ConfiguredStreamsAppTest {
         return StreamsTopicConfig.builder().build();
     }
 
-    private static AppConfiguration<StreamsTopicConfig> newAppConfiguration() {
-        return new AppConfiguration<>(emptyTopicConfig());
-    }
-
     @Test
     void shouldPrioritizeConfigCLIParameters() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         "foo", "baz",
@@ -67,9 +62,8 @@ class ConfiguredStreamsAppTest {
     @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
-        final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -78,9 +72,8 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldSetDefaultSerde() {
-        final AppConfiguration<StreamsTopicConfig> configuration = newAppConfiguration();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
                 .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, LongSerde.class);
@@ -88,9 +81,8 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldThrowIfKeySerdeHasBeenConfiguredDifferently() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         DEFAULT_KEY_SERDE_CLASS_CONFIG, ByteArraySerde.class
@@ -102,9 +94,8 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldThrowIfValueSerdeHasBeenConfiguredDifferently() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         DEFAULT_VALUE_SERDE_CLASS_CONFIG, ByteArraySerde.class
@@ -116,9 +107,8 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldThrowIfAppIdHasBeenConfiguredDifferently() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         StreamsConfig.APPLICATION_ID_CONFIG, "my-app"
@@ -130,9 +120,8 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
@@ -144,9 +133,8 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
+                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .withSchemaRegistryUrl("fake")
                 .with(Map.of(

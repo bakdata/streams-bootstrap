@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ public class ExecutableStreamsApp<T extends StreamsApp>
     private final @NonNull StreamsConfig config;
     @Getter
     private final @NonNull T app;
-    private final @NonNull EffectiveAppConfiguration<StreamsTopicConfig> effectiveConfig;
+    private final @NonNull AppConfiguration<StreamsTopicConfig> appConfig;
 
     /**
      * Create {@code StreamsCleanUpRunner} in order to clean application
@@ -54,7 +54,7 @@ public class ExecutableStreamsApp<T extends StreamsApp>
      */
     @Override
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp(this.effectiveConfig);
+        final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp(this.appConfig);
         return StreamsCleanUpRunner.create(this.topology, this.config, configurer);
     }
 
@@ -65,7 +65,7 @@ public class ExecutableStreamsApp<T extends StreamsApp>
      */
     @Override
     public StreamsRunner createRunner() {
-        this.app.setup(this.effectiveConfig);
+        this.app.setup(this.appConfig);
         return new StreamsRunner(this.topology, this.config);
     }
 
@@ -77,7 +77,7 @@ public class ExecutableStreamsApp<T extends StreamsApp>
      */
     @Override
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
-        this.app.setup(this.effectiveConfig);
+        this.app.setup(this.appConfig);
         return new StreamsRunner(this.topology, this.config, executionOptions);
     }
 

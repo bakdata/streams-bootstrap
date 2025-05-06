@@ -43,7 +43,7 @@ import org.mockito.quality.Strictness;
 class ExecutableProducerAppTest {
 
     @Mock
-    private Consumer<EffectiveAppConfiguration<ProducerTopicConfig>> setup;
+    private Consumer<AppConfiguration<ProducerTopicConfig>> setup;
     @Mock
     private Supplier<ProducerCleanUpConfiguration> setupCleanUp;
 
@@ -52,14 +52,13 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), topics);
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
-        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
+        verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -67,14 +66,13 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), topics);
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
-        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
+        verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -82,9 +80,8 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), topics);
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
@@ -95,13 +92,13 @@ class ExecutableProducerAppTest {
     private class TestProducer implements ProducerApp {
 
         @Override
-        public void setup(final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
+        public void setup(final AppConfiguration<ProducerTopicConfig> configuration) {
             ExecutableProducerAppTest.this.setup.accept(configuration);
         }
 
         @Override
         public ProducerCleanUpConfiguration setupCleanUp(
-                final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
+                final AppConfiguration<ProducerTopicConfig> configuration) {
             return ExecutableProducerAppTest.this.setupCleanUp.get();
         }
 

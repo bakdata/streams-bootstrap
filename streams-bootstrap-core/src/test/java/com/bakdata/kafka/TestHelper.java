@@ -47,11 +47,6 @@ public class TestHelper {
         return topology;
     }
 
-    static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app,
-            final StreamsTopicConfig topicConfig) {
-        return new ConfiguredStreamsApp<>(app, new AppConfiguration<>(topicConfig));
-    }
-
     @Getter
     public static class CapturingUncaughtExceptionHandler implements UncaughtExceptionHandler {
         private Throwable lastException;

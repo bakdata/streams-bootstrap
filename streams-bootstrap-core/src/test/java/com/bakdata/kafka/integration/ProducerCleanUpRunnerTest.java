@@ -25,13 +25,12 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.integration.ProducerRunnerTest.configureApp;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.ConfiguredProducerApp;
-import com.bakdata.kafka.EffectiveAppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.ExecutableProducerApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
@@ -73,21 +72,24 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     private TopicHook topicHook;
 
     static ConfiguredProducerApp<ProducerApp> createStringApplication() {
-        return configureApp(new StringProducer(), ProducerTopicConfig.builder()
+        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
-                .build());
+                .build();
+        return new ConfiguredProducerApp<>(new StringProducer(), topics);
     }
 
     private static ConfiguredProducerApp<ProducerApp> createAvroKeyApplication() {
-        return configureApp(new AvroKeyProducer(), ProducerTopicConfig.builder()
+        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
-                .build());
+                .build();
+        return new ConfiguredProducerApp<>(new AvroKeyProducer(), topics);
     }
 
     private static ConfiguredProducerApp<ProducerApp> createAvroValueApplication() {
-        return configureApp(new AvroValueProducer(), ProducerTopicConfig.builder()
+        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
-                .build());
+                .build();
+        return new ConfiguredProducerApp<>(new AvroValueProducer(), topics);
     }
 
     private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
@@ -162,16 +164,17 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     }
 
     private ConfiguredProducerApp<ProducerApp> createCleanUpHookApplication() {
-        return configureApp(new StringProducer() {
+        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
+                .outputTopic("output")
+                .build();
+        return new ConfiguredProducerApp<>(new StringProducer() {
             @Override
             public ProducerCleanUpConfiguration setupCleanUp(
-                    final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
+                    final AppConfiguration<ProducerTopicConfig> configuration) {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(ProducerCleanUpRunnerTest.this.topicHook);
             }
-        }, ProducerTopicConfig.builder()
-                .outputTopic("output")
-                .build());
+        }, topics);
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {

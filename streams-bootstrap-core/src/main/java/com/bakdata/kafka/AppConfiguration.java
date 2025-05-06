@@ -24,19 +24,34 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.util.ImprovedAdminClient;
+import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 /**
- * Configuration of an app. This includes topics and Kafka configuration
+ * Configuration for setting up an app
  * @param <T> type of topic config
+ * @see StreamsApp#setup(AppConfiguration)
+ * @see StreamsApp#setupCleanUp(AppConfiguration)
+ * @see ProducerApp#setup(AppConfiguration)
+ * @see ProducerApp#setupCleanUp(AppConfiguration)
  */
 @Value
-@RequiredArgsConstructor
 @EqualsAndHashCode
 public class AppConfiguration<T> {
     @NonNull
     T topics;
+    @NonNull
+    Map<String, Object> kafkaProperties;
+
+    /**
+     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     *
+     * @return {@code ImprovedAdminClient}
+     */
+    public ImprovedAdminClient createAdminClient() {
+        return ImprovedAdminClient.create(this.kafkaProperties);
+    }
 }

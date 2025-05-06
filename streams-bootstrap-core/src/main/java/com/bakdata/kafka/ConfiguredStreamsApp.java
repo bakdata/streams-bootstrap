@@ -35,14 +35,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 /**
- * A {@link StreamsApp} with a corresponding {@link AppConfiguration}
+ * A {@link StreamsApp} with a corresponding {@link StreamsTopicConfig}
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
+@Getter
 public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp<ExecutableStreamsApp<T>> {
-    @Getter
     private final @NonNull T app;
-    private final @NonNull AppConfiguration<StreamsTopicConfig> configuration;
+    private final @NonNull StreamsTopicConfig topics;
 
     private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -113,14 +113,6 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Get topic configuration
-     * @return topic configuration
-     */
-    public StreamsTopicConfig getTopics() {
-        return this.configuration.getTopics();
-    }
-
-    /**
      * Create an {@code ExecutableStreamsApp} using the provided {@code KafkaEndpointConfig}
      * @return {@code ExecutableStreamsApp}
      */
@@ -128,13 +120,13 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
         final Topology topology = this.createTopology(kafkaProperties);
-        final EffectiveAppConfiguration<StreamsTopicConfig> effectiveConfiguration =
-                new EffectiveAppConfiguration<>(this.getTopics(), kafkaProperties);
+        final AppConfiguration<StreamsTopicConfig> appConfiguration =
+                new AppConfiguration<>(this.getTopics(), kafkaProperties);
         return ExecutableStreamsApp.<T>builder()
                 .topology(topology)
                 .config(new StreamsConfig(kafkaProperties))
                 .app(this.app)
-                .effectiveConfig(effectiveConfiguration)
+                .appConfig(appConfiguration)
                 .build();
     }
 

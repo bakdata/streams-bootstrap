@@ -24,11 +24,13 @@
 
 package com.bakdata.kafka;
 
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.NonNull;
+import org.apache.kafka.clients.CommonClientConfigs;
 
 @Builder
 class KafkaPropertiesFactory {
@@ -47,6 +49,8 @@ class KafkaPropertiesFactory {
             this.putAll(KafkaPropertiesFactory.this.baseConfig);
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
             this.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
+            this.validateNotSet(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG);
+            this.validateNotSet(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
             this.putAll(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
             final SerializationConfig serializationConfig =
                     KafkaPropertiesFactory.this.app.defaultSerializationConfig();

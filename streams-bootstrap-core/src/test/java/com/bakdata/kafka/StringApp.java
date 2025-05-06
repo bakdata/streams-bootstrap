@@ -40,7 +40,7 @@ abstract class StringApp implements StreamsApp {
     }
 
     TestTopology<String, String> startApp(final StreamsTopicConfig topicConfig) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = TestHelper.configureApp(this, topicConfig);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this, topicConfig);
         return TestHelper.startApp(configuredApp);
     }
 
@@ -49,6 +49,6 @@ abstract class StringApp implements StreamsApp {
     }
 
     ConfiguredStreamsApp<StreamsApp> configureApp() {
-        return TestHelper.configureApp(this, StreamsTopicConfig.builder().build());
+        return new ConfiguredStreamsApp<>(this, StreamsTopicConfig.builder().build());
     }
 }

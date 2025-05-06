@@ -410,11 +410,11 @@ public class StreamsBuilderX {
     }
 
     /**
-     * Create {@code EffectiveAppConfiguration} used by this app
-     * @return {@code EffectiveAppConfiguration}
+     * Create {@link AppConfiguration} used by this app
+     * @return {@link AppConfiguration}
      */
-    public EffectiveAppConfiguration<StreamsTopicConfig> createEffectiveConfiguration() {
-        return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
+    public AppConfiguration<StreamsTopicConfig> createConfiguration() {
+        return new AppConfiguration<>(this.topics, this.kafkaProperties);
     }
 
     /**

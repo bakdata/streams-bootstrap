@@ -31,7 +31,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.KStreamX;
@@ -88,8 +87,7 @@ class StreamsRunnerTest extends KafkaTest {
     private Path stateDir;
 
     static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
-        return new ConfiguredStreamsApp<>(app, configuration);
+        return new ConfiguredStreamsApp<>(app, topics);
     }
 
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,

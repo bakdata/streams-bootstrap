@@ -40,19 +40,14 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredProducerAppTest {
 
-    private static AppConfiguration<ProducerTopicConfig> newAppConfiguration() {
-        return new AppConfiguration<>(emptyTopicConfig());
-    }
-
     private static ProducerTopicConfig emptyTopicConfig() {
         return ProducerTopicConfig.builder().build();
     }
 
     @Test
     void shouldPrioritizeConfigCLIParameters() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         "foo", "baz",
@@ -67,9 +62,8 @@ class ConfiguredProducerAppTest {
     @SetEnvironmentVariable(key = "KAFKA_FOO", value = "baz")
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
-        final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -78,9 +72,8 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldSetDefaultSerializer() {
-        final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
@@ -88,9 +81,8 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfKeySerializerHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
@@ -102,9 +94,8 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfValueSerializerHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
@@ -116,9 +107,8 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .with(Map.of(
                         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
@@ -130,9 +120,8 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
+                new ConfiguredProducerApp<>(new TestProducer(), emptyTopicConfig());
         final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
                 .withSchemaRegistryUrl("fake")
                 .with(Map.of(
