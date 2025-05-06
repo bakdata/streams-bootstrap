@@ -181,7 +181,7 @@ public final class TestTopologyFactory {
      * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
      */
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092")
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092")
                 .withSchemaRegistryUrl(this.schemaRegistryUrl);
         return app.getKafkaProperties(endpointConfig);
     }

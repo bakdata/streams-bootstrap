@@ -86,10 +86,6 @@ class StreamsRunnerTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
-    static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
-        return new ConfiguredStreamsApp<>(app, topics);
-    }
-
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
             final KafkaEndpointConfig endpointConfig, final Path stateDir) {
         return app.withEndpoint(endpointConfig.with(createStreamsTestConfig(stateDir)));
@@ -100,21 +96,21 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
-        return configureApp(new Mirror(), StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(new Mirror(), StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createLabeledInputTopicsApplication() {
-        return configureApp(new LabeledInputTopics(), StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(new LabeledInputTopics(), StreamsTopicConfig.builder()
                 .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
                 .outputTopic("output")
                 .build());
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createErrorApplication() {
-        return configureApp(new ErrorApplication(), StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(new ErrorApplication(), StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());

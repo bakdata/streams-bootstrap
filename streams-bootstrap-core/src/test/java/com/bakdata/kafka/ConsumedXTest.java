@@ -277,7 +277,7 @@ class ConsumedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig(kafkaCluster.getBootstrapServers());
+            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create(kafkaCluster.getBootstrapServers());
             final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
             testClient.createTopic("input");
             testClient.createTopic("output");
@@ -321,7 +321,7 @@ class ConsumedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig(kafkaCluster.getBootstrapServers());
+            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create(kafkaCluster.getBootstrapServers());
             final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
             testClient.createTopic("input");
             testClient.createTopic("output");

@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.ByteArraySerde;
 import org.apache.kafka.common.serialization.Serdes.LongSerde;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -47,8 +50,11 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")
+                new ConfiguredStreamsApp<>(new TestApplication(Map.of(
+                        "foo", "bar",
+                        "hello", "world"
+                )), emptyTopicConfig());
+        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.create("fake")
                 .with(Map.of(
                         "foo", "baz",
                         "kafka", "streams"
@@ -63,8 +69,11 @@ class ConfiguredStreamsAppTest {
     @SetEnvironmentVariable(key = "KAFKA_KAFKA", value = "streams")
     void shouldPrioritizeEnvironmentConfigs() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
+                new ConfiguredStreamsApp<>(new TestApplication(Map.of(
+                        "foo", "bar",
+                        "hello", "world"
+                )), emptyTopicConfig());
+        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.create("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
                 .containsEntry("hello", "world");
@@ -74,7 +83,7 @@ class ConfiguredStreamsAppTest {
     void shouldSetDefaultSerde() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
+        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.create("fake")))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
                 .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, LongSerde.class);
     }
@@ -83,7 +92,7 @@ class ConfiguredStreamsAppTest {
     void shouldThrowIfKeySerdeHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("fake")
                 .with(Map.of(
                         DEFAULT_KEY_SERDE_CLASS_CONFIG, ByteArraySerde.class
                 ));
@@ -96,7 +105,7 @@ class ConfiguredStreamsAppTest {
     void shouldThrowIfValueSerdeHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("fake")
                 .with(Map.of(
                         DEFAULT_VALUE_SERDE_CLASS_CONFIG, ByteArraySerde.class
                 ));
@@ -109,7 +118,7 @@ class ConfiguredStreamsAppTest {
     void shouldThrowIfAppIdHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("fake")
                 .with(Map.of(
                         StreamsConfig.APPLICATION_ID_CONFIG, "my-app"
                 ));
@@ -121,11 +130,10 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
-                .with(Map.of(
+                new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
-                ));
+                )), emptyTopicConfig());
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");
@@ -134,18 +142,24 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
-        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
-                .withSchemaRegistryUrl("fake")
-                .with(Map.of(
+                new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-                ));
+                )), emptyTopicConfig());
+        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("fake")
+                .withSchemaRegistryUrl("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");
     }
 
+    @RequiredArgsConstructor
     private static class TestApplication implements StreamsApp {
+
+        private final @NonNull Map<String, Object> kafkaProperties;
+
+        private TestApplication() {
+            this(emptyMap());
+        }
 
         @Override
         public void buildTopology(final StreamsBuilderX builder) {
@@ -159,10 +173,7 @@ class ConfiguredStreamsAppTest {
 
         @Override
         public Map<String, Object> createKafkaProperties() {
-            return Map.of(
-                    "foo", "bar",
-                    "hello", "world"
-            );
+            return this.kafkaProperties;
         }
 
         @Override

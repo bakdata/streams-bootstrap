@@ -118,7 +118,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private static ConfiguredStreamsApp<StreamsApp> createWordCountPatternApplication() {
         final StreamsApp app = new WordCountPattern();
-        return StreamsRunnerTest.configureApp(app, StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                 .inputPattern(Pattern.compile(".*_topic"))
                 .outputTopic("word_output")
                 .build());
@@ -126,7 +126,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private static ConfiguredStreamsApp<StreamsApp> createWordCountApplication() {
         final StreamsApp app = new WordCount();
-        return StreamsRunnerTest.configureApp(app, StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                 .inputTopics(List.of("word_input"))
                 .outputTopic("word_output")
                 .build());
@@ -134,7 +134,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorValueApplication() {
         final StreamsApp app = new MirrorValueWithAvro();
-        return StreamsRunnerTest.configureApp(app, StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
@@ -142,7 +142,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorKeyApplication() {
         final StreamsApp app = new MirrorKeyWithAvro();
-        return StreamsRunnerTest.configureApp(app, StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
@@ -677,27 +677,25 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private ConfiguredStreamsApp<StreamsApp> createComplexApplication() {
         this.newTestClient().createTopic(ComplexTopologyApplication.THROUGH_TOPIC);
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(new ComplexTopologyApplication(), StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
-                .build();
-        return StreamsRunnerTest.configureApp(new ComplexTopologyApplication(), topics);
+                .build());
     }
 
     private ConfiguredStreamsApp<StreamsApp> createComplexCleanUpHookApplication() {
         this.newTestClient().createTopic(ComplexTopologyApplication.THROUGH_TOPIC);
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build();
-        return StreamsRunnerTest.configureApp(new ComplexTopologyApplication() {
+        return new ConfiguredStreamsApp<>(new ComplexTopologyApplication() {
             @Override
             public StreamsCleanUpConfiguration setupCleanUp(
                     final AppConfiguration<StreamsTopicConfig> configuration) {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(StreamsCleanUpRunnerTest.this.topicHook);
             }
-        }, topics);
+        }, StreamsTopicConfig.builder()
+                .inputTopics(List.of("input"))
+                .outputTopic("output")
+                .build());
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {

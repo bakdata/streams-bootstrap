@@ -38,15 +38,15 @@ import org.apache.kafka.clients.CommonClientConfigs;
  * Configuration to connect to Kafka infrastructure, i.e., bootstrap servers and optionally schema registry.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class KafkaEndpointConfig {
+public final class KafkaEndpointConfig {
     static final Set<String> PROVIDED_PROPERTIES = Set.of(
             CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
             AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
     );
     private final @NonNull Map<String, Object> properties;
 
-    public KafkaEndpointConfig(final String bootstrapServers) {
-        this(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
+    public static KafkaEndpointConfig create(final String bootstrapServers) {
+        return new KafkaEndpointConfig(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
     }
 
     public KafkaEndpointConfig withSchemaRegistryUrl(final String schemaRegistryUrl) {

@@ -77,7 +77,7 @@ public abstract class KafkaTest {
     }
 
     protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
-        return new KafkaEndpointConfig(this.getBootstrapServers());
+        return KafkaEndpointConfig.create(this.getBootstrapServers());
     }
 
     protected KafkaEndpointConfig createEndpoint() {

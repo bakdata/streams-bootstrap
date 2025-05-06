@@ -195,7 +195,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     public KafkaEndpointConfig getEndpointConfig() {
-        return new KafkaEndpointConfig(this.bootstrapServers)
+        return KafkaEndpointConfig.create(this.bootstrapServers)
                 .withSchemaRegistryUrl(this.schemaRegistryUrl)
                 .with(this.kafkaConfig);
     }
