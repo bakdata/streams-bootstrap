@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.record.CompressionType;
 
 /**
  * A {@link ProducerApp} with a corresponding {@link AppConfiguration}
@@ -50,7 +51,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
         kafkaConfig.put(ProducerConfig.ACKS_CONFIG, "all");
 
         // compression
-        kafkaConfig.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
+        kafkaConfig.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, CompressionType.GZIP.toString());
 
         return kafkaConfig;
     }
