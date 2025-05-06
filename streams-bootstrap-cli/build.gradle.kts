@@ -8,6 +8,7 @@ plugins {
 dependencies {
     api(project(":streams-bootstrap-core"))
     api(libs.picocli)
+    implementation(libs.slf4j)
 
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)

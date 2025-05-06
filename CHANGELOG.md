@@ -1,8 +1,28 @@
 # Change Log
 
-## [4.1.2](https://github.com/bakdata/streams-bootstrap/tree/4.1.2) (2025-04-02)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.2...4.1.2)
+## [4.1.3](https://github.com/bakdata/streams-bootstrap/tree/4.1.3) (2025-05-06)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.3...4.1.3)
 
+
+## [4.1.3](https://github.com/bakdata/streams-bootstrap/tree/4.1.3) (2025-05-06)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.2...4.1.3)
+
+**Merged pull requests:**
+
+- Exclude Slf4j 1.x dependencies [\#312](https://github.com/bakdata/streams-bootstrap/pull/312) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to Gradle 8.13 [\#306](https://github.com/bakdata/streams-bootstrap/pull/306) ([@philipp94831](https://github.com/philipp94831))
+- Fix Helm publish for dependabot [\#304](https://github.com/bakdata/streams-bootstrap/pull/304) ([@philipp94831](https://github.com/philipp94831))
+- Configure Dependabot [\#293](https://github.com/bakdata/streams-bootstrap/pull/293) ([@philipp94831](https://github.com/philipp94831))
+- Migrate to version catalog [\#292](https://github.com/bakdata/streams-bootstrap/pull/292) ([@philipp94831](https://github.com/philipp94831))
+
+**Upgraded dependencies:**
+
+- Bump the test\-dependencies group with 2 updates [\#311](https://github.com/bakdata/streams-bootstrap/pull/311) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump info.picocli:picocli from 4.7.6 to 4.7.7 [\#310](https://github.com/bakdata/streams-bootstrap/pull/310) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump bakdata/ci\-templates from 1.32.0 to 1.66.1 [\#309](https://github.com/bakdata/streams-bootstrap/pull/309) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump the test\-dependencies group across 1 directory with 7 updates [\#307](https://github.com/bakdata/streams-bootstrap/pull/307) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.slf4j:slf4j\-api from 2.0.16 to 2.0.17 in the log\-dependencies group [\#295](https://github.com/bakdata/streams-bootstrap/pull/295) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump the plugins group with 3 updates [\#297](https://github.com/bakdata/streams-bootstrap/pull/297) ([@dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [4.1.2](https://github.com/bakdata/streams-bootstrap/tree/4.1.2) (2025-04-02)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.1...4.1.2)
