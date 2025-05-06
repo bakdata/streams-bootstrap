@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
@@ -55,6 +56,7 @@ public final class TestTopologyFactory {
             ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
     );
     private final String schemaRegistryUrl;
+    private final @NonNull Map<String, Object> kafkaProperties;
 
     /**
      * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
@@ -80,7 +82,7 @@ public final class TestTopologyFactory {
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
-        return new TestTopologyFactory(schemaRegistryUrl);
+        return new TestTopologyFactory(schemaRegistryUrl, emptyMap());
     }
 
     /**
@@ -118,6 +120,10 @@ public final class TestTopologyFactory {
 
     public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
         return runtimeConfiguration.with(createStreamsTestConfig());
+    }
+
+    public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
+        return new TestTopologyFactory(this.schemaRegistryUrl, kafkaProperties);
     }
 
     /**
@@ -191,7 +197,8 @@ public final class TestTopologyFactory {
      */
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092")
-                .withSchemaRegistryUrl(this.schemaRegistryUrl);
+                .withSchemaRegistryUrl(this.schemaRegistryUrl)
+                .with(this.kafkaProperties);
         return app.getKafkaProperties(runtimeConfiguration);
     }
 }
