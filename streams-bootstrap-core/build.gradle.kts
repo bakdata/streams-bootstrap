@@ -34,14 +34,11 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.junit)
 
-    testFixturesApi(project(":streams-bootstrap-test"))
-    testFixturesApi(libs.testcontainers.junit)
-    testFixturesApi(libs.testcontainers.kafka)
+    testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(libs.kafka.streams.avro.serde) {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
     testImplementation(libs.log4j.slf4j2)
-    testFixturesApi(libs.awaitility)
 }
 
 tasks.withType<Test> {
