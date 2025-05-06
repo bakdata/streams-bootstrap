@@ -40,7 +40,7 @@ class TestTopologyFactoryTest extends KafkaTest {
         return new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
-                .build(), TestTopologyFactory.createStreamsTestConfig()));
+                .build()));
     }
 
     @Test
