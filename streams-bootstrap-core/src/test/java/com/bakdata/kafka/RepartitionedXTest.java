@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
@@ -257,7 +258,7 @@ class RepartitionedXTest {
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
                         ));
-                AsyncRunnable.runAsync(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -325,7 +326,7 @@ class RepartitionedXTest {
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
                         ));
-                AsyncRunnable.runAsync(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -387,7 +388,7 @@ class RepartitionedXTest {
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-                AsyncRunnable.runAsync(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -435,7 +436,7 @@ class RepartitionedXTest {
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-                AsyncRunnable.runAsync(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
