@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -59,7 +60,7 @@ class ConsumerGroupVerifierTest extends KafkaTest {
                     .to("input", List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
-            new Thread(runner).start();
+            runAsync(runner);
             awaitActive(executableApp);
             awaitProcessing(executableApp);
             final List<ConsumerRecord<String, String>> records = testClient.read()
