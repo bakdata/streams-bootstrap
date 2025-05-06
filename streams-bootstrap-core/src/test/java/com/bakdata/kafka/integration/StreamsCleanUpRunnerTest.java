@@ -44,7 +44,6 @@ import com.bakdata.kafka.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.StreamsCleanUpRunner;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
@@ -114,7 +113,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     public static void run(final ExecutableStreamsApp<?> app) {
         try (final StreamsRunner runner = app.createRunner()) {
-            TestHelper.run(runner);
+            runAsync(runner);
             // Wait until stream application has consumed all data
             awaitProcessing(app);
         }
@@ -658,14 +657,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build());
-    }
-
-    private void run(final ExecutableStreamsApp<?> app) {
-        try (final StreamsRunner runner = app.createRunner()) {
-            runAsync(runner);
-            // Wait until stream application has consumed all data
-            this.awaitProcessing(app);
-        }
     }
 
     private ConfiguredStreamsApp<StreamsApp> createComplexApplication() {

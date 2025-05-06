@@ -27,25 +27,15 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyMap;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Map;
-import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TestHelper {
-    public static Thread run(final StreamsRunner runner) {
-        // run in Thread because the application blocks indefinitely
-        final Thread thread = new Thread(runner);
-        final UncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return thread;
-    }
 
     static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
         final TestTopology<K, V> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(app);
+                new TestTopologyFactory(TestEnvironment.withoutSchemaRegistry()).createTopology(app);
         topology.start();
         return topology;
     }
@@ -59,15 +49,5 @@ public class TestHelper {
             final StreamsTopicConfig topicConfig,
             final Map<String, String> config) {
         return new ConfiguredStreamsApp<>(app, new AppConfiguration<>(topicConfig, config));
-    }
-
-    @Getter
-    public static class CapturingUncaughtExceptionHandler implements UncaughtExceptionHandler {
-        private Throwable lastException;
-
-        @Override
-        public void uncaughtException(final Thread t, final Throwable e) {
-            this.lastException = e;
-        }
     }
 }

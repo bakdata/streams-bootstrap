@@ -241,7 +241,7 @@ class ProducedXTest {
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
                         ));
-                TestHelper.run(runner);
+                AsyncRunnable.runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -291,7 +291,7 @@ class ProducedXTest {
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
                         ));
-                TestHelper.run(runner);
+                AsyncRunnable.runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)

@@ -291,7 +291,7 @@ class ConsumedXTest {
                     TestTopologyFactory.createStreamsTestConfig());
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
                     final StreamsRunner runner = executableApp.createRunner()) {
-                TestHelper.run(runner);
+                AsyncRunnable.runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -337,7 +337,7 @@ class ConsumedXTest {
                     TestTopologyFactory.createStreamsTestConfig());
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
                     final StreamsRunner runner = executableApp.createRunner()) {
-                TestHelper.run(runner);
+                AsyncRunnable.runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
