@@ -56,9 +56,10 @@ class ExecutableStreamsAppTest {
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), topics);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092");
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
         executableApp.createRunner();
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -71,9 +72,10 @@ class ExecutableStreamsAppTest {
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), topics);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092");
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
         executableApp.createRunner(StreamsExecutionOptions.builder().build());
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -86,8 +88,9 @@ class ExecutableStreamsAppTest {
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), topics);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092");
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());
         executableApp.createCleanUpRunner();
         verify(this.setupCleanUp).get();

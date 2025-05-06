@@ -277,8 +277,9 @@ class ConsumedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create(kafkaCluster.getBootstrapServers());
-            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            final RuntimeConfiguration runtimeConfiguration =
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+            final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             testClient.send()
@@ -286,8 +287,8 @@ class ConsumedXTest {
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
-                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig
-                            .with(TestTopologyFactory.createStreamsTestConfig()));
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
+                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 TestHelper.run(runner);
                 KafkaTest.awaitActive(executableApp);
@@ -321,8 +322,9 @@ class ConsumedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create(kafkaCluster.getBootstrapServers());
-            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            final RuntimeConfiguration runtimeConfiguration =
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+            final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             testClient.send()
@@ -330,8 +332,8 @@ class ConsumedXTest {
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
-                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig
-                            .with(TestTopologyFactory.createStreamsTestConfig()));
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
+                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 TestHelper.run(runner);
                 KafkaTest.awaitActive(executableApp);

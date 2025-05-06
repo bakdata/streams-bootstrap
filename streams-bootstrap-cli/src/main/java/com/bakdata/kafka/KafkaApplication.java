@@ -194,8 +194,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
         }
     }
 
-    public KafkaEndpointConfig getEndpointConfig() {
-        return KafkaEndpointConfig.create(this.bootstrapServers)
+    public RuntimeConfiguration getRuntimeConfiguration() {
+        return RuntimeConfiguration.create(this.bootstrapServers)
                 .withSchemaRegistryUrl(this.schemaRegistryUrl)
                 .with(this.kafkaConfig);
     }
@@ -207,8 +207,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     public final E createExecutableApp() {
         final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return configuredStreamsApp.withEndpoint(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = this.getRuntimeConfiguration();
+        return configuredStreamsApp.withRuntimeConfiguration(runtimeConfiguration);
     }
 
     /**

@@ -34,7 +34,7 @@ import lombok.NonNull;
 class KafkaPropertiesFactory {
     private final @NonNull Map<String, Object> baseConfig;
     private final @NonNull App<?, ?> app;
-    private final @NonNull KafkaEndpointConfig endpointConfig;
+    private final @NonNull RuntimeConfiguration runtimeConfig;
 
     Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
         return new Task().createKafkaProperties(configOverrides);
@@ -47,8 +47,8 @@ class KafkaPropertiesFactory {
             this.putAll(KafkaPropertiesFactory.this.baseConfig);
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
             this.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
-            KafkaEndpointConfig.PROVIDED_PROPERTIES.forEach(this::validateNotSet);
-            this.putAll(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
+            RuntimeConfiguration.PROVIDED_PROPERTIES.forEach(this::validateNotSet);
+            this.putAll(KafkaPropertiesFactory.this.runtimeConfig.createKafkaProperties());
             final SerializationConfig serializationConfig =
                     KafkaPropertiesFactory.this.app.defaultSerializationConfig();
             this.putAllValidating(serializationConfig.createProperties());

@@ -111,6 +111,15 @@ public final class TestTopologyFactory {
         return STREAMS_TEST_CONFIG;
     }
 
+    public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration,
+            final Path stateDir) {
+        return runtimeConfiguration.with(createStreamsTestConfig(stateDir));
+    }
+
+    public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        return runtimeConfiguration.with(createStreamsTestConfig());
+    }
+
     /**
      * Get Schema Registry URL if configured
      * @return Schema Registry URL
@@ -141,14 +150,14 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link KafkaEndpointConfig}
+     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link RuntimeConfiguration}
      * for test purposes with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to create TestTopology from
      * @param <K> Default type of keys
      * @param <V> Default type of values
      * @return {@code TestTopology} that uses topology and configuration provided by {@code ConfiguredStreamsApp}
-     * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
+     * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
     public <K, V> TestTopology<K, V> createTopology(final ConfiguredStreamsApp<? extends StreamsApp> app) {
@@ -157,14 +166,14 @@ public final class TestTopologyFactory {
 
     /**
      * Create a {@code TestTopologyExtension} from a {@code ConfiguredStreamsApp}. It injects a
-     * {@link KafkaEndpointConfig} for test purposes with Schema Registry optionally configured.
+     * {@link RuntimeConfiguration} for test purposes with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to create TestTopology from
      * @param <K> Default type of keys
      * @param <V> Default type of values
      * @return {@code TestTopologyExtension} that uses topology and configuration provided by
      * {@code ConfiguredStreamsApp}
-     * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
+     * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
     public <K, V> TestTopologyExtension<K, V> createTopologyExtension(
@@ -173,16 +182,16 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Get Kafka properties from a {@code ConfiguredStreamsApp} using a {@link KafkaEndpointConfig} for test purposes
+     * Get Kafka properties from a {@code ConfiguredStreamsApp} using a {@link RuntimeConfiguration} for test purposes
      * with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to get Kafka properties of
      * @return Kafka properties
-     * @see ConfiguredStreamsApp#getKafkaProperties(KafkaEndpointConfig)
+     * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      */
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092")
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092")
                 .withSchemaRegistryUrl(this.schemaRegistryUrl);
-        return app.getKafkaProperties(endpointConfig);
+        return app.getKafkaProperties(runtimeConfiguration);
     }
 }

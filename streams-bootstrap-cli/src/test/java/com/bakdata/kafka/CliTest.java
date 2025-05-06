@@ -245,7 +245,7 @@ class CliTest {
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
-            new KafkaTestClient(KafkaEndpointConfig.create(kafkaCluster.getBootstrapServers()))
+            new KafkaTestClient(RuntimeConfiguration.create(kafkaCluster.getBootstrapServers()))
                     .send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -279,7 +279,7 @@ class CliTest {
                 })) {
             kafkaCluster.start();
             final KafkaTestClient testClient =
-                    new KafkaTestClient(KafkaEndpointConfig.create(kafkaCluster.getBootstrapServers()));
+                    new KafkaTestClient(RuntimeConfiguration.create(kafkaCluster.getBootstrapServers()));
             testClient.createTopic(output);
 
             runApp(app,

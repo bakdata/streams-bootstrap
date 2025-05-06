@@ -54,9 +54,10 @@ class ExecutableProducerAppTest {
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), topics);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092");
-        final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableProducerApp<ProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
         executableApp.createRunner();
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -68,9 +69,10 @@ class ExecutableProducerAppTest {
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), topics);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092");
-        final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableProducerApp<ProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -82,8 +84,9 @@ class ExecutableProducerAppTest {
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), topics);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.create("localhost:9092");
-        final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableProducerApp<ProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
         executableApp.createCleanUpRunner();
         verify(this.setupCleanUp).get();

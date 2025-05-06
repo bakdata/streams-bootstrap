@@ -80,7 +80,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
      *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
@@ -93,11 +93,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *     </li>
      * </ul>
      *
-     * @param endpointConfig endpoint to run app on
+     * @param runtimeConfiguration configuration to run app with
      * @return Kafka configuration
      */
-    public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+    public Map<String, Object> getKafkaProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration);
         return propertiesFactory.createKafkaProperties(Map.of(
                 StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId()
         ));
@@ -113,12 +113,12 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Create an {@code ExecutableStreamsApp} using the provided {@code KafkaEndpointConfig}
+     * Create an {@code ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
      * @return {@code ExecutableStreamsApp}
      */
     @Override
-    public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
+    public ExecutableStreamsApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
         final Topology topology = this.createTopology(kafkaProperties);
         final AppConfiguration<StreamsTopicConfig> appConfiguration =
                 new AppConfiguration<>(this.getTopics(), kafkaProperties);
@@ -147,12 +147,12 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         this.app.close();
     }
 
-    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfig) {
         final Map<String, Object> baseConfig = createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
-                .endpointConfig(endpointConfig)
+                .runtimeConfig(runtimeConfig)
                 .build();
     }
 

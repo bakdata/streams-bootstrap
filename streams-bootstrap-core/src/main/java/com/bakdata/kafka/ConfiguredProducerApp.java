@@ -74,7 +74,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
      *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
@@ -83,22 +83,22 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *     </li>
      * </ul>
      *
-     * @param endpointConfig endpoint to run app on
+     * @param runtimeConfiguration configuration to run app with
      * @return Kafka configuration
      */
-    public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+    public Map<String, Object> getKafkaProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration);
         return propertiesFactory.createKafkaProperties(emptyMap());
     }
 
     /**
-     * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
+     * Create an {@code ExecutableProducerApp} using the provided {@link RuntimeConfiguration}
      * @return {@code ExecutableProducerApp}
      */
     @Override
-    public ExecutableProducerApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
+    public ExecutableProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
         final ProducerTopicConfig topics = this.getTopics();
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
+        final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
         return new ExecutableProducerApp<>(topics, kafkaProperties, this.app);
     }
 
@@ -107,12 +107,12 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
         this.app.close();
     }
 
-    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfiguration) {
         final Map<String, Object> baseConfig = createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
-                .endpointConfig(endpointConfig)
+                .runtimeConfig(runtimeConfiguration)
                 .build();
     }
 }

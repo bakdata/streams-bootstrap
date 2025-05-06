@@ -50,7 +50,7 @@ class ProducerRunnerTest extends KafkaTest {
     @Test
     void shouldRunApp() {
         try (final ConfiguredProducerApp<ProducerApp> app = createStringApplication();
-                final ProducerRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+                final ProducerRunner runner = app.withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())
                         .createRunner()) {
             runner.run();
 

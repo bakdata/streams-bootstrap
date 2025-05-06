@@ -25,7 +25,6 @@
 package com.bakdata.kafka.integration;
 
 import static com.bakdata.kafka.TestHelper.run;
-import static com.bakdata.kafka.TestTopologyFactory.createStreamsTestConfig;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -34,9 +33,9 @@ import static org.mockito.Mockito.when;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.KStreamX;
-import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
@@ -45,6 +44,7 @@ import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
+import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -87,8 +87,9 @@ class StreamsRunnerTest extends KafkaTest {
     private Path stateDir;
 
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
-            final KafkaEndpointConfig endpointConfig, final Path stateDir) {
-        return app.withEndpoint(endpointConfig.with(createStreamsTestConfig(stateDir)));
+            final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
+        return app.withRuntimeConfiguration(
+                TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
     }
 
     private static void awaitThreadIsDead(final Thread thread) {
@@ -216,7 +217,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     private ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        return createExecutableApp(app, this.createEndpointWithoutSchemaRegistry(), this.stateDir);
+        return createExecutableApp(app, this.createConfigWithoutSchemaRegistry(), this.stateDir);
     }
 
     private static class ErrorApplication implements StreamsApp {
