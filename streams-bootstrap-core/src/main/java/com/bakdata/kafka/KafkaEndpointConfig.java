@@ -24,12 +24,11 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -40,11 +39,14 @@ import org.apache.kafka.clients.CommonClientConfigs;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaEndpointConfig {
-    private final @NonNull String bootstrapServers;
+    static final Set<String> PROVIDED_PROPERTIES = Set.of(
+            CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+            AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
+    );
     private final @NonNull Map<String, Object> properties;
 
     public KafkaEndpointConfig(final String bootstrapServers) {
-        this(bootstrapServers, emptyMap());
+        this(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
     }
 
     public KafkaEndpointConfig withSchemaRegistryUrl(final String schemaRegistryUrl) {
@@ -57,7 +59,7 @@ public class KafkaEndpointConfig {
     public KafkaEndpointConfig with(final Map<String, ?> newProperties) {
         final Map<String, Object> mergedProperties = new HashMap<>(this.properties);
         mergedProperties.putAll(newProperties);
-        return new KafkaEndpointConfig(this.bootstrapServers, Collections.unmodifiableMap(mergedProperties));
+        return new KafkaEndpointConfig(Collections.unmodifiableMap(mergedProperties));
     }
 
     /**
@@ -70,10 +72,7 @@ public class KafkaEndpointConfig {
      * @return properties used for connecting to Kafka
      */
     public Map<String, Object> createKafkaProperties() {
-        final Map<String, Object> kafkaConfig = new HashMap<>();
-        kafkaConfig.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-        kafkaConfig.putAll(this.properties);
-        return Collections.unmodifiableMap(kafkaConfig);
+        return this.properties;
     }
 
 }
