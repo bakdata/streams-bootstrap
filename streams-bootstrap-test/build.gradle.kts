@@ -7,4 +7,5 @@ plugins {
 dependencies {
     api(project(":streams-bootstrap-core"))
     api(libs.fluentKafkaStreamsTests)
+    implementation(libs.slf4j)
 }
