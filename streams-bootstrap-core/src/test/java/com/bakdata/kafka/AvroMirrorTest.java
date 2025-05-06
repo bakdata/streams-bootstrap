@@ -29,7 +29,6 @@ import static com.bakdata.kafka.TestEnvironment.withSchemaRegistry;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.test_applications.MirrorWithNonDefaultSerde;
 import java.util.List;
-import org.apache.kafka.common.serialization.Serde;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -49,32 +48,18 @@ class AvroMirrorTest {
 
     @Test
     void shouldMirror() {
-        final Serde<TestRecord> keySerde = this.getKeySerde();
-        final Serde<TestRecord> valueSerde = this.getValueSerde();
         final TestRecord testRecord = TestRecord.newBuilder()
                 .setContent("bar")
                 .build();
         this.testTopology.input()
-                .withKeySerde(keySerde)
-                .withValueSerde(valueSerde)
+                .configureWithKeySerde(MirrorWithNonDefaultSerde.newKeySerde())
+                .configureWithValueSerde(MirrorWithNonDefaultSerde.newValueSerde())
                 .add(testRecord, testRecord);
 
         this.testTopology.streamOutput()
-                .withKeySerde(keySerde)
-                .withValueSerde(valueSerde)
+                .configureWithKeySerde(MirrorWithNonDefaultSerde.newKeySerde())
+                .configureWithValueSerde(MirrorWithNonDefaultSerde.newValueSerde())
                 .expectNextRecord().hasKey(testRecord).hasValue(testRecord)
                 .expectNoMoreRecord();
-    }
-
-    private Serde<TestRecord> getValueSerde() {
-        return this.createSerdeFactory().configureForValues(MirrorWithNonDefaultSerde.newValueSerde());
-    }
-
-    private Configurator createSerdeFactory() {
-        return TestTopologyFactory.createConfigurator(this.testTopology);
-    }
-
-    private Serde<TestRecord> getKeySerde() {
-        return this.createSerdeFactory().configureForKeys(MirrorWithNonDefaultSerde.newKeySerde());
     }
 }

@@ -1,46 +1,47 @@
 description = "Collection of commonly used modules when writing a Kafka Streams Application"
 
 plugins {
-    id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
+    id("java-library")
+    alias(libs.plugins.avro)
 }
 
 dependencies {
-    val kafkaVersion: String by project
-    implementation(group = "org.apache.kafka", name = "kafka-tools", version = kafkaVersion)
+    api(libs.kafka.streams.utils)
+    implementation(libs.kafka.tools) {
+        exclude(group = "org.slf4j", module = "slf4j-reload4j")
+    }
 
-    api(group = "org.apache.kafka", name = "kafka-streams", version = kafkaVersion)
-    api(group = "org.apache.kafka", name = "kafka-clients", version = kafkaVersion)
-    val confluentVersion: String by project
-    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
-    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-    implementation(
-        group = "org.slf4j",
-        name = "slf4j-api",
-        version = "2.0.16"
-    )
-    implementation(group = "org.jooq", name = "jool", version = "0.9.15")
-    implementation(group = "io.github.resilience4j", name = "resilience4j-retry", version = "1.7.1")
+    api(libs.kafka.streams)
+    api(libs.kafka.clients)
+    implementation(libs.kafka.schema.serializer) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
+    }
+    api(libs.kafka.schema.registry.client) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
+    }
+    implementation(libs.slf4j)
+    implementation(libs.jool)
+    implementation(libs.resilience4j.retry)
+    api(platform(libs.errorHandling.bom))
+    api(libs.errorHandling.core)
 
-    val junitVersion: String by project
-    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
-    testImplementation(group = "org.junit-pioneer", name = "junit-pioneer", version = "2.3.0")
-    val assertJVersion: String by project
-    testImplementation(group = "org.assertj", name = "assertj-core", version = assertJVersion)
-    val mockitoVersion: String by project
-    testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
-    testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.pioneer)
+    testImplementation(libs.assertj)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit)
 
     testFixturesApi(project(":streams-bootstrap-test"))
-    val testContainersVersion: String by project
-    testFixturesApi(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
-    testFixturesApi(group = "org.testcontainers", name = "kafka", version = testContainersVersion)
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
-    val log4jVersion: String by project
-    testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
-    val awaitilityVersion: String by project
-    testFixturesApi(group = "org.awaitility", name = "awaitility", version = awaitilityVersion)
+    testFixturesApi(libs.testcontainers.junit)
+    testFixturesApi(libs.testcontainers.kafka)
+    testImplementation(libs.kafka.streams.avro.serde) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
+    testImplementation(libs.log4j.slf4j2)
+    testFixturesApi(libs.awaitility)
 }
 
 tasks.withType<Test> {

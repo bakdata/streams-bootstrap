@@ -12,14 +12,13 @@ apiVersion: batch/v1
 kind: Job
   {{- end }}
 metadata:
-  name: {{ template "producer-app.fullname" . }}
+  name: {{ include "producer-app.fullname" . }}
   {{- include "producer-app.annotations" . }}
   labels:
-    app: {{ template "producer-app.name" . }}
-    chart: {{ template "producer-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "producer-app.labels" . | nindent 4 }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.schedule }}
@@ -29,6 +28,14 @@ spec:
   failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
   concurrencyPolicy: Replace
   jobTemplate:
+    metadata:
+      {{- include "producer-app.annotations" . | indent 4 }}
+      labels:
+        {{- include "producer-app.selectorLabels" . | nindent 8 }}
+        streams-bootstrap/kind: {{ .Chart.Name }}
+        {{- range $key, $value := .Values.labels }}
+        {{ $key | quote }}: {{ $value | quote }}
+        {{- end }}
     spec:
       {{- if .Values.ttlSecondsAfterFinished }}
       ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}

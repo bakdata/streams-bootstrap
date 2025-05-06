@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: kafka-streams
+spec:
+  selector:
+    matchExpressions:
+      - key: "streams-bootstrap/kind"
+        operator: In
+        values:
+          - streams-app
+  podMetricsEndpoints:
+    - path: /metrics
+      targetPort: 5556

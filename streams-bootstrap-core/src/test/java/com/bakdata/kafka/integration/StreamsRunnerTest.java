@@ -33,15 +33,17 @@ import static org.mockito.Mockito.when;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.AsyncRunnable;
 import com.bakdata.kafka.ConfiguredStreamsApp;
+import com.bakdata.kafka.KStreamX;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TopologyBuilder;
+import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -59,7 +61,6 @@ import org.apache.kafka.streams.errors.MissingSourceTopicException;
 import org.apache.kafka.streams.errors.StreamsException;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse;
-import org.apache.kafka.streams.kstream.KStream;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -214,10 +215,10 @@ class StreamsRunnerTest extends KafkaTest {
     private static class ErrorApplication implements StreamsApp {
 
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
-            final KStream<String, String> input = builder.streamInput();
+        public void buildTopology(final StreamsBuilderX builder) {
+            final KStreamX<String, String> input = builder.streamInput();
             input.map((k, v) -> {throw new RuntimeException("Error in map");})
-                    .to(builder.getTopics().getOutputTopic());
+                    .toOutputTopic();
         }
 
         @Override

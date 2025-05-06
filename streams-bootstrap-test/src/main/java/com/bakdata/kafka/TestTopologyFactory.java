@@ -50,17 +50,6 @@ public final class TestTopologyFactory {
     private final @NonNull TestEnvironment environment;
 
     /**
-     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
-     * {@link org.apache.kafka.common.serialization.Serializer} using the {@code TestTopology} properties.
-     * @param testTopology {@code TestTopology} to use properties of
-     * @return {@code Configurator}
-     * @see TestTopology#getProperties()
-     */
-    public static Configurator createConfigurator(final TestTopology<?, ?> testTopology) {
-        return new Configurator(testTopology.getProperties());
-    }
-
-    /**
      * Create a new Kafka Streams config suitable for test environments. This includes setting the following
      * parameters in addition to {@link #createStreamsTestConfig()}:
      * <ul>
