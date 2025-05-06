@@ -366,15 +366,13 @@ class MaterializedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                    .bootstrapServers(kafkaCluster.getBootstrapServers())
-                    .build();
+            final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig(kafkaCluster.getBootstrapServers());
             final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
             testClient.createTopic("input");
             testClient.createTopic("output");
-            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig(stateDir));
-                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig
+                            .with(TestTopologyFactory.createStreamsTestConfig(stateDir)));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -413,15 +411,13 @@ class MaterializedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                    .bootstrapServers(kafkaCluster.getBootstrapServers())
-                    .build();
+            final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig(kafkaCluster.getBootstrapServers());
             final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
             testClient.createTopic("input");
             testClient.createTopic("output");
-            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig(stateDir));
-                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig
+                            .with(TestTopologyFactory.createStreamsTestConfig(stateDir)));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

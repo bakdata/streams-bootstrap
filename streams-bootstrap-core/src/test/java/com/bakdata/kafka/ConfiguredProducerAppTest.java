@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,15 +50,14 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldPrioritizeConfigCLIParameters() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
-                "foo", "baz",
-                "kafka", "streams"
-        ));
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .build()))
+        assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")
+                .with(Map.of(
+                        "foo", "baz",
+                        "kafka", "streams"
+                ))))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
                 .containsEntry("hello", "world");
@@ -71,9 +70,7 @@ class ConfiguredProducerAppTest {
         final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .build()))
+        assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
                 .containsEntry("hello", "world");
@@ -84,23 +81,20 @@ class ConfiguredProducerAppTest {
         final AppConfiguration<ProducerTopicConfig> configuration = newAppConfiguration();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        assertThat(configuredApp.getKafkaProperties(KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .build()))
+        assertThat(configuredApp.getKafkaProperties(new KafkaEndpointConfig("fake")))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
     }
 
     @Test
     void shouldThrowIfKeySerializerHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
-                KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
-        ));
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+                .with(Map.of(
+                        KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
+                ));
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'key.serializer' should not be configured already");
@@ -108,14 +102,13 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfValueSerializerHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
-                VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
-        ));
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+                .with(Map.of(
+                        VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
+                ));
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'value.serializer' should not be configured already");
@@ -123,14 +116,13 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
-                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
-        ));
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+                .with(Map.of(
+                        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
+                ));
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");
@@ -138,15 +130,14 @@ class ConfiguredProducerAppTest {
 
     @Test
     void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig(), Map.of(
-                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-        ));
+        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(emptyTopicConfig());
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("fake")
-                .schemaRegistryUrl("fake")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("fake")
+                .withSchemaRegistryUrl("fake")
+                .with(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
+                ));
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(endpointConfig))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");

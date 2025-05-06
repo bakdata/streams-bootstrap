@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,9 +55,7 @@ class ExecutableProducerAppTest {
         final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
@@ -72,9 +70,7 @@ class ExecutableProducerAppTest {
         final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
@@ -89,9 +85,7 @@ class ExecutableProducerAppTest {
         final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
         executableApp.createCleanUpRunner();

@@ -195,10 +195,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     public KafkaEndpointConfig getEndpointConfig() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.bootstrapServers)
-                .schemaRegistryUrl(this.schemaRegistryUrl)
-                .build();
+        return new KafkaEndpointConfig(this.bootstrapServers)
+                .withSchemaRegistryUrl(this.schemaRegistryUrl)
+                .with(this.kafkaConfig);
     }
 
     /**
@@ -229,7 +228,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     public final AppConfiguration<T> createConfiguration() {
         final T topics = this.createTopicConfig();
-        return new AppConfiguration<>(topics, this.kafkaConfig);
+        return new AppConfiguration<>(topics);
     }
 
     /**

@@ -57,9 +57,7 @@ class ExecutableStreamsAppTest {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner();
@@ -75,9 +73,7 @@ class ExecutableStreamsAppTest {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
         executableApp.createRunner(StreamsExecutionOptions.builder().build());
@@ -93,9 +89,7 @@ class ExecutableStreamsAppTest {
         final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
+        final KafkaEndpointConfig endpointConfig = new KafkaEndpointConfig("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());
         executableApp.createCleanUpRunner();

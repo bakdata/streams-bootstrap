@@ -25,7 +25,6 @@
 package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 abstract class StringApp implements StreamsApp {
@@ -49,7 +48,7 @@ abstract class StringApp implements StreamsApp {
         return this.startApp(StreamsTopicConfig.builder().build());
     }
 
-    ConfiguredStreamsApp<StreamsApp> configureApp(final Map<String, String> config) {
-        return TestHelper.configureApp(this, StreamsTopicConfig.builder().build(), config);
+    ConfiguredStreamsApp<StreamsApp> configureApp() {
+        return TestHelper.configureApp(this, StreamsTopicConfig.builder().build());
     }
 }

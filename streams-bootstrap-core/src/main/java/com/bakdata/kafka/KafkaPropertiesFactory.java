@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,8 +48,7 @@ class KafkaPropertiesFactory {
             this.putAll(KafkaPropertiesFactory.this.baseConfig);
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
             this.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
-            this.putAll(KafkaPropertiesFactory.this.configuration.getKafkaConfig());
-            this.putAllValidating(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
+            this.putAll(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
             final SerializationConfig serializationConfig =
                     KafkaPropertiesFactory.this.app.defaultSerializationConfig();
             this.putAllValidating(serializationConfig.createProperties());

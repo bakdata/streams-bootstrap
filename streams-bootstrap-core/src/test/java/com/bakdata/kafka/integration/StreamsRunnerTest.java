@@ -33,7 +33,9 @@ import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredStreamsApp;
+import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.KStreamX;
+import com.bakdata.kafka.KafkaEndpointConfig;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -85,25 +87,45 @@ class StreamsRunnerTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
-    static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics,
-            final Path stateDir) {
-        final AppConfiguration<StreamsTopicConfig> configuration =
-                new AppConfiguration<>(topics, createStreamsTestConfig(stateDir));
+    static ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
+        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         return new ConfiguredStreamsApp<>(app, configuration);
+    }
+
+    static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
+            final KafkaEndpointConfig endpointConfig, final Path stateDir) {
+        return app.withEndpoint(endpointConfig.with(createStreamsTestConfig(stateDir)));
     }
 
     private static void awaitThreadIsDead(final Thread thread) {
         await("Thread is dead").atMost(Duration.ofSeconds(10)).until(() -> !thread.isAlive());
     }
 
-    ConfiguredStreamsApp<StreamsApp> configureApp(final StreamsApp app, final StreamsTopicConfig topics) {
-        return configureApp(app, topics, this.stateDir);
+    private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
+        return configureApp(new Mirror(), StreamsTopicConfig.builder()
+                .inputTopics(List.of("input"))
+                .outputTopic("output")
+                .build());
+    }
+
+    private static ConfiguredStreamsApp<StreamsApp> createLabeledInputTopicsApplication() {
+        return configureApp(new LabeledInputTopics(), StreamsTopicConfig.builder()
+                .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
+                .outputTopic("output")
+                .build());
+    }
+
+    private static ConfiguredStreamsApp<StreamsApp> createErrorApplication() {
+        return configureApp(new ErrorApplication(), StreamsTopicConfig.builder()
+                .inputTopics(List.of("input"))
+                .outputTopic("output")
+                .build());
     }
 
     @Test
     void shouldRunApp() {
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createMirrorApplication();
-                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+        try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
+                final StreamsRunner runner = this.createExecutableApp(app)
                         .createRunner()) {
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final String outputTopic = app.getTopics().getOutputTopic();
@@ -124,8 +146,8 @@ class StreamsRunnerTest extends KafkaTest {
 
     @Test
     void shouldUseMultipleLabeledInputTopics() {
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createLabeledInputTopicsApplication();
-                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+        try (final ConfiguredStreamsApp<StreamsApp> app = createLabeledInputTopicsApplication();
+                final StreamsRunner runner = this.createExecutableApp(app)
                         .createRunner()) {
             final List<String> inputTopics = app.getTopics().getLabeledInputTopics().get("label");
             final String inputTopic1 = inputTopics.get(0);
@@ -155,8 +177,8 @@ class StreamsRunnerTest extends KafkaTest {
     @Test
     void shouldThrowOnMissingInputTopic() {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createMirrorApplication();
-                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+        try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
+                final StreamsRunner runner = this.createExecutableApp(app)
                         .createRunner(StreamsExecutionOptions.builder()
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
@@ -174,8 +196,8 @@ class StreamsRunnerTest extends KafkaTest {
     @Test
     void shouldCloseOnMapError() {
         when(this.uncaughtExceptionHandler.handle(any())).thenReturn(StreamThreadExceptionResponse.SHUTDOWN_CLIENT);
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createErrorApplication();
-                final StreamsRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+        try (final ConfiguredStreamsApp<StreamsApp> app = createErrorApplication();
+                final StreamsRunner runner = this.createExecutableApp(app)
                         .createRunner(StreamsExecutionOptions.builder()
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
@@ -199,25 +221,8 @@ class StreamsRunnerTest extends KafkaTest {
         }
     }
 
-    private ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
-        return this.configureApp(new Mirror(), StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build());
-    }
-
-    private ConfiguredStreamsApp<StreamsApp> createLabeledInputTopicsApplication() {
-        return this.configureApp(new LabeledInputTopics(), StreamsTopicConfig.builder()
-                .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
-                .outputTopic("output")
-                .build());
-    }
-
-    private ConfiguredStreamsApp<StreamsApp> createErrorApplication() {
-        return this.configureApp(new ErrorApplication(), StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build());
+    private ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app) {
+        return createExecutableApp(app, this.createEndpointWithoutSchemaRegistry(), this.stateDir);
     }
 
     private static class ErrorApplication implements StreamsApp {

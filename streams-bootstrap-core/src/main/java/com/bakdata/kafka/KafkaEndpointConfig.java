@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,55 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.NonNull;
-import org.apache.kafka.streams.StreamsConfig;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.CommonClientConfigs;
 
 /**
  * Configuration to connect to Kafka infrastructure, i.e., bootstrap servers and optionally schema registry.
  */
-@Builder
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaEndpointConfig {
     private final @NonNull String bootstrapServers;
-    private final String schemaRegistryUrl;
+    private final @NonNull Map<String, Object> properties;
+
+    public KafkaEndpointConfig(final String bootstrapServers) {
+        this(bootstrapServers, emptyMap());
+    }
+
+    public KafkaEndpointConfig withSchemaRegistryUrl(final String schemaRegistryUrl) {
+        if (schemaRegistryUrl == null) {
+            return this;
+        }
+        return this.with(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl));
+    }
+
+    public KafkaEndpointConfig with(final Map<String, ?> newProperties) {
+        final Map<String, Object> mergedProperties = new HashMap<>(this.properties);
+        mergedProperties.putAll(newProperties);
+        return new KafkaEndpointConfig(this.bootstrapServers, Collections.unmodifiableMap(mergedProperties));
+    }
 
     /**
-     * Create Kafka properties to connect to infrastructure.
-     * The following properties are configured:
+     * Create Kafka properties to connect to infrastructure. The following properties are configured:
      * <ul>
      *     <li>{@code bootstrap.servers}</li>
      *     <li>{@code schema.registry.url}</li>
      * </ul>
+     *
      * @return properties used for connecting to Kafka
      */
     public Map<String, Object> createKafkaProperties() {
-        final Map<String, String> kafkaConfig = new HashMap<>();
-        kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-        if (this.schemaRegistryUrl != null) {
-            kafkaConfig.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
-        }
+        final Map<String, Object> kafkaConfig = new HashMap<>();
+        kafkaConfig.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
+        kafkaConfig.putAll(this.properties);
         return Collections.unmodifiableMap(kafkaConfig);
     }
 
