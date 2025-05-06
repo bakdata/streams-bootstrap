@@ -15,11 +15,13 @@ dependencies {
     api(libs.kafka.clients)
     implementation(libs.kafka.schema.serializer) {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
     api(libs.kafka.schema.registry.client) {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
-    api(libs.slf4j)
+    implementation(libs.slf4j)
     implementation(libs.jool)
     implementation(libs.resilience4j.retry)
     api(platform(libs.errorHandling.bom))
