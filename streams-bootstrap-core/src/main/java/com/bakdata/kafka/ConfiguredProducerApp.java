@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,9 +74,6 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
-     *     </li>
-     *     <li>
      *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
      *     </li>
      *     <li>
@@ -123,7 +120,6 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
-                .configuration(this.configuration)
                 .endpointConfig(endpointConfig)
                 .build();
     }

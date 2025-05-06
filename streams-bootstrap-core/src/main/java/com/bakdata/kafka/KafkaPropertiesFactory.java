@@ -34,7 +34,6 @@ import lombok.NonNull;
 class KafkaPropertiesFactory {
     private final @NonNull Map<String, Object> baseConfig;
     private final @NonNull App<?, ?> app;
-    private final @NonNull AppConfiguration<?> configuration;
     private final @NonNull KafkaEndpointConfig endpointConfig;
 
     Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
