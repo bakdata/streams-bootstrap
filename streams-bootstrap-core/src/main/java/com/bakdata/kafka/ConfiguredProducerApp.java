@@ -97,9 +97,8 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      */
     @Override
     public ExecutableProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
-        final ProducerTopicConfig topics = this.getTopics();
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
-        return new ExecutableProducerApp<>(topics, kafkaProperties, this.app);
+        return new ExecutableProducerApp<>(this.topics, kafkaProperties, this.app);
     }
 
     @Override

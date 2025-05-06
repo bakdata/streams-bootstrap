@@ -109,7 +109,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
      */
     public String getUniqueAppId() {
-        return Objects.requireNonNull(this.app.getUniqueAppId(this.getTopics()));
+        return Objects.requireNonNull(this.app.getUniqueAppId(this.topics));
     }
 
     /**
@@ -121,7 +121,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
         final Topology topology = this.createTopology(kafkaProperties);
         final AppConfiguration<StreamsTopicConfig> appConfiguration =
-                new AppConfiguration<>(this.getTopics(), kafkaProperties);
+                new AppConfiguration<>(this.topics, kafkaProperties);
         return ExecutableStreamsApp.<T>builder()
                 .topology(topology)
                 .config(new StreamsConfig(kafkaProperties))
@@ -137,7 +137,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @return topology of the Kafka Streams app
      */
     public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
+        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.topics, kafkaProperties);
         this.app.buildTopology(streamsBuilder);
         return streamsBuilder.build();
     }

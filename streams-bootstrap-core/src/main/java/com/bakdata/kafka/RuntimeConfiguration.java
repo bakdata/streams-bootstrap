@@ -49,17 +49,23 @@ public final class RuntimeConfiguration {
         return new RuntimeConfiguration(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
     }
 
+    private static void validate(final String key) {
+        if (PROVIDED_PROPERTIES.contains(key)) {
+            throw new IllegalArgumentException(
+                    String.format("Cannot configure '%s'. Please use provided methods", key));
+        }
+    }
+
     public RuntimeConfiguration withSchemaRegistryUrl(final String schemaRegistryUrl) {
         if (schemaRegistryUrl == null) {
             return this;
         }
-        return this.with(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl));
+        return this.withInternal(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl));
     }
 
     public RuntimeConfiguration with(final Map<String, ?> newProperties) {
-        final Map<String, Object> mergedProperties = new HashMap<>(this.properties);
-        mergedProperties.putAll(newProperties);
-        return new RuntimeConfiguration(Collections.unmodifiableMap(mergedProperties));
+        newProperties.keySet().forEach(RuntimeConfiguration::validate);
+        return this.withInternal(newProperties);
     }
 
     /**
@@ -73,6 +79,12 @@ public final class RuntimeConfiguration {
      */
     public Map<String, Object> createKafkaProperties() {
         return this.properties;
+    }
+
+    private RuntimeConfiguration withInternal(final Map<String, ?> newProperties) {
+        final Map<String, Object> mergedProperties = new HashMap<>(this.properties);
+        mergedProperties.putAll(newProperties);
+        return new RuntimeConfiguration(Collections.unmodifiableMap(mergedProperties));
     }
 
 }
