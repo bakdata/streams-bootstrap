@@ -39,11 +39,11 @@ class AvroMirrorTest {
             new TestTopologyFactory(withSchemaRegistry()).createTopologyExtension(this.app);
 
     private static ConfiguredStreamsApp<MirrorWithNonDefaultSerde> createApp() {
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(StreamsTopicConfig.builder()
-                        .inputTopics(List.of("input"))
-                        .outputTopic("output")
-                .build());
-        return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(), configuration);
+        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
+                .inputTopics(List.of("input"))
+                .outputTopic("output")
+                .build();
+        return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(), topics);
     }
 
     @Test

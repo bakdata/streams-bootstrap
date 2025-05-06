@@ -55,7 +55,7 @@ public class ConsumerGroupVerifier {
      * @return verifier
      */
     public static ConsumerGroupVerifier verify(final ExecutableStreamsApp<?> app) {
-        final EffectiveAppConfiguration<StreamsTopicConfig> config = app.getEffectiveConfig();
+        final AppConfiguration<StreamsTopicConfig> config = app.getAppConfig();
         final ImprovedStreamsConfig streamsConfig = new ImprovedStreamsConfig(app.getConfig());
         return new ConsumerGroupVerifier(streamsConfig.getAppId(), config::createAdminClient);
     }

@@ -43,15 +43,15 @@ class ConsumerGroupVerifierTest extends KafkaTest {
     void shouldVerify() {
         final StreamsApp app = new SimpleStreamsApp();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
+                new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                         .inputTopics(List.of("input"))
                         .outputTopic("output")
-                        .build(), TestTopologyFactory.createStreamsTestConfig()));
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .build();
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+                        .build());
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create(this.getBootstrapServers());
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(
+                        runtimeConfiguration.with(TestTopologyFactory.createStreamsTestConfig()));
+        final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
         testClient.createTopic("input");
         try (final StreamsRunner runner = executableApp.createRunner()) {
             testClient.send()

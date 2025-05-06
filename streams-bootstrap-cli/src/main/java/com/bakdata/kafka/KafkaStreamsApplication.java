@@ -140,9 +140,8 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     }
 
     @Override
-    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app,
-            final AppConfiguration<StreamsTopicConfig> configuration) {
-        final ConfiguredStreamsApp<T> configuredApp = new ConfiguredStreamsApp<>(app, configuration);
+    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app, final StreamsTopicConfig topics) {
+        final ConfiguredStreamsApp<T> configuredApp = new ConfiguredStreamsApp<>(app, topics);
         if (this.applicationId != null && !configuredApp.getUniqueAppId().equals(this.applicationId)) {
             throw new IllegalArgumentException(
                     "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
