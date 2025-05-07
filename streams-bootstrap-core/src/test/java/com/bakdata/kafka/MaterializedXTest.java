@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static java.util.Collections.emptyMap;
 
@@ -373,13 +374,13 @@ class MaterializedXTest {
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -419,13 +420,13 @@ class MaterializedXTest {
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)

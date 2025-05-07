@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
@@ -288,9 +289,9 @@ class ConsumedXTest {
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -333,9 +334,9 @@ class ConsumedXTest {
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

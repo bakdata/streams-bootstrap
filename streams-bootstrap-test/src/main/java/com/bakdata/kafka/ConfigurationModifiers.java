@@ -24,34 +24,20 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import java.util.Map;
+import java.util.function.UnaryOperator;
+import lombok.experimental.UtilityClass;
 
-class TestTopologyFactoryTest extends KafkaTest {
+@UtilityClass
+class ConfigurationModifiers {
 
-    @RegisterExtension
-    private final TestTopologyExtension<String, String> testTopology = new TestTopologyFactory()
-            .createTopologyExtension(createApp());
-
-    private static ConfiguredStreamsApp<StreamsApp> createApp() {
-        final StreamsApp app = new SimpleStreamsApp();
-        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build());
+    static UnaryOperator<RuntimeConfiguration> withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
+        return runtimeConfiguration -> runtimeConfiguration.withSchemaRegistryUrl(
+                schemaRegistry.getSchemaRegistryUrl());
     }
 
-    @Test
-    void shouldVerify() {
-        this.testTopology.input()
-                .add("foo", "bar");
-        this.testTopology.streamOutput()
-                .expectNextRecord()
-                .hasKey("foo")
-                .hasValue("bar")
-                .expectNoMoreRecord();
+    static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, Object> kafkaProperties) {
+        return runtimeConfiguration -> runtimeConfiguration.with(kafkaProperties);
     }
 
 }

@@ -24,12 +24,12 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.TestHelper.run;
-import static org.awaitility.Awaitility.await;
+import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.bakdata.kafka.AsyncRunnable;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.KStreamX;
@@ -43,8 +43,7 @@ import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
-import com.bakdata.kafka.TestTopologyFactory;
+import com.bakdata.kafka.TestConfigurator;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -77,6 +76,7 @@ import org.mockito.quality.Strictness;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class StreamsRunnerTest extends KafkaTest {
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
     @Mock
     private StreamsUncaughtExceptionHandler uncaughtExceptionHandler;
     @Mock
@@ -89,11 +89,7 @@ class StreamsRunnerTest extends KafkaTest {
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
             final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
         return app.withRuntimeConfiguration(
-                TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
-    }
-
-    private static void awaitThreadIsDead(final Thread thread) {
-        await("Thread is dead").atMost(Duration.ofSeconds(10)).until(() -> !thread.isAlive());
+                TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
@@ -126,7 +122,7 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            run(runner);
+            runAsync(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -152,7 +148,7 @@ class StreamsRunnerTest extends KafkaTest {
             testClient.createTopic(inputTopic1);
             testClient.createTopic(inputTopic2);
             testClient.createTopic(outputTopic);
-            run(runner);
+            runAsync(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -178,11 +174,9 @@ class StreamsRunnerTest extends KafkaTest {
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
-            final Thread thread = run(runner);
-            final CapturingUncaughtExceptionHandler handler =
-                    (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
-            awaitThreadIsDead(thread);
-            this.softly.assertThat(handler.getLastException()).isInstanceOf(MissingSourceTopicException.class);
+            final AsyncRunnable runnable = runAsync(runner);
+            this.softly.assertThatThrownBy(() -> runnable.await(TIMEOUT))
+                    .isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
         }
@@ -201,15 +195,12 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            final Thread thread = run(runner);
-            final CapturingUncaughtExceptionHandler handler =
-                    (CapturingUncaughtExceptionHandler) thread.getUncaughtExceptionHandler();
+            final AsyncRunnable runnable = runAsync(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            awaitThreadIsDead(thread);
-            this.softly.assertThat(handler.getLastException()).isInstanceOf(StreamsException.class)
+            this.softly.assertThatThrownBy(() -> runnable.await(TIMEOUT)).isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
