@@ -45,10 +45,22 @@ public final class TestApplicationTopologyFactory {
         this(UnaryOperator.identity());
     }
 
+    /**
+     * Create a new {@code TestApplicationTopologyFactory} with configured Schema Registry. The scope is random in order
+     * to avoid collisions between different test instances as scopes are retained globally.
+     *
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     */
     public static TestApplicationTopologyFactory withSchemaRegistry() {
         return withSchemaRegistry(new TestSchemaRegistry());
     }
 
+    /**
+     * Create a new {@code TestApplicationTopologyFactory} with configured Schema Registry.
+     *
+     * @param schemaRegistry Schema Registry to use
+     * @return {@code TestApplicationTopologyFactory} with configured Schema Registry
+     */
     public static TestApplicationTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
         return new TestApplicationTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
     }
