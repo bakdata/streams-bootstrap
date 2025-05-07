@@ -24,13 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.TestEnvironment.withoutSchemaRegistry;
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import java.lang.Thread.UncaughtExceptionHandler;
-import lombok.Getter;
-import java.util.Map;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -38,7 +32,7 @@ public class TestHelper {
 
     static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
         final TestTopology<K, V> topology =
-                new TestTopologyFactory(withoutSchemaRegistry()).createTopology(app);
+                new TestTopologyFactory().createTopology(app);
         topology.start();
         return topology;
     }

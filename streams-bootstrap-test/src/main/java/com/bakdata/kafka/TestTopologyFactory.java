@@ -29,11 +29,10 @@ import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
-import lombok.NonNull;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -42,7 +41,7 @@ import org.apache.kafka.streams.StreamsConfig;
 /**
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class TestTopologyFactory {
 
@@ -51,15 +50,32 @@ public final class TestTopologyFactory {
             StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
             ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
     );
-    private final @NonNull TestEnvironment environment;
-    private final @NonNull Map<String, Object> kafkaProperties;
+    private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
+
+    public TestTopologyFactory(final TestSchemaRegistry schemaRegistry) {
+        this(configureSchemaRegistry(schemaRegistry));
+    }
+
+    public TestTopologyFactory() {
+        this(UnaryOperator.identity());
+    }
 
     /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following
-     * parameters in addition to {@link #createStreamsTestConfig()}:
+     * Create a new {@code TestTopologyFactory} with configured {@link TestSchemaRegistry}
+     *
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     */
+    public static TestTopologyFactory withSchemaRegistry() {
+        return new TestTopologyFactory(new TestSchemaRegistry());
+    }
+
+    /**
+     * Create a new Kafka Streams config suitable for test environments. This includes setting the following parameters
+     * in addition to {@link #createStreamsTestConfig()}:
      * <ul>
      *     <li>{@link StreamsConfig#STATE_DIR_CONFIG}=provided directory</li>
      * </ul>
+     *
      * @param stateDir directory to use for storing Kafka Streams state
      * @return Kafka Streams config
      * @see #createStreamsTestConfig()
@@ -71,11 +87,13 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following parameters:
+     * Create a new Kafka Streams config suitable for test environments. This includes setting the following
+     * parameters:
      * <ul>
      *     <li>{@link StreamsConfig#STATESTORE_CACHE_MAX_BYTES_CONFIG}=0</li>
      *     <li>{@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG}=10000</li>
      * </ul>
+     *
      * @return Kafka Streams config
      */
     public static Map<String, String> createStreamsTestConfig() {
@@ -91,13 +109,23 @@ public final class TestTopologyFactory {
         return runtimeConfiguration.with(createStreamsTestConfig());
     }
 
+    private static UnaryOperator<RuntimeConfiguration> configureSchemaRegistry(
+            final TestSchemaRegistry schemaRegistry) {
+        return runtimeConfiguration -> runtimeConfiguration.withSchemaRegistryUrl(
+                schemaRegistry.getSchemaRegistryUrl());
+    }
+
+    private static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, Object> kafkaProperties) {
+        return runtimeConfiguration -> runtimeConfiguration.with(kafkaProperties);
+    }
+
     public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
-        return new TestTopologyFactory(this.schemaRegistryUrl, kafkaProperties);
+        return new TestTopologyFactory(this.configurationModifier.andThen(configureProperties(kafkaProperties)));
     }
 
     /**
-     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link RuntimeConfiguration}
-     * for test purposes with Schema Registry optionally configured.
+     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link RuntimeConfiguration} for
+     * test purposes with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to create TestTopology from
      * @param <K> Default type of keys
@@ -136,9 +164,7 @@ public final class TestTopologyFactory {
      * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      */
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092")
-                .withSchemaRegistryUrl(this.environment.getSchemaRegistryUrl())
-                .with(this.kafkaProperties);
-        return app.getKafkaProperties(runtimeConfiguration);
+        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        return app.getKafkaProperties(this.configurationModifier.apply(runtimeConfiguration));
     }
 }

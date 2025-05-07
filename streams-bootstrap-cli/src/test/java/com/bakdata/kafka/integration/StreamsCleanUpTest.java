@@ -25,8 +25,6 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.TestEnvironment.withoutSchemaRegistry;
-
 import com.bakdata.kafka.CloseFlagApp;
 import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.KafkaTest;
@@ -172,7 +170,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private TestApplicationRunner createTestRunner() {
-        return new TestApplicationRunner(this.getBootstrapServers(), withoutSchemaRegistry());
+        return TestApplicationRunner.create(this.getBootstrapServers());
     }
 
     private CloseFlagApp createCloseFlagApplication() {

@@ -30,10 +30,10 @@ import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -41,36 +41,17 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class TestEnvironment {
+public final class TestSchemaRegistry {
 
     private static final String MOCK_URL_PREFIX = "mock://";
-    private final String schemaRegistryUrl;
+    private final @NonNull String schemaRegistryUrl;
 
     /**
-     * Create a new {@code SchemaRegistryEnv} with no configured Schema Registry.
-     * @return {@code SchemaRegistryEnv} with no configured Schema Registry
-     */
-    public static TestEnvironment withoutSchemaRegistry() {
-        return withSchemaRegistry(null);
-    }
-
-    /**
-     * Create a new {@code SchemaRegistryEnv} with configured
-     * {@link io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry}. The scope is random in order to avoid
+     * Create a new {@code TestSchemaRegistry}. The scope is random in order to avoid
      * collisions between different test instances as scopes are retained globally.
-     * @return {@code SchemaRegistryEnv} with configured Schema Registry
      */
-    public static TestEnvironment withSchemaRegistry() {
-        return withSchemaRegistry(MOCK_URL_PREFIX + UUID.randomUUID());
-    }
-
-    /**
-     * Create a new {@code SchemaRegistryEnv} with configured Schema Registry.
-     * @param schemaRegistryUrl Schema Registry URL to use
-     * @return {@code SchemaRegistryEnv} with configured Schema Registry
-     */
-    public static TestEnvironment withSchemaRegistry(final String schemaRegistryUrl) {
-        return new TestEnvironment(schemaRegistryUrl);
+    public TestSchemaRegistry() {
+        this(MOCK_URL_PREFIX + UUID.randomUUID());
     }
 
     /**
@@ -89,9 +70,7 @@ public final class TestEnvironment {
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        final List<String> baseUrls = List.of(
-                Objects.requireNonNull(this.schemaRegistryUrl, "Schema Registry is not configured")
-        );
+        final List<String> baseUrls = List.of(this.schemaRegistryUrl);
         return SchemaRegistryClientFactory.newClient(baseUrls, 0, providers, emptyMap(), null);
     }
 }

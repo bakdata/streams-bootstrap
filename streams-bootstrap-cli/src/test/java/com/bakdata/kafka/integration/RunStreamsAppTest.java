@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.TestEnvironment.withoutSchemaRegistry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaStreamsApplication;
@@ -58,7 +57,7 @@ class RunStreamsAppTest extends KafkaTest {
             app.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
-            new TestApplicationRunner(this.getBootstrapServers(), withoutSchemaRegistry()).run(app);
+            TestApplicationRunner.create(this.getBootstrapServers()).run(app);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

@@ -26,20 +26,31 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestApplicationRunner {
 
     private final @NonNull String bootstrapServers;
-    private final @NonNull TestEnvironment environment;
+    @With
+    private final TestSchemaRegistry schemaRegistry;
+    @With
+    private final Map<String, String> kafkaConfig;
+
+    public static TestApplicationRunner create(final String bootstrapServers) {
+        return new TestApplicationRunner(bootstrapServers, null, emptyMap());
+    }
 
     public void run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
@@ -79,8 +90,8 @@ public final class TestApplicationRunner {
 
     public ConsumerGroupVerifier verify(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.configure(app);
-        final KafkaEndpointConfig endpointConfig = app.getEndpointConfig();
-        final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+        final RuntimeConfiguration configuration = app.getRuntimeConfiguration();
+        final KafkaTestClient testClient = new KafkaTestClient(configuration);
         try (final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = app.createConfiguredApp()) {
             final String uniqueAppId = configuredApp.getUniqueAppId();
             return new ConsumerGroupVerifier(uniqueAppId, testClient::admin);
@@ -88,24 +99,30 @@ public final class TestApplicationRunner {
     }
 
     public KafkaTestClient newTestClient() {
-        return new KafkaTestClient(KafkaEndpointConfig.builder()
-                .bootstrapServers(this.bootstrapServers)
-                .schemaRegistryUrl(this.environment.getSchemaRegistryUrl())
-                .build());
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
+                .withSchemaRegistryUrl(this.schemaRegistry != null ? this.schemaRegistry.getSchemaRegistryUrl() : null)
+                .with(this.kafkaConfig);
+        return new KafkaTestClient(configuration);
     }
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
         app.setBootstrapServers(this.bootstrapServers);
-        app.setSchemaRegistryUrl(this.environment.getSchemaRegistryUrl());
+        final Map<String, String> oldConfig = new HashMap<>(app.getKafkaConfig());
+        oldConfig.putAll(this.kafkaConfig);
+        app.setKafkaConfig(oldConfig);
+        if (this.schemaRegistry != null) {
+            app.setSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
+        }
     }
 
     private String[] setupArgs(final String[] args, final Iterable<String> command) {
-        final Builder<String> argBuilder = ImmutableList.<String>builder()
+        final ImmutableList.Builder<String> argBuilder = ImmutableList.<String>builder()
                 .add(args)
                 .add("--bootstrap-servers", this.bootstrapServers);
-        if (this.environment.getSchemaRegistryUrl() != null) {
-            argBuilder.add("--schema-registry-url", this.environment.getSchemaRegistryUrl());
+        if (this.schemaRegistry != null) {
+            argBuilder.add("--schema-registry-url", this.schemaRegistry.getSchemaRegistryUrl());
         }
+        this.kafkaConfig.forEach((k, v) -> argBuilder.add("--kafka-config", String.format("%s=%s", k, v)));
         final List<String> newArgs = argBuilder
                 .addAll(command)
                 .build();

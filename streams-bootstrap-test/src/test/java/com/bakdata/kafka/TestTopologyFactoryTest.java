@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.TestEnvironment.withoutSchemaRegistry;
-
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -34,7 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class TestTopologyFactoryTest extends KafkaTest {
 
     @RegisterExtension
-    private final TestTopologyExtension<String, String> testTopology = new TestTopologyFactory(withoutSchemaRegistry())
+    private final TestTopologyExtension<String, String> testTopology = new TestTopologyFactory()
             .createTopologyExtension(createApp());
 
     private static ConfiguredStreamsApp<StreamsApp> createApp() {

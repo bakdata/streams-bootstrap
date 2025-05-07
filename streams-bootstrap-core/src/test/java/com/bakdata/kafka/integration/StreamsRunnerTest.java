@@ -25,14 +25,10 @@
 package com.bakdata.kafka.integration;
 
 import static com.bakdata.kafka.AsyncRunnable.runAsync;
-import static com.bakdata.kafka.TestTopologyFactory.createStreamsTestConfig;
-import static com.bakdata.kafka.TestHelper.run;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.AsyncRunnable;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
@@ -47,7 +43,6 @@ import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
 import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
