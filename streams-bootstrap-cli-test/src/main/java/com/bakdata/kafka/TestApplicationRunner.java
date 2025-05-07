@@ -29,23 +29,21 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
 import com.google.common.collect.ImmutableList;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.With;
+import org.apache.kafka.streams.StreamsConfig;
 
-@Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestApplicationRunner {
 
     private final @NonNull String bootstrapServers;
-    @With
     private final TestSchemaRegistry schemaRegistry;
-    @With
     private final @NonNull Map<String, String> kafkaConfig;
 
     public static TestApplicationRunner create(final String bootstrapServers) {
@@ -55,16 +53,37 @@ public final class TestApplicationRunner {
     private static Map<String, String> merge(final Map<String, String> map1, final Map<String, String> map2) {
         final Map<String, String> merged = new HashMap<>(map1);
         merged.putAll(map2);
-        return merged;
+        return Collections.unmodifiableMap(merged);
     }
 
-    public void run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+    public TestApplicationRunner withStateDir(final Path stateDir) {
+        return this.withKafkaConfig(Map.of(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString()));
+    }
+
+    public TestApplicationRunner withTestConfig() {
+        return this.withKafkaConfig(TestConfigurator.createStreamsTestConfig());
+    }
+
+    public TestApplicationRunner withKafkaConfig(final Map<String, String> newKafkaConfig) {
+        return new TestApplicationRunner(
+                this.bootstrapServers, this.schemaRegistry, merge(this.kafkaConfig, newKafkaConfig));
+    }
+
+    public TestApplicationRunner withSchemaRegistry(final @NonNull TestSchemaRegistry schemaRegistry) {
+        return new TestApplicationRunner(this.bootstrapServers, schemaRegistry, this.kafkaConfig);
+    }
+
+    public TestApplicationRunner withSchemaRegistry() {
+        return this.withSchemaRegistry(new TestSchemaRegistry());
+    }
+
+    public void run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
         final Thread thread = new Thread(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
         thread.start();
     }
 
-    public int clean(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+    public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
         final String[] newArgs = this.setupArgs(args, List.of("clean"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
@@ -74,12 +93,12 @@ public final class TestApplicationRunner {
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
-    public AsyncRunnable run(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         return runAsync(app);
     }
 
-    public void clean(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public void clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         app.clean();
     }
@@ -89,7 +108,7 @@ public final class TestApplicationRunner {
         app.reset();
     }
 
-    public void prepareExecution(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.configure(app);
         app.onApplicationStart();
     }
@@ -111,7 +130,7 @@ public final class TestApplicationRunner {
         return new KafkaTestClient(configuration);
     }
 
-    public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    public void configure(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         app.setBootstrapServers(this.bootstrapServers);
         final Map<String, String> mergedConfig = merge(app.getKafkaConfig(), this.kafkaConfig);
         app.setKafkaConfig(mergedConfig);

@@ -32,7 +32,6 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
-import com.bakdata.kafka.TestConfigurator;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.nio.file.Path;
@@ -62,9 +61,23 @@ class StreamsCleanUpTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
+    private static CloseFlagApp createCloseFlagApplication() {
+        final CloseFlagApp app = new CloseFlagApp();
+        app.setInputTopics(List.of("input"));
+        app.setOutputTopic("output");
+        return app;
+    }
+
+    private static KafkaStreamsApplication<?> createWordCountApplication() {
+        final KafkaStreamsApplication<?> application = new SimpleKafkaStreamsApplication<>(WordCount::new);
+        application.setOutputTopic("word_output");
+        application.setInputTopics(List.of("word_input"));
+        return application;
+    }
+
     @Test
     void shouldClean() {
-        try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
+        try (final KafkaStreamsApplication<?> app = createWordCountApplication()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
             testClient.send()
@@ -100,7 +113,7 @@ class StreamsCleanUpTest extends KafkaTest {
 
     @Test
     void shouldReset() {
-        try (final KafkaStreamsApplication<?> app = this.createWordCountApplication()) {
+        try (final KafkaStreamsApplication<?> app = createWordCountApplication()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getOutputTopic());
             testClient.send()
@@ -138,7 +151,7 @@ class StreamsCleanUpTest extends KafkaTest {
 
     @Test
     void shouldCallClose() {
-        try (final CloseFlagApp app = this.createCloseFlagApplication()) {
+        try (final CloseFlagApp app = createCloseFlagApplication()) {
             this.newTestClient().createTopic(app.getInputTopics().get(0));
             this.softly.assertThat(app.isClosed()).isFalse();
             this.softly.assertThat(app.isAppClosed()).isFalse();
@@ -170,14 +183,9 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private TestApplicationRunner createTestRunner() {
-        return TestApplicationRunner.create(this.getBootstrapServers());
-    }
-
-    private CloseFlagApp createCloseFlagApplication() {
-        final CloseFlagApp app = new CloseFlagApp();
-        app.setInputTopics(List.of("input"));
-        app.setOutputTopic("output");
-        return this.configure(app);
+        return TestApplicationRunner.create(this.getBootstrapServers())
+                .withStateDir(this.stateDir)
+                .withTestConfig();
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
@@ -198,18 +206,6 @@ class StreamsCleanUpTest extends KafkaTest {
         this.softly.assertThat(output)
                 .as(description)
                 .containsExactlyInAnyOrderElementsOf(expectedValues);
-    }
-
-    private KafkaStreamsApplication<?> createWordCountApplication() {
-        final KafkaStreamsApplication<?> application = new SimpleKafkaStreamsApplication<>(WordCount::new);
-        application.setOutputTopic("word_output");
-        application.setInputTopics(List.of("word_input"));
-        return this.configure(application);
-    }
-
-    private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
-        application.setKafkaConfig(TestConfigurator.createStreamsTestConfig(this.stateDir));
-        return application;
     }
 
 }
