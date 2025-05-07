@@ -46,10 +46,16 @@ public final class TestApplicationRunner {
     @With
     private final TestSchemaRegistry schemaRegistry;
     @With
-    private final Map<String, String> kafkaConfig;
+    private final @NonNull Map<String, String> kafkaConfig;
 
     public static TestApplicationRunner create(final String bootstrapServers) {
         return new TestApplicationRunner(bootstrapServers, null, emptyMap());
+    }
+
+    private static Map<String, String> merge(final Map<String, String> map1, final Map<String, String> map2) {
+        final Map<String, String> merged = new HashMap<>(map1);
+        merged.putAll(map2);
+        return merged;
     }
 
     public void run(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
@@ -107,9 +113,8 @@ public final class TestApplicationRunner {
 
     public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
         app.setBootstrapServers(this.bootstrapServers);
-        final Map<String, String> oldConfig = new HashMap<>(app.getKafkaConfig());
-        oldConfig.putAll(this.kafkaConfig);
-        app.setKafkaConfig(oldConfig);
+        final Map<String, String> mergedConfig = merge(app.getKafkaConfig(), this.kafkaConfig);
+        app.setKafkaConfig(mergedConfig);
         if (this.schemaRegistry != null) {
             app.setSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
         }

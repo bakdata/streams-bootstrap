@@ -24,42 +24,60 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.ConfigurationModifiers.configureProperties;
+
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@RequiredArgsConstructor
-public final class TestApplicationHelper {
+public final class TestApplicationTopologyFactory {
 
-    private final @NonNull TestSchemaRegistry schemaRegistry;
+    private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
 
-    public ConfiguredStreamsApp<? extends StreamsApp> createConfiguredApp(
+    public TestApplicationTopologyFactory() {
+        this(UnaryOperator.identity());
+    }
+
+    public static TestApplicationTopologyFactory withSchemaRegistry() {
+        return withSchemaRegistry(new TestSchemaRegistry());
+    }
+
+    public static TestApplicationTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
+        return new TestApplicationTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
+    }
+
+    private static ConfiguredStreamsApp<? extends StreamsApp> createConfiguredApp(
             final KafkaStreamsApplication<? extends StreamsApp> app) {
-        this.configure(app);
         app.prepareRun();
         return app.createConfiguredApp();
     }
 
+    public TestApplicationTopologyFactory with(final Map<String, Object> kafkaProperties) {
+        return new TestApplicationTopologyFactory(
+                this.configurationModifier.andThen(configureProperties(kafkaProperties)));
+    }
+
     public <K, V> TestTopology<K, V> createTopology(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = this.createConfiguredApp(app);
+        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = createConfiguredApp(app);
         final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
         return testTopologyFactory.createTopology(configuredApp);
     }
 
     public <K, V> TestTopology<K, V> createTopologyExtension(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = this.createConfiguredApp(app);
+        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = createConfiguredApp(app);
         final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
         return testTopologyFactory.createTopologyExtension(configuredApp);
     }
 
-    public void configure(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        app.setSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
-    }
-
     private TestTopologyFactory createTestTopologyFactory() {
-        return new TestTopologyFactory(this.schemaRegistry);
+        return new TestTopologyFactory(this.configurationModifier);
     }
 
 }

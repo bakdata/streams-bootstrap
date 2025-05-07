@@ -41,7 +41,7 @@ import org.apache.kafka.streams.StreamsConfig;
 /**
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 public final class TestTopologyFactory {
 
@@ -52,21 +52,42 @@ public final class TestTopologyFactory {
     );
     private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
 
-    public TestTopologyFactory(final TestSchemaRegistry schemaRegistry) {
-        this(configureSchemaRegistry(schemaRegistry));
-    }
-
+    /**
+     * Create a new {@code TestTopologyFactory}
+     */
     public TestTopologyFactory() {
         this(UnaryOperator.identity());
     }
 
     /**
-     * Create a new {@code TestTopologyFactory} with configured {@link TestSchemaRegistry}
+     * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
+     *
+     * @return {@code TestTopologyFactory} with no configured Schema Registry
+     * @deprecated Use {@link TestTopologyFactory#TestTopologyFactory()} instead
+     */
+    @Deprecated(since = "5.0.0")
+    public static TestTopologyFactory withoutSchemaRegistry() {
+        return new TestTopologyFactory();
+    }
+
+    /**
+     * Create a new {@code TestTopologyFactory} with configured Schema Registry. The scope is random in order to avoid
+     * collisions between different test instances as scopes are retained globally.
      *
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry() {
-        return new TestTopologyFactory(new TestSchemaRegistry());
+        return withSchemaRegistry(new TestSchemaRegistry());
+    }
+
+    /**
+     * Create a new {@code TestTopologyFactory} with configured Schema Registry.
+     *
+     * @param schemaRegistry Schema Registry to use
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     */
+    public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
+        return new TestTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
     }
 
     /**
@@ -109,18 +130,9 @@ public final class TestTopologyFactory {
         return runtimeConfiguration.with(createStreamsTestConfig());
     }
 
-    private static UnaryOperator<RuntimeConfiguration> configureSchemaRegistry(
-            final TestSchemaRegistry schemaRegistry) {
-        return runtimeConfiguration -> runtimeConfiguration.withSchemaRegistryUrl(
-                schemaRegistry.getSchemaRegistryUrl());
-    }
-
-    private static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, Object> kafkaProperties) {
-        return runtimeConfiguration -> runtimeConfiguration.with(kafkaProperties);
-    }
-
     public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
-        return new TestTopologyFactory(this.configurationModifier.andThen(configureProperties(kafkaProperties)));
+        return new TestTopologyFactory(
+                this.configurationModifier.andThen(ConfigurationModifiers.configureProperties(kafkaProperties)));
     }
 
     /**
