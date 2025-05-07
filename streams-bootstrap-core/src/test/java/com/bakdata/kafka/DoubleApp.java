@@ -40,7 +40,7 @@ abstract class DoubleApp implements StreamsApp {
     }
 
     TestTopology<Double, Double> startApp(final StreamsTopicConfig topicConfig) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = TestHelper.configureApp(this, topicConfig);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this, topicConfig);
         return TestHelper.startApp(configuredApp);
     }
 

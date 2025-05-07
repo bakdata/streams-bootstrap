@@ -76,17 +76,13 @@ public abstract class KafkaTest {
                 .atMost(Duration.ofSeconds(20L));
     }
 
-    protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .build();
+    protected RuntimeConfiguration createConfigWithoutSchemaRegistry() {
+        return RuntimeConfiguration.create(this.getBootstrapServers());
     }
 
-    protected KafkaEndpointConfig createEndpoint() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
-                .build();
+    protected RuntimeConfiguration createConfig() {
+        return this.createConfigWithoutSchemaRegistry()
+                .withSchemaRegistryUrl(this.getSchemaRegistryUrl());
     }
 
     protected String getBootstrapServers() {
@@ -94,7 +90,7 @@ public abstract class KafkaTest {
     }
 
     protected KafkaTestClient newTestClient() {
-        return new KafkaTestClient(this.createEndpoint());
+        return new KafkaTestClient(this.createConfig());
     }
 
     protected String getSchemaRegistryUrl() {

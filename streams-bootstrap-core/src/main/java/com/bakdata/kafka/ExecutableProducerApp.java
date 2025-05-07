@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
      */
     @Override
     public ProducerCleanUpRunner createCleanUpRunner() {
-        final EffectiveAppConfiguration<ProducerTopicConfig> configuration = this.createEffectiveConfiguration();
+        final AppConfiguration<ProducerTopicConfig> configuration = this.createConfiguration();
         final ProducerCleanUpConfiguration configurer = this.app.setupCleanUp(configuration);
         return ProducerCleanUpRunner.create(this.topics, this.kafkaProperties, configurer);
     }
@@ -65,7 +65,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
     @Override
     public ProducerRunner createRunner(final ProducerExecutionOptions options) {
         final ProducerBuilder producerBuilder = new ProducerBuilder(this.topics, this.kafkaProperties);
-        final EffectiveAppConfiguration<ProducerTopicConfig> configuration = this.createEffectiveConfiguration();
+        final AppConfiguration<ProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
         return new ProducerRunner(this.app.buildRunnable(producerBuilder));
     }
@@ -75,7 +75,7 @@ public class ExecutableProducerApp<T extends ProducerApp>
         this.app.close();
     }
 
-    private EffectiveAppConfiguration<ProducerTopicConfig> createEffectiveConfiguration() {
-        return new EffectiveAppConfiguration<>(this.topics, this.kafkaProperties);
+    private AppConfiguration<ProducerTopicConfig> createConfiguration() {
+        return new AppConfiguration<>(this.topics, this.kafkaProperties);
     }
 }
