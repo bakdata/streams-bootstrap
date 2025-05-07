@@ -32,7 +32,7 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
-import com.bakdata.kafka.TestTopologyFactory;
+import com.bakdata.kafka.TestConfigurator;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
 import java.util.List;
@@ -54,7 +54,7 @@ class RunStreamsAppTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         testClient.createTopic(output);
         try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(Mirror::new)) {
-            app.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
+            app.setKafkaConfig(TestConfigurator.createStreamsTestConfig(this.stateDir));
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
             TestApplicationRunner.create(this.getBootstrapServers()).run(app);

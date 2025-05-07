@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import static com.bakdata.kafka.ConfigurationModifiers.configureProperties;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -76,16 +77,52 @@ public final class TestApplicationTopologyFactory {
                 this.configurationModifier.andThen(configureProperties(kafkaProperties)));
     }
 
+    /**
+     * Create a {@link TestTopology} from a {@link KafkaStreamsApplication}. It injects a {@link RuntimeConfiguration}
+     * for test purposes with Schema Registry optionally configured.
+     *
+     * @param app KafkaStreamsApplication to create TestTopology from
+     * @param <K> Default type of keys
+     * @param <V> Default type of values
+     * @return {@link TestTopology} that uses topology and configuration provided by {@link KafkaStreamsApplication}
+     * @see TestTopologyFactory#createTopology(ConfiguredStreamsApp)
+     */
     public <K, V> TestTopology<K, V> createTopology(final KafkaStreamsApplication<? extends StreamsApp> app) {
         final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = createConfiguredApp(app);
         final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
         return testTopologyFactory.createTopology(configuredApp);
     }
 
-    public <K, V> TestTopology<K, V> createTopologyExtension(final KafkaStreamsApplication<? extends StreamsApp> app) {
+    /**
+     * Create a {@link TestTopologyExtension} from a {@link KafkaStreamsApplication}. It injects a
+     * {@link RuntimeConfiguration} for test purposes with Schema Registry optionally configured.
+     *
+     * @param app KafkaStreamsApplication to create TestTopology from
+     * @param <K> Default type of keys
+     * @param <V> Default type of values
+     * @return {@link TestTopologyExtension} that uses topology and configuration provided by
+     * {@link KafkaStreamsApplication}
+     * @see TestTopologyFactory#createTopologyExtension(ConfiguredStreamsApp)
+     */
+    public <K, V> TestTopologyExtension<K, V> createTopologyExtension(
+            final KafkaStreamsApplication<? extends StreamsApp> app) {
         final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = createConfiguredApp(app);
         final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
         return testTopologyFactory.createTopologyExtension(configuredApp);
+    }
+
+    /**
+     * Get Kafka properties from a {@link KafkaStreamsApplication} using a {@link RuntimeConfiguration} for test
+     * purposes with Schema Registry optionally configured.
+     *
+     * @param app KafkaStreamsApplication to get Kafka properties of
+     * @return Kafka properties
+     * @see TestTopologyFactory#getKafkaProperties(ConfiguredStreamsApp)
+     */
+    public Map<String, Object> getKafkaProperties(final KafkaStreamsApplication<? extends StreamsApp> app) {
+        final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = createConfiguredApp(app);
+        final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
+        return testTopologyFactory.getKafkaProperties(configuredApp);
     }
 
     private TestTopologyFactory createTestTopologyFactory() {

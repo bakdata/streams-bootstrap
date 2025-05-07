@@ -26,8 +26,6 @@ package com.bakdata.kafka;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -35,8 +33,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
@@ -45,11 +41,6 @@ import org.apache.kafka.streams.StreamsConfig;
 @Getter
 public final class TestTopologyFactory {
 
-    private static final Map<String, String> STREAMS_TEST_CONFIG = Map.of(
-            // Disable caching to allow immediate aggregations
-            StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
-            ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
-    );
     private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
 
     /**
@@ -88,46 +79,6 @@ public final class TestTopologyFactory {
      */
     public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
         return new TestTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
-    }
-
-    /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following parameters
-     * in addition to {@link #createStreamsTestConfig()}:
-     * <ul>
-     *     <li>{@link StreamsConfig#STATE_DIR_CONFIG}=provided directory</li>
-     * </ul>
-     *
-     * @param stateDir directory to use for storing Kafka Streams state
-     * @return Kafka Streams config
-     * @see #createStreamsTestConfig()
-     */
-    public static Map<String, String> createStreamsTestConfig(final Path stateDir) {
-        final Map<String, String> config = new HashMap<>(createStreamsTestConfig());
-        config.put(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString());
-        return Map.copyOf(config);
-    }
-
-    /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following
-     * parameters:
-     * <ul>
-     *     <li>{@link StreamsConfig#STATESTORE_CACHE_MAX_BYTES_CONFIG}=0</li>
-     *     <li>{@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG}=10000</li>
-     * </ul>
-     *
-     * @return Kafka Streams config
-     */
-    public static Map<String, String> createStreamsTestConfig() {
-        return STREAMS_TEST_CONFIG;
-    }
-
-    public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration,
-            final Path stateDir) {
-        return runtimeConfiguration.with(createStreamsTestConfig(stateDir));
-    }
-
-    public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
-        return runtimeConfiguration.with(createStreamsTestConfig());
     }
 
     public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {

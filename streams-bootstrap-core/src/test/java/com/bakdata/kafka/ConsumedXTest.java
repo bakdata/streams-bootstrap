@@ -289,7 +289,7 @@ class ConsumedXTest {
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
@@ -334,7 +334,7 @@ class ConsumedXTest {
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 runAsync(runner);
                 KafkaTest.awaitActive(executableApp);

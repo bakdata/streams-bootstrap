@@ -50,7 +50,7 @@ class ConsumerGroupVerifierTest extends KafkaTest {
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create(this.getBootstrapServers());
         final ExecutableStreamsApp<StreamsApp> executableApp =
                 configuredApp.withRuntimeConfiguration(
-                        runtimeConfiguration.with(TestTopologyFactory.createStreamsTestConfig()));
+                        runtimeConfiguration.with(TestConfigurator.createStreamsTestConfig()));
         final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
         testClient.createTopic("input");
         try (final StreamsRunner runner = executableApp.createRunner()) {

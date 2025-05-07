@@ -232,7 +232,7 @@ class ProducedXTest {
             testClient.createTopic("output", KafkaTestClient.defaultTopicSettings().partitions(2).build());
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -281,7 +281,7 @@ class ProducedXTest {
             testClient.createTopic("output", KafkaTestClient.defaultTopicSettings().partitions(2).build());
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

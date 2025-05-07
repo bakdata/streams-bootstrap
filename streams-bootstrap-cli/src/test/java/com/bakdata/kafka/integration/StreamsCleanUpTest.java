@@ -32,7 +32,7 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
-import com.bakdata.kafka.TestTopologyFactory;
+import com.bakdata.kafka.TestConfigurator;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.nio.file.Path;
@@ -208,7 +208,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private <T extends KafkaStreamsApplication<?>> T configure(final T application) {
-        application.setKafkaConfig(TestTopologyFactory.createStreamsTestConfig(this.stateDir));
+        application.setKafkaConfig(TestConfigurator.createStreamsTestConfig(this.stateDir));
         return application;
     }
 

@@ -374,7 +374,7 @@ class MaterializedXTest {
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -420,7 +420,7 @@ class MaterializedXTest {
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

@@ -43,7 +43,7 @@ import com.bakdata.kafka.StreamsBuilderX;
 import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TestTopologyFactory;
+import com.bakdata.kafka.TestConfigurator;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -89,7 +89,7 @@ class StreamsRunnerTest extends KafkaTest {
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
             final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
         return app.withRuntimeConfiguration(
-                TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
