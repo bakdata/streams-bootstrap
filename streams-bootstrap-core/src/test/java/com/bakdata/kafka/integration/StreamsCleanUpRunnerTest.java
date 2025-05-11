@@ -91,7 +91,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
-    static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<K, V> consumerRecord) {
+    static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<? extends K, ? extends V> consumerRecord) {
         return new KeyValue<>(consumerRecord.key(), consumerRecord.value());
     }
 
@@ -271,7 +271,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                     uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
             final String backingTopic =
                     uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
-            final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
             try (final ImprovedAdminClient admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
@@ -280,7 +279,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 }
                 this.softly.assertThat(topicClient.exists(internalTopic)).isTrue();
                 this.softly.assertThat(topicClient.exists(backingTopic)).isTrue();
-                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
 
             awaitClosed(executableApp);
@@ -293,7 +291,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 }
                 this.softly.assertThat(topicClient.exists(internalTopic)).isFalse();
                 this.softly.assertThat(topicClient.exists(backingTopic)).isFalse();
-                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
         }
     }
@@ -327,7 +324,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             }
 
             awaitClosed(executableApp);
-            clean(executableApp);
+            reset(executableApp);
 
             try (final ImprovedAdminClient admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
@@ -497,14 +494,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                     uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition" + "-value";
             final String backingSubject =
                     uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog" + "-value";
-            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
             this.softly.assertThat(client.getAllSubjects())
-                    .contains(inputSubject, internalSubject, backingSubject, manualSubject);
+                    .contains(inputSubject, internalSubject, backingSubject);
             reset(executableApp);
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(internalSubject, backingSubject)
-                    .contains(inputSubject, manualSubject);
+                    .contains(inputSubject);
         }
     }
 
@@ -533,7 +529,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
             this.softly.assertThat(client.getAllSubjects())
                     .contains(inputSubject, manualSubject);
-            clean(executableApp);
+            reset(executableApp);
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(manualSubject)
@@ -542,7 +538,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldCallCleanupHookForInternalTopics() {
+    void shouldCallCleanupHookForInternalAndIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = app.withEndpoint(this.createEndpoint())) {
             reset(executableApp);
@@ -550,6 +546,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
+            verify(this.topicHook).deleted(ComplexTopologyApplication.THROUGH_TOPIC);
             verify(this.topicHook).close();
             verifyNoMoreInteractions(this.topicHook);
         }

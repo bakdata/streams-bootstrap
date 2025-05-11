@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -46,13 +45,10 @@ import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.kstream.StreamJoined;
-import org.apache.kafka.streams.kstream.TransformerSupplier;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.kstream.ValueJoinerWithKey;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
-import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
-import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
 import org.apache.kafka.streams.processor.TopicNameExtractor;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
@@ -370,20 +366,6 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
-    public KStreamX<K, V>[] branch(final Predicate<? super K, ? super V>... predicates) {
-        return Arrays.stream(this.wrapped.branch(predicates))
-                .map(this.context::wrap)
-                .toArray(KStreamX[]::new);
-    }
-
-    @Override
-    public KStreamX<K, V>[] branch(final Named named, final Predicate<? super K, ? super V>... predicates) {
-        return Arrays.stream(this.wrapped.branch(named, predicates))
-                .map(this.context::wrap)
-                .toArray(KStreamX[]::new);
-    }
-
-    @Override
     public BranchedKStreamX<K, V> split() {
         return this.context.wrap(this.wrapped.split());
     }
@@ -403,16 +385,6 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     public KStreamX<K, V> merge(final KStream<K, V> stream, final Named named) {
         final KStream<K, V> other = StreamsContext.maybeUnwrap(stream);
         return this.context.wrap(this.wrapped.merge(other, named));
-    }
-
-    @Override
-    public KStreamX<K, V> through(final String topic) {
-        return this.context.wrap(this.wrapped.through(topic));
-    }
-
-    @Override
-    public KStreamX<K, V> through(final String topic, final Produced<K, V> produced) {
-        return this.context.wrap(this.wrapped.through(topic, produced));
     }
 
     @Override
@@ -842,109 +814,6 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
-    }
-
-    @Override
-    public <K1, V1> KStreamX<K1, V1> transform(
-            final TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.transform(transformerSupplier, stateStoreNames));
-    }
-
-    @Override
-    public <K1, V1> KStreamX<K1, V1> transform(
-            final TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier, final Named named,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.transform(transformerSupplier, named, stateStoreNames));
-    }
-
-    @Override
-    public <K1, V1> KStreamX<K1, V1> flatTransform(
-            final TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.flatTransform(transformerSupplier, stateStoreNames));
-    }
-
-    @Override
-    public <K1, V1> KStreamX<K1, V1> flatTransform(
-            final TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
-            final Named named,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.flatTransform(transformerSupplier, named, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> transformValues(
-            final ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> transformValues(
-            final ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier, final Named named,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> transformValues(
-            final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> transformValues(
-            final ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
-            final Named named,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.transformValues(valueTransformerSupplier, named, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> flatTransformValues(
-            final ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> flatTransformValues(
-            final ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier, final Named named,
-            final String... stateStoreNames) {
-        return this.context.wrap(
-                this.wrapped.flatTransformValues(valueTransformerSupplier, named, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> flatTransformValues(
-            final ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
-            final String... stateStoreNames) {
-        return this.context.wrap(this.wrapped.flatTransformValues(valueTransformerSupplier, stateStoreNames));
-    }
-
-    @Override
-    public <VR> KStreamX<K, VR> flatTransformValues(
-            final ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
-            final Named named,
-            final String... stateStoreNames) {
-        return this.context.wrap(
-                this.wrapped.flatTransformValues(valueTransformerSupplier, named, stateStoreNames));
-    }
-
-    @Override
-    public void process(
-            final org.apache.kafka.streams.processor.ProcessorSupplier<? super K, ? super V> processorSupplier,
-            final String... stateStoreNames) {
-        this.wrapped.process(processorSupplier, stateStoreNames);
-    }
-
-    @Override
-    public void process(
-            final org.apache.kafka.streams.processor.ProcessorSupplier<? super K, ? super V> processorSupplier,
-            final Named named, final String... stateStoreNames) {
-        this.wrapped.process(processorSupplier, named, stateStoreNames);
     }
 
     @Override

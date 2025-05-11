@@ -33,6 +33,8 @@ import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopicSettings;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -232,7 +234,10 @@ class RepartitionedXTest {
                 final KStreamX<String, String> input = builder.stream("input");
                 final KStreamX<String, String> repartitioned = input.repartition(RepartitionedX
                         .<String, String>streamPartitioner(
-                                (topic, key, value, numPartitions) -> "bar".equals(value) ? 0 : 1)
+                                (topic, key, value, numPartitions) -> {
+                                    final int partition = "bar".equals(value) ? 0 : 1;
+                                    return Optional.of(Set.of(partition));
+                                })
                         .withNumberOfPartitions(2)
                         .withName("repartition"));
                 repartitioned.to("output");
@@ -301,7 +306,10 @@ class RepartitionedXTest {
                 final KStreamX<String, String> repartitioned = input.repartition(
                         RepartitionedX.<String, String>as("repartition")
                                 .withStreamPartitioner(
-                                        (topic, key, value, numPartitions) -> "bar".equals(value) ? 0 : 1)
+                                        (topic, key, value, numPartitions) -> {
+                                            final int partition = "bar".equals(value) ? 0 : 1;
+                                            return Optional.of(Set.of(partition));
+                                        })
                                 .withNumberOfPartitions(2));
                 repartitioned.to("output");
             }
