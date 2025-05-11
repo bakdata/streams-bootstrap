@@ -35,6 +35,7 @@ import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -185,7 +186,8 @@ class StreamsCleanUpTest extends KafkaTest {
     private TestApplicationRunner createTestRunner() {
         return TestApplicationRunner.create(this.getBootstrapServers())
                 .withStateDir(this.stateDir)
-                .withTestConfig();
+                .withNoStateStoreCaching()
+                .withSessionTimeout(Duration.ofSeconds(10L));
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {

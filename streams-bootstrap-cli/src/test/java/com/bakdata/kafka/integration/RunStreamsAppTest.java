@@ -34,6 +34,7 @@ import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -57,7 +58,8 @@ class RunStreamsAppTest extends KafkaTest {
             app.setOutputTopic(output);
             TestApplicationRunner.create(this.getBootstrapServers())
                     .withStateDir(this.stateDir)
-                    .withTestConfig()
+                    .withNoStateStoreCaching()
+                    .withSessionTimeout(Duration.ofSeconds(10L))
                     .run(app);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
