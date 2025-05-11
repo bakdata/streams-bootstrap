@@ -30,6 +30,7 @@ import static java.util.Collections.emptyMap;
 
 import com.google.common.collect.ImmutableList;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -60,8 +62,12 @@ public final class TestApplicationRunner {
         return this.withKafkaConfig(Map.of(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString()));
     }
 
-    public TestApplicationRunner withTestConfig() {
-        return this.withKafkaConfig(TestConfigurator.createStreamsTestConfig());
+    public TestApplicationRunner withNoStateStoreCaching() {
+        return this.withKafkaConfig(Map.of(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L)));
+    }
+
+    public TestApplicationRunner withSessionTimeout(Duration sessionTimeout) {
+        return this.withKafkaConfig(Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
     }
 
     public TestApplicationRunner withKafkaConfig(final Map<String, String> newKafkaConfig) {
