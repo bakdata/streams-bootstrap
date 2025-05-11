@@ -31,7 +31,7 @@ package com.bakdata.kafka;
  */
 public interface ConfiguredApp<E> extends AutoCloseable {
     /**
-     * Create an executable app using the provided {@link  RuntimeConfiguration}.
+     * Create an executable app using the provided {@link RuntimeConfiguration}.
      * @param runtimeConfiguration configuration to run app with
      * @return executable streams app
      */
