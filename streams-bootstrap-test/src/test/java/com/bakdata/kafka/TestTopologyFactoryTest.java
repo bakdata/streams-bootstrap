@@ -29,7 +29,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-class TestTopologyFactoryTest extends KafkaTest {
+class TestTopologyFactoryTest {
 
     @RegisterExtension
     private final TestTopologyExtension<String, String> testTopology = new TestTopologyFactory()
@@ -44,7 +44,7 @@ class TestTopologyFactoryTest extends KafkaTest {
     }
 
     @Test
-    void shouldVerify() {
+    void shouldProcessRecords() {
         this.testTopology.input()
                 .add("foo", "bar");
         this.testTopology.streamOutput()
