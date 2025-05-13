@@ -220,7 +220,8 @@ class TestApplicationRunnerTest extends KafkaTest {
             awaitClosed(verifier);
         }
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
-            runner.clean(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+            this.softly.assertThat(runner.clean(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC))
+                    .isEqualTo(0);
             this.softly.assertThat(testClient.existsTopic(OUTPUT_TOPIC)).isFalse();
         }
     }
@@ -301,7 +302,8 @@ class TestApplicationRunnerTest extends KafkaTest {
             awaitClosed(verifier);
         }
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
-            runner.reset(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+            this.softly.assertThat(runner.reset(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC))
+                    .isEqualTo(0);
         }
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);

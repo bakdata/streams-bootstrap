@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -44,7 +45,7 @@ class AsyncRunnableTest {
     void shouldProvideResult() {
         final AsyncRunnable<Integer> runnable = AsyncRunnable.runAsync(() -> 1);
         final Duration timeout = Duration.ofSeconds(1L);
-        assertThatCode(() -> runnable.await(timeout)).isEqualTo(1L);
+        assertThat(runnable.await(timeout)).isEqualTo(1L);
     }
 
     @Test
