@@ -124,17 +124,17 @@ public final class TestApplicationRunner {
         return this.withSchemaRegistry(new TestSchemaRegistry());
     }
 
-    public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
+    public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
         return runAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
-    public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
+    public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("clean"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
-    public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String[] args) {
+    public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("reset"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }

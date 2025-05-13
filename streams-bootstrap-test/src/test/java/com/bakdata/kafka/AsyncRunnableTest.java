@@ -25,12 +25,20 @@
 package com.bakdata.kafka;
 
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 class AsyncRunnableTest {
+
+    @Test
+    void shouldRun() {
+        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {});
+        final Duration timeout = Duration.ofSeconds(1L);
+        assertThatCode(() -> runnable.await(timeout)).doesNotThrowAnyException();
+    }
 
     @Test
     void shouldThrowException() {

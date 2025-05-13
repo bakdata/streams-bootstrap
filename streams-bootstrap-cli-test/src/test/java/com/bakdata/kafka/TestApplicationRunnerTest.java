@@ -50,6 +50,10 @@ class TestApplicationRunnerTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
+    private static KafkaStreamsApplication<SimpleStreamsApp> newApp() {
+        return TestApplicationTopologyFactoryTest.newApp(new SimpleStreamsApp());
+    }
+
     @Test
     void shouldRun() {
         final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
@@ -65,6 +69,36 @@ class TestApplicationRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .from(OUTPUT_TOPIC, POLL_TIMEOUT);
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                    });
+        }
+    }
+
+    @Test
+    void shouldRunAsCli() {
+        final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
+        try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(INPUT_TOPIC, List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+            runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
             final List<ConsumerRecord<String, String>> records = testClient.read()
@@ -156,6 +190,42 @@ class TestApplicationRunnerTest extends KafkaTest {
     }
 
     @Test
+    void shouldCleanAsCli() {
+        final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
+        try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(INPUT_TOPIC, List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+            runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .from(OUTPUT_TOPIC, POLL_TIMEOUT);
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                    });
+            app.stop();
+            awaitClosed(verifier);
+        }
+        try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
+            runner.clean(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+            this.softly.assertThat(testClient.existsTopic(OUTPUT_TOPIC)).isFalse();
+        }
+    }
+
+    @Test
     void shouldReset() {
         final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
                 .withNoStateStoreCaching()
@@ -186,6 +256,56 @@ class TestApplicationRunnerTest extends KafkaTest {
             awaitClosed(verifier);
             runner.reset(app);
             runner.run(app);
+            awaitProcessing(verifier);
+            final List<ConsumerRecord<String, String>> records2 = testClient.read()
+                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .from(OUTPUT_TOPIC, POLL_TIMEOUT);
+            this.softly.assertThat(records2)
+                    .hasSize(2)
+                    .allSatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                    });
+        }
+    }
+
+    @Test
+    void shouldResetAsCli() {
+        final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
+        try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(INPUT_TOPIC, List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+            runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
+            final List<ConsumerRecord<String, String>> records1 = testClient.read()
+                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .from(OUTPUT_TOPIC, POLL_TIMEOUT);
+            this.softly.assertThat(records1)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                    });
+            app.stop();
+            awaitClosed(verifier);
+        }
+        try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
+            runner.reset(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+        }
+        try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
+            runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
             final List<ConsumerRecord<String, String>> records2 = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)

@@ -54,15 +54,19 @@ class TestApplicationTopologyFactoryTest {
     }
 
     static KafkaStreamsApplication<SimpleStreamsApp> createApp(final SimpleStreamsApp streamsApp) {
-        final KafkaStreamsApplication<SimpleStreamsApp> app = new KafkaStreamsApplication<>() {
+        final KafkaStreamsApplication<SimpleStreamsApp> app = newApp(streamsApp);
+        app.setInputTopics(List.of(INPUT_TOPIC));
+        app.setOutputTopic(OUTPUT_TOPIC);
+        return app;
+    }
+
+    static KafkaStreamsApplication<SimpleStreamsApp> newApp(final SimpleStreamsApp streamsApp) {
+        return new KafkaStreamsApplication<>() {
             @Override
             public SimpleStreamsApp createApp() {
                 return streamsApp;
             }
         };
-        app.setInputTopics(List.of(INPUT_TOPIC));
-        app.setOutputTopic(OUTPUT_TOPIC);
-        return app;
     }
 
     @Test

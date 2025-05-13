@@ -50,16 +50,16 @@ class RunStreamsAppTest extends KafkaTest {
     void shouldRunApp() {
         final String input = "input";
         final String output = "output";
-        final KafkaTestClient testClient = this.newTestClient();
-        testClient.createTopic(output);
         try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(Mirror::new)) {
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
-            TestApplicationRunner.create(this.getBootstrapServers())
+            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
                     .withStateDir(this.stateDir)
                     .withNoStateStoreCaching()
-                    .withSessionTimeout(SESSION_TIMEOUT)
-                    .run(app);
+                    .withSessionTimeout(SESSION_TIMEOUT);
+            final KafkaTestClient testClient = runner.newTestClient();
+            testClient.createTopic(output);
+            runner.run(app);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
