@@ -55,17 +55,6 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
-     *
-     * @return {@code TestTopologyFactory} with no configured Schema Registry
-     * @deprecated Use {@link TestTopologyFactory#TestTopologyFactory()} instead
-     */
-    @Deprecated(since = "5.0.0")
-    public static TestTopologyFactory withoutSchemaRegistry() {
-        return new TestTopologyFactory();
-    }
-
-    /**
      * Create a new {@code TestTopologyFactory} with configured Schema Registry. The scope is random in order to avoid
      * collisions between different test instances as scopes are retained globally.
      *
@@ -73,18 +62,6 @@ public final class TestTopologyFactory {
      */
     public static TestTopologyFactory withSchemaRegistry() {
         return withSchemaRegistry(new TestSchemaRegistry());
-    }
-
-    /**
-     * Create a new {@code TestTopologyFactory} with configured Schema Registry.
-     *
-     * @param schemaRegistryUrl Schema Registry URL to use
-     * @return {@code TestTopologyFactory} with configured Schema Registry
-     * @deprecated Use {@link TestTopologyFactory#withSchemaRegistry(TestSchemaRegistry)} instead
-     */
-    @Deprecated(since = "5.0.0")
-    public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
-        return new TestTopologyFactory(schemaRegistryUrl);
     }
 
     /**
