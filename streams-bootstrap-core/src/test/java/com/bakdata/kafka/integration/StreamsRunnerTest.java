@@ -44,7 +44,6 @@ import com.bakdata.kafka.StreamsExecutionOptions;
 import com.bakdata.kafka.StreamsRunner;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestHelper.CapturingUncaughtExceptionHandler;
-import com.bakdata.kafka.TestTopologyFactory;
 import com.bakdata.kafka.test_applications.LabeledInputTopics;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
@@ -88,8 +87,9 @@ class StreamsRunnerTest extends KafkaTest {
 
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
             final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
-        return app.withRuntimeConfiguration(
-                TestTopologyFactory.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+        return app.withRuntimeConfiguration(runtimeConfiguration.withStateDir(stateDir)
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT));
     }
 
     private static void awaitThreadIsDead(final Thread thread) {

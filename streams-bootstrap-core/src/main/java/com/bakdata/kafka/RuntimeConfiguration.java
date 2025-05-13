@@ -25,6 +25,8 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,8 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Runtime configuration to connect to Kafka infrastructure, e.g., bootstrap servers and schema registry.
@@ -79,6 +83,19 @@ public final class RuntimeConfiguration {
     public RuntimeConfiguration with(final Map<String, ?> newProperties) {
         newProperties.keySet().forEach(RuntimeConfiguration::validate);
         return this.withInternal(newProperties);
+    }
+
+    public RuntimeConfiguration withStateDir(final Path stateDir) {
+        return this.withInternal(Map.of(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString()));
+    }
+
+    public RuntimeConfiguration withNoStateStoreCaching() {
+        return this.withInternal(Map.of(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L)));
+    }
+
+    public RuntimeConfiguration withSessionTimeout(final Duration sessionTimeout) {
+        return this.withInternal(
+                Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
     }
 
     /**

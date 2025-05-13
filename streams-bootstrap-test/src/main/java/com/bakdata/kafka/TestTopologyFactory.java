@@ -120,17 +120,10 @@ public final class TestTopologyFactory {
     }
 
     /**
-     *
+     * Configure arbitrary Kafka properties for the application under test
+     * @param kafkaProperties properties to configure
+     * @return a copy of this {@code TestTopologyFactory} with provided properties
      */
-    public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration,
-            final Path stateDir) {
-        return runtimeConfiguration.with(createStreamsTestConfig(stateDir));
-    }
-
-    public static RuntimeConfiguration createRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
-        return runtimeConfiguration.with(createStreamsTestConfig());
-    }
-
     public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
         return new TestTopologyFactory(this.schemaRegistryUrl, kafkaProperties);
     }
