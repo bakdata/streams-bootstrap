@@ -174,7 +174,7 @@ class StreamsRunnerTest extends KafkaTest {
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
-            final AsyncRunnable runnable = runAsync(runner);
+            final AsyncRunnable<Void> runnable = runAsync(runner);
             this.softly.assertThatThrownBy(() -> runnable.await(TIMEOUT))
                     .isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
@@ -195,7 +195,7 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            final AsyncRunnable runnable = runAsync(runner);
+            final AsyncRunnable<Void> runnable = runAsync(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

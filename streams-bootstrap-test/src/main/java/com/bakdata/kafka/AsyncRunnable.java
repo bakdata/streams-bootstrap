@@ -28,28 +28,44 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AsyncRunnable {
+public final class AsyncRunnable<T> {
     private final @NonNull CountDownLatch shutdown;
     private final @NonNull CapturingUncaughtExceptionHandler exceptionHandler;
+    private final @NonNull ResultProvider<T> resultProvider;
 
-    public static AsyncRunnable runAsync(final Runnable app) {
+    public static AsyncRunnable<Void> runAsync(final Runnable app) {
+        return runAsync(asSupplier(app));
+    }
+
+    public static <T> AsyncRunnable<T> runAsync(final Supplier<? extends T> app) {
         final CountDownLatch shutdown = new CountDownLatch(1);
+        final ResultProvider<T> provider = new ResultProvider<>();
         final Thread thread = new Thread(() -> {
-            app.run();
+            provider.setResult(app.get());
             shutdown.countDown();
         });
         final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler(shutdown);
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
-        return new AsyncRunnable(shutdown, handler);
+        return new AsyncRunnable<>(shutdown, handler, provider);
     }
 
-    public void await(final Duration timeout) {
+    private static Supplier<Void> asSupplier(final Runnable app) {
+        return () -> {
+            app.run();
+            return null;
+        };
+    }
+
+    public T await(final Duration timeout) {
         try {
             final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (timedOut) {
@@ -60,6 +76,7 @@ public final class AsyncRunnable {
             throw new RuntimeException("Error awaiting runnable", e);
         }
         this.exceptionHandler.throwException();
+        return this.resultProvider.getResult();
     }
 
     @RequiredArgsConstructor
@@ -82,5 +99,11 @@ public final class AsyncRunnable {
             }
             throw new RuntimeException("Thread threw an exception", this.lastException);
         }
+    }
+
+    @Setter
+    @Getter
+    private static class ResultProvider<T> {
+        private T result;
     }
 }

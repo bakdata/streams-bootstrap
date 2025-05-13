@@ -35,15 +35,22 @@ class AsyncRunnableTest {
 
     @Test
     void shouldRun() {
-        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {});
+        final AsyncRunnable<Void> runnable = AsyncRunnable.runAsync(() -> {});
         final Duration timeout = Duration.ofSeconds(1L);
         assertThatCode(() -> runnable.await(timeout)).doesNotThrowAnyException();
     }
 
     @Test
+    void shouldProvideResult() {
+        final AsyncRunnable<Integer> runnable = AsyncRunnable.runAsync(() -> 1);
+        final Duration timeout = Duration.ofSeconds(1L);
+        assertThatCode(() -> runnable.await(timeout)).isEqualTo(1L);
+    }
+
+    @Test
     void shouldThrowException() {
         final RuntimeException exception = new RuntimeException("Test exception");
-        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {
+        final AsyncRunnable<Void> runnable = AsyncRunnable.runAsync(() -> {
             throw exception;
         });
         final Duration timeout = Duration.ofSeconds(1L);
@@ -52,7 +59,7 @@ class AsyncRunnableTest {
 
     @Test
     void shouldThrowOnTimeout() {
-        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {
+        final AsyncRunnable<Void> runnable = AsyncRunnable.runAsync(() -> {
             try {
                 Thread.sleep(Duration.ofSeconds(2L).toMillis());
             } catch (final InterruptedException e) {
