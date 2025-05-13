@@ -47,8 +47,8 @@ public final class TestSchemaRegistry {
     private final @NonNull String schemaRegistryUrl;
 
     /**
-     * Create a new {@code TestSchemaRegistry}. The scope is random in order to avoid
-     * collisions between different test instances as scopes are retained globally.
+     * Create a new {@code TestSchemaRegistry}. The scope is random in order to avoid collisions between different test
+     * instances as scopes are retained globally.
      */
     public TestSchemaRegistry() {
         this(MOCK_URL_PREFIX + UUID.randomUUID());
@@ -56,6 +56,7 @@ public final class TestSchemaRegistry {
 
     /**
      * Get {@code SchemaRegistryClient} for configured URL with default providers
+     *
      * @return {@code SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
      */
@@ -65,6 +66,7 @@ public final class TestSchemaRegistry {
 
     /**
      * Get {@code SchemaRegistryClient} for configured URL
+     *
      * @param providers list of {@code SchemaProvider} to use for {@code SchemaRegistryClient}
      * @return {@code SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
