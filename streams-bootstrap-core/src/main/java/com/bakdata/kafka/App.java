@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public interface App<T, C> extends AutoCloseable {
      * @param configuration provides all runtime application configurations
      * @return clean up configuration
      */
-    C setupCleanUp(final EffectiveAppConfiguration<T> configuration);
+    C setupCleanUp(final AppConfiguration<T> configuration);
 
     @Override
     default void close() {
@@ -59,7 +59,7 @@ public interface App<T, C> extends AutoCloseable {
      * Setup Kafka resources, such as topics, before running this app
      * @param configuration provides all runtime application configurations
      */
-    default void setup(final EffectiveAppConfiguration<T> configuration) {
+    default void setup(final AppConfiguration<T> configuration) {
         // do nothing by default
     }
 

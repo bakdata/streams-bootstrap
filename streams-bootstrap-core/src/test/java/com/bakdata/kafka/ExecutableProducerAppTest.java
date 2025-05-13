@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ import org.mockito.quality.Strictness;
 class ExecutableProducerAppTest {
 
     @Mock
-    private Consumer<EffectiveAppConfiguration<ProducerTopicConfig>> setup;
+    private Consumer<AppConfiguration<ProducerTopicConfig>> setup;
     @Mock
     private Supplier<ProducerCleanUpConfiguration> setupCleanUp;
 
@@ -52,16 +52,14 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
-        final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+                new ConfiguredProducerApp<>(new TestProducer(), topics);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableProducerApp<ProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner();
-        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
+        verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -69,16 +67,14 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
-        final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+                new ConfiguredProducerApp<>(new TestProducer(), topics);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableProducerApp<ProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
-        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
+        verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -86,13 +82,11 @@ class ExecutableProducerAppTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
-        final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+                new ConfiguredProducerApp<>(new TestProducer(), topics);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableProducerApp<ProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
         executableApp.createCleanUpRunner();
         verify(this.setupCleanUp).get();
@@ -101,13 +95,13 @@ class ExecutableProducerAppTest {
     private class TestProducer implements ProducerApp {
 
         @Override
-        public void setup(final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
+        public void setup(final AppConfiguration<ProducerTopicConfig> configuration) {
             ExecutableProducerAppTest.this.setup.accept(configuration);
         }
 
         @Override
         public ProducerCleanUpConfiguration setupCleanUp(
-                final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
+                final AppConfiguration<ProducerTopicConfig> configuration) {
             return ExecutableProducerAppTest.this.setupCleanUp.get();
         }
 
