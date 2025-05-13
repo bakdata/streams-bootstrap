@@ -2,6 +2,7 @@ description = "Utils for testing your Kafka Streams Application"
 
 plugins {
     id("java-library")
+    alias(libs.plugins.avro)
 }
 
 dependencies {
@@ -14,5 +15,8 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.junit)
     testImplementation(testFixtures(project(":streams-bootstrap-test")))
+    testImplementation(libs.kafka.streams.avro.serde) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
     testImplementation(libs.log4j.slf4j2)
 }

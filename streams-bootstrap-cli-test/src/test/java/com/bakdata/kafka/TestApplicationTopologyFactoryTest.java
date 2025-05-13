@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,11 +47,15 @@ class TestApplicationTopologyFactoryTest {
     private final TestTopologyExtension<String, String> testTopologyExtension = new TestApplicationTopologyFactory()
             .createTopologyExtension(createApp());
 
-    private static KafkaStreamsApplication<StreamsApp> createApp() {
-        final KafkaStreamsApplication<StreamsApp> app = new KafkaStreamsApplication<>() {
+    private static KafkaStreamsApplication<SimpleStreamsApp> createApp() {
+        return createApp(new SimpleStreamsApp());
+    }
+
+    private static KafkaStreamsApplication<SimpleStreamsApp> createApp(final SimpleStreamsApp streamsApp) {
+        final KafkaStreamsApplication<SimpleStreamsApp> app = new KafkaStreamsApplication<>() {
             @Override
-            public StreamsApp createApp() {
-                return new SimpleStreamsApp();
+            public SimpleStreamsApp createApp() {
+                return streamsApp;
             }
         };
         app.setInputTopics(List.of("input"));
@@ -71,8 +76,8 @@ class TestApplicationTopologyFactoryTest {
 
     @Test
     void shouldProcessRecords() {
-        try (final TestTopology<String, String> testTopology = new TestApplicationTopologyFactory().createTopology(
-                createApp())) {
+        final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
+        try (final TestTopology<String, String> testTopology = factory.createTopology(createApp())) {
             testTopology.start();
             testTopology.input()
                     .add("foo", "bar");
@@ -85,6 +90,31 @@ class TestApplicationTopologyFactoryTest {
     }
 
     @Test
+    void shouldProcessRecordsUsingSchemaRegistry() {
+        final TestApplicationTopologyFactory factory = TestApplicationTopologyFactory.withSchemaRegistry();
+        final SimpleStreamsApp app = new SimpleStreamsApp() {
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                return super.defaultSerializationConfig()
+                        .withValueSerde(SpecificAvroSerde.class);
+            }
+        };
+        try (final TestTopology<String, TestRecord> testTopology = factory.createTopology(createApp(app))) {
+            testTopology.start();
+            final TestRecord value = TestRecord.newBuilder()
+                    .setContent("content")
+                    .build();
+            testTopology.input()
+                    .add("foo", value);
+            testTopology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue(value)
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
     void shouldCallPrepareRun() {
         final KafkaStreamsApplication<StreamsApp> app = mock();
         when(app.createConfiguredApp()).thenReturn(
@@ -92,8 +122,8 @@ class TestApplicationTopologyFactoryTest {
                         .inputTopics(List.of("input"))
                         .outputTopic("output")
                         .build()));
-        try (final TestTopology<String, String> testTopology = new TestApplicationTopologyFactory().createTopology(
-                app)) {
+        final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
+        try (final TestTopology<String, String> testTopology = factory.createTopology(app)) {
             verify(app).prepareRun();
             testTopology.start();
         }

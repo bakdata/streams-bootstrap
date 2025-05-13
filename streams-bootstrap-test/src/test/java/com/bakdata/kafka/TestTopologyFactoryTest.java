@@ -37,12 +37,12 @@ class TestTopologyFactoryTest {
     private final TestTopologyExtension<String, String> testTopologyExtension = new TestTopologyFactory()
             .createTopologyExtension(createApp());
 
-    private static ConfiguredStreamsApp<StreamsApp> createApp() {
+    private static ConfiguredStreamsApp<SimpleStreamsApp> createApp() {
         final SimpleStreamsApp app = new SimpleStreamsApp();
         return createApp(app);
     }
 
-    private static ConfiguredStreamsApp<StreamsApp> createApp(final SimpleStreamsApp app) {
+    private static ConfiguredStreamsApp<SimpleStreamsApp> createApp(final SimpleStreamsApp app) {
         return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
