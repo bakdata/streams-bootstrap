@@ -120,13 +120,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     public ExecutableStreamsApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
         final Topology topology = this.createTopology(kafkaProperties);
-        final AppConfiguration<StreamsTopicConfig> appConfiguration =
-                new AppConfiguration<>(this.topics, kafkaProperties);
         return ExecutableStreamsApp.<T>builder()
                 .topology(topology)
-                .config(new StreamsConfig(kafkaProperties))
+                .kafkaProperties(kafkaProperties)
                 .app(this.app)
-                .appConfig(appConfiguration)
+                .topics(this.topics)
                 .build();
     }
 
