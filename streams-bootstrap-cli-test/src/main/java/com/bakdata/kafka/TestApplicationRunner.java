@@ -85,15 +85,18 @@ public final class TestApplicationRunner {
 
     /**
      * Configure {@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG} for Kafka consumers. Useful for testing
+     *
      * @param sessionTimeout session timeout
      * @return a copy of this runtime configuration with configured consumer session timeout
      */
     public TestApplicationRunner withSessionTimeout(final Duration sessionTimeout) {
-        return this.withKafkaConfig(Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
+        return this.withKafkaConfig(
+                Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
     }
 
     /**
      * Configure arbitrary Kafka properties
+     *
      * @param newKafkaConfig properties to configure
      * @return a copy of this runtime configuration with provided properties
      */
@@ -104,6 +107,7 @@ public final class TestApplicationRunner {
 
     /**
      * Configure a schema registry for (de-)serialization.
+     *
      * @param schemaRegistry schema registry to use
      * @return a copy of this runtime configuration with configured schema registry
      */
@@ -113,16 +117,16 @@ public final class TestApplicationRunner {
 
     /**
      * Configure a schema registry for (de-)serialization.
+     *
      * @return a copy of this runtime configuration with configured schema registry
      */
     public TestApplicationRunner withSchemaRegistry() {
         return this.withSchemaRegistry(new TestSchemaRegistry());
     }
 
-    public void run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
+    public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
-        final Thread thread = new Thread(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
-        thread.start();
+        return runAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
     public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
@@ -166,9 +170,7 @@ public final class TestApplicationRunner {
     }
 
     public KafkaTestClient newTestClient() {
-        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
-                .withSchemaRegistryUrl(this.schemaRegistry != null ? this.schemaRegistry.getSchemaRegistryUrl() : null)
-                .with(this.kafkaConfig);
+        final RuntimeConfiguration configuration = this.createRuntimeConfiguration();
         return new KafkaTestClient(configuration);
     }
 
@@ -179,6 +181,13 @@ public final class TestApplicationRunner {
         if (this.schemaRegistry != null) {
             app.setSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
         }
+    }
+
+    private RuntimeConfiguration createRuntimeConfiguration() {
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
+                .with(this.kafkaConfig);
+        return this.schemaRegistry == null ? configuration
+                : configuration.withSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
     }
 
     private String[] setupArgs(final String[] args, final Iterable<String> command) {

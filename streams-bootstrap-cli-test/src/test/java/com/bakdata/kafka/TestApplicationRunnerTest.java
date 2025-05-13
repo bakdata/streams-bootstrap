@@ -52,11 +52,11 @@ class TestApplicationRunnerTest extends KafkaTest {
 
     @Test
     void shouldRun() {
-        final KafkaTestClient testClient = this.newTestClient();
-        testClient.createTopic(INPUT_TOPIC);
         final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
                 .withNoStateStoreCaching()
                 .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = createApp()) {
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -65,8 +65,8 @@ class TestApplicationRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
-            final ExecutableStreamsApp<SimpleStreamsApp> executableApp = app.createExecutableApp();
-            awaitProcessing(executableApp);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
             final List<ConsumerRecord<String, String>> records = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -82,12 +82,12 @@ class TestApplicationRunnerTest extends KafkaTest {
 
     @Test
     void shouldRunUsingSchemaRegistry() {
-        final KafkaTestClient testClient = this.newTestClient();
-        testClient.createTopic(INPUT_TOPIC);
         final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
-                .withSchemaRegistry(this.getSchemaRegistry())
+                .withSchemaRegistry()
                 .withNoStateStoreCaching()
                 .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
         final SimpleStreamsApp streamsApp = new SimpleStreamsApp() {
             @Override
             public SerdeConfig defaultSerializationConfig() {
@@ -106,8 +106,8 @@ class TestApplicationRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("foo", value)
                     ));
             runner.run(app);
-            final ExecutableStreamsApp<SimpleStreamsApp> executableApp = app.createExecutableApp();
-            awaitProcessing(executableApp);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
             final List<ConsumerRecord<String, TestRecord>> records = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
@@ -123,11 +123,11 @@ class TestApplicationRunnerTest extends KafkaTest {
 
     @Test
     void shouldClean() {
-        final KafkaTestClient testClient = this.newTestClient();
-        testClient.createTopic(INPUT_TOPIC);
         final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
                 .withNoStateStoreCaching()
                 .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = createApp()) {
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -136,8 +136,8 @@ class TestApplicationRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
-            final ExecutableStreamsApp<SimpleStreamsApp> executableApp = app.createExecutableApp();
-            awaitProcessing(executableApp);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
             final List<ConsumerRecord<String, String>> records = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -149,7 +149,7 @@ class TestApplicationRunnerTest extends KafkaTest {
                         this.softly.assertThat(rekord.value()).isEqualTo("bar");
                     });
             app.stop();
-            awaitClosed(executableApp);
+            awaitClosed(verifier);
             runner.clean(app);
             this.softly.assertThat(testClient.existsTopic(OUTPUT_TOPIC)).isFalse();
         }
@@ -157,11 +157,11 @@ class TestApplicationRunnerTest extends KafkaTest {
 
     @Test
     void shouldReset() {
-        final KafkaTestClient testClient = this.newTestClient();
-        testClient.createTopic(INPUT_TOPIC);
         final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
                 .withNoStateStoreCaching()
                 .withSessionTimeout(SESSION_TIMEOUT);
+        final KafkaTestClient testClient = runner.newTestClient();
+        testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = createApp()) {
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -170,8 +170,8 @@ class TestApplicationRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
-            final ExecutableStreamsApp<SimpleStreamsApp> executableApp = app.createExecutableApp();
-            awaitProcessing(executableApp);
+            final ConsumerGroupVerifier verifier = runner.verify(app);
+            awaitProcessing(verifier);
             final List<ConsumerRecord<String, String>> records1 = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -183,10 +183,10 @@ class TestApplicationRunnerTest extends KafkaTest {
                         this.softly.assertThat(rekord.value()).isEqualTo("bar");
                     });
             app.stop();
-            awaitClosed(executableApp);
+            awaitClosed(verifier);
             runner.reset(app);
             runner.run(app);
-            awaitProcessing(executableApp);
+            awaitProcessing(verifier);
             final List<ConsumerRecord<String, String>> records2 = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)

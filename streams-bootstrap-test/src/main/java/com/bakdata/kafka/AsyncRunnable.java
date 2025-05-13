@@ -53,11 +53,11 @@ public final class AsyncRunnable {
         try {
             final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (timedOut) {
-                throw new RuntimeException("Timeout awaiting application shutdown");
+                throw new RuntimeException("Timeout awaiting runnable");
             }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Error awaiting application shutdown", e);
+            throw new RuntimeException("Error awaiting runnable", e);
         }
         this.exceptionHandler.throwException();
     }

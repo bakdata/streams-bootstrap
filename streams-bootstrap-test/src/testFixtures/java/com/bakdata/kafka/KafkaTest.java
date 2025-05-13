@@ -53,8 +53,12 @@ public abstract class KafkaTest {
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
-        awaitActive(app);
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        awaitProcessing(verifier);
+    }
+
+    protected static void awaitProcessing(final ConsumerGroupVerifier verifier) {
+        awaitActive(verifier);
         await()
                 .alias("Consumer group has finished processing")
                 .until(verifier::hasFinishedProcessing);
@@ -62,6 +66,10 @@ public abstract class KafkaTest {
 
     protected static void awaitActive(final ExecutableStreamsApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        awaitActive(verifier);
+    }
+
+    protected static void awaitActive(final ConsumerGroupVerifier verifier) {
         await()
                 .alias("Consumer group is active")
                 .until(verifier::isActive);
@@ -69,6 +77,10 @@ public abstract class KafkaTest {
 
     protected static void awaitClosed(final ExecutableStreamsApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        awaitClosed(verifier);
+    }
+
+    protected static void awaitClosed(final ConsumerGroupVerifier verifier) {
         await()
                 .alias("Consumer group is closed")
                 .until(verifier::isClosed);
