@@ -327,7 +327,6 @@ class ConsumedXTest {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
                     RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
-                            .withStateDir(stateDir)
                             .withNoStateStoreCaching()
                             .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
