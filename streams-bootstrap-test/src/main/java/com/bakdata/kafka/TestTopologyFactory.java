@@ -24,19 +24,11 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import io.confluent.kafka.schemaregistry.SchemaProvider;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -48,7 +40,6 @@ import org.apache.kafka.streams.StreamsConfig;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestTopologyFactory {
 
-    private static final String MOCK_URL_PREFIX = "mock://";
     private static final Map<String, String> STREAMS_TEST_CONFIG = Map.of(
             // Disable caching to allow immediate aggregations
             StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
@@ -58,29 +49,31 @@ public final class TestTopologyFactory {
 
     /**
      * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
+     *
      * @return {@code TestTopologyFactory} with no configured Schema Registry
      */
     public static TestTopologyFactory withoutSchemaRegistry() {
-        return withSchemaRegistry(null);
+        return new TestTopologyFactory(null);
     }
 
     /**
-     * Create a new {@code TestTopologyFactory} with configured
-     * {@link io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry}. The scope is random in order to avoid
+     * Create a new {@code TestTopologyFactory} with configured Schema Registry. The scope is random in order to avoid
      * collisions between different test instances as scopes are retained globally.
+     *
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry() {
-        return withSchemaRegistry(MOCK_URL_PREFIX + UUID.randomUUID());
+        return withSchemaRegistry(new TestSchemaRegistry());
     }
 
     /**
      * Create a new {@code TestTopologyFactory} with configured Schema Registry.
-     * @param schemaRegistryUrl Schema Registry URL to use
+     *
+     * @param schemaRegistry Schema Registry to use
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
-    public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
-        return new TestTopologyFactory(schemaRegistryUrl);
+    public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
+        return new TestTopologyFactory(schemaRegistry.getSchemaRegistryUrl());
     }
 
     /**
@@ -109,35 +102,6 @@ public final class TestTopologyFactory {
      */
     public static Map<String, String> createStreamsTestConfig() {
         return STREAMS_TEST_CONFIG;
-    }
-
-    /**
-     * Get Schema Registry URL if configured
-     * @return Schema Registry URL
-     * @throws NullPointerException if Schema Registry is not configured
-     */
-    public String getSchemaRegistryUrl() {
-        return Objects.requireNonNull(this.schemaRegistryUrl, "Schema Registry is not configured");
-    }
-
-    /**
-     * Get {@code SchemaRegistryClient} for configured URL with default providers
-     * @return {@code SchemaRegistryClient}
-     * @throws NullPointerException if Schema Registry is not configured
-     */
-    public SchemaRegistryClient getSchemaRegistryClient() {
-        return this.getSchemaRegistryClient(null);
-    }
-
-    /**
-     * Get {@code SchemaRegistryClient} for configured URL
-     * @param providers list of {@code SchemaProvider} to use for {@code SchemaRegistryClient}
-     * @return {@code SchemaRegistryClient}
-     * @throws NullPointerException if Schema Registry is not configured
-     */
-    public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        return SchemaRegistryClientFactory.newClient(List.of(this.getSchemaRegistryUrl()), 0, providers, emptyMap(),
-                null);
     }
 
     /**
