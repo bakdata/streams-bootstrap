@@ -83,6 +83,7 @@ public final class TestTopologyFactory {
 
     /**
      * Configure arbitrary Kafka properties for the application under test
+     *
      * @param kafkaProperties properties to configure
      * @return a copy of this {@code TestTopologyFactory} with provided properties
      */

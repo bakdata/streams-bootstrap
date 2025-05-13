@@ -85,14 +85,29 @@ public final class RuntimeConfiguration {
         return this.withInternal(newProperties);
     }
 
+    /**
+     * Configure {@link StreamsConfig#STATE_DIR_CONFIG} for Kafka Streams. Useful for testing
+     *
+     * @param stateDir directory to use for storing Kafka Streams state
+     * @return a copy of this runtime configuration with configured Kafka Streams state directory
+     */
     public RuntimeConfiguration withStateDir(final Path stateDir) {
         return this.withInternal(Map.of(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString()));
     }
 
+    /**
+     * Disable for Kafka Streams. Useful for testing
+     * @return a copy of this runtime configuration with Kafka Streams state store caching disabled
+     */
     public RuntimeConfiguration withNoStateStoreCaching() {
         return this.withInternal(Map.of(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L)));
     }
 
+    /**
+     * Configure {@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG} for Kafka consumers. Useful for testing
+     * @param sessionTimeout session timeout
+     * @return a copy of this runtime configuration with configured consumer session timeout
+     */
     public RuntimeConfiguration withSessionTimeout(final Duration sessionTimeout) {
         return this.withInternal(
                 Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
