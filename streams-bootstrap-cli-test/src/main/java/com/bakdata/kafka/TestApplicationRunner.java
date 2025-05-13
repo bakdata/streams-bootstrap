@@ -48,6 +48,12 @@ public final class TestApplicationRunner {
     private final TestSchemaRegistry schemaRegistry;
     private final @NonNull Map<String, String> kafkaConfig;
 
+    /**
+     * Create a test application runner with the given bootstrap servers.
+     *
+     * @param bootstrapServers bootstrap servers to connect to
+     * @return test application runner
+     */
     public static TestApplicationRunner create(final String bootstrapServers) {
         return new TestApplicationRunner(bootstrapServers, null, emptyMap());
     }
@@ -58,27 +64,57 @@ public final class TestApplicationRunner {
         return Collections.unmodifiableMap(merged);
     }
 
+    /**
+     * Configure {@link StreamsConfig#STATE_DIR_CONFIG} for Kafka Streams. Useful for testing
+     *
+     * @param stateDir directory to use for storing Kafka Streams state
+     * @return a copy of this runtime configuration with configured Kafka Streams state directory
+     */
     public TestApplicationRunner withStateDir(final Path stateDir) {
         return this.withKafkaConfig(Map.of(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString()));
     }
 
+    /**
+     * Disable for Kafka Streams. Useful for testing
+     *
+     * @return a copy of this runtime configuration with Kafka Streams state store caching disabled
+     */
     public TestApplicationRunner withNoStateStoreCaching() {
         return this.withKafkaConfig(Map.of(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L)));
     }
 
-    public TestApplicationRunner withSessionTimeout(Duration sessionTimeout) {
+    /**
+     * Configure {@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG} for Kafka consumers. Useful for testing
+     * @param sessionTimeout session timeout
+     * @return a copy of this runtime configuration with configured consumer session timeout
+     */
+    public TestApplicationRunner withSessionTimeout(final Duration sessionTimeout) {
         return this.withKafkaConfig(Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
     }
 
+    /**
+     * Configure arbitrary Kafka properties
+     * @param newKafkaConfig properties to configure
+     * @return a copy of this runtime configuration with provided properties
+     */
     public TestApplicationRunner withKafkaConfig(final Map<String, String> newKafkaConfig) {
         return new TestApplicationRunner(
                 this.bootstrapServers, this.schemaRegistry, merge(this.kafkaConfig, newKafkaConfig));
     }
 
+    /**
+     * Configure a schema registry for (de-)serialization.
+     * @param schemaRegistry schema registry to use
+     * @return a copy of this runtime configuration with configured schema registry
+     */
     public TestApplicationRunner withSchemaRegistry(final @NonNull TestSchemaRegistry schemaRegistry) {
         return new TestApplicationRunner(this.bootstrapServers, schemaRegistry, this.kafkaConfig);
     }
 
+    /**
+     * Configure a schema registry for (de-)serialization.
+     * @return a copy of this runtime configuration with configured schema registry
+     */
     public TestApplicationRunner withSchemaRegistry() {
         return this.withSchemaRegistry(new TestSchemaRegistry());
     }
