@@ -121,6 +121,7 @@ public final class TestTopologyFactory {
 
     /**
      * Configure arbitrary Kafka properties for the application under test
+     *
      * @param kafkaProperties properties to configure
      * @return a copy of this {@code TestTopologyFactory} with provided properties
      */
@@ -208,6 +209,7 @@ public final class TestTopologyFactory {
     private RuntimeConfiguration createConfiguration() {
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092")
                 .with(this.kafkaProperties);
-        return this.schemaRegistryUrl == null ? configuration : configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
+        return this.schemaRegistryUrl == null ? configuration
+                : configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
     }
 }
