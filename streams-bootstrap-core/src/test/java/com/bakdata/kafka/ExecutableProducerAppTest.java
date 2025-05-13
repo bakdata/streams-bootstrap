@@ -54,10 +54,10 @@ class ExecutableProducerAppTest {
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), topics);
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp =
-                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner();
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -69,10 +69,10 @@ class ExecutableProducerAppTest {
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), topics);
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp =
-                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner(ProducerExecutionOptions.builder().build());
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -84,9 +84,9 @@ class ExecutableProducerAppTest {
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), topics);
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp =
-                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+                configuredApp.withRuntimeConfiguration(configuration);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
         executableApp.createCleanUpRunner();
         verify(this.setupCleanUp).get();
