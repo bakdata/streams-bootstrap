@@ -45,7 +45,7 @@ class AsyncRunnableTest {
     void shouldProvideResult() {
         final AsyncRunnable<Integer> runnable = AsyncRunnable.runAsync(() -> 1);
         final Duration timeout = Duration.ofSeconds(1L);
-        assertThat(runnable.await(timeout)).isEqualTo(1L);
+        assertThat(runnable.await(timeout)).isEqualTo(1);
     }
 
     @Test
