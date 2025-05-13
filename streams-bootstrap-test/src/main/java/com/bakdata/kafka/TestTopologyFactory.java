@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import java.nio.file.Path;
@@ -55,7 +57,7 @@ public final class TestTopologyFactory {
      * @return {@code TestTopologyFactory} with no configured Schema Registry
      */
     public static TestTopologyFactory withoutSchemaRegistry() {
-        return new TestTopologyFactory(null);
+        return create(null);
     }
 
     /**
@@ -75,7 +77,7 @@ public final class TestTopologyFactory {
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return new TestTopologyFactory(schemaRegistry.getSchemaRegistryUrl(), emptyMap());
+        return create(schemaRegistry.getSchemaRegistryUrl());
     }
 
     /**
@@ -107,6 +109,10 @@ public final class TestTopologyFactory {
      */
     public static Map<String, String> createStreamsTestConfig() {
         return STREAMS_TEST_CONFIG;
+    }
+
+    private static TestTopologyFactory create(final String schemaRegistryUrl) {
+        return new TestTopologyFactory(schemaRegistryUrl, emptyMap());
     }
 
     /**
