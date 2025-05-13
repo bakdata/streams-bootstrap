@@ -31,8 +31,7 @@ import lombok.experimental.UtilityClass;
 public class TestHelper {
 
     static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        final TestTopology<K, V> topology =
-                new TestTopologyFactory().createTopology(app);
+        final TestTopology<K, V> topology = new TestTopologyFactory().createTopology(app);
         topology.start();
         return topology;
     }

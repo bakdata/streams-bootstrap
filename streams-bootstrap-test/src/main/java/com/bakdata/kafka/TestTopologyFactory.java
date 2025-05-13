@@ -74,6 +74,18 @@ public final class TestTopologyFactory {
     /**
      * Create a new {@code TestTopologyFactory} with configured Schema Registry.
      *
+     * @param schemaRegistryUrl Schema Registry URL to use
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     * @deprecated Use {@link TestTopologyFactory#withSchemaRegistry(TestSchemaRegistry)} instead
+     */
+    @Deprecated(since = "5.0.0")
+    public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
+        return withSchemaRegistry(new TestSchemaRegistry(schemaRegistryUrl));
+    }
+
+    /**
+     * Create a new {@code TestTopologyFactory} with configured Schema Registry.
+     *
      * @param schemaRegistry Schema Registry to use
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
