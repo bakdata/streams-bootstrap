@@ -77,11 +77,12 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following
-     * parameters in addition to {@link #createStreamsTestConfig()}:
+     * Create a new Kafka Streams config suitable for test environments. This includes setting the following parameters
+     * in addition to {@link #createStreamsTestConfig()}:
      * <ul>
      *     <li>{@link StreamsConfig#STATE_DIR_CONFIG}=provided directory</li>
      * </ul>
+     *
      * @param stateDir directory to use for storing Kafka Streams state
      * @return Kafka Streams config
      * @see #createStreamsTestConfig()
@@ -93,11 +94,13 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following parameters:
+     * Create a new Kafka Streams config suitable for test environments. This includes setting the following
+     * parameters:
      * <ul>
      *     <li>{@link StreamsConfig#STATESTORE_CACHE_MAX_BYTES_CONFIG}=0</li>
      *     <li>{@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG}=10000</li>
      * </ul>
+     *
      * @return Kafka Streams config
      */
     public static Map<String, String> createStreamsTestConfig() {
@@ -105,8 +108,8 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link KafkaEndpointConfig}
-     * for test purposes with Schema Registry optionally configured.
+     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link KafkaEndpointConfig} for
+     * test purposes with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to create TestTopology from
      * @param <K> Default type of keys
