@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
+import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
 import static java.util.Collections.emptyMap;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
@@ -368,13 +369,16 @@ class MaterializedXTest {
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
-                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withStateDir(stateDir)
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                            runtimeConfiguration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -414,13 +418,16 @@ class MaterializedXTest {
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
-                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withStateDir(stateDir)
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+                            runtimeConfiguration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

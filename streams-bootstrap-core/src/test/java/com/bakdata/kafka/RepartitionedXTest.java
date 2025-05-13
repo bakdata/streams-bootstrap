@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
+import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -242,13 +243,15 @@ class RepartitionedXTest {
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
-                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
+                            runtimeConfiguration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -309,13 +312,15 @@ class RepartitionedXTest {
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
-                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
+                            runtimeConfiguration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -373,13 +378,15 @@ class RepartitionedXTest {
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
-                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
+                            runtimeConfiguration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -420,13 +427,16 @@ class RepartitionedXTest {
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
             final RuntimeConfiguration runtimeConfiguration =
-                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers());
+                    RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withStateDir(stateDir)
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
             final KafkaTestClient testClient = new KafkaTestClient(runtimeConfiguration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withRuntimeConfiguration(
-                            TestConfigurator.createRuntimeConfiguration(runtimeConfiguration));
+                            runtimeConfiguration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)

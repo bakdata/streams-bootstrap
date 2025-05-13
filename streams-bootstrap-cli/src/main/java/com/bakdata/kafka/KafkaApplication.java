@@ -195,9 +195,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     public RuntimeConfiguration getRuntimeConfiguration() {
-        return RuntimeConfiguration.create(this.bootstrapServers)
-                .withSchemaRegistryUrl(this.schemaRegistryUrl)
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
                 .with(this.kafkaConfig);
+        return this.schemaRegistryUrl == null ? configuration : configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
     }
 
     /**

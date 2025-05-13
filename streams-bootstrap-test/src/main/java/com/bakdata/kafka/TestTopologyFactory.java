@@ -81,6 +81,11 @@ public final class TestTopologyFactory {
         return new TestTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
     }
 
+    /**
+     * Configure arbitrary Kafka properties for the application under test
+     * @param kafkaProperties properties to configure
+     * @return a copy of this {@code TestTopologyFactory} with provided properties
+     */
     public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
         return new TestTopologyFactory(
                 this.configurationModifier.andThen(ConfigurationModifiers.configureProperties(kafkaProperties)));
@@ -127,7 +132,12 @@ public final class TestTopologyFactory {
      * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      */
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
-        return app.getKafkaProperties(this.configurationModifier.apply(runtimeConfiguration));
+        final RuntimeConfiguration runtimeConfiguration = this.createRuntimeConfiguration();
+        return app.getKafkaProperties(runtimeConfiguration);
+    }
+
+    private RuntimeConfiguration createRuntimeConfiguration() {
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        return this.configurationModifier.apply(configuration);
     }
 }

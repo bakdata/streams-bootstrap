@@ -88,8 +88,9 @@ class StreamsRunnerTest extends KafkaTest {
 
     static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
             final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
-        return app.withRuntimeConfiguration(
-                TestConfigurator.createRuntimeConfiguration(runtimeConfiguration, stateDir));
+        return app.withRuntimeConfiguration(runtimeConfiguration.withStateDir(stateDir)
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT));
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {

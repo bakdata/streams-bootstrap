@@ -25,6 +25,8 @@
 package com.bakdata.kafka;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,8 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Runtime configuration to connect to Kafka infrastructure, e.g., bootstrap servers and schema registry.
@@ -45,6 +49,12 @@ public final class RuntimeConfiguration {
     );
     private final @NonNull Map<String, Object> properties;
 
+    /**
+     * Create a runtime configuration with the given bootstrap servers.
+     *
+     * @param bootstrapServers bootstrap servers to connect to
+     * @return runtime configuration
+     */
     public static RuntimeConfiguration create(final String bootstrapServers) {
         return new RuntimeConfiguration(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
     }
@@ -56,24 +66,41 @@ public final class RuntimeConfiguration {
         }
     }
 
+    /**
+     * Configure a schema registry for (de-)serialization.
+     * @param schemaRegistryUrl schema registry url
+     * @return a copy of this runtime configuration with configured schema registry
+     */
     public RuntimeConfiguration withSchemaRegistryUrl(final String schemaRegistryUrl) {
-        if (schemaRegistryUrl == null) {
-            return this;
-        }
         return this.withInternal(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl));
     }
 
+    /**
+     * Configure arbitrary Kafka properties
+     * @param newProperties properties to configure
+     * @return a copy of this runtime configuration with provided properties
+     */
     public RuntimeConfiguration with(final Map<String, ?> newProperties) {
         newProperties.keySet().forEach(RuntimeConfiguration::validate);
         return this.withInternal(newProperties);
     }
 
+    public RuntimeConfiguration withStateDir(final Path stateDir) {
+        return this.withInternal(Map.of(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString()));
+    }
+
+    public RuntimeConfiguration withNoStateStoreCaching() {
+        return this.withInternal(Map.of(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L)));
+    }
+
+    public RuntimeConfiguration withSessionTimeout(final Duration sessionTimeout) {
+        return this.withInternal(
+                Map.of(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Long.toString(sessionTimeout.toMillis())));
+    }
+
     /**
-     * Create Kafka properties to connect to infrastructure. The following properties are configured:
-     * <ul>
-     *     <li>{@code bootstrap.servers}</li>
-     *     <li>{@code schema.registry.url}</li>
-     * </ul>
+     * Create Kafka properties to connect to infrastructure and modify runtime behavior. {@code bootstrap.servers} is
+     * always configured.
      *
      * @return properties used for connecting to Kafka
      */
