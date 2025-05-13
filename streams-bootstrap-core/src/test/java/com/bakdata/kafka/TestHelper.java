@@ -45,7 +45,7 @@ public class TestHelper {
 
     static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
         final TestTopology<K, V> topology =
-                TestTopologyFactory.withoutSchemaRegistry().createTopology(app);
+                new TestTopologyFactory().createTopology(app);
         topology.start();
         return topology;
     }

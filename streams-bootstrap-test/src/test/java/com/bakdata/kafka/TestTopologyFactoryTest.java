@@ -32,7 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class TestTopologyFactoryTest extends KafkaTest {
 
     @RegisterExtension
-    private final TestTopologyExtension<String, String> testTopology = TestTopologyFactory.withoutSchemaRegistry()
+    private final TestTopologyExtension<String, String> testTopology = new TestTopologyFactory()
             .createTopologyExtension(createApp());
 
     private static ConfiguredStreamsApp<StreamsApp> createApp() {
