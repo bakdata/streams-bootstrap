@@ -70,7 +70,7 @@ class AsyncRunnableTest {
         });
         final Duration timeout = Duration.ofSeconds(1L);
         assertThatThrownBy(() -> runnable.await(timeout))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(TimeoutException.class)
                 .hasMessage("Timeout awaiting runnable");
     }
 }

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -69,7 +70,7 @@ public final class AsyncRunnable<T> {
         try {
             final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (timedOut) {
-                throw new RuntimeException("Timeout awaiting runnable");
+                throw new TimeoutException("Timeout awaiting runnable");
             }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -97,12 +98,13 @@ public final class AsyncRunnable<T> {
             if (this.lastException instanceof RuntimeException) {
                 throw (RuntimeException) this.lastException;
             }
-            throw new RuntimeException("Thread threw an exception", this.lastException);
+            throw new ExecutionException("Thread threw an exception", this.lastException);
         }
     }
 
     @Setter
     @Getter
+    @NoArgsConstructor
     private static class ResultProvider<T> {
         private T result;
     }
