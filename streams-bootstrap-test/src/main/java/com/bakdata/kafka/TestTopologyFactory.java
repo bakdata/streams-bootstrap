@@ -132,11 +132,11 @@ public final class TestTopologyFactory {
      * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      */
     public Map<String, Object> getKafkaProperties(final ConfiguredStreamsApp<? extends StreamsApp> app) {
-        final RuntimeConfiguration runtimeConfiguration = this.createRuntimeConfiguration();
-        return app.getKafkaProperties(runtimeConfiguration);
+        final RuntimeConfiguration configuration = this.createConfiguration();
+        return app.getKafkaProperties(configuration);
     }
 
-    private RuntimeConfiguration createRuntimeConfiguration() {
+    private RuntimeConfiguration createConfiguration() {
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         return this.configurationModifier.apply(configuration);
     }

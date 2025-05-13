@@ -56,10 +56,10 @@ class ExecutableStreamsAppTest {
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), topics);
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp =
-                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner();
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -72,10 +72,10 @@ class ExecutableStreamsAppTest {
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), topics);
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp =
-                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(runtimeConfiguration);
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner(StreamsExecutionOptions.builder().build());
         verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
@@ -88,9 +88,9 @@ class ExecutableStreamsAppTest {
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), topics);
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("localhost:9092");
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp =
-                configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+                configuredApp.withRuntimeConfiguration(configuration);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());
         executableApp.createCleanUpRunner();
         verify(this.setupCleanUp).get();
