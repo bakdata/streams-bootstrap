@@ -2,6 +2,7 @@ description = "Utils for testing your Kafka Streams Application"
 
 plugins {
     id("java-library")
+    alias(libs.plugins.avro)
 }
 
 dependencies {
@@ -12,6 +13,12 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj)
+    testImplementation(libs.kafka.streams.avro.serde) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
+    testImplementation(libs.kafka.protobuf.provider) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
     testFixturesApi(libs.testcontainers.junit)
     testFixturesApi(libs.testcontainers.kafka)
     testImplementation(libs.log4j.slf4j2)
