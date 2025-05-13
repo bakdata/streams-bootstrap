@@ -52,12 +52,25 @@ public final class TestTopologyFactory {
     private final @NonNull Map<String, Object> kafkaProperties;
 
     /**
+     * Create a new {@code TestTopologyFactory}
+     */
+    public TestTopologyFactory() {
+        this(null);
+    }
+
+    private TestTopologyFactory(final String schemaRegistryUrl) {
+        this(schemaRegistryUrl, emptyMap());
+    }
+
+    /**
      * Create a new {@code TestTopologyFactory} with no configured Schema Registry.
      *
      * @return {@code TestTopologyFactory} with no configured Schema Registry
+     * @deprecated Use {@link TestTopologyFactory#TestTopologyFactory()} instead
      */
+    @Deprecated(since = "5.0.0")
     public static TestTopologyFactory withoutSchemaRegistry() {
-        return create(null);
+        return new TestTopologyFactory();
     }
 
     /**
@@ -73,11 +86,23 @@ public final class TestTopologyFactory {
     /**
      * Create a new {@code TestTopologyFactory} with configured Schema Registry.
      *
+     * @param schemaRegistryUrl Schema Registry URL to use
+     * @return {@code TestTopologyFactory} with configured Schema Registry
+     * @deprecated Use {@link TestTopologyFactory#withSchemaRegistry(TestSchemaRegistry)} instead
+     */
+    @Deprecated(since = "5.0.0")
+    public static TestTopologyFactory withSchemaRegistry(final String schemaRegistryUrl) {
+        return new TestTopologyFactory(schemaRegistryUrl);
+    }
+
+    /**
+     * Create a new {@code TestTopologyFactory} with configured Schema Registry.
+     *
      * @param schemaRegistry Schema Registry to use
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return create(schemaRegistry.getSchemaRegistryUrl());
+        return new TestTopologyFactory(schemaRegistry.getSchemaRegistryUrl());
     }
 
     /**
@@ -109,10 +134,6 @@ public final class TestTopologyFactory {
      */
     public static Map<String, String> createStreamsTestConfig() {
         return STREAMS_TEST_CONFIG;
-    }
-
-    private static TestTopologyFactory create(final String schemaRegistryUrl) {
-        return new TestTopologyFactory(schemaRegistryUrl, emptyMap());
     }
 
     /**
