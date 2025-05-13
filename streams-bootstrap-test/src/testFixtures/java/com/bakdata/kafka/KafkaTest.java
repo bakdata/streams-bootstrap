@@ -38,7 +38,7 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class KafkaTest {
     protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
     protected static final Duration SESSION_TIMEOUT = Duration.ofSeconds(10L);
-    private final TestTopologyFactory testTopologyFactory = TestTopologyFactory.withSchemaRegistry();
+    private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
 
@@ -95,11 +95,11 @@ public abstract class KafkaTest {
     }
 
     protected String getSchemaRegistryUrl() {
-        return this.testTopologyFactory.getSchemaRegistryUrl();
+        return this.schemaRegistry.getSchemaRegistryUrl();
     }
 
     protected SchemaRegistryClient getSchemaRegistryClient() {
-        return this.testTopologyFactory.getSchemaRegistryClient();
+        return this.schemaRegistry.getSchemaRegistryClient();
     }
 
 }
