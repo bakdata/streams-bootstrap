@@ -43,23 +43,25 @@ import org.mockito.quality.Strictness;
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class TestApplicationTopologyFactoryTest {
 
+    static final String OUTPUT_TOPIC = "output";
+    static final String INPUT_TOPIC = "input";
     @RegisterExtension
     private final TestTopologyExtension<String, String> testTopologyExtension = new TestApplicationTopologyFactory()
             .createTopologyExtension(createApp());
 
-    private static KafkaStreamsApplication<SimpleStreamsApp> createApp() {
+    static KafkaStreamsApplication<SimpleStreamsApp> createApp() {
         return createApp(new SimpleStreamsApp());
     }
 
-    private static KafkaStreamsApplication<SimpleStreamsApp> createApp(final SimpleStreamsApp streamsApp) {
+    static KafkaStreamsApplication<SimpleStreamsApp> createApp(final SimpleStreamsApp streamsApp) {
         final KafkaStreamsApplication<SimpleStreamsApp> app = new KafkaStreamsApplication<>() {
             @Override
             public SimpleStreamsApp createApp() {
                 return streamsApp;
             }
         };
-        app.setInputTopics(List.of("input"));
-        app.setOutputTopic("output");
+        app.setInputTopics(List.of(INPUT_TOPIC));
+        app.setOutputTopic(OUTPUT_TOPIC);
         return app;
     }
 
@@ -119,8 +121,8 @@ class TestApplicationTopologyFactoryTest {
         final KafkaStreamsApplication<StreamsApp> app = mock();
         when(app.createConfiguredApp()).thenReturn(
                 new ConfiguredStreamsApp<>(new SimpleStreamsApp(), StreamsTopicConfig.builder()
-                        .inputTopics(List.of("input"))
-                        .outputTopic("output")
+                        .inputTopics(List.of(INPUT_TOPIC))
+                        .outputTopic(OUTPUT_TOPIC)
                         .build()));
         final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
         try (final TestTopology<String, String> testTopology = factory.createTopology(app)) {
