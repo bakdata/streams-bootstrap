@@ -11,6 +11,7 @@ kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }
 kafka-schema-serializer = { group = "io.confluent", name = "kafka-schema-serializer" }
 kafka-schema-registry-client = { group = "io.confluent", name = "kafka-schema-registry-client" }
 kafka-streams-avro-serde = { group = "io.confluent", name = "kafka-streams-avro-serde" }
+kafka-protobuf-provider = { group = "io.confluent", name = "kafka-protobuf-provider" }
 largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "2.12.1" }
 largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
 errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "1.8.0" }
