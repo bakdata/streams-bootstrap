@@ -29,7 +29,7 @@ package com.bakdata.kafka;
  */
 public class TimeoutException extends RuntimeException {
 
-    TimeoutException(final Throwable cause) {
-        super(cause);
+    TimeoutException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

@@ -61,7 +61,7 @@ public final class AsyncSupplier<T> {
             }
             throw new ExecutionException(e);
         } catch (final java.util.concurrent.TimeoutException e) {
-            throw new TimeoutException(e);
+            throw new TimeoutException("Timeout awaiting result in " + timeout, e);
         }
     }
 
