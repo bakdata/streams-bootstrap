@@ -24,42 +24,30 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link ConfiguredStreamsApp}
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
 public final class TestTopologyFactory {
 
-    private static final Map<String, String> STREAMS_TEST_CONFIG = Map.of(
-            // Disable caching to allow immediate aggregations
-            StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, Long.toString(0L),
-            ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.toString(10_000)
-    );
-    private final String schemaRegistryUrl;
-    private final @NonNull Map<String, Object> kafkaProperties;
+    private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
 
     /**
      * Create a new {@code TestTopologyFactory}
      */
     public TestTopologyFactory() {
-        this(null);
-    }
-
-    private TestTopologyFactory(final String schemaRegistryUrl) {
-        this(schemaRegistryUrl, emptyMap());
+        this(UnaryOperator.identity());
     }
 
     /**
@@ -79,38 +67,7 @@ public final class TestTopologyFactory {
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return new TestTopologyFactory(schemaRegistry.getSchemaRegistryUrl());
-    }
-
-    /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following parameters
-     * in addition to {@link #createStreamsTestConfig()}:
-     * <ul>
-     *     <li>{@link StreamsConfig#STATE_DIR_CONFIG}=provided directory</li>
-     * </ul>
-     *
-     * @param stateDir directory to use for storing Kafka Streams state
-     * @return Kafka Streams config
-     * @see #createStreamsTestConfig()
-     */
-    public static Map<String, String> createStreamsTestConfig(final Path stateDir) {
-        final Map<String, String> config = new HashMap<>(createStreamsTestConfig());
-        config.put(StreamsConfig.STATE_DIR_CONFIG, stateDir.toString());
-        return Map.copyOf(config);
-    }
-
-    /**
-     * Create a new Kafka Streams config suitable for test environments. This includes setting the following
-     * parameters:
-     * <ul>
-     *     <li>{@link StreamsConfig#STATESTORE_CACHE_MAX_BYTES_CONFIG}=0</li>
-     *     <li>{@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG}=10000</li>
-     * </ul>
-     *
-     * @return Kafka Streams config
-     */
-    public static Map<String, String> createStreamsTestConfig() {
-        return STREAMS_TEST_CONFIG;
+        return new TestTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
     }
 
     /**
@@ -120,7 +77,8 @@ public final class TestTopologyFactory {
      * @return a copy of this {@code TestTopologyFactory} with provided properties
      */
     public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
-        return new TestTopologyFactory(this.schemaRegistryUrl, kafkaProperties);
+        return new TestTopologyFactory(
+                this.configurationModifier.andThen(ConfigurationModifiers.configureProperties(kafkaProperties)));
     }
 
     /**
@@ -169,9 +127,7 @@ public final class TestTopologyFactory {
     }
 
     private RuntimeConfiguration createConfiguration() {
-        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092")
-                .with(this.kafkaProperties);
-        return this.schemaRegistryUrl == null ? configuration
-                : configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        return this.configurationModifier.apply(configuration);
     }
 }
