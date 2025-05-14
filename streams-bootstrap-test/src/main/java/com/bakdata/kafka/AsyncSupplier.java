@@ -26,7 +26,9 @@ package com.bakdata.kafka;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -52,17 +54,9 @@ public final class AsyncSupplier<T> {
         return new AsyncSupplier<>(future);
     }
 
-    static <T> T await(final CompletableFuture<T> future, final Duration timeout) throws InterruptedException {
-        try {
-            return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        } catch (final java.util.concurrent.ExecutionException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
-            }
-            throw new ExecutionException(e);
-        } catch (final java.util.concurrent.TimeoutException e) {
-            throw new TimeoutException("Timeout awaiting result in " + timeout, e);
-        }
+    static <T> T await(final CompletableFuture<T> future, final Duration timeout)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -73,7 +67,7 @@ public final class AsyncSupplier<T> {
      * @return result of the supplier
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public T await(final Duration timeout) throws InterruptedException {
+    public T await(final Duration timeout) throws InterruptedException, ExecutionException, TimeoutException {
         return await(this.future, timeout);
     }
 }

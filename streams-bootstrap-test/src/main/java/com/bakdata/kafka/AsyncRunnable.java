@@ -26,6 +26,8 @@ package com.bakdata.kafka;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,7 @@ public final class AsyncRunnable {
      * @param timeout time to wait for result
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public void await(final Duration timeout) throws InterruptedException, ExecutionException {
+    public void await(final Duration timeout) throws InterruptedException, ExecutionException, TimeoutException {
         AsyncSupplier.await(this.future, timeout);
     }
 
