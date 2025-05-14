@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import static com.bakdata.kafka.AsyncRunnable.runAsync;
+import static com.bakdata.kafka.AsyncSupplier.getAsync;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
@@ -124,9 +125,9 @@ public final class TestApplicationRunner {
         return this.withSchemaRegistry(new TestSchemaRegistry());
     }
 
-    public AsyncRunnable<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
+    public AsyncSupplier<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
-        return runAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+        return getAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
     public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
@@ -139,7 +140,7 @@ public final class TestApplicationRunner {
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
-    public AsyncRunnable<Void> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+    public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         return runAsync(app);
     }

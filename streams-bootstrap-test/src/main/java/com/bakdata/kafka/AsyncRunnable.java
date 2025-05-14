@@ -24,88 +24,29 @@
 
 package com.bakdata.kafka;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AsyncRunnable<T> {
-    private final @NonNull CountDownLatch shutdown;
-    private final @NonNull CapturingUncaughtExceptionHandler exceptionHandler;
-    private final @NonNull ResultProvider<T> resultProvider;
+public final class AsyncRunnable {
+    private final @NonNull AsyncSupplier<Void> supplier;
 
-    public static AsyncRunnable<Void> runAsync(final Runnable app) {
-        return runAsync(asSupplier(app));
+    public static AsyncRunnable runAsync(final Runnable runnable) {
+        final Supplier<Void> supplier = asSupplier(runnable);
+        return new AsyncRunnable(AsyncSupplier.getAsync(supplier));
     }
 
-    public static <T> AsyncRunnable<T> runAsync(final Supplier<? extends T> app) {
-        final CountDownLatch shutdown = new CountDownLatch(1);
-        final ResultProvider<T> provider = new ResultProvider<>();
-        final Thread thread = new Thread(() -> {
-            provider.setResult(app.get());
-            shutdown.countDown();
-        });
-        final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler(shutdown);
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return new AsyncRunnable<>(shutdown, handler, provider);
-    }
-
-    private static Supplier<Void> asSupplier(final Runnable app) {
+    private static Supplier<Void> asSupplier(final Runnable runnable) {
         return () -> {
-            app.run();
+            runnable.run();
             return null;
         };
     }
 
-    public T await(final Duration timeout) {
-        try {
-            final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (timedOut) {
-                throw new TimeoutException("Timeout awaiting runnable");
-            }
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Error awaiting runnable", e);
-        }
-        this.exceptionHandler.throwException();
-        return this.resultProvider.getResult();
-    }
-
-    @RequiredArgsConstructor
-    private static class CapturingUncaughtExceptionHandler implements UncaughtExceptionHandler {
-        private final @NonNull CountDownLatch countDownLatch;
-        private Throwable lastException;
-
-        @Override
-        public void uncaughtException(final Thread t, final Throwable e) {
-            this.lastException = e;
-            this.countDownLatch.countDown();
-        }
-
-        private void throwException() {
-            if (this.lastException == null) {
-                return;
-            }
-            if (this.lastException instanceof RuntimeException) {
-                throw (RuntimeException) this.lastException;
-            }
-            throw new ExecutionException("Thread threw an exception", this.lastException);
-        }
-    }
-
-    @Setter
-    @Getter
-    @NoArgsConstructor
-    private static class ResultProvider<T> {
-        private T result;
+    public void await(final Duration timeout) {
+        this.supplier.await(timeout);
     }
 }

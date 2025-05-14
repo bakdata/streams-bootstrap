@@ -32,26 +32,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
-class AsyncRunnableTest {
+class AsyncTest {
 
     @Test
     void shouldRun() {
-        final AsyncRunnable<Void> runnable = AsyncRunnable.runAsync(() -> {});
+        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {});
         final Duration timeout = Duration.ofSeconds(1L);
         assertThatCode(() -> runnable.await(timeout)).doesNotThrowAnyException();
     }
 
     @Test
-    void shouldProvideResult() {
-        final AsyncRunnable<Integer> runnable = AsyncRunnable.runAsync(() -> 1);
+    void shouldGet() {
+        final AsyncSupplier<Integer> supplier = AsyncSupplier.getAsync(() -> 1);
         final Duration timeout = Duration.ofSeconds(1L);
-        assertThat(runnable.await(timeout)).isEqualTo(1);
+        assertThat(supplier.await(timeout)).isEqualTo(1);
     }
 
     @Test
     void shouldThrowException() {
         final RuntimeException exception = new RuntimeException("Test exception");
-        final AsyncRunnable<Void> runnable = AsyncRunnable.runAsync(() -> {
+        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {
             throw exception;
         });
         final Duration timeout = Duration.ofSeconds(1L);
@@ -60,7 +60,7 @@ class AsyncRunnableTest {
 
     @Test
     void shouldThrowOnTimeout() {
-        final AsyncRunnable<Void> runnable = AsyncRunnable.runAsync(() -> {
+        final AsyncRunnable runnable = AsyncRunnable.runAsync(() -> {
             try {
                 Thread.sleep(Duration.ofSeconds(2L).toMillis());
             } catch (final InterruptedException e) {
