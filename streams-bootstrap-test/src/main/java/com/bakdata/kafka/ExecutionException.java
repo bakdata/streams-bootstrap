@@ -29,7 +29,7 @@ package com.bakdata.kafka;
  */
 public class ExecutionException extends RuntimeException {
 
-    ExecutionException(final String message, final Throwable cause) {
-        super(message, cause);
+    ExecutionException(final Throwable cause) {
+        super(cause);
     }
 }

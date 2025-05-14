@@ -25,7 +25,7 @@
 package com.bakdata.kafka;
 
 import java.time.Duration;
-import java.util.function.Supplier;
+import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AsyncRunnable {
-    private final @NonNull AsyncSupplier<Void> supplier;
+    private final @NonNull CompletableFuture<Void> future;
 
     /**
      * Call a runnable asynchronously. Execution starts immediately. Execution can be awaited.
@@ -44,15 +44,8 @@ public final class AsyncRunnable {
      * @return async runnable for awaiting execution
      */
     public static AsyncRunnable runAsync(final Runnable runnable) {
-        final Supplier<Void> supplier = asSupplier(runnable);
-        return new AsyncRunnable(AsyncSupplier.getAsync(supplier));
-    }
-
-    private static Supplier<Void> asSupplier(final Runnable runnable) {
-        return () -> {
-            runnable.run();
-            return null;
-        };
+        final CompletableFuture<Void> future = CompletableFuture.runAsync(runnable);
+        return new AsyncRunnable(future);
     }
 
     /**
@@ -62,7 +55,8 @@ public final class AsyncRunnable {
      * @param timeout time to wait for result
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public void await(final Duration timeout) throws InterruptedException {
-        this.supplier.await(timeout);
+    public void await(final Duration timeout) throws InterruptedException, ExecutionException {
+        AsyncSupplier.await(this.future, timeout);
     }
+
 }

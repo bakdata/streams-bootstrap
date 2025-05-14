@@ -24,17 +24,13 @@
 
 package com.bakdata.kafka;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Call a {@link Supplier} asynchronously and wait for the result.
@@ -43,9 +39,7 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AsyncSupplier<T> {
-    private final @NonNull CountDownLatch shutdown;
-    private final @NonNull CapturingUncaughtExceptionHandler exceptionHandler;
-    private final @NonNull ResultProvider<T> resultProvider;
+    private final @NonNull CompletableFuture<T> future;
 
     /**
      * Call a supplier asynchronously. Execution starts immediately. Result can be awaited.
@@ -53,17 +47,22 @@ public final class AsyncSupplier<T> {
      * @param <T> type of result
      * @return async supplier for awaiting result
      */
-    public static <T> AsyncSupplier<T> getAsync(final Supplier<? extends T> supplier) {
-        final CountDownLatch shutdown = new CountDownLatch(1);
-        final ResultProvider<T> provider = new ResultProvider<>();
-        final Thread thread = new Thread(() -> {
-            provider.setResult(supplier.get());
-            shutdown.countDown();
-        });
-        final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler(shutdown);
-        thread.setUncaughtExceptionHandler(handler);
-        thread.start();
-        return new AsyncSupplier<>(shutdown, handler, provider);
+    public static <T> AsyncSupplier<T> getAsync(final Supplier<T> supplier) {
+        final CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier);
+        return new AsyncSupplier<>(future);
+    }
+
+    static <T> T await(final CompletableFuture<T> future, final Duration timeout) throws InterruptedException {
+        try {
+            return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        } catch (final java.util.concurrent.ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw new ExecutionException(e);
+        } catch (final java.util.concurrent.TimeoutException e) {
+            throw new TimeoutException(e);
+        }
     }
 
     /**
@@ -75,40 +74,6 @@ public final class AsyncSupplier<T> {
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
     public T await(final Duration timeout) throws InterruptedException {
-        final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        if (timedOut) {
-            throw new TimeoutException("Timeout awaiting result in " + timeout);
-        }
-        this.exceptionHandler.throwException();
-        return this.resultProvider.getResult();
-    }
-
-    @RequiredArgsConstructor
-    private static class CapturingUncaughtExceptionHandler implements UncaughtExceptionHandler {
-        private final @NonNull CountDownLatch countDownLatch;
-        private Throwable lastException;
-
-        @Override
-        public void uncaughtException(final Thread t, final Throwable e) {
-            this.lastException = e;
-            this.countDownLatch.countDown();
-        }
-
-        private void throwException() {
-            if (this.lastException == null) {
-                return;
-            }
-            if (this.lastException instanceof RuntimeException) {
-                throw (RuntimeException) this.lastException;
-            }
-            throw new ExecutionException("Thread threw an exception", this.lastException);
-        }
-    }
-
-    @Setter
-    @Getter
-    @NoArgsConstructor
-    private static class ResultProvider<T> {
-        private T result;
+        return await(this.future, timeout);
     }
 }
