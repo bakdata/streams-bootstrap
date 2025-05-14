@@ -42,6 +42,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
+/**
+ * Class that provides helpers for using running {@link KafkaApplication} in tests
+ */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestApplicationRunner {
 
@@ -125,41 +128,84 @@ public final class TestApplicationRunner {
         return this.withSchemaRegistry(new TestSchemaRegistry());
     }
 
+    /**
+     * Run the application asynchronously with the given arguments. Execution can be awaited using
+     * {@link AsyncSupplier#await(Duration)}. {@code --bootstrap-servers}, {@code --schema-registry-url}, and
+     * {@code --kafka-config} are automatically configured.
+     *
+     * @param app application to run
+     * @param args CLI arguments to pass to the application
+     * @return {@link AsyncSupplier} providing the application exit code
+     */
     public AsyncSupplier<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
         return getAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
+    /**
+     * Clean the application with the given arguments. {@code --bootstrap-servers}, {@code --schema-registry-url}, and
+     * {@code --kafka-config} are automatically configured.
+     *
+     * @param app application to clean
+     * @param args CLI arguments to pass to the application
+     * @return application exit code
+     */
     public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("clean"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
+    /**
+     * Reset the application with the given arguments. {@code --bootstrap-servers}, {@code --schema-registry-url}, and
+     * {@code --kafka-config} are automatically configured.
+     *
+     * @param app application to reset
+     * @param args CLI arguments to pass to the application
+     * @return application exit code
+     */
     public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("reset"));
         return KafkaApplication.startApplicationWithoutExit(app, newArgs);
     }
 
+    /**
+     * Run the application asynchronously. Execution can be awaited using {@link AsyncRunnable#await(Duration)}.
+     * Bootstrap servers, Schema Registry and Kafka config are automatically configured.
+     *
+     * @param app application to run
+     * @return {@link AsyncRunnable} to await execution
+     */
     public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         return runAsync(app);
     }
 
+    /**
+     * Clean the application. Bootstrap servers, Schema Registry and Kafka config are automatically configured.
+     *
+     * @param app application to clean
+     */
     public void clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         app.clean();
     }
 
+    /**
+     * Reset the application. Bootstrap servers, Schema Registry and Kafka config are automatically configured.
+     *
+     * @param app application to reset
+     */
     public void reset(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.prepareExecution(app);
         app.reset();
     }
 
-    public void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
-        this.configure(app);
-        app.onApplicationStart();
-    }
-
+    /**
+     * Create a new {@link ConsumerGroupVerifier} for the provided application.
+     *
+     * @param app application to verify
+     * @return {@link ConsumerGroupVerifier}
+     */
     public ConsumerGroupVerifier verify(final KafkaStreamsApplication<? extends StreamsApp> app) {
         this.configure(app);
         final RuntimeConfiguration configuration = app.getRuntimeConfiguration();
@@ -170,11 +216,20 @@ public final class TestApplicationRunner {
         }
     }
 
+    /**
+     * Create a new {@link KafkaTestClient} for the configured test environment.
+     *
+     * @return {@link KafkaTestClient}
+     */
     public KafkaTestClient newTestClient() {
         final RuntimeConfiguration configuration = this.createRuntimeConfiguration();
         return new KafkaTestClient(configuration);
     }
 
+    /**
+     * Configure the application according to the test environment. Bootstrap servers, Schema Registry and Kafka config
+     * are configured.
+     */
     public void configure(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         app.setBootstrapServers(this.bootstrapServers);
         final Map<String, String> mergedConfig = merge(app.getKafkaConfig(), this.kafkaConfig);
@@ -182,6 +237,11 @@ public final class TestApplicationRunner {
         if (this.schemaRegistry != null) {
             app.setSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
         }
+    }
+
+    private void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+        this.configure(app);
+        app.onApplicationStart();
     }
 
     private RuntimeConfiguration createRuntimeConfiguration() {

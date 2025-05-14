@@ -27,7 +27,9 @@ package com.bakdata.kafka;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,12 +38,23 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Call a {@link Supplier} asynchronously and wait for the result.
+ *
+ * @param <T> type of result
+ */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AsyncSupplier<T> {
     private final @NonNull CountDownLatch shutdown;
     private final @NonNull CapturingUncaughtExceptionHandler exceptionHandler;
     private final @NonNull ResultProvider<T> resultProvider;
 
+    /**
+     * Call a supplier asynchronously. Execution starts immediately. Result can be awaited.
+     * @param supplier supplier to call
+     * @param <T> type of result
+     * @return async supplier for awaiting result
+     */
     public static <T> AsyncSupplier<T> getAsync(final Supplier<? extends T> supplier) {
         final CountDownLatch shutdown = new CountDownLatch(1);
         final ResultProvider<T> provider = new ResultProvider<>();
@@ -55,15 +68,20 @@ public final class AsyncSupplier<T> {
         return new AsyncSupplier<>(shutdown, handler, provider);
     }
 
-    public T await(final Duration timeout) {
-        try {
-            final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (timedOut) {
-                throw new TimeoutException("Timeout awaiting runnable");
-            }
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted awaiting runnable", e);
+    /**
+     * Await the result of the supplier. This method blocks until the supplier has finished or the timeout has elapsed.
+     * {@link RuntimeException RuntimeExceptions} are rethrown.
+     *
+     * @param timeout time to wait for result
+     * @return result of the supplier
+     * @throws InterruptedException if the current thread is interrupted while waiting
+     * @throws TimeoutException if the timeout has elapsed while waiting
+     * @throws ExecutionException if a non-runtime exception was thrown by the supplier
+     */
+    public T await(final Duration timeout) throws InterruptedException, TimeoutException, ExecutionException {
+        final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        if (timedOut) {
+            throw new TimeoutException("Timeout awaiting result in " + timeout);
         }
         this.exceptionHandler.throwException();
         return this.resultProvider.getResult();
@@ -80,7 +98,7 @@ public final class AsyncSupplier<T> {
             this.countDownLatch.countDown();
         }
 
-        private void throwException() {
+        private void throwException() throws ExecutionException {
             if (this.lastException == null) {
                 return;
             }

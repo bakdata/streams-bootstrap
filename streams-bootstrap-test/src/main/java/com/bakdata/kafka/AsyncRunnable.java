@@ -25,15 +25,26 @@
 package com.bakdata.kafka;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Call a {@link Runnable} asynchronously and wait for the result.
+ */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AsyncRunnable {
     private final @NonNull AsyncSupplier<Void> supplier;
 
+    /**
+     * Call a runnable asynchronously. Execution starts immediately. Execution can be awaited.
+     *
+     * @param runnable runnable to call
+     * @return async runnable for awaiting execution
+     */
     public static AsyncRunnable runAsync(final Runnable runnable) {
         final Supplier<Void> supplier = asSupplier(runnable);
         return new AsyncRunnable(AsyncSupplier.getAsync(supplier));
@@ -46,7 +57,16 @@ public final class AsyncRunnable {
         };
     }
 
-    public void await(final Duration timeout) {
+    /**
+     * Await the execution of the runnable. This method blocks until the runnable has finished or the timeout has
+     * elapsed. {@link RuntimeException RuntimeExceptions} are rethrown.
+     *
+     * @param timeout time to wait for result
+     * @throws InterruptedException if the current thread is interrupted while waiting
+     * @throws TimeoutException if the timeout has elapsed while waiting
+     * @throws ExecutionException if a non-runtime exception was thrown by the runnable
+     */
+    public void await(final Duration timeout) throws InterruptedException, TimeoutException, ExecutionException {
         this.supplier.await(timeout);
     }
 }

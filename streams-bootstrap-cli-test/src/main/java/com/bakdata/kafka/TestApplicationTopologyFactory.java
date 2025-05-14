@@ -36,12 +36,18 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Class that provides helpers for using Fluent Kafka Streams Tests with {@link KafkaStreamsApplication}
+ */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class TestApplicationTopologyFactory {
 
     private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
 
+    /**
+     * Create a new {@code TestApplicationTopologyFactory}
+     */
     public TestApplicationTopologyFactory() {
         this(UnaryOperator.identity());
     }
@@ -72,6 +78,12 @@ public final class TestApplicationTopologyFactory {
         return app.createConfiguredApp();
     }
 
+    /**
+     * Configure arbitrary Kafka properties for the application under test
+     *
+     * @param kafkaProperties properties to configure
+     * @return a copy of this {@code TestApplicationTopologyFactory} with provided properties
+     */
     public TestApplicationTopologyFactory with(final Map<String, Object> kafkaProperties) {
         return new TestApplicationTopologyFactory(
                 this.configurationModifier.andThen(configureProperties(kafkaProperties)));
