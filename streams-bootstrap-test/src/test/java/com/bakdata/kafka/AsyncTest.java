@@ -30,8 +30,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 
 class AsyncTest {
@@ -44,7 +42,7 @@ class AsyncTest {
     }
 
     @Test
-    void shouldGet() throws InterruptedException, TimeoutException, ExecutionException {
+    void shouldGet() throws InterruptedException {
         final AsyncSupplier<Integer> supplier = AsyncSupplier.getAsync(() -> 1);
         final Duration timeout = Duration.ofSeconds(1L);
         assertThat(supplier.await(timeout)).isEqualTo(1);

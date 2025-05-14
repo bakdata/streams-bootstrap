@@ -27,9 +27,7 @@ package com.bakdata.kafka;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -75,10 +73,8 @@ public final class AsyncSupplier<T> {
      * @param timeout time to wait for result
      * @return result of the supplier
      * @throws InterruptedException if the current thread is interrupted while waiting
-     * @throws TimeoutException if the timeout has elapsed while waiting
-     * @throws ExecutionException if a non-runtime exception was thrown by the supplier
      */
-    public T await(final Duration timeout) throws InterruptedException, TimeoutException, ExecutionException {
+    public T await(final Duration timeout) throws InterruptedException {
         final boolean timedOut = !this.shutdown.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
         if (timedOut) {
             throw new TimeoutException("Timeout awaiting result in " + timeout);
@@ -98,7 +94,7 @@ public final class AsyncSupplier<T> {
             this.countDownLatch.countDown();
         }
 
-        private void throwException() throws ExecutionException {
+        private void throwException() {
             if (this.lastException == null) {
                 return;
             }

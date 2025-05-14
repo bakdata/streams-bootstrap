@@ -229,6 +229,8 @@ public final class TestApplicationRunner {
     /**
      * Configure the application according to the test environment. Bootstrap servers, Schema Registry and Kafka config
      * are configured.
+     *
+     * @param app application to configure
      */
     public void configure(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         app.setBootstrapServers(this.bootstrapServers);
