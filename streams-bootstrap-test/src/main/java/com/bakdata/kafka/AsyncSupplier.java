@@ -63,7 +63,7 @@ public final class AsyncSupplier<T> {
             }
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Error awaiting runnable", e);
+            throw new RuntimeException("Interrupted awaiting runnable", e);
         }
         this.exceptionHandler.throwException();
         return this.resultProvider.getResult();
