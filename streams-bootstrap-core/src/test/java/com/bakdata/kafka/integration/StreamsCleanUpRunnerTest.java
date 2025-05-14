@@ -25,7 +25,7 @@
 package com.bakdata.kafka.integration;
 
 
-import static com.bakdata.kafka.AsyncRunnable.runAsync;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 

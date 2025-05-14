@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.AsyncRunnable.runAsync;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import java.util.List;

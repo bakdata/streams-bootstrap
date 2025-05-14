@@ -24,9 +24,9 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.AsyncRunnable.runAsync;
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;

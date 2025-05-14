@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.AsyncRunnable.runAsync;
-import static com.bakdata.kafka.AsyncSupplier.getAsync;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
@@ -36,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -129,17 +128,16 @@ public final class TestApplicationRunner {
     }
 
     /**
-     * Run the application asynchronously with the given arguments. Execution can be awaited using
-     * {@link AsyncSupplier#await(Duration)}. {@code --bootstrap-servers}, {@code --schema-registry-url}, and
-     * {@code --kafka-config} are automatically configured.
+     * Run the application asynchronously with the given arguments. {@code --bootstrap-servers}, {@code --schema
+     * -registry-url}, and {@code --kafka-config} are automatically configured.
      *
      * @param app application to run
      * @param args CLI arguments to pass to the application
-     * @return {@link AsyncSupplier} providing the application exit code
+     * @return {@link CompletableFuture} providing the application exit code
      */
-    public AsyncSupplier<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
+    public CompletableFuture<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
-        return getAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+        return CompletableFuture.supplyAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
     }
 
     /**
@@ -169,15 +167,15 @@ public final class TestApplicationRunner {
     }
 
     /**
-     * Run the application asynchronously. Execution can be awaited using {@link AsyncRunnable#await(Duration)}.
-     * Bootstrap servers, Schema Registry and Kafka config are automatically configured.
+     * Run the application asynchronously. Bootstrap servers, Schema Registry and Kafka config are automatically
+     * configured.
      *
      * @param app application to run
-     * @return {@link AsyncRunnable} to await execution
+     * @return {@link CompletableFuture} to await execution
      */
-    public AsyncRunnable run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+    public CompletableFuture<Void> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
-        return runAsync(app);
+        return CompletableFuture.runAsync(app);
     }
 
     /**

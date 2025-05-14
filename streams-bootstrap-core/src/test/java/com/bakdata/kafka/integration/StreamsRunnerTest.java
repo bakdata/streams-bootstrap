@@ -24,12 +24,11 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.AsyncRunnable.runAsync;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.bakdata.kafka.AsyncRunnable;
 import com.bakdata.kafka.ConfiguredStreamsApp;
 import com.bakdata.kafka.ExecutableStreamsApp;
 import com.bakdata.kafka.KStreamX;
@@ -49,6 +48,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -174,8 +175,9 @@ class StreamsRunnerTest extends KafkaTest {
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
-            final AsyncRunnable runnable = runAsync(runner);
-            this.softly.assertThatThrownBy(() -> runnable.await(TIMEOUT))
+            final CompletableFuture<Void> runnable = runAsync(runner);
+            this.softly.assertThatThrownBy(() -> runnable.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
+                    .cause()
                     .isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
@@ -195,12 +197,14 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            final AsyncRunnable runnable = runAsync(runner);
+            final CompletableFuture<Void> runnable = runAsync(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            this.softly.assertThatThrownBy(() -> runnable.await(TIMEOUT)).isInstanceOf(StreamsException.class)
+            this.softly.assertThatThrownBy(() -> runnable.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
+                    .cause()
+                    .isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
             verify(this.uncaughtExceptionHandler).handle(any());
             verify(this.stateListener).onChange(State.ERROR, State.PENDING_ERROR);
