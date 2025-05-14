@@ -175,8 +175,8 @@ class StreamsRunnerTest extends KafkaTest {
                                 .stateListener(() -> this.stateListener)
                                 .uncaughtExceptionHandler(() -> this.uncaughtExceptionHandler)
                                 .build())) {
-            final CompletableFuture<Void> runnable = runAsync(runner);
-            this.softly.assertThatThrownBy(() -> runnable.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
+            final CompletableFuture<Void> future = runAsync(runner);
+            this.softly.assertThatThrownBy(() -> future.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
                     .cause()
                     .isInstanceOf(MissingSourceTopicException.class);
             verify(this.uncaughtExceptionHandler).handle(any());
@@ -197,12 +197,12 @@ class StreamsRunnerTest extends KafkaTest {
             final String outputTopic = app.getTopics().getOutputTopic();
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(outputTopic);
-            final CompletableFuture<Void> runnable = runAsync(runner);
+            final CompletableFuture<Void> future = runAsync(runner);
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            this.softly.assertThatThrownBy(() -> runnable.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
+            this.softly.assertThatThrownBy(() -> future.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
                     .cause()
                     .isInstanceOf(StreamsException.class)
                     .satisfies(e -> this.softly.assertThat(e.getCause()).hasMessage("Error in map"));
