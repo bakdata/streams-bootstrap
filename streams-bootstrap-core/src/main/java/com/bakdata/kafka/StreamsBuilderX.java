@@ -433,7 +433,13 @@ public class StreamsBuilderX {
         return new StoresX(this.createConfigurator());
     }
 
-    Topology build() {
+    /**
+     * Returns the {@link Topology} that represents the specified processing logic.
+     *
+     * @return the {@link Topology} that represents the specified processing logic
+     * @see StreamsBuilder#build()
+     */
+    public Topology build() {
         return this.streamsBuilder.build();
     }
 }
