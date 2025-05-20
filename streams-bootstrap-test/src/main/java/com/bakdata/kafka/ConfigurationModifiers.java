@@ -24,15 +24,20 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import java.util.Map;
+import java.util.function.UnaryOperator;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class TestHelper {
+class ConfigurationModifiers {
 
-    static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        final TestTopology<K, V> topology = new TestTopologyFactory().createTopology(app);
-        topology.start();
-        return topology;
+    static UnaryOperator<RuntimeConfiguration> withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
+        return runtimeConfiguration -> runtimeConfiguration.withSchemaRegistryUrl(
+                schemaRegistry.getSchemaRegistryUrl());
     }
+
+    static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, Object> kafkaProperties) {
+        return runtimeConfiguration -> runtimeConfiguration.with(kafkaProperties);
+    }
+
 }

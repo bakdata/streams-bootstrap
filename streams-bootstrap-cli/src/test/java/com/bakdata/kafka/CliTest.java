@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.newCluster;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -33,6 +34,7 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -47,10 +49,8 @@ import org.testcontainers.kafka.KafkaContainer;
 
 class CliTest {
 
-    private static Thread runApp(final KafkaStreamsApplication<?> app, final String... args) {
-        final Thread thread = new Thread(() -> KafkaApplication.startApplication(app, args));
-        thread.start();
-        return thread;
+    private static CompletableFuture<Void> runApp(final KafkaStreamsApplication<?> app, final String... args) {
+        return runAsync(() -> KafkaApplication.startApplication(app, args));
     }
 
     @Test
@@ -236,12 +236,12 @@ class CliTest {
 
                     @Override
                     public SerdeConfig defaultSerializationConfig() {
-                        throw new UnsupportedOperationException();
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
                     }
                 })) {
             kafkaCluster.start();
 
-            final Thread thread = runApp(app,
+            final CompletableFuture<Void> future = runApp(app,
                     "--bootstrap-server", kafkaCluster.getBootstrapServers(),
                     "--input-topics", input
             );
@@ -250,7 +250,7 @@ class CliTest {
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            await("Thread is dead").atMost(Duration.ofSeconds(10L)).until(() -> !thread.isAlive());
+            await("Application has closed").atMost(Duration.ofSeconds(10L)).until(future::isDone);
         }
     }
 

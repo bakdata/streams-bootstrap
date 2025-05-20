@@ -24,33 +24,53 @@
 
 package com.bakdata.kafka;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-class TestTopologyFactoryTest {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+class TestApplicationTopologyFactoryTest {
 
+    static final String OUTPUT_TOPIC = "output";
+    static final String INPUT_TOPIC = "input";
     @RegisterExtension
-    private final TestTopologyExtension<String, String> testTopologyExtension = new TestTopologyFactory()
+    private final TestTopologyExtension<String, String> testTopologyExtension = new TestApplicationTopologyFactory()
             .createTopologyExtension(createApp());
 
-    private static ConfiguredStreamsApp<SimpleStreamsApp> createApp() {
-        final SimpleStreamsApp app = new SimpleStreamsApp();
-        return createApp(app);
+    static KafkaStreamsApplication<SimpleStreamsApp> createApp() {
+        return createApp(new SimpleStreamsApp());
     }
 
-    private static ConfiguredStreamsApp<SimpleStreamsApp> createApp(final SimpleStreamsApp app) {
-        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build());
+    static KafkaStreamsApplication<SimpleStreamsApp> createApp(final SimpleStreamsApp streamsApp) {
+        final KafkaStreamsApplication<SimpleStreamsApp> app = newApp(streamsApp);
+        app.setInputTopics(List.of(INPUT_TOPIC));
+        app.setOutputTopic(OUTPUT_TOPIC);
+        return app;
+    }
+
+    static KafkaStreamsApplication<SimpleStreamsApp> newApp(final SimpleStreamsApp streamsApp) {
+        return new KafkaStreamsApplication<>() {
+            @Override
+            public SimpleStreamsApp createApp() {
+                return streamsApp;
+            }
+        };
     }
 
     @Test
-    void shouldProcessRecordsUsingExtension() {
+    void shouldProcessRecordsWithExtension() {
         this.testTopologyExtension.input()
                 .add("foo", "bar");
         this.testTopologyExtension.streamOutput()
@@ -62,7 +82,8 @@ class TestTopologyFactoryTest {
 
     @Test
     void shouldProcessRecords() {
-        try (final TestTopology<String, String> testTopology = new TestTopologyFactory().createTopology(createApp())) {
+        final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
+        try (final TestTopology<String, String> testTopology = factory.createTopology(createApp())) {
             testTopology.start();
             testTopology.input()
                     .add("foo", "bar");
@@ -76,7 +97,7 @@ class TestTopologyFactoryTest {
 
     @Test
     void shouldProcessRecordsUsingSchemaRegistry() {
-        final TestTopologyFactory factory = TestTopologyFactory.withSchemaRegistry();
+        final TestApplicationTopologyFactory factory = TestApplicationTopologyFactory.withSchemaRegistry();
         final SimpleStreamsApp app = new SimpleStreamsApp() {
             @Override
             public SerdeConfig defaultSerializationConfig() {
@@ -96,6 +117,21 @@ class TestTopologyFactoryTest {
                     .hasKey("foo")
                     .hasValue(value)
                     .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldCallPrepareRun() {
+        final KafkaStreamsApplication<StreamsApp> app = mock();
+        when(app.createConfiguredApp()).thenReturn(
+                new ConfiguredStreamsApp<>(new SimpleStreamsApp(), StreamsTopicConfig.builder()
+                        .inputTopics(List.of(INPUT_TOPIC))
+                        .outputTopic(OUTPUT_TOPIC)
+                        .build()));
+        final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
+        try (final TestTopology<String, String> testTopology = factory.createTopology(app)) {
+            verify(app).prepareRun();
+            testTopology.start();
         }
     }
 
