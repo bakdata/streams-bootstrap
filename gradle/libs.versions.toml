@@ -4,7 +4,7 @@ mockito = "5.17.0"
 testcontainers = "1.21.0"
 
 [libraries]
-kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.0" }
+kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.1-SNAPSHOT" }
 kafka-tools = { group = "org.apache.kafka", name = "kafka-tools" }
 kafka-streams = { group = "org.apache.kafka", name = "kafka-streams" }
 kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }

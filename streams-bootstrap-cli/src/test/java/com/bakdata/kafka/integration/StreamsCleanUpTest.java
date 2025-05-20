@@ -190,7 +190,7 @@ class StreamsCleanUpTest extends KafkaTest {
     }
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
+        final List<ConsumerRecord<String, Long>> records = this.newTestClient().<String, Long>read()
                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
                 .from(outputTopic, POLL_TIMEOUT);

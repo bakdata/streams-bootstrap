@@ -61,7 +61,7 @@ class ProducerRunnerTest extends KafkaTest {
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
+        final List<ConsumerRecord<String, String>> records = this.newTestClient().<String, String>read()
                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .from(outputTopic, POLL_TIMEOUT);

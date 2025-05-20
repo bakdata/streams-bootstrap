@@ -38,14 +38,22 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.Deserializer;
 
 /**
  * Read data from a Kafka cluster
  */
 @RequiredArgsConstructor
-public class ReaderBuilder {
+public class ReaderBuilder<K, V> {
 
     private final @NonNull Map<String, Object> properties;
+    private final @NonNull Preconfigured<Deserializer<K>> keyDeserializer;
+    private final @NonNull Preconfigured<Deserializer<V>> valueDeserializer;
+
+    static <K, V> ReaderBuilder<K, V> create(final Map<String, Object> properties) {
+        return new ReaderBuilder<>(properties, Preconfigured.defaultDeserializer(),
+                Preconfigured.defaultDeserializer());
+    }
 
     private static <K, V> List<ConsumerRecord<K, V>> pollAll(final Consumer<K, V> consumer, final Duration timeout) {
         final List<ConsumerRecord<K, V>> records = new ArrayList<>();
@@ -73,26 +81,26 @@ public class ReaderBuilder {
 
     /**
      * Add a consumer configuration
+     *
      * @param key configuration key
      * @param value configuration value
      * @return {@code ReaderBuilder} with added configuration
      */
-    public ReaderBuilder with(final String key, final Object value) {
+    public ReaderBuilder<K, V> with(final String key, final Object value) {
         final Map<String, Object> newProperties = new HashMap<>(this.properties);
         newProperties.put(key, value);
-        return new ReaderBuilder(Map.copyOf(newProperties));
+        return new ReaderBuilder<>(Map.copyOf(newProperties), this.keyDeserializer, this.valueDeserializer);
     }
 
     /**
-     * Read all data from a topic. This method is idempotent, meaning calling it multiple times will read the same
-     * data unless the data in the topic changes.
+     * Read all data from a topic. This method is idempotent, meaning calling it multiple times will read the same data
+     * unless the data in the topic changes.
+     *
      * @param topic topic to read from
      * @param timeout consumer poll timeout
      * @return consumed records
-     * @param <K> type of keys
-     * @param <V> type of values
      */
-    public <K, V> List<ConsumerRecord<K, V>> from(final String topic, final Duration timeout) {
+    public List<ConsumerRecord<K, V>> from(final String topic, final Duration timeout) {
         try (final Consumer<K, V> consumer = this.createConsumer()) {
             return readAll(consumer, topic, timeout);
         }
@@ -100,12 +108,23 @@ public class ReaderBuilder {
 
     /**
      * Create a new {@code Consumer} for a Kafka cluster
+     *
      * @return {@code Consumer}
-     * @param <K> type of keys
-     * @param <V> type of values
      */
-    public <K, V> Consumer<K, V> createConsumer() {
-        return new KafkaConsumer<>(this.properties);
+    public Consumer<K, V> createConsumer() {
+        return new KafkaConsumer<>(ReaderBuilder.this.properties,
+                this.keyDeserializer.configureForKeys(ReaderBuilder.this.properties),
+                this.valueDeserializer.configureForValues(ReaderBuilder.this.properties));
+    }
+
+    public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Preconfigured<Deserializer<KN>> keyDeserializer,
+            final Preconfigured<Deserializer<VN>> valueDeserializer) {
+        return new ReaderBuilder<>(this.properties, keyDeserializer, valueDeserializer);
+    }
+
+    public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Deserializer<KN> keyDeserializer,
+            final Deserializer<VN> valueDeserializer) {
+        return this.withDeserializers(Preconfigured.create(keyDeserializer), Preconfigured.create(valueDeserializer));
     }
 
 }

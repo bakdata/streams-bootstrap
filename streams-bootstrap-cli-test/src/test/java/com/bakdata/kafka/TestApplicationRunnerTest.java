@@ -71,7 +71,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.read()
+            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -101,7 +101,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.read()
+            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -142,7 +142,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, TestRecord>> records = testClient.read()
+            final List<ConsumerRecord<String, TestRecord>> records = testClient.<String, TestRecord>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -172,7 +172,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.read()
+            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -206,7 +206,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.read()
+            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -243,7 +243,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records1 = testClient.read()
+            final List<ConsumerRecord<String, String>> records1 = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -258,7 +258,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.reset(app);
             runner.run(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records2 = testClient.read()
+            final List<ConsumerRecord<String, String>> records2 = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -288,7 +288,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records1 = testClient.read()
+            final List<ConsumerRecord<String, String>> records1 = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
@@ -309,7 +309,7 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records2 = testClient.read()
+            final List<ConsumerRecord<String, String>> records2 = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
