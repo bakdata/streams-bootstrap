@@ -42,6 +42,8 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 /**
  * Read data from a Kafka cluster
+ * @param <K> type of keys deserialized by the reader
+ * @param <V> type of values deserialized by the reader
  */
 @RequiredArgsConstructor
 public class ReaderBuilder<K, V> {

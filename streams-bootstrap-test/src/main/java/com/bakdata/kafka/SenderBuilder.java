@@ -39,6 +39,8 @@ import org.apache.kafka.common.serialization.Serializer;
 
 /**
  * Send data to a Kafka cluster
+ * @param <K> type of keys serialized by the reader
+ * @param <V> type of values serialized by the reader
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SenderBuilder<K, V> {

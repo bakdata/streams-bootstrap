@@ -42,7 +42,7 @@ class KafkaTestClientTest extends KafkaTest {
     private SoftAssertions softly;
 
     @Test
-    void shouldSendAndRead() {
+    void shouldSendAndReadWithKeyAndValueSerde() {
         final KafkaTestClient testClient = this.newTestClient();
         final String topic = "topic";
         testClient.createTopic(topic);
@@ -53,6 +53,25 @@ class KafkaTestClientTest extends KafkaTest {
         final List<ConsumerRecord<String, String>> records = testClient.read()
                 .withKeyDeserializer(new StringDeserializer())
                 .withValueDeserializer(new StringDeserializer())
+                .from(topic, POLL_TIMEOUT);
+        this.softly.assertThat(records)
+                .hasSize(1)
+                .anySatisfy(rekord -> {
+                    this.softly.assertThat(rekord.key()).isEqualTo("key");
+                    this.softly.assertThat(rekord.value()).isEqualTo("value");
+                });
+    }
+
+    @Test
+    void shouldSendAndRead() {
+        final KafkaTestClient testClient = this.newTestClient();
+        final String topic = "topic";
+        testClient.createTopic(topic);
+        testClient.send()
+                .withSerializers(new StringSerializer(), new StringSerializer())
+                .to(topic, List.of(new SimpleProducerRecord<>("key", "value")));
+        final List<ConsumerRecord<String, String>> records = testClient.read()
+                .withDeserializers(new StringDeserializer(), new StringDeserializer())
                 .from(topic, POLL_TIMEOUT);
         this.softly.assertThat(records)
                 .hasSize(1)
