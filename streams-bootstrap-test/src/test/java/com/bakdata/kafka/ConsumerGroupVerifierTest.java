@@ -68,7 +68,7 @@ class ConsumerGroupVerifierTest extends KafkaTest {
                     ));
             runAsync(runner);
             awaitProcessing(executableApp);
-            final List<ConsumerRecord<String, String>> records = testClient.read()
+            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from("output", POLL_TIMEOUT);

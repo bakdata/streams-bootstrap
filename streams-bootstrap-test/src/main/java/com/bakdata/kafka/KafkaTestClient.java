@@ -59,8 +59,8 @@ public class KafkaTestClient {
      * Prepare sending new data to the cluster
      * @return configured {@code SenderBuilder}
      */
-    public SenderBuilder send() {
-        return new SenderBuilder(this.configuration.createKafkaProperties());
+    public <K, V> SenderBuilder<K, V> send() {
+        return SenderBuilder.create(this.configuration.createKafkaProperties());
     }
 
     /**
@@ -68,8 +68,8 @@ public class KafkaTestClient {
      * {@link OffsetResetStrategy#EARLIEST}
      * @return configured {@code ReaderBuilder}
      */
-    public ReaderBuilder read() {
-        return new ReaderBuilder(this.configuration.createKafkaProperties())
+    public <K, V> ReaderBuilder<K, V> read() {
+        return ReaderBuilder.<K, V>create(this.configuration.createKafkaProperties())
                 .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.EARLIEST.toString());
     }
 

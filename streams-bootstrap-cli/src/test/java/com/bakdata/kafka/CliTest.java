@@ -291,7 +291,7 @@ class CliTest {
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            final List<ConsumerRecord<String, String>> keyValues = testClient.read()
+            final List<ConsumerRecord<String, String>> keyValues = testClient.<String, String>read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .from(output, POLL_TIMEOUT);
