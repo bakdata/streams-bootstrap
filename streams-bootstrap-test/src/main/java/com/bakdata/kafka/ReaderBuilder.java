@@ -112,9 +112,9 @@ public class ReaderBuilder<K, V> {
      * @return {@code Consumer}
      */
     public Consumer<K, V> createConsumer() {
-        return new KafkaConsumer<>(ReaderBuilder.this.properties,
-                this.keyDeserializer.configureForKeys(ReaderBuilder.this.properties),
-                this.valueDeserializer.configureForValues(ReaderBuilder.this.properties));
+        return new KafkaConsumer<>(this.properties,
+                this.keyDeserializer.configureForKeys(this.properties),
+                this.valueDeserializer.configureForValues(this.properties));
     }
 
     public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Preconfigured<Deserializer<KN>> keyDeserializer,
@@ -125,6 +125,22 @@ public class ReaderBuilder<K, V> {
     public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Deserializer<KN> keyDeserializer,
             final Deserializer<VN> valueDeserializer) {
         return this.withDeserializers(Preconfigured.create(keyDeserializer), Preconfigured.create(valueDeserializer));
+    }
+
+    public <KN> ReaderBuilder<KN, V> withKeyDeserializer(final Preconfigured<Deserializer<KN>> keyDeserializer) {
+        return this.withDeserializers(keyDeserializer, this.valueDeserializer);
+    }
+
+    public <KN> ReaderBuilder<KN, V> withKeyDeserializer(final Deserializer<KN> keyDeserializer) {
+        return this.withKeyDeserializer(Preconfigured.create(keyDeserializer));
+    }
+
+    public <VN> ReaderBuilder<K, VN> withValueDeserializer(final Preconfigured<Deserializer<VN>> valueDeserializer) {
+        return this.withDeserializers(this.keyDeserializer, valueDeserializer);
+    }
+
+    public <VN> ReaderBuilder<K, VN> withValueDeserializer(final Deserializer<VN> valueDeserializer) {
+        return this.withValueDeserializer(Preconfigured.create(valueDeserializer));
     }
 
 }

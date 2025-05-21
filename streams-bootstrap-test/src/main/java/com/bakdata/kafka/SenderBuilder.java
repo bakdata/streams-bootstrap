@@ -83,8 +83,7 @@ public final class SenderBuilder<K, V> {
      */
     public Producer<K, V> createProducer() {
         return new KafkaProducer<>(this.properties, this.keySerializer.configureForKeys(this.properties),
-                this.valueSerializer.configureForValues(
-                        this.properties));
+                this.valueSerializer.configureForValues(this.properties));
     }
 
     public <KN, VN> SenderBuilder<KN, VN> withSerializers(final Preconfigured<Serializer<KN>> keySerializer,
@@ -95,6 +94,22 @@ public final class SenderBuilder<K, V> {
     public <KN, VN> SenderBuilder<KN, VN> withSerializers(final Serializer<KN> keySerializer,
             final Serializer<VN> valueSerializer) {
         return this.withSerializers(Preconfigured.create(keySerializer), Preconfigured.create(valueSerializer));
+    }
+
+    public <KN> SenderBuilder<KN, V> withKeySerializer(final Preconfigured<Serializer<KN>> keySerializer) {
+        return this.withSerializers(keySerializer, this.valueSerializer);
+    }
+
+    public <KN> SenderBuilder<KN, V> withKeySerializer(final Serializer<KN> keySerializer) {
+        return this.withKeySerializer(Preconfigured.create(keySerializer));
+    }
+
+    public <VN> SenderBuilder<K, VN> withValueSerializer(final Preconfigured<Serializer<VN>> valueSerializer) {
+        return this.withSerializers(this.keySerializer, valueSerializer);
+    }
+
+    public <VN> SenderBuilder<K, VN> withValueSerializer(final Serializer<VN> valueSerializer) {
+        return this.withValueSerializer(Preconfigured.create(valueSerializer));
     }
 
     /**
