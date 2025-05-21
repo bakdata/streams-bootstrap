@@ -86,28 +86,72 @@ public final class SenderBuilder<K, V> {
                 this.valueSerializer.configureForValues(this.properties));
     }
 
+    /**
+     * Provide custom serializers for keys and values. Serializers are configured automatically.
+     *
+     * @param keySerializer serializer for keys
+     * @param valueSerializer serializer for values
+     * @param <KN> type of keys
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom serializers
+     */
     public <KN, VN> SenderBuilder<KN, VN> withSerializers(final Preconfigured<Serializer<KN>> keySerializer,
             final Preconfigured<Serializer<VN>> valueSerializer) {
         return new SenderBuilder<>(this.properties, keySerializer, valueSerializer);
     }
 
+    /**
+     * Provide custom serializers for keys and values. Serializers are configured automatically.
+     * @param keySerializer serializer for keys
+     * @param valueSerializer serializer for values
+     * @param <KN> type of keys
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom serializers
+     * @see SenderBuilder#withSerializers(Preconfigured, Preconfigured)
+     */
     public <KN, VN> SenderBuilder<KN, VN> withSerializers(final Serializer<KN> keySerializer,
             final Serializer<VN> valueSerializer) {
         return this.withSerializers(Preconfigured.create(keySerializer), Preconfigured.create(valueSerializer));
     }
 
+    /**
+     * Provide a custom serializers for keys. Serializer is configured automatically.
+     * @param keySerializer serializer for keys
+     * @param <KN> type of keys
+     * @return {@code SenderBuilder} with custom key serializer
+     */
     public <KN> SenderBuilder<KN, V> withKeySerializer(final Preconfigured<Serializer<KN>> keySerializer) {
         return this.withSerializers(keySerializer, this.valueSerializer);
     }
 
+    /**
+     * Provide a custom serializers for keys. Serializer is configured automatically.
+     * @param keySerializer serializer for keys
+     * @param <KN> type of keys
+     * @return {@code SenderBuilder} with custom key serializer
+     * @see SenderBuilder#withKeySerializer(Preconfigured)
+     */
     public <KN> SenderBuilder<KN, V> withKeySerializer(final Serializer<KN> keySerializer) {
         return this.withKeySerializer(Preconfigured.create(keySerializer));
     }
 
+    /**
+     * Provide a custom serializers for values. Serializer is configured automatically.
+     * @param valueSerializer serializer for values
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom value serializer
+     */
     public <VN> SenderBuilder<K, VN> withValueSerializer(final Preconfigured<Serializer<VN>> valueSerializer) {
         return this.withSerializers(this.keySerializer, valueSerializer);
     }
 
+    /**
+     * Provide a custom serializers for values. Serializer is configured automatically.
+     * @param valueSerializer serializer for values
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom value serializer
+     * @see SenderBuilder#withValueSerializer(Preconfigured)
+     */
     public <VN> SenderBuilder<K, VN> withValueSerializer(final Serializer<VN> valueSerializer) {
         return this.withValueSerializer(Preconfigured.create(valueSerializer));
     }
