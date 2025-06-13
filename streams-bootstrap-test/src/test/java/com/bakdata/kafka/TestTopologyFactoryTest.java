@@ -24,19 +24,25 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-class TestTopologyFactoryTest extends KafkaTest {
+class TestTopologyFactoryTest {
 
     @RegisterExtension
-    private final TestTopologyExtension<String, String> testTopology = TestTopologyFactory.withoutSchemaRegistry()
+    private final TestTopologyExtension<String, String> testTopologyExtension = new TestTopologyFactory()
             .createTopologyExtension(createApp());
 
-    private static ConfiguredStreamsApp<StreamsApp> createApp() {
-        final StreamsApp app = new SimpleStreamsApp();
+    private static ConfiguredStreamsApp<SimpleStreamsApp> createApp() {
+        final SimpleStreamsApp app = new SimpleStreamsApp();
+        return createApp(app);
+    }
+
+    private static ConfiguredStreamsApp<SimpleStreamsApp> createApp(final SimpleStreamsApp app) {
         return new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
@@ -44,14 +50,53 @@ class TestTopologyFactoryTest extends KafkaTest {
     }
 
     @Test
-    void shouldVerify() {
-        this.testTopology.input()
+    void shouldProcessRecordsUsingExtension() {
+        this.testTopologyExtension.input()
                 .add("foo", "bar");
-        this.testTopology.streamOutput()
+        this.testTopologyExtension.streamOutput()
                 .expectNextRecord()
                 .hasKey("foo")
                 .hasValue("bar")
                 .expectNoMoreRecord();
+    }
+
+    @Test
+    void shouldProcessRecords() {
+        try (final TestTopology<String, String> testTopology = new TestTopologyFactory().createTopology(createApp())) {
+            testTopology.start();
+            testTopology.input()
+                    .add("foo", "bar");
+            testTopology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldProcessRecordsUsingSchemaRegistry() {
+        final TestTopologyFactory factory = TestTopologyFactory.withSchemaRegistry();
+        final SimpleStreamsApp app = new SimpleStreamsApp() {
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                return super.defaultSerializationConfig()
+                        .withValueSerde(SpecificAvroSerde.class);
+            }
+        };
+        try (final TestTopology<String, TestRecord> testTopology = factory.createTopology(createApp(app))) {
+            testTopology.start();
+            final TestRecord value = TestRecord.newBuilder()
+                    .setContent("content")
+                    .build();
+            testTopology.input()
+                    .add("foo", value);
+            testTopology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue(value)
+                    .expectNoMoreRecord();
+        }
     }
 
 }
