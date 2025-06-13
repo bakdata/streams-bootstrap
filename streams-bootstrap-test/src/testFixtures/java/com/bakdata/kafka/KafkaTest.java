@@ -44,9 +44,7 @@ public abstract class KafkaTest {
 
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
-                .withTag(AppInfoParser.getVersion()))
-                .withEnv("KAFKA_LISTENERS",
-                        "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094"); //TODO remove with 3.9.1 https://issues.apache.org/jira/browse/KAFKA-18281
+                .withTag(AppInfoParser.getVersion()));
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {

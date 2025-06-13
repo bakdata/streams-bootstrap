@@ -84,8 +84,6 @@ public class ApacheKafkaContainerCluster implements Startable {
                         .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", internalTopicsRf + "")
                         .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", internalTopicsRf + "")
                         .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", internalTopicsRf + "")
-                        .withEnv("KAFKA_LISTENERS",
-                                "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094") //TODO remove with 3.9.1 https://issues.apache.org/jira/browse/KAFKA-18281
                         .withStartupTimeout(Duration.ofMinutes(1)))
                 .collect(Collectors.toList());
     }
