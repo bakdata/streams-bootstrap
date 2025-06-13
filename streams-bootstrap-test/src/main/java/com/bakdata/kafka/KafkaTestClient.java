@@ -43,7 +43,7 @@ import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 @RequiredArgsConstructor
 public class KafkaTestClient {
 
-    private final @NonNull KafkaEndpointConfig endpointConfig;
+    private final @NonNull RuntimeConfiguration configuration;
 
     /**
      * Create a new {@code TopicSettingsBuilder} which uses a single partition and no replicas
@@ -60,7 +60,7 @@ public class KafkaTestClient {
      * @return configured {@code SenderBuilder}
      */
     public SenderBuilder send() {
-        return new SenderBuilder(this.endpointConfig.createKafkaProperties());
+        return new SenderBuilder(this.configuration.createKafkaProperties());
     }
 
     /**
@@ -69,7 +69,7 @@ public class KafkaTestClient {
      * @return configured {@code ReaderBuilder}
      */
     public ReaderBuilder read() {
-        return new ReaderBuilder(this.endpointConfig.createKafkaProperties())
+        return new ReaderBuilder(this.configuration.createKafkaProperties())
                 .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.EARLIEST.toString());
     }
 
@@ -78,7 +78,7 @@ public class KafkaTestClient {
      * @return configured admin client
      */
     public ImprovedAdminClient admin() {
-        return ImprovedAdminClient.create(this.endpointConfig.createKafkaProperties());
+        return ImprovedAdminClient.create(this.configuration.createKafkaProperties());
     }
 
     /**

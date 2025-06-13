@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,14 +34,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
- * A {@link ProducerApp} with a corresponding {@link AppConfiguration}
+ * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig}
  * @param <T> type of {@link ProducerApp}
  */
 @RequiredArgsConstructor
+@Getter
 public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredApp<ExecutableProducerApp<T>> {
-    @Getter
     private final @NonNull T app;
-    private final @NonNull AppConfiguration<ProducerTopicConfig> configuration;
+    private final @NonNull ProducerTopicConfig topics;
 
     private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -74,10 +74,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
-     *     </li>
-     *     <li>
-     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
      *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
@@ -86,31 +83,22 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
      *     </li>
      * </ul>
      *
-     * @param endpointConfig endpoint to run app on
+     * @param runtimeConfiguration configuration to run app with
      * @return Kafka configuration
      */
-    public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+    public Map<String, Object> getKafkaProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration);
         return propertiesFactory.createKafkaProperties(emptyMap());
     }
 
     /**
-     * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
+     * Create an {@code ExecutableProducerApp} using the provided {@link RuntimeConfiguration}
      * @return {@code ExecutableProducerApp}
      */
     @Override
-    public ExecutableProducerApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        final ProducerTopicConfig topics = this.getTopics();
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
-        return new ExecutableProducerApp<>(topics, kafkaProperties, this.app);
-    }
-
-    /**
-     * Get topic configuration
-     * @return topic configuration
-     */
-    public ProducerTopicConfig getTopics() {
-        return this.configuration.getTopics();
+    public ExecutableProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
+        return new ExecutableProducerApp<>(this.topics, kafkaProperties, this.app);
     }
 
     @Override
@@ -118,13 +106,12 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
         this.app.close();
     }
 
-    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfiguration) {
         final Map<String, Object> baseConfig = createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
-                .configuration(this.configuration)
-                .endpointConfig(endpointConfig)
+                .runtimeConfig(runtimeConfiguration)
                 .build();
     }
 }

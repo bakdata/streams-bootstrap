@@ -44,7 +44,7 @@ import org.mockito.quality.Strictness;
 class ExecutableStreamsAppTest {
 
     @Mock
-    private Consumer<EffectiveAppConfiguration<StreamsTopicConfig>> setup;
+    private Consumer<AppConfiguration<StreamsTopicConfig>> setup;
     @Mock
     private Supplier<StreamsCleanUpConfiguration> setupCleanUp;
 
@@ -54,16 +54,14 @@ class ExecutableStreamsAppTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+                new ConfiguredStreamsApp<>(new TestApplication(), topics);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner();
-        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
+        verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -72,16 +70,14 @@ class ExecutableStreamsAppTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
-        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
+                new ConfiguredStreamsApp<>(new TestApplication(), topics);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
+        final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(configuration);
         executableApp.createRunner(StreamsExecutionOptions.builder().build());
-        verify(this.setup).accept(new EffectiveAppConfiguration<>(topics, kafkaProperties));
+        verify(this.setup).accept(new AppConfiguration<>(topics, kafkaProperties));
     }
 
     @Test
@@ -90,13 +86,11 @@ class ExecutableStreamsAppTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        final AppConfiguration<StreamsTopicConfig> configuration = new AppConfiguration<>(topics);
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), configuration);
-        final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .bootstrapServers("localhost:9092")
-                .build();
-        final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+                new ConfiguredStreamsApp<>(new TestApplication(), topics);
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final ExecutableStreamsApp<StreamsApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());
         executableApp.createCleanUpRunner();
         verify(this.setupCleanUp).get();
@@ -105,13 +99,13 @@ class ExecutableStreamsAppTest {
     private class TestApplication implements StreamsApp {
 
         @Override
-        public void setup(final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
+        public void setup(final AppConfiguration<StreamsTopicConfig> configuration) {
             ExecutableStreamsAppTest.this.setup.accept(configuration);
         }
 
         @Override
         public StreamsCleanUpConfiguration setupCleanUp(
-                final EffectiveAppConfiguration<StreamsTopicConfig> setupConfiguration) {
+                final AppConfiguration<StreamsTopicConfig> setupConfiguration) {
             return ExecutableStreamsAppTest.this.setupCleanUp.get();
         }
 

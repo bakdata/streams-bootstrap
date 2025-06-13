@@ -43,10 +43,10 @@ class TestTopologyFactoryTest {
     }
 
     private static ConfiguredStreamsApp<SimpleStreamsApp> createApp(final SimpleStreamsApp app) {
-        return new ConfiguredStreamsApp<>(app, new AppConfiguration<>(StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
-                .build()));
+                .build());
     }
 
     @Test

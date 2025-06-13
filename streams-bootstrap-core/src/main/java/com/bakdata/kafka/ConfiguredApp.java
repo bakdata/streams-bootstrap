@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +27,15 @@ package com.bakdata.kafka;
 /**
  * An application with a corresponding configuration
  *
- * @param <E> type of executable app after configuring {@link KafkaEndpointConfig}
+ * @param <E> type of executable app after configuring {@link RuntimeConfiguration}
  */
 public interface ConfiguredApp<E> extends AutoCloseable {
     /**
-     * Create an executable app using the provided {@code KafkaEndpointConfig}
-     * @param endpointConfig endpoint to run app on
+     * Create an executable app using the provided {@link RuntimeConfiguration}.
+     * @param runtimeConfiguration configuration to run app with
      * @return executable streams app
      */
-    E withEndpoint(KafkaEndpointConfig endpointConfig);
+    E withRuntimeConfiguration(RuntimeConfiguration runtimeConfiguration);
 
     @Override
     void close();

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +34,7 @@ import org.apache.kafka.streams.Topology;
 
 /**
  * A {@link StreamsApp} with a corresponding {@link Topology} and {@link StreamsConfig}
+ *
  * @param <T> type of {@link ProducerApp}
  */
 @Builder(access = AccessLevel.PACKAGE)
@@ -43,46 +45,58 @@ public class ExecutableStreamsApp<T extends StreamsApp>
     @Getter
     private final @NonNull Topology topology;
     @Getter
-    private final @NonNull StreamsConfig config;
+    private final @NonNull Map<String, Object> kafkaProperties;
     @Getter
     private final @NonNull T app;
-    private final @NonNull EffectiveAppConfiguration<StreamsTopicConfig> effectiveConfig;
+    @Getter
+    private final @NonNull StreamsTopicConfig topics;
 
     /**
      * Create {@code StreamsCleanUpRunner} in order to clean application
+     *
      * @return {@code StreamsCleanUpRunner}
      */
     @Override
     public StreamsCleanUpRunner createCleanUpRunner() {
-        final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp(this.effectiveConfig);
-        return StreamsCleanUpRunner.create(this.topology, this.config, configurer);
+        final StreamsCleanUpConfiguration configurer = this.app.setupCleanUp(this.createConfiguration());
+        return StreamsCleanUpRunner.create(this.topology, this.getConfig(), configurer);
     }
 
     /**
      * Create {@code StreamsRunner} in order to run application with default {@link StreamsExecutionOptions}
+     *
      * @return {@code StreamsRunner}
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig)
      */
     @Override
     public StreamsRunner createRunner() {
-        this.app.setup(this.effectiveConfig);
-        return new StreamsRunner(this.topology, this.config);
+        this.app.setup(this.createConfiguration());
+        return new StreamsRunner(this.topology, this.getConfig());
     }
 
     /**
      * Create {@code StreamsRunner} in order to run application
+     *
      * @param executionOptions options for running Kafka Streams application
      * @return {@code StreamsRunner}
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig, StreamsExecutionOptions)
      */
     @Override
     public StreamsRunner createRunner(final StreamsExecutionOptions executionOptions) {
-        this.app.setup(this.effectiveConfig);
-        return new StreamsRunner(this.topology, this.config, executionOptions);
+        this.app.setup(this.createConfiguration());
+        return new StreamsRunner(this.topology, this.getConfig(), executionOptions);
     }
 
     @Override
     public void close() {
         this.app.close();
+    }
+
+    public StreamsConfig getConfig() {
+        return new StreamsConfig(this.kafkaProperties);
+    }
+
+    private AppConfiguration<StreamsTopicConfig> createConfiguration() {
+        return new AppConfiguration<>(this.topics, this.kafkaProperties);
     }
 }
