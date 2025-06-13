@@ -1,10 +1,10 @@
 [versions]
 junit = "5.12.2"
 mockito = "5.17.0"
-testcontainers = "1.20.6"
+testcontainers = "1.21.0"
 
 [libraries]
-kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.1-SNAPSHOT" }
+kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.2-SNAPSHOT" }
 kafka-tools = { group = "org.apache.kafka", name = "kafka-tools" }
 kafka-streams = { group = "org.apache.kafka", name = "kafka-streams" }
 kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }
@@ -15,7 +15,7 @@ largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", ve
 largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
 errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "1.8.0" }
 errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
-picocli = { group = "info.picocli", name = "picocli", version = "4.7.6" }
+picocli = { group = "info.picocli", name = "picocli", version = "4.7.7" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.17" }
 jool = { group = "org.jooq", name = "jool", version = "0.9.15" }
 resilience4j-retry = { group = "io.github.resilience4j", name = "resilience4j-retry", version = "2.3.0" }
