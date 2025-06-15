@@ -34,8 +34,8 @@ import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
 import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
+import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -66,12 +66,12 @@ class RunProducerAppTest extends KafkaTest {
                 return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
             }
         })) {
-            app.setBootstrapServers(this.getBootstrapServers());
-            final String schemaRegistryUrl = this.getSchemaRegistryUrl();
-            app.setSchemaRegistryUrl(schemaRegistryUrl);
+            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
+                    .withSchemaRegistry();
             app.setOutputTopic(output);
-            app.run();
-            final KafkaTestClient testClient = this.newTestClient();
+            final KafkaTestClient testClient = runner.newTestClient();
+            testClient.createTopic(output);
+            runner.run(app);
             assertThat(testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
@@ -81,12 +81,10 @@ class RunProducerAppTest extends KafkaTest {
                         assertThat(kv.key()).isEqualTo("foo");
                         assertThat(kv.value().getContent()).isEqualTo("bar");
                     });
-            app.clean();
-            try (final ImprovedAdminClient admin = testClient.admin()) {
-                assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
-                        .as("Output topic is deleted")
-                        .isFalse();
-            }
+            runner.clean(app);
+            assertThat(testClient.existsTopic(app.getOutputTopic()))
+                    .as("Output topic is deleted")
+                    .isFalse();
         }
     }
 }

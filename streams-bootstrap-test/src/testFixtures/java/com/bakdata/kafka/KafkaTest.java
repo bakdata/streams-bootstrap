@@ -26,6 +26,8 @@ package com.bakdata.kafka;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
@@ -38,6 +40,7 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class KafkaTest {
     protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
     protected static final Duration SESSION_TIMEOUT = Duration.ofSeconds(10L);
+    @Getter(AccessLevel.PROTECTED)
     private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
@@ -48,8 +51,12 @@ public abstract class KafkaTest {
     }
 
     protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
-        awaitActive(app);
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        awaitProcessing(verifier);
+    }
+
+    protected static void awaitProcessing(final ConsumerGroupVerifier verifier) {
+        awaitActive(verifier);
         await()
                 .alias("Consumer group has finished processing")
                 .until(verifier::hasFinishedProcessing);
@@ -57,6 +64,10 @@ public abstract class KafkaTest {
 
     protected static void awaitActive(final ExecutableStreamsApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        awaitActive(verifier);
+    }
+
+    protected static void awaitActive(final ConsumerGroupVerifier verifier) {
         await()
                 .alias("Consumer group is active")
                 .until(verifier::isActive);
@@ -64,6 +75,10 @@ public abstract class KafkaTest {
 
     protected static void awaitClosed(final ExecutableStreamsApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        awaitClosed(verifier);
+    }
+
+    protected static void awaitClosed(final ConsumerGroupVerifier verifier) {
         await()
                 .alias("Consumer group is closed")
                 .until(verifier::isClosed);
