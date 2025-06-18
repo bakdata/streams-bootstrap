@@ -26,12 +26,10 @@ package com.bakdata.kafka.integration;
 
 import static com.bakdata.kafka.integration.ProducerCleanUpRunnerTest.createStringApplication;
 
-import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredProducerApp;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerRunner;
-import com.bakdata.kafka.ProducerTopicConfig;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -49,15 +47,10 @@ class ProducerRunnerTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    static ConfiguredProducerApp<ProducerApp> configureApp(final ProducerApp app, final ProducerTopicConfig topics) {
-        final AppConfiguration<ProducerTopicConfig> configuration = new AppConfiguration<>(topics);
-        return new ConfiguredProducerApp<>(app, configuration);
-    }
-
     @Test
     void shouldRunApp() {
         try (final ConfiguredProducerApp<ProducerApp> app = createStringApplication();
-                final ProducerRunner runner = app.withEndpoint(this.createEndpointWithoutSchemaRegistry())
+                final ProducerRunner runner = app.withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())
                         .createRunner()) {
             runner.run();
 

@@ -37,6 +37,7 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers
 public abstract class KafkaTest {
     protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
+    protected static final Duration SESSION_TIMEOUT = Duration.ofSeconds(10L);
     private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
@@ -74,17 +75,13 @@ public abstract class KafkaTest {
                 .atMost(Duration.ofSeconds(20L));
     }
 
-    protected KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .build();
+    protected RuntimeConfiguration createConfigWithoutSchemaRegistry() {
+        return RuntimeConfiguration.create(this.getBootstrapServers());
     }
 
-    protected KafkaEndpointConfig createEndpoint() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.getBootstrapServers())
-                .schemaRegistryUrl(this.getSchemaRegistryUrl())
-                .build();
+    protected RuntimeConfiguration createConfig() {
+        return this.createConfigWithoutSchemaRegistry()
+                .withSchemaRegistryUrl(this.getSchemaRegistryUrl());
     }
 
     protected String getBootstrapServers() {
@@ -92,7 +89,7 @@ public abstract class KafkaTest {
     }
 
     protected KafkaTestClient newTestClient() {
-        return new KafkaTestClient(this.createEndpoint());
+        return new KafkaTestClient(this.createConfig());
     }
 
     protected String getSchemaRegistryUrl() {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -141,9 +141,8 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     }
 
     @Override
-    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app,
-            final AppConfiguration<StreamsTopicConfig> configuration) {
-        final ConfiguredStreamsApp<T> configuredApp = new ConfiguredStreamsApp<>(app, configuration);
+    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app, final StreamsTopicConfig topics) {
+        final ConfiguredStreamsApp<T> configuredApp = new ConfiguredStreamsApp<>(app, topics);
         if (this.applicationId != null && !configuredApp.getUniqueAppId().equals(this.applicationId)) {
             throw new IllegalArgumentException(
                     "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,14 +35,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 /**
- * A {@link StreamsApp} with a corresponding {@link AppConfiguration}
+ * A {@link StreamsApp} with a corresponding {@link StreamsTopicConfig}
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
+@Getter
 public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp<ExecutableStreamsApp<T>> {
-    @Getter
     private final @NonNull T app;
-    private final @NonNull AppConfiguration<StreamsTopicConfig> configuration;
+    private final @NonNull StreamsTopicConfig topics;
 
     private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -80,10 +80,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
-     *     </li>
-     *     <li>
-     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
      *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
@@ -96,11 +93,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *     </li>
      * </ul>
      *
-     * @param endpointConfig endpoint to run app on
+     * @param runtimeConfiguration configuration to run app with
      * @return Kafka configuration
      */
-    public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+    public Map<String, Object> getKafkaProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration);
         return propertiesFactory.createKafkaProperties(Map.of(
                 StreamsConfig.APPLICATION_ID_CONFIG, this.getUniqueAppId()
         ));
@@ -112,32 +109,22 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
      */
     public String getUniqueAppId() {
-        return Objects.requireNonNull(this.app.getUniqueAppId(this.getTopics()));
+        return Objects.requireNonNull(this.app.getUniqueAppId(this.topics));
     }
 
     /**
-     * Get topic configuration
-     * @return topic configuration
-     */
-    public StreamsTopicConfig getTopics() {
-        return this.configuration.getTopics();
-    }
-
-    /**
-     * Create an {@code ExecutableStreamsApp} using the provided {@code KafkaEndpointConfig}
+     * Create an {@code ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
      * @return {@code ExecutableStreamsApp}
      */
     @Override
-    public ExecutableStreamsApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
+    public ExecutableStreamsApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
         final Topology topology = this.createTopology(kafkaProperties);
-        final EffectiveAppConfiguration<StreamsTopicConfig> effectiveConfiguration =
-                new EffectiveAppConfiguration<>(this.getTopics(), kafkaProperties);
         return ExecutableStreamsApp.<T>builder()
                 .topology(topology)
-                .config(new StreamsConfig(kafkaProperties))
+                .kafkaProperties(kafkaProperties)
                 .app(this.app)
-                .effectiveConfig(effectiveConfiguration)
+                .topics(this.topics)
                 .build();
     }
 
@@ -148,7 +135,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @return topology of the Kafka Streams app
      */
     public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
+        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.topics, kafkaProperties);
         this.app.buildTopology(streamsBuilder);
         return streamsBuilder.build();
     }
@@ -158,13 +145,12 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         this.app.close();
     }
 
-    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfig) {
         final Map<String, Object> baseConfig = createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
-                .configuration(this.configuration)
-                .endpointConfig(endpointConfig)
+                .runtimeConfig(runtimeConfig)
                 .build();
     }
 

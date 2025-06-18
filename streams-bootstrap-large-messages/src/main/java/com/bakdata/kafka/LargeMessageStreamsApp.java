@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ public interface LargeMessageStreamsApp extends StreamsApp {
 
     @Override
     default StreamsCleanUpConfiguration setupCleanUp(
-            final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
+            final AppConfiguration<StreamsTopicConfig> configuration) {
         final StreamsCleanUpConfiguration cleanUpConfiguration = StreamsApp.super.setupCleanUp(configuration);
         return LargeMessageAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
