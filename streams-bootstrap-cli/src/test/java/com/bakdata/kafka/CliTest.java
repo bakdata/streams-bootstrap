@@ -402,4 +402,39 @@ class CliTest {
                     .containsEntry("bar", "2");
         }
     }
+
+    @Test
+    void shouldProvideApplicationId() {
+        try (final KafkaStreamsApplication<?> app = new KafkaStreamsApplication<>() {
+            @Override
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final StreamsBuilderX builder) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        return topics.getApplicationId();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+
+            @Override
+            public void run() {
+                // do nothing
+            }
+        }) {
+            KafkaApplication.startApplicationWithoutExit(app, new String[]{
+                    "--application-id", "application-1",
+            });
+            assertThat(app.getApplicationId()).isEqualTo("application-1");
+        }
+    }
 }

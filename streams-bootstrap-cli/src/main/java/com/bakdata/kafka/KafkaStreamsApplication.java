@@ -136,6 +136,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
                 .outputTopic(this.getOutputTopic())
                 .labeledOutputTopics(this.getLabeledOutputTopics())
                 .errorTopic(this.errorTopic)
+                .applicationId(this.applicationId)
                 .build();
     }
 
