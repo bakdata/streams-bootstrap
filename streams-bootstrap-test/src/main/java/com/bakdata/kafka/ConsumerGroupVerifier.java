@@ -55,9 +55,9 @@ public class ConsumerGroupVerifier {
      * @return verifier
      */
     public static ConsumerGroupVerifier verify(final ExecutableStreamsApp<?> app) {
-        final EffectiveAppConfiguration<StreamsTopicConfig> config = app.getEffectiveConfig();
+        final Map<String, Object> kafkaProperties = app.getKafkaProperties();
         final ImprovedStreamsConfig streamsConfig = new ImprovedStreamsConfig(app.getConfig());
-        return new ConsumerGroupVerifier(streamsConfig.getAppId(), config::createAdminClient);
+        return new ConsumerGroupVerifier(streamsConfig.getAppId(), () -> ImprovedAdminClient.create(kafkaProperties));
     }
 
     /**
