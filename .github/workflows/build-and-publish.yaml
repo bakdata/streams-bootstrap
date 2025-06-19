@@ -19,6 +19,6 @@ jobs:
       signing-secret-key-ring: ${{ secrets.SONATYPE_SIGNING_SECRET_KEY_RING }}
       signing-key-id: ${{ secrets.SONATYPE_SIGNING_KEY_ID }}
       signing-password: ${{ secrets.SONATYPE_SIGNING_PASSWORD }}
-      ossrh-username: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
-      ossrh-password: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+      ossrh-username: ${{ secrets.SONATYPE_OSSRH_USERNAME }}
+      ossrh-password: ${{ secrets.SONATYPE_OSSRH_PASSWORD }}
       github-token: ${{ secrets.GH_TOKEN }}
