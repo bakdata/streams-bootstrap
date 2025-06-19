@@ -49,11 +49,22 @@ import org.apache.kafka.streams.state.StoreBuilder;
 @Value
 public class StreamsBuilderX {
 
-    StreamsBuilder streamsBuilder = new StreamsBuilder();
+    @NonNull
+    StreamsBuilder streamsBuilder;
     @NonNull
     StreamsTopicConfig topics;
     @NonNull
     Map<String, Object> kafkaProperties;
+
+    /**
+     * Create a new {@code StreamsBuilderX}. A new internal {@link StreamsBuilder} is created automatically
+     *
+     * @param topics topic configuration
+     * @param kafkaProperties kafka properties
+     */
+    public StreamsBuilderX(final StreamsTopicConfig topics, final Map<String, Object> kafkaProperties) {
+        this(new StreamsBuilder(), topics, kafkaProperties);
+    }
 
     /**
      * @see StreamsBuilder#stream(String)
@@ -433,7 +444,13 @@ public class StreamsBuilderX {
         return new StoresX(this.createConfigurator());
     }
 
-    Topology build() {
+    /**
+     * Returns the {@link Topology} that represents the specified processing logic.
+     *
+     * @return the {@link Topology} that represents the specified processing logic
+     * @see StreamsBuilder#build()
+     */
+    public Topology build() {
         return this.streamsBuilder.build();
     }
 }

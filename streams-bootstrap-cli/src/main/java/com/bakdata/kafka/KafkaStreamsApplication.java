@@ -153,7 +153,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
      * Called before cleaning the application, i.e., invoking {@link #clean()} or {@link #reset()}
      */
     @Override
-    protected void prepareClean() {
+    public void prepareClean() {
         super.prepareClean();
     }
 

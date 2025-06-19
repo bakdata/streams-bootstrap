@@ -1,4 +1,4 @@
-description = "Base classes to create standalone Java applications using picocli"
+description = "Utils for testing your Kafka Streams Application"
 
 plugins {
     id("java-library")
@@ -6,9 +6,8 @@ plugins {
 }
 
 dependencies {
-    api(project(":streams-bootstrap-core"))
-    api(libs.picocli)
-    implementation(libs.slf4j)
+    api(project(":streams-bootstrap-test"))
+    api(project(":streams-bootstrap-cli"))
 
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
@@ -16,8 +15,6 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.junit)
     testImplementation(testFixtures(project(":streams-bootstrap-test")))
-    testImplementation(project(":streams-bootstrap-cli-test"))
-    testImplementation(libs.junit.systemExit)
     testImplementation(libs.kafka.streams.avro.serde) {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
