@@ -91,11 +91,10 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      * Streams Reset Tool</a>
      *
      * @param inputTopics list of input topics of the streams app
-     * @param intermediateTopics list of intermediate topics of the streams app
      * @param allTopics list of all topics that exists in the Kafka cluster
      * @param streamsAppConfig configuration properties of the streams app
      */
-    public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
+    public static void runResetter(final Collection<String> inputTopics,
             final Collection<String> allTopics, final ImprovedStreamsConfig streamsAppConfig) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final String appId = streamsAppConfig.getAppId();
@@ -108,10 +107,6 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
             argList.addAll(List.of("--input-topics", String.join(",", existingInputTopics)));
-        }
-        final Collection<String> existingIntermediateTopics = filterExistingTopics(intermediateTopics, allTopics);
-        if (!existingIntermediateTopics.isEmpty()) {
-            argList.addAll(List.of("--intermediate-topics", String.join(",", existingIntermediateTopics)));
         }
         final String[] args = argList.toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
@@ -203,14 +198,17 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
         private void reset() {
             final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            this.reset(allTopics);
+        }
+
+        private void reset(final Collection<String> allTopics) {
             final List<String> inputTopics =
                     StreamsCleanUpRunner.this.topologyInformation.getInputTopics(allTopics);
-            final List<String> intermediateTopics =
-                    StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
-            runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.config);
+            runResetter(inputTopics, allTopics, StreamsCleanUpRunner.this.config);
             // the StreamsResetter is responsible for deleting internal topics
             StreamsCleanUpRunner.this.topologyInformation.getInternalTopics()
                     .forEach(this::resetInternalTopic);
+            this.deleteIntermediateTopics(allTopics);
             try (final KafkaStreams kafkaStreams = this.createStreams()) {
                 kafkaStreams.cleanUp();
             }
@@ -223,22 +221,26 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void cleanAndReset() {
-            this.reset();
-            this.clean();
+            final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            this.reset(allTopics);
+            this.clean(allTopics);
         }
 
-        private void clean() {
-            this.deleteTopics();
+        private void clean(final Collection<String> allTopics) {
+            this.deleteOutputTopics(allTopics);
             this.deleteConsumerGroup();
             StreamsCleanUpRunner.this.cleanHooks.runCleanHooks();
         }
 
-        /**
-         * Delete output topics
-         */
-        private void deleteTopics() {
-            final List<String> externalTopics = StreamsCleanUpRunner.this.topologyInformation.getExternalSinkTopics();
-            externalTopics.forEach(this::deleteTopic);
+        private void deleteIntermediateTopics(final Collection<String> allTopics) {
+            final List<String> intermediateTopics =
+                    StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
+            intermediateTopics.forEach(this::deleteTopic);
+        }
+
+        private void deleteOutputTopics(final Collection<String> allTopics) {
+            final List<String> outputTopics = StreamsCleanUpRunner.this.topologyInformation.getOutputTopics(allTopics);
+            outputTopics.forEach(this::deleteTopic);
         }
 
         private void resetInternalTopic(final String topic) {
