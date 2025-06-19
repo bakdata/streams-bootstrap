@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,34 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
+import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 /**
- * Configuration of an app. This includes topics and Kafka configuration
+ * Configuration for setting up an app
  * @param <T> type of topic config
+ * @see StreamsApp#setup(AppConfiguration)
+ * @see StreamsApp#setupCleanUp(AppConfiguration)
+ * @see ProducerApp#setup(AppConfiguration)
+ * @see ProducerApp#setupCleanUp(AppConfiguration)
  */
 @Value
-@RequiredArgsConstructor
 @EqualsAndHashCode
 public class AppConfiguration<T> {
     @NonNull
     T topics;
     @NonNull
-    Map<String, ?> kafkaConfig;
+    Map<String, Object> kafkaProperties;
 
     /**
-     * Create a new {@code AppConfiguration} with empty Kafka configuration
-     * @param topics topics to use for app
+     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     *
+     * @return {@code ImprovedAdminClient}
      */
-    public AppConfiguration(final T topics) {
-        this(topics, emptyMap());
+    public ImprovedAdminClient createAdminClient() {
+        return ImprovedAdminClient.create(this.kafkaProperties);
     }
 }

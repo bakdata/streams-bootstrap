@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpCon
      */
     @Override
     default ProducerCleanUpConfiguration setupCleanUp(
-            final EffectiveAppConfiguration<ProducerTopicConfig> configuration) {
+            final AppConfiguration<ProducerTopicConfig> configuration) {
         return new ProducerCleanUpConfiguration();
     }
 

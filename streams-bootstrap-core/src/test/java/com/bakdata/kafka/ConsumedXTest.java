@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
+import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -277,19 +278,19 @@ class ConsumedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                    .bootstrapServers(kafkaCluster.getBootstrapServers())
-                    .build();
-            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            final RuntimeConfiguration configuration = RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
+            final KafkaTestClient testClient = new KafkaTestClient(configuration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig());
-                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp
+                            .withRuntimeConfiguration(configuration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 TestHelper.run(runner);
                 KafkaTest.awaitActive(executableApp);
@@ -323,19 +324,19 @@ class ConsumedXTest {
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
             kafkaCluster.start();
-            final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                    .bootstrapServers(kafkaCluster.getBootstrapServers())
-                    .build();
-            final KafkaTestClient testClient = new KafkaTestClient(endpointConfig);
+            final RuntimeConfiguration configuration = RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                            .withNoStateStoreCaching()
+                            .withSessionTimeout(SESSION_TIMEOUT);
+            final KafkaTestClient testClient = new KafkaTestClient(configuration);
             testClient.createTopic("input");
             testClient.createTopic("output");
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp(
-                    TestTopologyFactory.createStreamsTestConfig());
-                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp
+                            .withRuntimeConfiguration(configuration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 TestHelper.run(runner);
                 KafkaTest.awaitActive(executableApp);
