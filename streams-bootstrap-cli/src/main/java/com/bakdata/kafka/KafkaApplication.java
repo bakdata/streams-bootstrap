@@ -194,11 +194,11 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
         }
     }
 
-    public KafkaEndpointConfig getEndpointConfig() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.bootstrapServers)
-                .schemaRegistryUrl(this.schemaRegistryUrl)
-                .build();
+    public RuntimeConfiguration getRuntimeConfiguration() {
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
+                .with(this.kafkaConfig);
+        return this.schemaRegistryUrl == null ? configuration
+                : configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
     }
 
     /**
@@ -208,8 +208,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      */
     public final E createExecutableApp() {
         final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return configuredStreamsApp.withEndpoint(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = this.getRuntimeConfiguration();
+        return configuredStreamsApp.withRuntimeConfiguration(runtimeConfiguration);
     }
 
     /**
@@ -218,18 +218,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@code ConfiguredApp}
      */
     public final CA createConfiguredApp() {
-        final AppConfiguration<T> configuration = this.createConfiguration();
-        final A app = this.createApp();
-        return this.createConfiguredApp(app, configuration);
-    }
-
-    /**
-     * Create configuration to configure app
-     * @return configuration
-     */
-    public final AppConfiguration<T> createConfiguration() {
         final T topics = this.createTopicConfig();
-        return new AppConfiguration<>(topics, this.kafkaConfig);
+        final A app = this.createApp();
+        return this.createConfiguredApp(app, topics);
     }
 
     /**
@@ -261,10 +252,10 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Create a new {@code ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
-     * @param configuration configuration for app
+     * @param topics topic configuration
      * @return {@code ConfiguredApp}
      */
-    protected abstract CA createConfiguredApp(final A app, AppConfiguration<T> configuration);
+    protected abstract CA createConfiguredApp(final A app, T topics);
 
     /**
      * Called before starting the application, e.g., invoking {@link #run()}
