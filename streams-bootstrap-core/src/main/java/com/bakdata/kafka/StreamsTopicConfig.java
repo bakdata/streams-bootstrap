@@ -66,7 +66,6 @@ public class StreamsTopicConfig {
     @NonNull
     Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
-    String applicationId;
 
     /**
      * Get input topics for a specified label

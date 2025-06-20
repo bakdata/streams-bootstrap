@@ -406,15 +406,10 @@ class CliTest {
         try (final KafkaStreamsApplication<?> app = new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
-                return new StreamsApp() {
+                return new SimpleCliStreamsApp(this.getApplicationId()) {
                     @Override
                     public void buildTopology(final StreamsBuilderX builder) {
                         throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
-                        return topics.getApplicationId();
                     }
 
                     @Override
