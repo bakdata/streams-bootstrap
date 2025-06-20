@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,15 @@
 
 package com.bakdata.kafka;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-/**
- * {@code KafkaStreamsApplication} without any additional configuration options.
- *
- * @param <T> type of {@link StreamsApp} created by this application
- */
 @RequiredArgsConstructor
-public final class SimpleKafkaStreamsApplication<T extends StreamsApp> extends KafkaStreamsApplication<T> {
-    private final @NonNull Function<String, T> appFactory;
+abstract class SimpleCliStreamsApp implements StreamsApp {
+    private final @NonNull String applicationId;
 
     @Override
-    public T createApp() {
-        return this.appFactory.apply(this.getApplicationId());
-    }
-
-    public SimpleKafkaStreamsApplication(final Supplier<T> appFactory) {
-        this.appFactory = ignored -> appFactory.get();
+    public String getUniqueAppId(final StreamsTopicConfig topics) {
+        return this.applicationId;
     }
 }
