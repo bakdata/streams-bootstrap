@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -292,7 +293,7 @@ class ConsumedXTest {
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp
                             .withRuntimeConfiguration(configuration);
                     final StreamsRunner runner = executableApp.createRunner()) {
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
@@ -338,7 +339,7 @@ class ConsumedXTest {
                     final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp
                             .withRuntimeConfiguration(configuration);
                     final StreamsRunner runner = executableApp.createRunner()) {
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitActive(executableApp);
                 testClient.send()
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
