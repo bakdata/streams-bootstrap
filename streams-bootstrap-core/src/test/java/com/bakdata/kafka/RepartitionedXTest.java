@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -263,7 +264,7 @@ class RepartitionedXTest {
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
                         ));
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -334,7 +335,7 @@ class RepartitionedXTest {
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
                         ));
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -396,7 +397,7 @@ class RepartitionedXTest {
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
@@ -444,7 +445,7 @@ class RepartitionedXTest {
                         .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                         .to("input", List.of(new SimpleProducerRecord<>("foo", "bar")));
-                TestHelper.run(runner);
+                runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
                                 .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
