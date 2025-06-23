@@ -23,3 +23,15 @@ dependencies {
     }
     testImplementation(libs.log4j.slf4j2)
 }
+
+tasks.withType<Test> {
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "-javaagent:${
+                configurations.testRuntimeClasspath.get().files.find {
+                    it.name.contains("junit5-system-exit")
+                }
+            }"
+        )
+    })
+}
