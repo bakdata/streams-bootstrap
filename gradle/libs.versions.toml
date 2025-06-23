@@ -4,7 +4,7 @@ mockito = "5.17.0"
 testcontainers = "1.21.0"
 
 [libraries]
-kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.1-SNAPSHOT" }
+kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.1.2-SNAPSHOT" }
 kafka-tools = { group = "org.apache.kafka", name = "kafka-tools" }
 kafka-streams = { group = "org.apache.kafka", name = "kafka-streams" }
 kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }
@@ -37,6 +37,6 @@ awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" 
 [plugins]
 release = { id = "com.bakdata.release", version = "1.9.1" }
 sonar = { id = "com.bakdata.sonar", version = "1.9.1" }
-sonatype = { id = "com.bakdata.sonatype", version = "1.9.1" }
+sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
 lombok = { id = "io.freefair.lombok", version = "8.13.1" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
