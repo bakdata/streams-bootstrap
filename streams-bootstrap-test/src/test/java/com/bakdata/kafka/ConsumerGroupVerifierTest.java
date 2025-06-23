@@ -24,19 +24,26 @@
 
 package com.bakdata.kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import java.time.Duration;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(SoftAssertionsExtension.class)
 class ConsumerGroupVerifierTest extends KafkaTest {
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
     void shouldVerify() {
@@ -59,23 +66,22 @@ class ConsumerGroupVerifierTest extends KafkaTest {
                     .to("input", List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
-            new Thread(runner).start();
-            awaitActive(executableApp);
+            runAsync(runner);
             awaitProcessing(executableApp);
             final List<ConsumerRecord<String, String>> records = testClient.read()
                     .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                     .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .from("input", Duration.ofSeconds(10L));
-            assertThat(records)
+                    .from("output", POLL_TIMEOUT);
+            this.softly.assertThat(records)
                     .hasSize(1)
                     .anySatisfy(rekord -> {
-                        assertThat(rekord.key()).isEqualTo("foo");
-                        assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
                     });
         }
         awaitClosed(executableApp);
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(executableApp);
-        assertThat(verifier.isActive()).isFalse();
+        this.softly.assertThat(verifier.isActive()).isFalse();
     }
 
 }

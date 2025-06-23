@@ -10,5 +10,6 @@ dependencies {
         api(project(":streams-bootstrap-cli"))
         api(project(":streams-bootstrap-large-messages"))
         api(project(":streams-bootstrap-test"))
+        api(project(":streams-bootstrap-cli-test"))
     }
 }
