@@ -403,27 +403,17 @@ class CliTest {
 
     @Test
     void shouldProvideApplicationId() {
-        try (final KafkaStreamsApplication<?> app = new KafkaStreamsApplication<>() {
+        try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(appId -> new SimpleCliStreamsApp(appId) {
             @Override
-            public StreamsApp createApp() {
-                return new SimpleCliStreamsApp(this.getApplicationId()) {
-                    @Override
-                    public void buildTopology(final StreamsBuilderX builder) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public SerdeConfig defaultSerializationConfig() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
-            public void run() {
-                // do nothing
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
             }
-        }) {
+        })) {
             KafkaApplication.startApplicationWithoutExit(app, new String[]{
                     "--application-id", "application-1",
             });

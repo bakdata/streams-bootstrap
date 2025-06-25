@@ -28,7 +28,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-abstract class SimpleCliStreamsApp implements StreamsApp {
+public abstract class SimpleCliStreamsApp implements StreamsApp {
     private final @NonNull String applicationId;
 
     @Override
