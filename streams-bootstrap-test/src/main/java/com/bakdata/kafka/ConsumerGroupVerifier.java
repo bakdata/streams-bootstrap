@@ -35,9 +35,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.ConsumerGroupState;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Utility class to verify the state of a Kafka consumer group
@@ -58,6 +60,16 @@ public class ConsumerGroupVerifier {
         final Map<String, Object> kafkaProperties = app.getKafkaProperties();
         final ImprovedStreamsConfig streamsConfig = new ImprovedStreamsConfig(app.getConfig());
         return new ConsumerGroupVerifier(streamsConfig.getAppId(), () -> ImprovedAdminClient.create(kafkaProperties));
+    }
+
+    /**
+     * Create a new verifier from an {@code ExecutableConsumerApp}
+     * @param app app to create verifier from
+     * @return verifier
+     */
+    public static ConsumerGroupVerifier verify(final ExecutableConsumerApp<?> app) {
+        final Map<String, Object> kafkaProperties = app.getKafkaProperties();
+        return new ConsumerGroupVerifier(kafkaProperties.get(ConsumerConfig.GROUP_ID_CONFIG).toString(), () -> ImprovedAdminClient.create(kafkaProperties));
     }
 
     /**

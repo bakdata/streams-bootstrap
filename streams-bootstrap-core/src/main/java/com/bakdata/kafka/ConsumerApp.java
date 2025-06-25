@@ -24,36 +24,35 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.Map;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Value;
-
 /**
- * Configuration for setting up an app
- * @param <T> type of topic config
- * @see StreamsApp#setup(AppConfiguration)
- * @see StreamsApp#setupCleanUp(AppConfiguration)
- * @see ProducerApp#setup(AppConfiguration)
- * @see ProducerApp#setupCleanUp(AppConfiguration)
- * @see ConsumerApp#setup(AppConfiguration)
- * @see ConsumerApp#setupCleanUp(AppConfiguration)
+ * Application that defines how to produce messages to Kafka and necessary configurations
  */
-@Value
-@EqualsAndHashCode
-public class AppConfiguration<T> {
-    @NonNull
-    T topics;
-    @NonNull
-    Map<String, Object> kafkaProperties;
+public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpConfiguration> {
 
     /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * Create a runnable that produces Kafka messages
      *
-     * @return {@code ImprovedAdminClient}
+     * @param builder provides all runtime application configurations
+     * @return {@code ProducerRunnable}
      */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    ConsumerRunnable buildRunnable(ConsumerBuilder builder);
+
+    /**
+     * @return {@code ProducerCleanUpConfiguration}
+     * @see ProducerCleanUpRunner
+     */
+    @Override
+    default ConsumerCleanUpConfiguration setupCleanUp(
+            final AppConfiguration<ConsumerTopicConfig> configuration) {
+        return new ConsumerCleanUpConfiguration();
     }
+
+    /**
+     * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
+     * state encapsulation. Could be set to: className-outputTopic
+     *
+     * @param topics provides runtime topic configuration
+     * @return unique application identifier
+     */
+    String getUniqueAppId(ConsumerTopicConfig topics);
 }

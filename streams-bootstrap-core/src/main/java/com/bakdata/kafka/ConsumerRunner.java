@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,28 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.Map;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Configuration for setting up an app
- * @param <T> type of topic config
- * @see StreamsApp#setup(AppConfiguration)
- * @see StreamsApp#setupCleanUp(AppConfiguration)
- * @see ProducerApp#setup(AppConfiguration)
- * @see ProducerApp#setupCleanUp(AppConfiguration)
- * @see ConsumerApp#setup(AppConfiguration)
- * @see ConsumerApp#setupCleanUp(AppConfiguration)
+ * Runs a Kafka Consumer application
  */
-@Value
-@EqualsAndHashCode
-public class AppConfiguration<T> {
-    @NonNull
-    T topics;
-    @NonNull
-    Map<String, Object> kafkaProperties;
+@RequiredArgsConstructor
+@Slf4j
+public class ConsumerRunner implements Runner {
 
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     *
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    private final @NonNull ConsumerRunnable runnable;
+
+    @Override
+    public void close() {
+        log.info("Closing consumer");
+        this.runnable.close();
+    }
+
+    @Override
+    public void run() {
+        log.info("Starting consumer");
+        this.runnable.run();
     }
 }

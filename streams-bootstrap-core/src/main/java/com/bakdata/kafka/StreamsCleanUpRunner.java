@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka;
 
+import static com.bakdata.kafka.StreamsResetterWrapper.runResetter;
+
 import com.bakdata.kafka.util.ConsumerGroupClient;
 import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
@@ -53,7 +55,6 @@ import org.apache.kafka.tools.StreamsResetter;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StreamsCleanUpRunner implements CleanUpRunner {
-    private static final int EXIT_CODE_SUCCESS = 0;
     private final TopologyInformation topologyInformation;
     private final Topology topology;
     private final @NonNull ImprovedStreamsConfig config;
@@ -84,79 +85,6 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
-    }
-
-    /**
-     * Run the <a href="https://docs.confluent.io/platform/current/streams/developer-guide/app-reset-tool.html">Kafka
-     * Streams Reset Tool</a>
-     *
-     * @param inputTopics list of input topics of the streams app
-     * @param intermediateTopics list of intermediate topics of the streams app
-     * @param allTopics list of all topics that exists in the Kafka cluster
-     * @param streamsAppConfig configuration properties of the streams app
-     */
-    public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final Collection<String> allTopics, final ImprovedStreamsConfig streamsAppConfig) {
-        // StreamsResetter's internal AdminClient can only be configured with a properties file
-        final String appId = streamsAppConfig.getAppId();
-        final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
-        final Collection<String> argList = new ArrayList<>(List.of(
-                "--application-id", appId,
-                "--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()),
-                "--config-file", tempFile.toString()
-        ));
-        final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
-        if (!existingInputTopics.isEmpty()) {
-            argList.addAll(List.of("--input-topics", String.join(",", existingInputTopics)));
-        }
-        final Collection<String> existingIntermediateTopics = filterExistingTopics(intermediateTopics, allTopics);
-        if (!existingIntermediateTopics.isEmpty()) {
-            argList.addAll(List.of("--intermediate-topics", String.join(",", existingIntermediateTopics)));
-        }
-        final String[] args = argList.toArray(String[]::new);
-        final StreamsResetter resetter = new StreamsResetter();
-        final int returnCode = resetter.execute(args);
-        try {
-            Files.delete(tempFile.toPath());
-        } catch (final IOException e) {
-            log.warn("Error deleting temporary property file", e);
-        }
-        if (returnCode != EXIT_CODE_SUCCESS) {
-            throw new CleanUpException("Error running streams resetter. Exit code " + returnCode);
-        }
-    }
-
-    static File createTemporaryPropertiesFile(final String appId, final Map<String, Object> config) {
-        // Writing properties requires Map<String, String>
-        final Properties parsedProperties = toStringBasedProperties(config);
-        try {
-            final File tempFile = File.createTempFile(appId + "-reset", "temp");
-            try (final FileOutputStream out = new FileOutputStream(tempFile)) {
-                parsedProperties.store(out, "");
-            }
-            return tempFile;
-        } catch (final IOException e) {
-            throw new CleanUpException("Could not run StreamsResetter", e);
-        }
-    }
-
-    static Properties toStringBasedProperties(final Map<String, Object> config) {
-        final Properties parsedProperties = new Properties();
-        config.forEach((key, value) -> parsedProperties.setProperty(key, value.toString()));
-        return parsedProperties;
-    }
-
-    private static Collection<String> filterExistingTopics(final Collection<String> topics,
-            final Collection<String> allTopics) {
-        return topics.stream()
-                .filter(topicName -> {
-                    final boolean exists = allTopics.contains(topicName);
-                    if (!exists) {
-                        log.warn("Not resetting missing topic {}", topicName);
-                    }
-                    return exists;
-                })
-                .collect(Collectors.toList());
     }
 
     @Override

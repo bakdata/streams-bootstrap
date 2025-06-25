@@ -108,6 +108,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
         System.exit(exitCode);
     }
 
+    // TODO FIX JAVADOCS EVERYWHERE
+
     /**
      * <p>This method needs to be called in the executable custom application class inheriting from
      * {@code KafkaApplication}.</p>

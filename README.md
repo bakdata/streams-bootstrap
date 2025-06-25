@@ -147,6 +147,8 @@ Additionally, the following commands are available:
 
 Create a subclass of `KafkaProducerApplication`.
 
+// TODO
+
 ```java
 import com.bakdata.kafka.KafkaProducerApplication;
 import com.bakdata.kafka.ProducerApp;

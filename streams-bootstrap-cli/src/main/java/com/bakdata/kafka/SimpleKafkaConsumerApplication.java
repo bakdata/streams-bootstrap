@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,21 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import java.util.Map;
-import lombok.EqualsAndHashCode;
+import java.util.function.Supplier;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Configuration for setting up an app
- * @param <T> type of topic config
- * @see StreamsApp#setup(AppConfiguration)
- * @see StreamsApp#setupCleanUp(AppConfiguration)
- * @see ProducerApp#setup(AppConfiguration)
- * @see ProducerApp#setupCleanUp(AppConfiguration)
- * @see ConsumerApp#setup(AppConfiguration)
- * @see ConsumerApp#setupCleanUp(AppConfiguration)
+ * {@code KafkaProducerApplication} without any additional configuration options.
+ *
+ * @param <T> type of {@link ProducerApp} created by this application
  */
-@Value
-@EqualsAndHashCode
-public class AppConfiguration<T> {
-    @NonNull
-    T topics;
-    @NonNull
-    Map<String, Object> kafkaProperties;
+@RequiredArgsConstructor
+public final class SimpleKafkaConsumerApplication<T extends ConsumerApp> extends KafkaConsumerApplication<T> {
+    private final @NonNull Supplier<T> appFactory;
 
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     *
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    @Override
+    public T createApp() {
+        return this.appFactory.get();
     }
 }

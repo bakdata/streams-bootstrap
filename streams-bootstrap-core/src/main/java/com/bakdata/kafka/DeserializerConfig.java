@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,28 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Map;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.With;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
 
 /**
- * Configuration for setting up an app
- * @param <T> type of topic config
- * @see StreamsApp#setup(AppConfiguration)
- * @see StreamsApp#setupCleanUp(AppConfiguration)
- * @see ProducerApp#setup(AppConfiguration)
- * @see ProducerApp#setupCleanUp(AppConfiguration)
- * @see ConsumerApp#setup(AppConfiguration)
- * @see ConsumerApp#setupCleanUp(AppConfiguration)
+ * Defines how to serialize the data in a Kafka producer
  */
-@Value
-@EqualsAndHashCode
-public class AppConfiguration<T> {
-    @NonNull
-    T topics;
-    @NonNull
-    Map<String, Object> kafkaProperties;
+@RequiredArgsConstructor
+@With
+public class DeserializerConfig implements SerializationConfig {
 
-    /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
-     *
-     * @return {@code ImprovedAdminClient}
-     */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    private final @NonNull Class<? extends Deserializer> keyDeserializer;
+    private final @NonNull Class<? extends Deserializer> valueDeserializer;
+
+    @Override
+    public Map<String, Object> createProperties() {
+        return Map.of(
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.keyDeserializer,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, this.valueDeserializer
+        );
     }
 }

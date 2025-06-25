@@ -69,6 +69,28 @@ public abstract class KafkaTest {
                 .until(verifier::isClosed);
     }
 
+    protected static void awaitProcessing(final ExecutableConsumerApp<?> app) {
+        awaitActive(app);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group has finished processing")
+                .until(verifier::hasFinishedProcessing);
+    }
+
+    protected static void awaitActive(final ExecutableConsumerApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is active")
+                .until(verifier::isActive);
+    }
+
+    protected static void awaitClosed(final ExecutableConsumerApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is closed")
+                .until(verifier::isClosed);
+    }
+
     private static ConditionFactory await() {
         return Awaitility.await()
                 .pollInterval(Duration.ofSeconds(2L))
