@@ -2,9 +2,11 @@
 junit = "5.12.2"
 mockito = "5.17.0"
 testcontainers = "1.21.0"
+kafkaUtils = "1.2.0"
 
 [libraries]
-kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version = "1.2.0" }
+kafka-bom = { group = "com.bakdata.kafka", name = "kafka-bom", version.ref = "kafkaUtils" }
+kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils", version.ref = "kafkaUtils" }
 kafka-tools = { group = "org.apache.kafka", name = "kafka-tools" }
 kafka-streams = { group = "org.apache.kafka", name = "kafka-streams" }
 kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }

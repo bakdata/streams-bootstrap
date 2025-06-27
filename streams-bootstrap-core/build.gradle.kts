@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    api(platform(libs.kafka.bom)) // Central repository requires this as a direct dependency to resolve versions
     api(libs.kafka.streams.utils)
     implementation(libs.kafka.tools)
 
