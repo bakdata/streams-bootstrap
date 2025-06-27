@@ -40,13 +40,10 @@ import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.kstream.StreamJoined;
-import org.apache.kafka.streams.kstream.TransformerSupplier;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.kstream.ValueJoinerWithKey;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
-import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
-import org.apache.kafka.streams.kstream.ValueTransformerWithKeySupplier;
 import org.apache.kafka.streams.processor.TopicNameExtractor;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorSupplier;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
@@ -479,14 +476,6 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     @Override
     KStreamX<K, V> peek(ForeachAction<? super K, ? super V> action, Named named);
 
-    @Deprecated
-    @Override
-    KStreamX<K, V>[] branch(Named named, Predicate<? super K, ? super V>... predicates);
-
-    @Deprecated
-    @Override
-    KStreamX<K, V>[] branch(Predicate<? super K, ? super V>... predicates);
-
     @Override
     BranchedKStreamX<K, V> split();
 
@@ -498,14 +487,6 @@ public interface KStreamX<K, V> extends KStream<K, V> {
 
     @Override
     KStreamX<K, V> merge(KStream<K, V> stream, Named named);
-
-    @Deprecated
-    @Override
-    KStreamX<K, V> through(String topic);
-
-    @Deprecated
-    @Override
-    KStreamX<K, V> through(String topic, Produced<K, V> produced);
 
     @Override
     KStreamX<K, V> repartition();
@@ -832,78 +813,6 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, Named named);
-
-    @Deprecated
-    @Override
-    <K1, V1> KStreamX<K1, V1> transform(
-            TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <K1, V1> KStreamX<K1, V1> transform(
-            TransformerSupplier<? super K, ? super V, KeyValue<K1, V1>> transformerSupplier,
-            Named named, String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <K1, V1> KStreamX<K1, V1> flatTransform(
-            TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <K1, V1> KStreamX<K1, V1> flatTransform(
-            TransformerSupplier<? super K, ? super V, Iterable<KeyValue<K1, V1>>> transformerSupplier, Named named,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> transformValues(
-            ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> transformValues(
-            ValueTransformerSupplier<? super V, ? extends VR> valueTransformerSupplier,
-            Named named, String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> transformValues(
-            ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> transformValues(
-            ValueTransformerWithKeySupplier<? super K, ? super V, ? extends VR> valueTransformerSupplier, Named named,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> flatTransformValues(
-            ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> flatTransformValues(
-            ValueTransformerSupplier<? super V, Iterable<VR>> valueTransformerSupplier,
-            Named named, String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> flatTransformValues(
-            ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier,
-            String... stateStoreNames);
-
-    @Deprecated
-    @Override
-    <VR> KStreamX<K, VR> flatTransformValues(
-            ValueTransformerWithKeySupplier<? super K, ? super V, Iterable<VR>> valueTransformerSupplier, Named named,
-            String... stateStoreNames);
 
     @Override
     <KOut, VOut> KStreamX<KOut, VOut> process(

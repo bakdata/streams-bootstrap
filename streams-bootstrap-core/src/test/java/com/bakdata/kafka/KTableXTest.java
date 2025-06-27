@@ -1337,31 +1337,6 @@ class KTableXTest {
     }
 
     @Test
-    void shouldFKeyJoinNamed() {
-        final StringApp app = new StringApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KTableX<String, String> input = builder.table("input");
-                final KTableX<String, String> otherInput = builder.table("other_input");
-                final KTableX<String, String> joined =
-                        input.join(otherInput, Function.identity(), (v1, v2) -> v1 + v2, Named.as("join"));
-                joined.toStream().to("output");
-            }
-        };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input("input")
-                    .add("foo", "bar");
-            topology.input("other_input")
-                    .add("bar", "baz");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("barbaz")
-                    .expectNoMoreRecord();
-        }
-    }
-
-    @Test
     void shouldFKeyJoinTableJoined() {
         final StringApp app = new StringApp() {
             @Override
@@ -1397,40 +1372,6 @@ class KTableXTest {
                         builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> joined = input.join(otherInput, Function.identity(), (v1, v2) -> v1 + v2,
                         MaterializedX.with(Serdes.String(), Serdes.String()));
-                joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
-            }
-        };
-        try (final TestTopology<Double, Double> topology = app.startApp()) {
-            topology.input("input")
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(Serdes.String())
-                    .add("foo", "bar");
-            topology.input("other_input")
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(Serdes.String())
-                    .add("bar", "baz");
-            topology.streamOutput()
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(Serdes.String())
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("barbaz")
-                    .expectNoMoreRecord();
-        }
-    }
-
-    @Test
-    void shouldFKeyJoinNamedUsingMaterialized() {
-        final DoubleApp app = new DoubleApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KTableX<String, String> input =
-                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KTableX<String, String> otherInput =
-                        builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
-                final KTableX<String, String> joined =
-                        input.join(otherInput, Function.identity(), (v1, v2) -> v1 + v2, Named.as("join"),
-                                Materialized.with(Serdes.String(), Serdes.String()));
                 joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
@@ -1516,34 +1457,6 @@ class KTableXTest {
     }
 
     @Test
-    void shouldLeftFKeyJoinNamed() {
-        final StringApp app = new StringApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KTableX<String, String> input = builder.table("input");
-                final KTableX<String, String> otherInput = builder.table("other_input");
-                final KTableX<String, String> joined = input.leftJoin(otherInput, Function.identity(),
-                        (v1, v2) -> v2 == null ? v1 : v1 + v2, Named.as("join"));
-                joined.toStream().to("output");
-            }
-        };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input("input")
-                    .add("foo", "bar");
-            topology.input("other_input")
-                    .add("bar", "baz");
-            topology.streamOutput()
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("bar")
-                    .expectNextRecord()
-                    .hasKey("foo")
-                    .hasValue("barbaz")
-                    .expectNoMoreRecord();
-        }
-    }
-
-    @Test
     void shouldLeftFKeyJoinTableJoined() {
         final StringApp app = new StringApp() {
             @Override
@@ -1609,7 +1522,7 @@ class KTableXTest {
     }
 
     @Test
-    void shouldLeftFKeyJoinNamedUsingMaterialized() {
+    void shouldLeftFKeyJoinTableJoinedUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
@@ -1619,7 +1532,7 @@ class KTableXTest {
                         builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> joined =
                         input.leftJoin(otherInput, Function.identity(), (v1, v2) -> v2 == null ? v1 : v1 + v2,
-                                Named.as("join"), Materialized.with(Serdes.String(), Serdes.String()));
+                                TableJoined.as("join"), MaterializedX.with(Serdes.String(), Serdes.String()));
                 joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
         };
@@ -1646,7 +1559,89 @@ class KTableXTest {
     }
 
     @Test
-    void shouldLeftFKeyJoinTableJoinedUsingMaterialized() {
+    void shouldFKeyJoinWithKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> otherInput = builder.table("other_input");
+                final KTableX<String, String> joined = input.join(otherInput, (k, v) -> v, (v1, v2) -> v1 + v2);
+                joined.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFKeyJoinTableJoinedWithKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> otherInput = builder.table("other_input");
+                final KTableX<String, String> joined =
+                        input.join(otherInput, (k, v) -> v, (v1, v2) -> v1 + v2, TableJoined.as("join"));
+                joined.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFKeyJoinWithKeyUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> otherInput =
+                        builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> joined = input.join(otherInput, (k, v) -> v, (v1, v2) -> v1 + v2,
+                        MaterializedX.with(Serdes.String(), Serdes.String()));
+                joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldFKeyJoinTableJoinedWithKeyUsingMaterialized() {
         final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
@@ -1655,7 +1650,134 @@ class KTableXTest {
                 final KTableX<String, String> otherInput =
                         builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
                 final KTableX<String, String> joined =
-                        input.leftJoin(otherInput, Function.identity(), (v1, v2) -> v2 == null ? v1 : v1 + v2,
+                        input.join(otherInput, (k, v) -> v, (v1, v2) -> v1 + v2, TableJoined.as("join"),
+                                MaterializedX.with(Serdes.String(), Serdes.String()));
+                joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldLeftFKeyJoinWithKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> otherInput = builder.table("other_input");
+                final KTableX<String, String> joined = input.leftJoin(otherInput, (k, v) -> v,
+                        (v1, v2) -> v2 == null ? v1 : v1 + v2);
+                joined.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldLeftFKeyJoinTableJoinedWithKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> otherInput = builder.table("other_input");
+                final KTableX<String, String> joined = input.leftJoin(otherInput, (k, v) -> v,
+                        (v1, v2) -> v2 == null ? v1 : v1 + v2, TableJoined.as("join"));
+                joined.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldLeftFKeyJoinWithKeyUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> otherInput =
+                        builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> joined =
+                        input.leftJoin(otherInput, (k, v) -> v, (v1, v2) -> v2 == null ? v1 : v1 + v2,
+                                MaterializedX.with(Serdes.String(), Serdes.String()));
+                joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
+            }
+        };
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input("input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            topology.input("other_input")
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("bar", "baz");
+            topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("bar")
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("barbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldLeftFKeyJoinTableJoinedWithKeyUsingMaterialized() {
+        final DoubleApp app = new DoubleApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input =
+                        builder.table("input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> otherInput =
+                        builder.table("other_input", ConsumedX.with(Serdes.String(), Serdes.String()));
+                final KTableX<String, String> joined =
+                        input.leftJoin(otherInput, (k, v) -> v, (v1, v2) -> v2 == null ? v1 : v1 + v2,
                                 TableJoined.as("join"), MaterializedX.with(Serdes.String(), Serdes.String()));
                 joined.toStream().to("output", ProducedX.with(Serdes.String(), Serdes.String()));
             }
