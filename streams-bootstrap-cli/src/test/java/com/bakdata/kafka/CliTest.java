@@ -400,4 +400,24 @@ class CliTest {
                     .containsEntry("bar", "2");
         }
     }
+
+    @Test
+    void shouldProvideApplicationId() {
+        try (final KafkaStreamsApplication<?> app = new SimpleKafkaStreamsApplication<>(appId -> new SimpleCliStreamsApp(appId) {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+        })) {
+            KafkaApplication.startApplicationWithoutExit(app, new String[]{
+                    "--application-id", "application-1",
+            });
+            assertThat(app.getApplicationId()).isEqualTo("application-1");
+        }
+    }
 }
