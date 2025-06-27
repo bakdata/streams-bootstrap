@@ -35,8 +35,6 @@ import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -61,12 +59,12 @@ class RunStreamsAppTest extends KafkaTest {
             testClient.createTopic(output);
             runner.run(app);
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
             assertThat(testClient.read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(output, POLL_TIMEOUT))
                     .hasSize(1);
         }

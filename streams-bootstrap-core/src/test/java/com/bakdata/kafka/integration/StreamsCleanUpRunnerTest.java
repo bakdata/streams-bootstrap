@@ -56,16 +56,14 @@ import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -156,8 +154,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -194,8 +192,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -239,8 +237,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -287,8 +285,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -335,8 +333,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -375,8 +373,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -413,8 +411,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "a"),
                             new SimpleProducerRecord<>(null, "b"),
@@ -447,9 +445,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, testRecord)
                     ));
@@ -480,8 +477,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new SpecificAvroSerializer<>())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(testRecord, "val")
                     ));
@@ -512,8 +509,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -550,8 +547,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -640,15 +637,15 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to("input_topic", List.of(
                             new SimpleProducerRecord<>(null, "a"),
                             new SimpleProducerRecord<>(null, "b")
                     ));
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to("another_topic", List.of(
                             new SimpleProducerRecord<>(null, "c")
                     ));
@@ -697,8 +694,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
+                .withKeyDeserializer(new StringDeserializer())
+                .withValueDeserializer(new LongDeserializer())
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
