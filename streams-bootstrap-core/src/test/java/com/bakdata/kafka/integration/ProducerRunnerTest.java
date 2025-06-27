@@ -32,7 +32,6 @@ import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerRunner;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
@@ -61,9 +60,9 @@ class ProducerRunnerTest extends KafkaTest {
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, String>> records = this.newTestClient().<String, String>read()
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
+                .withKeyDeserializer(new StringDeserializer())
+                .withValueDeserializer(new StringDeserializer())
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)

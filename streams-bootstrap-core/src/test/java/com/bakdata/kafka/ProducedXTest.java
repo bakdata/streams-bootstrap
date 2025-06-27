@@ -34,8 +34,6 @@ import com.bakdata.kafka.util.TopologyInformation;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -242,8 +240,8 @@ class ProducedXTest {
                             .withRuntimeConfiguration(configuration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
-                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .withKeySerializer(new StringSerializer())
+                        .withValueSerializer(new StringSerializer())
                         .to("input", List.of(
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
@@ -251,8 +249,8 @@ class ProducedXTest {
                 runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
-                                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .withKeyDeserializer(new StringDeserializer())
+                                .withValueDeserializer(new StringDeserializer())
                                 .from("output", POLL_TIMEOUT))
                         .hasSize(2)
                         .anySatisfy(outputRecord -> {
@@ -295,8 +293,8 @@ class ProducedXTest {
                             configuration);
                     final StreamsRunner runner = executableApp.createRunner()) {
                 testClient.send()
-                        .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                        .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                        .withKeySerializer(new StringSerializer())
+                        .withValueSerializer(new StringSerializer())
                         .to("input", List.of(
                                 new SimpleProducerRecord<>("foo", "bar"),
                                 new SimpleProducerRecord<>("foo", "baz")
@@ -304,8 +302,8 @@ class ProducedXTest {
                 runAsync(runner);
                 KafkaTest.awaitProcessing(executableApp);
                 this.softly.assertThat(testClient.read()
-                                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                                .withKeyDeserializer(new StringDeserializer())
+                                .withValueDeserializer(new StringDeserializer())
                                 .from("output", POLL_TIMEOUT))
                         .hasSize(2)
                         .anySatisfy(outputRecord -> {

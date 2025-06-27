@@ -38,7 +38,6 @@ import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -72,9 +71,9 @@ class RunProducerAppTest extends KafkaTest {
             final KafkaTestClient testClient = runner.newTestClient();
             testClient.createTopic(output);
             runner.run(app);
-            assertThat(testClient.<String, TestRecord>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
+            assertThat(testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new SpecificAvroDeserializer<TestRecord>())
                     .from(output, POLL_TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {

@@ -33,9 +33,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.List;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.api.SoftAssertions;
@@ -63,17 +61,17 @@ class TestApplicationRunnerTest extends KafkaTest {
         testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = createApp()) {
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records)
                     .hasSize(1)
@@ -93,17 +91,17 @@ class TestApplicationRunnerTest extends KafkaTest {
         testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records)
                     .hasSize(1)
@@ -134,17 +132,17 @@ class TestApplicationRunnerTest extends KafkaTest {
                     .setContent("content")
                     .build();
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", value)
                     ));
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, TestRecord>> records = testClient.<String, TestRecord>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
+            final List<ConsumerRecord<String, TestRecord>> records = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new SpecificAvroDeserializer<TestRecord>())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records)
                     .hasSize(1)
@@ -164,17 +162,17 @@ class TestApplicationRunnerTest extends KafkaTest {
         testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = createApp()) {
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records)
                     .hasSize(1)
@@ -198,17 +196,17 @@ class TestApplicationRunnerTest extends KafkaTest {
         testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records)
                     .hasSize(1)
@@ -235,17 +233,17 @@ class TestApplicationRunnerTest extends KafkaTest {
         testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = createApp()) {
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records1 = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records1 = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records1)
                     .hasSize(1)
@@ -258,9 +256,9 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.reset(app);
             runner.run(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records2 = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records2 = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records2)
                     .hasSize(2)
@@ -280,17 +278,17 @@ class TestApplicationRunnerTest extends KafkaTest {
         testClient.createTopic(INPUT_TOPIC);
         try (final KafkaStreamsApplication<SimpleStreamsApp> app = newApp()) {
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(INPUT_TOPIC, List.of(
                             new SimpleProducerRecord<>("foo", "bar")
                     ));
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records1 = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records1 = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records1)
                     .hasSize(1)
@@ -309,9 +307,9 @@ class TestApplicationRunnerTest extends KafkaTest {
             runner.run(app, "--input-topics", INPUT_TOPIC, "--output-topic", OUTPUT_TOPIC);
             final ConsumerGroupVerifier verifier = runner.verify(app);
             awaitProcessing(verifier);
-            final List<ConsumerRecord<String, String>> records2 = testClient.<String, String>read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+            final List<ConsumerRecord<String, String>> records2 = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(OUTPUT_TOPIC, POLL_TIMEOUT);
             this.softly.assertThat(records2)
                     .hasSize(2)
