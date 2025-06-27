@@ -68,8 +68,8 @@ public class KafkaTestClient {
      * {@link AutoOffsetResetStrategy#EARLIEST}
      * @return configured {@code ReaderBuilder}
      */
-    public ReaderBuilder read() {
-        return new ReaderBuilder(this.configuration.createKafkaProperties())
+    public <K, V> ReaderBuilder<K, V> read() {
+        return ReaderBuilder.<K, V>create(this.configuration.createKafkaProperties())
                 .with(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.type().toString());
     }
 
