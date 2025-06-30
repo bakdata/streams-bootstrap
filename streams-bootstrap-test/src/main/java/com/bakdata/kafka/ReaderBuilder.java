@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -45,8 +46,8 @@ import org.apache.kafka.common.serialization.Deserializer;
  * @param <K> type of keys deserialized by the reader
  * @param <V> type of values deserialized by the reader
  */
-@RequiredArgsConstructor
-public class ReaderBuilder<K, V> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReaderBuilder<K, V> {
 
     private final @NonNull Map<String, Object> properties;
     private final @NonNull Preconfigured<Deserializer<K>> keyDeserializer;
