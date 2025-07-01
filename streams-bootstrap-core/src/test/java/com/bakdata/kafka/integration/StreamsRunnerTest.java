@@ -50,8 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -125,12 +123,12 @@ class StreamsRunnerTest extends KafkaTest {
             testClient.createTopic(outputTopic);
             runAsync(runner);
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
             this.softly.assertThat(testClient.read()
-                            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .withKeyDeserializer(new StringDeserializer())
+                            .withValueDeserializer(new StringDeserializer())
                             .from(outputTopic, POLL_TIMEOUT))
                     .hasSize(1);
         }
@@ -151,16 +149,16 @@ class StreamsRunnerTest extends KafkaTest {
             testClient.createTopic(outputTopic);
             runAsync(runner);
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(inputTopic1, List.of(new SimpleProducerRecord<>("foo", "bar")));
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(inputTopic2, List.of(new SimpleProducerRecord<>("foo", "baz")));
             this.softly.assertThat(testClient.read()
-                            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .withKeyDeserializer(new StringDeserializer())
+                            .withValueDeserializer(new StringDeserializer())
                             .from(outputTopic, POLL_TIMEOUT))
                     .hasSize(2);
         }
@@ -199,8 +197,8 @@ class StreamsRunnerTest extends KafkaTest {
             testClient.createTopic(outputTopic);
             final CompletableFuture<Void> future = runAsync(runner);
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
             this.softly.assertThatThrownBy(() -> future.get(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS))
                     .cause()

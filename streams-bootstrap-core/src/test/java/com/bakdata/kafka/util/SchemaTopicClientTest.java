@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -69,8 +68,8 @@ class SchemaTopicClientTest extends KafkaTest {
                     .isTrue();
 
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
@@ -101,8 +100,8 @@ class SchemaTopicClientTest extends KafkaTest {
                     .isTrue();
 
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
@@ -134,8 +133,8 @@ class SchemaTopicClientTest extends KafkaTest {
                     .isTrue();
 
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(TOPIC, List.of(
                             new SimpleProducerRecord<>(null, TestRecord.newBuilder().setContent("foo").build())
                     ));
