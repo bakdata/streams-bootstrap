@@ -40,5 +40,5 @@ awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" 
 release = { id = "com.bakdata.release", version = "1.9.1" }
 sonar = { id = "com.bakdata.sonar", version = "1.9.1" }
 sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
-lombok = { id = "io.freefair.lombok", version = "8.13.1" }
+lombok = { id = "io.freefair.lombok", version = "8.14" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
