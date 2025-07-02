@@ -30,7 +30,7 @@ import org.apache.kafka.common.serialization.Serdes.DoubleSerde;
 abstract class DoubleApp implements StreamsApp {
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
         return "my-app";
     }
 
@@ -40,7 +40,8 @@ abstract class DoubleApp implements StreamsApp {
     }
 
     TestTopology<Double, Double> startApp(final StreamsTopicConfig topicConfig) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this, topicConfig);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(this, new StreamsAppConfiguration(topicConfig));
         return TestHelper.startApp(configuredApp);
     }
 

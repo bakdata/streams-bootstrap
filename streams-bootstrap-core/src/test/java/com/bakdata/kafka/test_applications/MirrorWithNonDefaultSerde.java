@@ -30,8 +30,8 @@ import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.ProducedX;
 import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
+import com.bakdata.kafka.StreamsAppConfiguration;
 import com.bakdata.kafka.StreamsBuilderX;
-import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TestRecord;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.NoArgsConstructor;
@@ -59,8 +59,8 @@ public class MirrorWithNonDefaultSerde implements StreamsApp {
     }
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+        return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
     }
 
     @Override

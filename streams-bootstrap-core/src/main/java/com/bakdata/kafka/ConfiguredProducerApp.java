@@ -39,10 +39,10 @@ import org.apache.kafka.common.record.CompressionType;
  * @param <T> type of {@link ProducerApp}
  */
 @RequiredArgsConstructor
-@Getter
 public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredApp<ExecutableProducerApp<T>> {
+    @Getter
     private final @NonNull T app;
-    private final @NonNull ProducerTopicConfig topics;
+    private final @NonNull ProducerAppConfiguration configuration;
 
     private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -99,7 +99,11 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     @Override
     public ExecutableProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
-        return new ExecutableProducerApp<>(this.topics, kafkaProperties, this.app);
+        return new ExecutableProducerApp<>(this.getTopics(), kafkaProperties, this.app);
+    }
+
+    public ProducerTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
     @Override

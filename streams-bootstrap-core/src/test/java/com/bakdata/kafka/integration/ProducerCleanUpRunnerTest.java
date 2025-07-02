@@ -36,6 +36,7 @@ import com.bakdata.kafka.ExecutableProducerApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
+import com.bakdata.kafka.ProducerAppConfiguration;
 import com.bakdata.kafka.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.ProducerTopicConfig;
 import com.bakdata.kafka.Runner;
@@ -74,21 +75,21 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        return new ConfiguredProducerApp<>(new StringProducer(), topics);
+        return new ConfiguredProducerApp<>(new StringProducer(), new ProducerAppConfiguration(topics));
     }
 
     private static ConfiguredProducerApp<ProducerApp> createAvroKeyApplication() {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        return new ConfiguredProducerApp<>(new AvroKeyProducer(), topics);
+        return new ConfiguredProducerApp<>(new AvroKeyProducer(), new ProducerAppConfiguration(topics));
     }
 
     private static ConfiguredProducerApp<ProducerApp> createAvroValueApplication() {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        return new ConfiguredProducerApp<>(new AvroValueProducer(), topics);
+        return new ConfiguredProducerApp<>(new AvroValueProducer(), new ProducerAppConfiguration(topics));
     }
 
     private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
@@ -173,9 +174,9 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(ProducerCleanUpRunnerTest.this.topicHook);
             }
-        }, ProducerTopicConfig.builder()
+        }, new ProducerAppConfiguration(ProducerTopicConfig.builder()
                 .outputTopic("output")
-                .build());
+                .build()));
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {

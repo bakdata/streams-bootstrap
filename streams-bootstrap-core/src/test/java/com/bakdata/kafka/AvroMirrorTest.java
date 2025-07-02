@@ -41,7 +41,7 @@ class AvroMirrorTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(), topics);
+        return new ConfiguredStreamsApp<>(new MirrorWithNonDefaultSerde(), new StreamsAppConfiguration(topics));
     }
 
     @Test

@@ -69,7 +69,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @Command(description = "Run a Kafka Streams application.")
 public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
         KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions,
-                ExecutableStreamsApp<T>, ConfiguredStreamsApp<T>, StreamsTopicConfig, T> {
+                ExecutableStreamsApp<T>, ConfiguredStreamsApp<T>, StreamsTopicConfig, T, StreamsAppConfiguration> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -140,13 +140,13 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     }
 
     @Override
-    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app, final StreamsTopicConfig topics) {
-        final ConfiguredStreamsApp<T> configuredApp = new ConfiguredStreamsApp<>(app, topics);
-        if (this.applicationId != null && !configuredApp.getUniqueAppId().equals(this.applicationId)) {
-            throw new IllegalArgumentException(
-                    "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
-        }
-        return configuredApp;
+    public final ConfiguredStreamsApp<T> createConfiguredApp(final T app, final StreamsAppConfiguration configuration) {
+        return new ConfiguredStreamsApp<>(app, configuration);
+    }
+
+    @Override
+    public StreamsAppConfiguration createAppConfiguration(final StreamsTopicConfig topics) {
+        return new StreamsAppConfiguration(topics, this.applicationId);
     }
 
     /**

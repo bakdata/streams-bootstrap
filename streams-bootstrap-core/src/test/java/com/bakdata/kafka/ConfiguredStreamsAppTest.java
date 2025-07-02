@@ -53,7 +53,7 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), emptyTopicConfig());
+                )), new StreamsAppConfiguration(emptyTopicConfig()));
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         "foo", "baz",
@@ -72,7 +72,7 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), emptyTopicConfig());
+                )), new StreamsAppConfiguration(emptyTopicConfig()));
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -82,7 +82,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldSetDefaultSerde() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(emptyTopicConfig()));
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
                 .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, LongSerde.class);
@@ -91,7 +91,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfKeySerdeHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(emptyTopicConfig()));
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         DEFAULT_KEY_SERDE_CLASS_CONFIG, ByteArraySerde.class
@@ -104,7 +104,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfValueSerdeHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(emptyTopicConfig()));
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         DEFAULT_VALUE_SERDE_CLASS_CONFIG, ByteArraySerde.class
@@ -117,7 +117,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfAppIdHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(emptyTopicConfig()));
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         StreamsConfig.APPLICATION_ID_CONFIG, "my-app"
@@ -132,7 +132,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
-                )), emptyTopicConfig());
+                )), new StreamsAppConfiguration(emptyTopicConfig()));
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -144,7 +144,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-                )), emptyTopicConfig());
+                )), new StreamsAppConfiguration(emptyTopicConfig()));
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .withSchemaRegistryUrl("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
@@ -167,7 +167,7 @@ class ConfiguredStreamsAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final StreamsTopicConfig topics) {
+        public String getUniqueAppId(final StreamsAppConfiguration configuration) {
             return "foo";
         }
 
