@@ -30,7 +30,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.nio.file.Path;
@@ -571,9 +571,9 @@ class StreamJoinedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
                         });
-                try (final ImprovedAdminClient admin = testClient.admin();
+                try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
-                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     this.softly.assertThat(topicClient.listTopics())
                             .noneSatisfy(topic -> this.softly.assertThat(topic)
                                     .startsWith(appId)
@@ -629,9 +629,9 @@ class StreamJoinedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
                         });
-                try (final ImprovedAdminClient admin = testClient.admin();
+                try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
-                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     this.softly.assertThat(topicClient.listTopics())
                             .filteredOn(topic -> topic.startsWith(appId) && topic.endsWith("-store-changelog"))
                             .allSatisfy(topic -> {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -79,20 +79,20 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
      */
     @Override
     public void clean() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.clean();
         }
     }
 
-    private ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    private AdminClientX createAdminClient() {
+        return AdminClientX.create(this.kafkaProperties);
     }
 
     @RequiredArgsConstructor
     private class Task {
 
-        private final @NonNull ImprovedAdminClient adminClient;
+        private final @NonNull AdminClientX adminClient;
 
         private void clean() {
             this.deleteTopics();

@@ -26,7 +26,7 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopicSettings;
 import com.bakdata.kafka.util.TopicSettings.TopicSettingsBuilder;
@@ -74,11 +74,11 @@ public class KafkaTestClient {
     }
 
     /**
-     * Create a new {@code ImprovedAdminClient} for the cluster
+     * Create a new {@link AdminClientX} for the cluster
      * @return configured admin client
      */
-    public ImprovedAdminClient admin() {
-        return ImprovedAdminClient.create(this.configuration.createKafkaProperties());
+    public AdminClientX admin() {
+        return AdminClientX.create(this.configuration.createKafkaProperties());
     }
 
     /**
@@ -89,7 +89,7 @@ public class KafkaTestClient {
      * @param config topic configuration
      */
     public void createTopic(final String topicName, final TopicSettings settings, final Map<String, String> config) {
-        try (final ImprovedAdminClient admin = this.admin();
+        try (final AdminClientX admin = this.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
             topicClient.createTopic(topicName, settings, config);
         }
@@ -124,7 +124,7 @@ public class KafkaTestClient {
      * @return whether a Kafka topic with the specified name exists or not
      */
     public boolean existsTopic(final String topicName) {
-        try (final ImprovedAdminClient admin = this.admin();
+        try (final AdminClientX admin = this.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
             return topicClient.exists(topicName);
         }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ import org.apache.kafka.streams.Topology;
 @Slf4j
 public final class StreamsRunner implements Runner {
 
-    private final @NonNull ImprovedStreamsConfig config;
+    private final @NonNull StreamsConfigX config;
     private final @NonNull Topology topology;
     private final @NonNull KafkaStreams streams;
     private final @NonNull CapturingStreamsUncaughtExceptionHandler exceptionHandler;
@@ -63,7 +63,7 @@ public final class StreamsRunner implements Runner {
      */
     public StreamsRunner(final @NonNull Topology topology, final @NonNull StreamsConfig config,
             final @NonNull StreamsExecutionOptions options) {
-        this.config = new ImprovedStreamsConfig(config);
+        this.config = new StreamsConfigX(config);
         this.topology = topology;
         this.streams = new KafkaStreams(topology, config);
         this.exceptionHandler = new CapturingStreamsUncaughtExceptionHandler(options.createUncaughtExceptionHandler());

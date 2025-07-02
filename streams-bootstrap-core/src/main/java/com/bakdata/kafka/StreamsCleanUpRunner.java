@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,7 +56,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     private static final int EXIT_CODE_SUCCESS = 0;
     private final TopologyInformation topologyInformation;
     private final Topology topology;
-    private final @NonNull ImprovedStreamsConfig config;
+    private final @NonNull StreamsConfigX config;
     private final @NonNull StreamsCleanUpConfiguration cleanHooks;
 
     /**
@@ -81,7 +81,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      */
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
-        final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
+        final StreamsConfigX config = new StreamsConfigX(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
@@ -95,7 +95,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      * @param streamsAppConfig configuration properties of the streams app
      */
     public static void runResetter(final Collection<String> inputTopics,
-            final Collection<String> allTopics, final ImprovedStreamsConfig streamsAppConfig) {
+            final Collection<String> allTopics, final StreamsConfigX streamsAppConfig) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final String appId = streamsAppConfig.getAppId();
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
@@ -166,7 +166,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      */
     @Override
     public void clean() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.cleanAndReset();
         }
@@ -177,7 +177,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      * local state.
      */
     public void reset() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.reset();
         }
@@ -187,14 +187,14 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         return this.config.getKafkaProperties();
     }
 
-    private ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.getKafkaProperties());
+    private AdminClientX createAdminClient() {
+        return AdminClientX.create(this.getKafkaProperties());
     }
 
     @RequiredArgsConstructor
     private class Task {
 
-        private final @NonNull ImprovedAdminClient adminClient;
+        private final @NonNull AdminClientX adminClient;
 
         private void reset() {
             final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
