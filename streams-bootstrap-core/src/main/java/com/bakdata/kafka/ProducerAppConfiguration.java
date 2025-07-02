@@ -28,6 +28,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Configuration of a {@link ProducerApp}
+ */
 @RequiredArgsConstructor
 public class ProducerAppConfiguration {
 

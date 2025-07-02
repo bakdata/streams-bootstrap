@@ -106,9 +106,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Get unique application identifier of {@code StreamsApp}
+     * Get unique application identifier of {@link StreamsApp}
      * @return unique application identifier
      * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
+     * provided application identifier in {@link StreamsAppConfiguration}
      */
     public String getUniqueAppId() {
         final String uniqueAppId =

@@ -65,6 +65,7 @@ import picocli.CommandLine.ParseResult;
  * @param <CA> type of {@link ConfiguredApp} used by this app
  * @param <T> type of topic config used by this app
  * @param <A> type of app
+ * @param <AC> type of configuration used by this app
  */
 @ToString
 @Getter

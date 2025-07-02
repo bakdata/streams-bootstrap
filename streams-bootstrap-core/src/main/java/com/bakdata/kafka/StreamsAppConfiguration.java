@@ -29,6 +29,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Configuration of a {@link StreamsApp}
+ */
 @RequiredArgsConstructor
 public class StreamsAppConfiguration {
 
@@ -36,6 +39,11 @@ public class StreamsAppConfiguration {
     private final @NonNull StreamsTopicConfig topics;
     private final String uniqueAppId;
 
+    /**
+     * Create a new {@code StreamsAppConfiguration} with no provided {@link #uniqueAppId}
+     *
+     * @param topics topics to use for app
+     */
     public StreamsAppConfiguration(final StreamsTopicConfig topics) {
         this(topics, null);
     }
