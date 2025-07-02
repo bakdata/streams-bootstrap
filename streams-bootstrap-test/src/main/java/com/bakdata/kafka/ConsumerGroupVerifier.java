@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +47,7 @@ import org.apache.kafka.common.TopicPartition;
 public class ConsumerGroupVerifier {
 
     private final @NonNull String group;
-    private final @NonNull Supplier<ImprovedAdminClient> adminClientSupplier;
+    private final @NonNull Supplier<AdminClientX> adminClientSupplier;
 
     /**
      * Create a new verifier from an {@code ExecutableStreamsApp}
@@ -56,8 +56,8 @@ public class ConsumerGroupVerifier {
      */
     public static ConsumerGroupVerifier verify(final ExecutableStreamsApp<?> app) {
         final Map<String, Object> kafkaProperties = app.getKafkaProperties();
-        final ImprovedStreamsConfig streamsConfig = new ImprovedStreamsConfig(app.getConfig());
-        return new ConsumerGroupVerifier(streamsConfig.getAppId(), () -> ImprovedAdminClient.create(kafkaProperties));
+        final StreamsConfigX streamsConfig = new StreamsConfigX(app.getConfig());
+        return new ConsumerGroupVerifier(streamsConfig.getAppId(), () -> AdminClientX.create(kafkaProperties));
     }
 
     /**
@@ -82,7 +82,7 @@ public class ConsumerGroupVerifier {
      * @return current state of consumer group
      */
     public GroupState getState() {
-        try (final ImprovedAdminClient admin = this.adminClientSupplier.get();
+        try (final AdminClientX admin = this.adminClientSupplier.get();
                 final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient()) {
             final ConsumerGroupDescription description = consumerGroupClient.describe(this.group);
             final GroupState state = description.groupState();
@@ -104,7 +104,7 @@ public class ConsumerGroupVerifier {
      * @return lag of consumer group. If no partitions are assigned, an empty {@code Optional} is returned
      */
     public Optional<Long> computeLag() {
-        try (final ImprovedAdminClient admin = this.adminClientSupplier.get();
+        try (final AdminClientX admin = this.adminClientSupplier.get();
                 final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient();
                 final TopicClient topicClient = admin.getTopicClient()) {
             final Map<TopicPartition, OffsetAndMetadata> consumerOffsets =

@@ -43,7 +43,7 @@ import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.test_applications.AvroKeyProducer;
 import com.bakdata.kafka.test_applications.AvroValueProducer;
 import com.bakdata.kafka.test_applications.StringProducer;
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
@@ -113,7 +113,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = this.newTestClient().admin()) {
+            try (final AdminClientX admin = this.newTestClient().admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();

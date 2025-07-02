@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ import org.apache.kafka.streams.Topology;
 public class RunningStreams {
 
     @NonNull
-    ImprovedStreamsConfig config;
+    StreamsConfigX config;
     @NonNull
     Topology topology;
     @NonNull

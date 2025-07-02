@@ -30,7 +30,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopicSettings;
 import com.bakdata.kafka.util.TopologyInformation;
@@ -267,7 +267,7 @@ class RepartitionedXTest {
                 this.softly.assertThat(testClient.read()
                                 .withKeyDeserializer(new StringDeserializer())
                                 .withValueDeserializer(new StringDeserializer())
-                                .from(new ImprovedStreamsConfig(executableApp.getConfig()).getAppId()
+                                .from(new StreamsConfigX(executableApp.getConfig()).getAppId()
                                       + "-repartition-repartition", POLL_TIMEOUT))
                         .hasSize(2)
                         .anySatisfy(outputRecord -> {
@@ -338,7 +338,7 @@ class RepartitionedXTest {
                 this.softly.assertThat(testClient.read()
                                 .withKeyDeserializer(new StringDeserializer())
                                 .withValueDeserializer(new StringDeserializer())
-                                .from(new ImprovedStreamsConfig(executableApp.getConfig()).getAppId()
+                                .from(new StreamsConfigX(executableApp.getConfig()).getAppId()
                                       + "-repartition-repartition", POLL_TIMEOUT))
                         .hasSize(2)
                         .anySatisfy(outputRecord -> {
@@ -406,9 +406,9 @@ class RepartitionedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final ImprovedAdminClient admin = testClient.admin();
+                try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
-                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     final TopicSettings settings = topicClient.describe(appId + "-repartition-repartition");
                     this.softly.assertThat(settings.getPartitions()).isEqualTo(2);
                 }
@@ -454,9 +454,9 @@ class RepartitionedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final ImprovedAdminClient admin = testClient.admin();
+                try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
-                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     final TopicSettings settings = topicClient.describe(appId + "-repartition-repartition");
                     this.softly.assertThat(settings.getPartitions()).isEqualTo(2);
                 }

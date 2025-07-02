@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
  * Provide methods for common operations when performing administrative actions on a Kafka cluster
  */
 @Builder(access = AccessLevel.PRIVATE)
-public final class ImprovedAdminClient implements AutoCloseable {
+public final class AdminClientX implements AutoCloseable {
 
     private static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private final @NonNull Admin adminClient;
@@ -58,7 +58,7 @@ public final class ImprovedAdminClient implements AutoCloseable {
      * @param properties Kafka configuration
      * @return admin client
      */
-    public static ImprovedAdminClient create(@NonNull final Map<String, Object> properties) {
+    public static AdminClientX create(@NonNull final Map<String, Object> properties) {
         return create(properties, ADMIN_TIMEOUT);
     }
 
@@ -68,7 +68,7 @@ public final class ImprovedAdminClient implements AutoCloseable {
      * @param timeout timeout when performing admin operations
      * @return admin client
      */
-    public static ImprovedAdminClient create(@NonNull final Map<String, Object> properties,
+    public static AdminClientX create(@NonNull final Map<String, Object> properties,
             @NonNull final Duration timeout) {
         if (!properties.containsKey(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG)) {
             throw new IllegalArgumentException(
