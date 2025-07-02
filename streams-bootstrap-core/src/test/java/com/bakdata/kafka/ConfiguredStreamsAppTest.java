@@ -156,6 +156,68 @@ class ConfiguredStreamsAppTest {
                 .hasMessage("'schema.registry.url' should not be configured already");
     }
 
+    @Test
+    void shouldThrowIfAppIdIsInconsistent() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                return "foo";
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig(), "not_foo"));
+        assertThatThrownBy(configuredApp::getUniqueAppId)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Provided application ID does not match StreamsApp#getUniqueAppId()");
+    }
+
+    @Test
+    void shouldThrowIfAppIdIsNull() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                return null;
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig(), "foo"));
+        assertThatThrownBy(configuredApp::getUniqueAppId)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Application ID cannot be null");
+    }
+
+    @Test
+    void shouldReturnConfiguredAppId() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig(), "foo"));
+        assertThat(configuredApp.getUniqueAppId()).isEqualTo("foo");
+    }
+
     @RequiredArgsConstructor
     private static class TestApplication implements StreamsApp {
 

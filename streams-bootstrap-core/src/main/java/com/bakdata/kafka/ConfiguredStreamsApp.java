@@ -111,7 +111,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      */
     public String getUniqueAppId() {
-        final String uniqueAppId = Objects.requireNonNull(this.app.getUniqueAppId(this.configuration));
+        final String uniqueAppId =
+                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
         if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
             throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
         }
