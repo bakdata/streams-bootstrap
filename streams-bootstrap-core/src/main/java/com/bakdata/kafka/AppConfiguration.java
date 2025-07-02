@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -47,11 +47,11 @@ public class AppConfiguration<T> {
     Map<String, Object> kafkaProperties;
 
     /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * Create a new {@link AdminClientX} using {@link #kafkaProperties}
      *
-     * @return {@code ImprovedAdminClient}
+     * @return {@link AdminClientX}
      */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    public AdminClientX createAdminClient() {
+        return AdminClientX.create(this.kafkaProperties);
     }
 }

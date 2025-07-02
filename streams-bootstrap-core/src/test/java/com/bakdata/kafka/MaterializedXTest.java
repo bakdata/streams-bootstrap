@@ -31,7 +31,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.TopicClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.nio.file.Path;
@@ -392,9 +392,9 @@ class MaterializedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final ImprovedAdminClient admin = testClient.admin();
+                try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
-                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     this.softly.assertThat(topicClient.exists(appId + "-store-changelog")).isFalse();
                 }
             }
@@ -440,9 +440,9 @@ class MaterializedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final ImprovedAdminClient admin = testClient.admin();
+                try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
-                    final String appId = new ImprovedStreamsConfig(executableApp.getConfig()).getAppId();
+                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     final String topicName = appId + "-store-changelog";
                     this.softly.assertThat(topicClient.exists(topicName)).isTrue();
                     final Map<String, String> config = topicClient.getConfig(topicName);

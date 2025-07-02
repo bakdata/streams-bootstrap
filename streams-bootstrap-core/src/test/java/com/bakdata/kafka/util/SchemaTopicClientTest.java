@@ -60,7 +60,7 @@ class SchemaTopicClientTest extends KafkaTest {
     void shouldDeleteTopicAndSchemaWhenSchemaRegistryUrlIsSet()
             throws IOException, RestClientException {
         final KafkaTestClient testClient = this.newTestClient();
-        try (final ImprovedAdminClient admin = testClient.admin();
+        try (final AdminClientX admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
             topicClient.createTopic(TOPIC, defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -92,7 +92,7 @@ class SchemaTopicClientTest extends KafkaTest {
     @Test
     void shouldResetSchema() throws IOException, RestClientException {
         final KafkaTestClient testClient = this.newTestClient();
-        try (final ImprovedAdminClient admin = testClient.admin();
+        try (final AdminClientX admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
             topicClient.createTopic(TOPIC, defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))
@@ -125,7 +125,7 @@ class SchemaTopicClientTest extends KafkaTest {
     void shouldDeleteTopicAndKeepSchemaWhenSchemaRegistryUrlIsNotSet() throws RestClientException,
             IOException {
         final KafkaTestClient testClient = this.newTestClient();
-        try (final ImprovedAdminClient admin = testClient.admin();
+        try (final AdminClientX admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
             topicClient.createTopic(TOPIC, defaultTopicSettings().build());
             this.softly.assertThat(topicClient.exists(TOPIC))

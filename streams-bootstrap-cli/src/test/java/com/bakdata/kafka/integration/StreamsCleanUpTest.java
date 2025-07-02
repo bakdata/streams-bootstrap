@@ -33,7 +33,7 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.test_applications.WordCount;
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,7 +98,7 @@ class StreamsCleanUpTest extends KafkaTest {
             awaitClosed(app.createExecutableApp());
             this.clean(app);
 
-            try (final ImprovedAdminClient admin = testClient.admin()) {
+            try (final AdminClientX admin = testClient.admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();
@@ -134,7 +134,7 @@ class StreamsCleanUpTest extends KafkaTest {
             awaitClosed(app.createExecutableApp());
             this.reset(app);
 
-            try (final ImprovedAdminClient admin = testClient.admin()) {
+            try (final AdminClientX admin = testClient.admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
                         .as("Output topic exists")
                         .isTrue();
