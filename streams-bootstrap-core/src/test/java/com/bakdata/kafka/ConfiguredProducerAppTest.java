@@ -47,13 +47,17 @@ class ConfiguredProducerAppTest {
         return ProducerTopicConfig.builder().build();
     }
 
+    private static ProducerAppConfiguration newAppConfiguration() {
+        return new ProducerAppConfiguration(emptyTopicConfig());
+    }
+
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), new ProducerAppConfiguration(emptyTopicConfig()));
+                )), newAppConfiguration());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         "foo", "baz",
@@ -72,7 +76,7 @@ class ConfiguredProducerAppTest {
                 new ConfiguredProducerApp<>(new TestProducer(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), new ProducerAppConfiguration(emptyTopicConfig()));
+                )), newAppConfiguration());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -82,7 +86,7 @@ class ConfiguredProducerAppTest {
     @Test
     void shouldSetDefaultSerializer() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), new ProducerAppConfiguration(emptyTopicConfig()));
+                new ConfiguredProducerApp<>(new TestProducer(), newAppConfiguration());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
@@ -91,7 +95,7 @@ class ConfiguredProducerAppTest {
     @Test
     void shouldThrowIfKeySerializerHasBeenConfiguredDifferently() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), new ProducerAppConfiguration(emptyTopicConfig()));
+                new ConfiguredProducerApp<>(new TestProducer(), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
@@ -104,7 +108,7 @@ class ConfiguredProducerAppTest {
     @Test
     void shouldThrowIfValueSerializerHasBeenConfiguredDifferently() {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), new ProducerAppConfiguration(emptyTopicConfig()));
+                new ConfiguredProducerApp<>(new TestProducer(), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class
@@ -119,7 +123,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(Map.of(
                         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
-                )), new ProducerAppConfiguration(emptyTopicConfig()));
+                )), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -131,7 +135,7 @@ class ConfiguredProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(Map.of(
                         AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-                )), new ProducerAppConfiguration(emptyTopicConfig()));
+                )), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .withSchemaRegistryUrl("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))

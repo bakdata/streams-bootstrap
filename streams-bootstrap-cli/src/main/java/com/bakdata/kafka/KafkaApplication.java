@@ -220,11 +220,17 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public final CA createConfiguredApp() {
         final T topics = this.createTopicConfig();
         final A app = this.createApp();
-        final AC appConfiguration = this.createAppConfiguration(topics);
+        final AC appConfiguration = this.createConfiguration(topics);
         return this.createConfiguredApp(app, appConfiguration);
     }
 
-    public abstract AC createAppConfiguration(T topics);
+    /**
+     * Create configuration to configure app
+     *
+     * @param topics topic configuration
+     * @return configuration
+     */
+    public abstract AC createConfiguration(T topics);
 
     /**
      * Create a new {@code RunnableApp}
@@ -276,7 +282,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Create a new {@code ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
-     * @param configuration topic configuration
+     * @param configuration configuration for app
      * @return {@code ConfiguredApp}
      */
     protected abstract CA createConfiguredApp(final A app, AC configuration);

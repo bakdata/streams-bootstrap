@@ -145,7 +145,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     }
 
     @Override
-    public StreamsAppConfiguration createAppConfiguration(final StreamsTopicConfig topics) {
+    public StreamsAppConfiguration createConfiguration(final StreamsTopicConfig topics) {
         return new StreamsAppConfiguration(topics, this.applicationId);
     }
 

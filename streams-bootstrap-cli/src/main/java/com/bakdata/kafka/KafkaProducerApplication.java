@@ -80,7 +80,7 @@ public abstract class KafkaProducerApplication<T extends ProducerApp> extends
     }
 
     @Override
-    public ProducerAppConfiguration createAppConfiguration(final ProducerTopicConfig topics) {
+    public ProducerAppConfiguration createConfiguration(final ProducerTopicConfig topics) {
         return new ProducerAppConfiguration(topics);
     }
 }

@@ -36,7 +36,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 /**
- * A {@link StreamsApp} with a corresponding {@link StreamsTopicConfig}
+ * A {@link StreamsApp} with a corresponding {@link StreamsAppConfiguration}
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
@@ -111,12 +111,20 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      */
     public String getUniqueAppId() {
-        final String uniqueAppId = this.app.getUniqueAppId(this.configuration);
-        if (this.configuration.getUniqueAppId().isPresent() && !uniqueAppId.equals(
-                this.configuration.getUniqueAppId().get())) {
+        final String uniqueAppId = Objects.requireNonNull(this.app.getUniqueAppId(this.configuration));
+        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
             throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
         }
-        return Objects.requireNonNull(uniqueAppId);
+        return uniqueAppId;
+    }
+
+    /**
+     * Get topic configuration
+     *
+     * @return topic configuration
+     */
+    public StreamsTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
     /**
@@ -133,10 +141,6 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
                 .app(this.app)
                 .topics(this.getTopics())
                 .build();
-    }
-
-    public StreamsTopicConfig getTopics() {
-        return this.configuration.getTopics();
     }
 
     /**
