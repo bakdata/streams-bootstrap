@@ -55,8 +55,8 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
- * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
- * {@link #startApplication(String[])} with an instance of your class from your main.
+ * To implement your Kafka application inherit from this class and add your custom options. Run it by creating an
+ * instance of your class and calling {@link #startApplication(String[])} method from your main.
  *
  * @param <R> type of {@link Runner} used by this app
  * @param <CR> type of {@link CleanUpRunner} used by this app
@@ -95,8 +95,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> kafkaConfig = emptyMap();
 
     /**
-     * <p>This method needs to be called in the executable custom application class inheriting from
-     * {@code KafkaApplication}.</p>
+     * <p>This method should be called in the main method of your application</p>
      * <p>This method calls System exit</p>
      *
      * @param args Arguments passed in by the custom application class.
@@ -108,8 +107,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * <p>This method needs to be called in the executable custom application class inheriting from
-     * {@code KafkaApplication}.</p>
+     * <p>This method should be called in the main method of your application</p>
      *
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
