@@ -56,7 +56,7 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
  * To implement your Kafka application inherit from this class and add your custom options. Run it by creating an
- * instance of your class and calling {@link #startApplication(String[])} method from your main.
+ * instance of your class and calling {@link #startApplication(String[])} from your main.
  *
  * @param <R> type of {@link Runner} used by this app
  * @param <CR> type of {@link CleanUpRunner} used by this app

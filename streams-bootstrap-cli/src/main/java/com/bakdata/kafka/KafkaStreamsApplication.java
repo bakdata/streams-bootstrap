@@ -57,7 +57,7 @@ import picocli.CommandLine.UseDefaultConverter;
  *     <li>{@link #volatileGroupInstanceId}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options.  Run it by
- * creating an instance of your class and calling {@link #startApplication(String[])} method from your main.
+ * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
  *
  * @param <T> type of {@link StreamsApp} created by this application
  */
