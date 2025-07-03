@@ -48,13 +48,13 @@ import org.testcontainers.kafka.KafkaContainer;
 class CliTest {
 
     private static CompletableFuture<Void> runApp(final KafkaStreamsApplication<?> app, final String... args) {
-        return runAsync(() -> KafkaApplication.startApplication(app, args));
+        return runAsync(() -> app.startApplication(args));
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
     void shouldExitWithSuccessCode() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
+        new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -79,7 +79,7 @@ class CliTest {
             public void run() {
                 // do nothing
             }
-        }, new String[]{
+        }.startApplication(new String[]{
                 "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -89,7 +89,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnRunError() {
-        KafkaApplication.startApplication(new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
+        new SimpleKafkaStreamsApplication<>(() -> new StreamsApp() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
                 throw new UnsupportedOperationException();
@@ -104,7 +104,7 @@ class CliTest {
             public SerdeConfig defaultSerializationConfig() {
                 throw new UnsupportedOperationException();
             }
-        }), new String[]{
+        }).startApplication(new String[]{
                 "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -114,7 +114,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnCleanupError() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
+        new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -139,7 +139,7 @@ class CliTest {
             public void clean() {
                 throw new RuntimeException();
             }
-        }, new String[]{
+        }.startApplication(new String[]{
                 "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -150,7 +150,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(2)
     void shouldExitWithErrorCodeOnMissingBootstrapServersParameter() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
+        new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -175,7 +175,7 @@ class CliTest {
             public void run() {
                 // do nothing
             }
-        }, new String[]{
+        }.startApplication(new String[]{
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -184,7 +184,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorCodeOnInconsistentAppId() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
+        new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -204,7 +204,7 @@ class CliTest {
                     }
                 };
             }
-        }, new String[]{
+        }.startApplication(new String[]{
                 "--bootstrap-servers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
@@ -305,7 +305,7 @@ class CliTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     void shouldExitWithErrorOnCleanupError() {
-        KafkaApplication.startApplication(new KafkaStreamsApplication<>() {
+        new KafkaStreamsApplication<>() {
             @Override
             public StreamsApp createApp() {
                 return new StreamsApp() {
@@ -325,7 +325,7 @@ class CliTest {
                     }
                 };
             }
-        }, new String[]{
+        }.startApplication(new String[]{
                 "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
@@ -361,7 +361,7 @@ class CliTest {
                 // do nothing
             }
         }) {
-            KafkaApplication.startApplicationWithoutExit(app, new String[]{
+            app.startApplicationWithoutExit(new String[]{
                     "--bootstrap-server", "bootstrap-servers",
                     "--schema-registry-url", "schema-registry",
                     "--input-topics", "input1,input2",
