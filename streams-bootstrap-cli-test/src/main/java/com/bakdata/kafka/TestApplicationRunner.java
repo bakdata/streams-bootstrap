@@ -137,7 +137,7 @@ public final class TestApplicationRunner {
      */
     public CompletableFuture<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
-        return CompletableFuture.supplyAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+        return CompletableFuture.supplyAsync(() -> app.startApplicationWithoutExit(newArgs));
     }
 
     /**
@@ -150,7 +150,7 @@ public final class TestApplicationRunner {
      */
     public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("clean"));
-        return KafkaApplication.startApplicationWithoutExit(app, newArgs);
+        return app.startApplicationWithoutExit(newArgs);
     }
 
     /**
@@ -163,7 +163,7 @@ public final class TestApplicationRunner {
      */
     public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("reset"));
-        return KafkaApplication.startApplicationWithoutExit(app, newArgs);
+        return app.startApplicationWithoutExit(newArgs);
     }
 
     /**

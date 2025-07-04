@@ -26,8 +26,8 @@ package com.bakdata.kafka;
 
 import static com.bakdata.kafka.StreamsResetterWrapper.runResetter;
 
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +56,7 @@ import org.apache.kafka.tools.StreamsResetter;
 public final class StreamsCleanUpRunner implements CleanUpRunner {
     private final TopologyInformation topologyInformation;
     private final Topology topology;
-    private final @NonNull ImprovedStreamsConfig config;
+    private final @NonNull StreamsConfigX config;
     private final @NonNull StreamsCleanUpConfiguration cleanHooks;
 
     /**
@@ -82,7 +81,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      */
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
-        final ImprovedStreamsConfig config = new ImprovedStreamsConfig(streamsConfig);
+        final StreamsConfigX config = new StreamsConfigX(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
@@ -99,7 +98,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      */
     @Override
     public void clean() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.cleanAndReset();
         }
@@ -110,7 +109,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      * local state.
      */
     public void reset() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.reset();
         }
@@ -120,25 +119,28 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         return this.config.getKafkaProperties();
     }
 
-    private ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.getKafkaProperties());
+    private AdminClientX createAdminClient() {
+        return AdminClientX.create(this.getKafkaProperties());
     }
 
     @RequiredArgsConstructor
     private class Task {
 
-        private final @NonNull ImprovedAdminClient adminClient;
+        private final @NonNull AdminClientX adminClient;
 
         private void reset() {
             final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            this.reset(allTopics);
+        }
+
+        private void reset(final Collection<String> allTopics) {
             final List<String> inputTopics =
                     StreamsCleanUpRunner.this.topologyInformation.getInputTopics(allTopics);
-            final List<String> intermediateTopics =
-                    StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
-            runResetter(inputTopics, intermediateTopics, allTopics, StreamsCleanUpRunner.this.config);
+            runResetter(inputTopics, allTopics, StreamsCleanUpRunner.this.config);
             // the StreamsResetter is responsible for deleting internal topics
             StreamsCleanUpRunner.this.topologyInformation.getInternalTopics()
                     .forEach(this::resetInternalTopic);
+            this.deleteIntermediateTopics(allTopics);
             try (final KafkaStreams kafkaStreams = this.createStreams()) {
                 kafkaStreams.cleanUp();
             }
@@ -151,22 +153,26 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void cleanAndReset() {
-            this.reset();
-            this.clean();
+            final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            this.reset(allTopics);
+            this.clean(allTopics);
         }
 
-        private void clean() {
-            this.deleteTopics();
+        private void clean(final Collection<String> allTopics) {
+            this.deleteOutputTopics(allTopics);
             this.deleteConsumerGroup();
             StreamsCleanUpRunner.this.cleanHooks.runCleanHooks();
         }
 
-        /**
-         * Delete output topics
-         */
-        private void deleteTopics() {
-            final List<String> externalTopics = StreamsCleanUpRunner.this.topologyInformation.getExternalSinkTopics();
-            externalTopics.forEach(this::deleteTopic);
+        private void deleteIntermediateTopics(final Collection<String> allTopics) {
+            final List<String> intermediateTopics =
+                    StreamsCleanUpRunner.this.topologyInformation.getIntermediateTopics(allTopics);
+            intermediateTopics.forEach(this::deleteTopic);
+        }
+
+        private void deleteOutputTopics(final Collection<String> allTopics) {
+            final List<String> outputTopics = StreamsCleanUpRunner.this.topologyInformation.getOutputTopics(allTopics);
+            outputTopics.forEach(this::deleteTopic);
         }
 
         private void resetInternalTopic(final String topic) {

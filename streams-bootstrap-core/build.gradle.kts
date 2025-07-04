@@ -6,10 +6,9 @@ plugins {
 }
 
 dependencies {
+    api(platform(libs.kafka.bom)) // Central repository requires this as a direct dependency to resolve versions
     api(libs.kafka.streams.utils)
-    implementation(libs.kafka.tools) {
-        exclude(group = "org.slf4j", module = "slf4j-reload4j")
-    }
+    implementation(libs.kafka.tools)
 
     api(libs.kafka.streams)
     api(libs.kafka.clients)

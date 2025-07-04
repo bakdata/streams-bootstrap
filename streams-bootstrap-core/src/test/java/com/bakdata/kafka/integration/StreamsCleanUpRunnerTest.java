@@ -51,21 +51,18 @@ import com.bakdata.kafka.test_applications.MirrorKeyWithAvro;
 import com.bakdata.kafka.test_applications.MirrorValueWithAvro;
 import com.bakdata.kafka.test_applications.WordCount;
 import com.bakdata.kafka.test_applications.WordCountPattern;
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -156,8 +153,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -177,7 +174,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             awaitClosed(executableApp);
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = testClient.admin();
+            try (final AdminClientX admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
                 this.softly.assertThat(topicClient.exists(app.getTopics().getOutputTopic()))
                         .as("Output topic is deleted")
@@ -194,8 +191,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -212,7 +209,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
@@ -222,7 +219,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             awaitClosed(executableApp);
             clean(executableApp);
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group is deleted")
@@ -239,8 +236,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -257,7 +254,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
@@ -266,7 +263,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
             awaitClosed(executableApp);
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 consumerGroupClient.deleteConsumerGroup(app.getUniqueAppId());
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
@@ -287,8 +284,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -301,29 +298,26 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                     uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition";
             final String backingTopic =
                     uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
-            final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
-            try (final ImprovedAdminClient admin = testClient.admin();
+            try (final AdminClientX admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
                     this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
                 }
                 this.softly.assertThat(topicClient.exists(internalTopic)).isTrue();
                 this.softly.assertThat(topicClient.exists(backingTopic)).isTrue();
-                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
 
             awaitClosed(executableApp);
             reset(executableApp);
 
-            try (final ImprovedAdminClient admin = testClient.admin();
+            try (final AdminClientX admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
                     this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
                 }
                 this.softly.assertThat(topicClient.exists(internalTopic)).isFalse();
                 this.softly.assertThat(topicClient.exists(backingTopic)).isFalse();
-                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
             }
         }
     }
@@ -338,8 +332,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -349,7 +343,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final List<String> inputTopics = app.getTopics().getInputTopics();
             final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
-            try (final ImprovedAdminClient admin = testClient.admin();
+            try (final AdminClientX admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
                     this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
@@ -358,9 +352,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             }
 
             awaitClosed(executableApp);
-            clean(executableApp);
+            reset(executableApp);
 
-            try (final ImprovedAdminClient admin = testClient.admin();
+            try (final AdminClientX admin = testClient.admin();
                     final TopicClient topicClient = admin.getTopicClient()) {
                 for (final String inputTopic : inputTopics) {
                     this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
@@ -378,8 +372,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "blub"),
                             new SimpleProducerRecord<>(null, "bla"),
@@ -402,7 +396,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             run(executableApp);
             final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
-                    .collect(Collectors.toList());
+                    .toList();
             this.assertContent(app.getTopics().getOutputTopic(), entriesTwice,
                     "All entries are twice in the input topic after the 2nd run");
         }
@@ -416,8 +410,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, "a"),
                             new SimpleProducerRecord<>(null, "b"),
@@ -450,9 +444,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, testRecord)
                     ));
@@ -483,8 +476,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new SpecificAvroSerializer<>())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(testRecord, "val")
                     ));
@@ -515,8 +508,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -531,14 +524,13 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                     uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition" + "-value";
             final String backingSubject =
                     uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog" + "-value";
-            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
             this.softly.assertThat(client.getAllSubjects())
-                    .contains(inputSubject, internalSubject, backingSubject, manualSubject);
+                    .contains(inputSubject, internalSubject, backingSubject);
             reset(executableApp);
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(internalSubject, backingSubject)
-                    .contains(inputSubject, manualSubject);
+                    .contains(inputSubject);
         }
     }
 
@@ -554,8 +546,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName())
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new SpecificAvroSerializer<>())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -568,7 +560,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
             this.softly.assertThat(client.getAllSubjects())
                     .contains(inputSubject, manualSubject);
-            clean(executableApp);
+            reset(executableApp);
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(manualSubject)
@@ -577,7 +569,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldCallCleanupHookForInternalTopics() {
+    void shouldCallCleanupHookForInternalAndIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
                         this.createConfig())) {
@@ -586,6 +578,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-changelog");
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog");
+            verify(this.topicHook).deleted(ComplexTopologyApplication.THROUGH_TOPIC);
             verify(this.topicHook).close();
             verifyNoMoreInteractions(this.topicHook);
         }
@@ -643,15 +636,15 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to("input_topic", List.of(
                             new SimpleProducerRecord<>(null, "a"),
                             new SimpleProducerRecord<>(null, "b")
                     ));
             testClient.send()
-                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
                     .to("another_topic", List.of(
                             new SimpleProducerRecord<>(null, "c")
                     ));
@@ -700,12 +693,12 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private List<KeyValue<String, Long>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, Long>> records = this.newTestClient().read()
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
+                .withKeyDeserializer(new StringDeserializer())
+                .withValueDeserializer(new LongDeserializer())
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void assertContent(final String outputTopic,

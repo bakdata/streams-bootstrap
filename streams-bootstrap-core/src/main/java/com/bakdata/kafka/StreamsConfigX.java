@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ import org.apache.kafka.streams.state.HostInfo;
  * Class for simplified access to configs provided by {@link StreamsConfig}
  */
 @Value
-public class ImprovedStreamsConfig {
+public class StreamsConfigX {
 
     @NonNull
     StreamsConfig streamsConfig;

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SoftAssertionsExtension.class)
-class ImprovedStreamsConfigTest {
+class StreamsConfigXTest {
 
     @InjectSoftAssertions
     private SoftAssertions softly;
@@ -48,7 +48,7 @@ class ImprovedStreamsConfigTest {
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092"
                 )
         );
-        this.softly.assertThat(new ImprovedStreamsConfig(config).getAppId())
+        this.softly.assertThat(new StreamsConfigX(config).getAppId())
                 .isEqualTo("test-app");
     }
 
@@ -60,7 +60,7 @@ class ImprovedStreamsConfigTest {
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, List.of("broker1:9092", "broker2:9092", "broker3:9092")
                 )
         );
-        this.softly.assertThat(new ImprovedStreamsConfig(config).getBoostrapServers())
+        this.softly.assertThat(new StreamsConfigX(config).getBoostrapServers())
                 .isEqualTo(List.of("broker1:9092", "broker2:9092", "broker3:9092"));
     }
 
@@ -72,7 +72,7 @@ class ImprovedStreamsConfigTest {
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092,broker2:9092,broker3:9092"
                 )
         );
-        this.softly.assertThat(new ImprovedStreamsConfig(config).getBoostrapServers())
+        this.softly.assertThat(new StreamsConfigX(config).getBoostrapServers())
                 .isEqualTo(List.of("broker1:9092", "broker2:9092", "broker3:9092"));
     }
 
@@ -84,7 +84,7 @@ class ImprovedStreamsConfigTest {
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092"
                 )
         );
-        this.softly.assertThat(new ImprovedStreamsConfig(config).getKafkaProperties())
+        this.softly.assertThat(new StreamsConfigX(config).getKafkaProperties())
                 .hasSize(2)
                 .anySatisfy((key, value) -> {
                     this.softly.assertThat(key).isEqualTo(StreamsConfig.APPLICATION_ID_CONFIG);
@@ -102,7 +102,7 @@ class ImprovedStreamsConfigTest {
                 Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092",
                         StreamsConfig.APPLICATION_SERVER_CONFIG, "localhost:9090"));
-        this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
+        this.softly.assertThat(new StreamsConfigX(config).getApplicationServer())
                 .hasValue(new HostInfo("localhost", 9090));
     }
 
@@ -111,7 +111,7 @@ class ImprovedStreamsConfigTest {
         final StreamsConfig config = new StreamsConfig(
                 Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
-        this.softly.assertThat(new ImprovedStreamsConfig(config).getApplicationServer())
+        this.softly.assertThat(new StreamsConfigX(config).getApplicationServer())
                 .isNotPresent();
     }
 

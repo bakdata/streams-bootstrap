@@ -95,8 +95,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToDeleteGroup(groupName, ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToDeleteGroup(groupName, ex);
         } catch (final TimeoutException ex) {
@@ -124,8 +124,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToDescribeGroup(groupName, ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToDescribeGroup(groupName, ex);
         } catch (final TimeoutException ex) {
@@ -152,8 +152,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToListOffsets(groupName, ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToListOffsets(groupName, ex);
         } catch (final TimeoutException ex) {
@@ -193,8 +193,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToListGroups(ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToListGroups(ex);
         } catch (final TimeoutException ex) {

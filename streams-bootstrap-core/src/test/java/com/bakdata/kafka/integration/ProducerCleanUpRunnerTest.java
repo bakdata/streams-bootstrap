@@ -42,13 +42,11 @@ import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.test_applications.AvroKeyProducer;
 import com.bakdata.kafka.test_applications.AvroValueProducer;
 import com.bakdata.kafka.test_applications.StringProducer;
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.util.AdminClientX;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
@@ -113,7 +111,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
             clean(executableApp);
 
-            try (final ImprovedAdminClient admin = this.newTestClient().admin()) {
+            try (final AdminClientX admin = this.newTestClient().admin()) {
                 this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
                         .as("Output topic is deleted")
                         .isFalse();
@@ -181,12 +179,12 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
-                .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .withKeyDeserializer(new StringDeserializer())
+                .withValueDeserializer(new StringDeserializer())
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }
