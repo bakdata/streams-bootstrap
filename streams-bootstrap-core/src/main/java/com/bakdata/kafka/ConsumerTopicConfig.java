@@ -87,4 +87,13 @@ public class ConsumerTopicConfig {
         }
         return pattern;
     }
+
+    public static ConsumerTopicConfig fromStreamsTopicConfig(final StreamsTopicConfig streamsTopicConfig) {
+        return builder()
+                .inputTopics(streamsTopicConfig.getInputTopics())
+                .labeledInputTopics(streamsTopicConfig.getLabeledInputTopics())
+                .inputPattern(streamsTopicConfig.getInputPattern())
+                .labeledInputPatterns(streamsTopicConfig.getLabeledInputPatterns())
+                .build();
+    }
 }

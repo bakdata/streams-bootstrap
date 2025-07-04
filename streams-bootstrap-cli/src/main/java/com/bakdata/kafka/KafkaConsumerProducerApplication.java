@@ -36,10 +36,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KafkaStreams.StateListener;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.UseDefaultConverter;
@@ -66,8 +62,8 @@ import picocli.CommandLine.UseDefaultConverter;
 @RequiredArgsConstructor
 @Slf4j
 @Command(description = "Run a Kafka Streams application.")
-public abstract class KafkaConsumerProducerApplication<T extends StreamsApp> extends
-        KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanupRunner, ConsumerProducerExecutionOptions,
+public abstract class KafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends
+        KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions,
                 ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, StreamsTopicConfig, T> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
@@ -81,6 +77,13 @@ public abstract class KafkaConsumerProducerApplication<T extends StreamsApp> ext
     @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
+    @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
+            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
+    private boolean volatileGroupInstanceId;
+    @CommandLine.Option(names = "--application-id",
+            description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
+                    + "StreamsApp#getUniqueAppId()")
+    private String applicationId;
 
     /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
@@ -109,11 +112,7 @@ public abstract class KafkaConsumerProducerApplication<T extends StreamsApp> ext
 
     @Override
     public final Optional<ConsumerProducerExecutionOptions> createExecutionOptions() {
-        final ConsumerProducerExecutionOptions options = ConsumerProducerExecutionOptions.builder()
-                .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
-                .stateListener(this::createStateListener)
-                .build();
-        return Optional.of(options);
+        return Optional.empty();
     }
 
     @Override
@@ -131,8 +130,12 @@ public abstract class KafkaConsumerProducerApplication<T extends StreamsApp> ext
 
     @Override
     public final ConfiguredConsumerProducerApp<T> createConfiguredApp(final T app,
-            final AppConfiguration<StreamsTopicConfig> configuration) {
-        final ConfiguredConsumerProducerApp<T> configuredApp = new ConfiguredConsumerProducerApp<>(app, configuration);
+            final StreamsTopicConfig topics) {
+        final ConfiguredConsumerProducerApp<T> configuredApp = new ConfiguredConsumerProducerApp<>(app, topics);
+        if (this.applicationId != null && !configuredApp.getUniqueAppId().equals(this.applicationId)) {
+            throw new IllegalArgumentException(
+                    "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
+        }
         return configuredApp;
     }
 
@@ -140,28 +143,8 @@ public abstract class KafkaConsumerProducerApplication<T extends StreamsApp> ext
      * Called before cleaning the application, i.e., invoking {@link #clean()} or {@link #reset()}
      */
     @Override
-    protected void prepareClean() {
+    public void prepareClean() {
         super.prepareClean();
-    }
-
-    /**
-     * Create a {@link StateListener} to use for Kafka Streams.
-     *
-     * @return {@code StateListener}. {@link NoOpStateListener} by default
-     * @see KafkaStreams#setStateListener(StateListener)
-     */
-    protected StateListener createStateListener() {
-        return new NoOpStateListener();
-    }
-
-    /**
-     * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
-     *
-     * @return {@code StreamsUncaughtExceptionHandler}. {@link DefaultStreamsUncaughtExceptionHandler} by default
-     * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
-     */
-    protected StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {
-        return new DefaultStreamsUncaughtExceptionHandler();
     }
 
 }

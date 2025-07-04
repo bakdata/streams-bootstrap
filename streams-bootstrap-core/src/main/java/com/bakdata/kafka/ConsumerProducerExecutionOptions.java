@@ -24,48 +24,22 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
+import java.time.Duration;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Value;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KafkaStreams.CloseOptions;
+import org.apache.kafka.streams.KafkaStreams.StateListener;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 
 /**
- * Provides topic configuration for a {@link ProducerApp}
+ * Options to run a Kafka Consumer Producer app
  */
 @Builder
-@Value
-@EqualsAndHashCode
-public class ProducerTopicConfig {
-
-    String outputTopic;
-    /**
-     * Output topics that are identified by a label
-     */
-    @Builder.Default
-    @NonNull
-    Map<String, String> labeledOutputTopics = emptyMap();
-
-    /**
-     * Get output topic for a specified label
-     *
-     * @param label label of output topic
-     * @return topic name
-     */
-    public String getOutputTopic(final String label) {
-        final String topic = this.labeledOutputTopics.get(label);
-        if (topic == null) {
-            throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
-        }
-        return topic;
-    }
-
-    public static ProducerTopicConfig fromStreamsTopicConfig(final StreamsTopicConfig config) {
-        return builder()
-                .outputTopic(config.getOutputTopic())
-                .labeledOutputTopics(config.getLabeledOutputTopics())
-                .build();
-    }
+public class ConsumerProducerExecutionOptions {
 }

@@ -24,48 +24,34 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
 import java.util.Map;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.With;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
 
 /**
- * Provides topic configuration for a {@link ProducerApp}
+ * Defines how to serialize the data in a Kafka producer
  */
-@Builder
-@Value
-@EqualsAndHashCode
-public class ProducerTopicConfig {
+@RequiredArgsConstructor
+@With
+public class SerializerDeserializerConfig implements SerializationConfig {
 
-    String outputTopic;
-    /**
-     * Output topics that are identified by a label
-     */
-    @Builder.Default
-    @NonNull
-    Map<String, String> labeledOutputTopics = emptyMap();
+    private final @NonNull Class<? extends Serializer> keySerializer;
+    private final @NonNull Class<? extends Serializer> valueSerializer;
+    private final @NonNull Class<? extends Deserializer> keyDeserializer;
+    private final @NonNull Class<? extends Deserializer> valueDeserializer;
 
-    /**
-     * Get output topic for a specified label
-     *
-     * @param label label of output topic
-     * @return topic name
-     */
-    public String getOutputTopic(final String label) {
-        final String topic = this.labeledOutputTopics.get(label);
-        if (topic == null) {
-            throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
-        }
-        return topic;
-    }
-
-    public static ProducerTopicConfig fromStreamsTopicConfig(final StreamsTopicConfig config) {
-        return builder()
-                .outputTopic(config.getOutputTopic())
-                .labeledOutputTopics(config.getLabeledOutputTopics())
-                .build();
+    @Override
+    public Map<String, Object> createProperties() {
+        return Map.of(
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, this.keySerializer,
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, this.valueSerializer,
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.keyDeserializer,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, this.valueDeserializer
+        );
     }
 }

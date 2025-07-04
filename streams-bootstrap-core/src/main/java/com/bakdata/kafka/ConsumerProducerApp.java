@@ -24,6 +24,10 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyMap;
+
+import java.util.Map;
+
 /**
  * Application that defines how to produce messages to Kafka and necessary configurations
  */
@@ -37,15 +41,24 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
     ConsumerProducerRunnable buildRunnable(ConsumerProducerBuilder builder);
 
     /**
+     * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
+     * state encapsulation. Could be set to: className-outputTopic
+     *
+     * @param topics provides runtime topic configuration
+     * @return unique application identifier
+     */
+    String getUniqueAppId(StreamsTopicConfig topics);
+
+    /**
      * @return {@code StreamsCleanUpConfiguration}
      * @see StreamsCleanUpRunner
      */
     @Override
     default StreamsCleanUpConfiguration setupCleanUp(
-            final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
+            final AppConfiguration<StreamsTopicConfig> configuration) {
         return new StreamsCleanUpConfiguration();
     }
 
     @Override
-    SerializerConfig defaultSerializationConfig();
+    SerializerDeserializerConfig defaultSerializationConfig();
 }

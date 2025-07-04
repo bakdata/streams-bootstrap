@@ -103,7 +103,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build();
-        return new ConfiguredConsumerApp<>(new StringConsumer("input"), topics);
+        return new ConfiguredConsumerApp<>(new StringConsumer(), topics);
     }
 
     // TODO

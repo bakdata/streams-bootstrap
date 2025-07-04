@@ -24,19 +24,27 @@
 
 package com.bakdata.kafka.integration;
 
-import static com.bakdata.kafka.integration.ConsumerCleanUpRunnerTest.createStringApplication;
+import static com.bakdata.kafka.integration.ConsumerProducerCleanUpRunnerTest.createStringConsumerProducer;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.ConfiguredConsumerApp;
+import com.bakdata.kafka.ConfiguredConsumerProducerApp;
 import com.bakdata.kafka.ConsumerApp;
+import com.bakdata.kafka.ConsumerProducerApp;
+import com.bakdata.kafka.ConsumerProducerRunner;
 import com.bakdata.kafka.ConsumerRunner;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.test_applications.StringConsumer;
+import com.bakdata.kafka.test_applications.StringConsumerProducer;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
@@ -47,42 +55,34 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 @ExtendWith(SoftAssertionsExtension.class)
-class ConsumerRunnerTest extends KafkaTest {
+class ConsumerProducerRunnerTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
     @Test
     void shouldRunApp() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ConsumerRunner runner = app.withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())
+        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
+                final ConsumerProducerRunner runner = app.withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())
                         .createRunner()) {
+            final KafkaTestClient testClient = this.newTestClient();
+            final String inputTopic = app.getTopics().getInputTopics().get(0);
+            final String outputTopic = app.getTopics().getOutputTopic();
+            testClient.createTopic(inputTopic);
+            testClient.createTopic(outputTopic);
+            runAsync(runner);
 
-            new Thread(runner).start();
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
 
-            final SimpleProducerRecord<String, String> simpleProducerRecord = new SimpleProducerRecord<>("foo", "bar");
-            this.writeInputTopic(app.getTopics().getInputTopics().get(0), simpleProducerRecord);
 
-            final StringConsumer stringConsumer = (StringConsumer) app.getApp();
-
-            Awaitility.await()
-                    .atMost(Duration.ofSeconds(1))
-                    .untilAsserted(() -> {
-                        final List<KeyValue<String, String>> consumedRecords = stringConsumer.getConsumedRecords()
-                                .stream()
-                                .map(StreamsCleanUpRunnerTest::toKeyValue)
-                                .toList();
-                        this.softly.assertThat(consumedRecords)
-                                .containsExactlyInAnyOrderElementsOf(List.of(new KeyValue<>("foo", "bar")));
-                    });
+            this.softly.assertThat(testClient.read()
+                            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .from(outputTopic, POLL_TIMEOUT))
+                    .hasSize(1);
         }
-    }
-
-    private void writeInputTopic(final String inputTopic, final SimpleProducerRecord<String, String> producerRecord) {
-        final KafkaTestClient testClient = this.newTestClient();
-        testClient.send()
-                .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .to(inputTopic, List.of(producerRecord));
     }
 
 }

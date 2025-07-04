@@ -26,91 +26,99 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
 
 /**
  * A {@link ProducerApp} with a corresponding {@link AppConfiguration}
  * @param <T> type of {@link ProducerApp}
  */
 @RequiredArgsConstructor
+@Getter
 public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implements ConfiguredApp<ExecutableConsumerProducerApp<T>> {
-    @Getter
     private final @NonNull T app;
-    private final @NonNull AppConfiguration<StreamsTopicConfig> configuration;
-
-    private static Map<String, Object> createBaseConfig() {
-        final Map<String, Object> kafkaConfig = new HashMap<>();
-
-        kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
-        kafkaConfig.put(ProducerConfig.ACKS_CONFIG, "all");
-
-        // compression
-        kafkaConfig.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
-
-        return kafkaConfig;
-    }
+    private final @NonNull StreamsTopicConfig topics;
 
     /**
-     * <p>This method creates the configuration to run a {@link ProducerApp}.</p>
+     * <p>This method creates the configuration to run a {@link StreamsApp}.</p>
      * Configuration is created in the following order
      * <ul>
      *     <li>
+     *         Exactly-once, in-order, and compression are configured:
      * <pre>
-     * max.in.flight.requests.per.connection=1
-     * acks=all
-     * compression.type=gzip
+     * processing.guarantee=exactly_once_v2
+     * producer.max.in.flight.requests.per.connection=1
+     * producer.acks=all
+     * producer.compression.type=gzip
      * </pre>
      *     </li>
      *     <li>
-     *         Configs provided by {@link ProducerApp#createKafkaProperties()}
+     *         Configs provided by {@link StreamsApp#createKafkaProperties()}
      *     </li>
      *     <li>
      *         Configs provided via environment variables (see
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link AppConfiguration#getKafkaConfig()}
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
-     *         Configs provided by {@link KafkaEndpointConfig#createKafkaProperties()}
+     *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
+     *         {@link StreamsConfig#DEFAULT_VALUE_SERDE_CLASS_CONFIG} is configured using
+     *         {@link StreamsApp#defaultSerializationConfig()}
      *     </li>
      *     <li>
-     *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
-     *         {@link ProducerConfig#VALUE_SERIALIZER_CLASS_CONFIG} is configured using
-     *         {@link ProducerApp#defaultSerializationConfig()}
+     *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
+     *         {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
      *     </li>
      * </ul>
      *
-     * @param endpointConfig endpoint to run app on
+     * @param runtimeConfiguration configuration to run app with
      * @return Kafka configuration
      */
-    public Map<String, Object> getKafkaProperties(final KafkaEndpointConfig endpointConfig) {
-        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(endpointConfig);
+    public Map<String, Object> getKafkaConsumerProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration, ConfiguredConsumerApp.createBaseConfig());
+        return propertiesFactory.createKafkaProperties(Map.of(
+                ConsumerConfig.GROUP_ID_CONFIG, this.getUniqueAppId()
+        ));
+    }
+
+    public Map<String, Object> getKafkaProducerProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration, ConfiguredProducerApp.createBaseConfig());
         return propertiesFactory.createKafkaProperties(emptyMap());
     }
 
     /**
-     * Create an {@code ExecutableProducerApp} using the provided {@code KafkaEndpointConfig}
-     * @return {@code ExecutableProducerApp}
+     * Get unique application identifier of {@code StreamsApp}
+     * @return unique application identifier
+     * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
      */
-    @Override
-    public ExecutableProducerApp<T> withEndpoint(final KafkaEndpointConfig endpointConfig) {
-        final ProducerTopicConfig topics = this.getTopics();
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(endpointConfig);
-        return new ExecutableProducerApp<>(topics, kafkaProperties, this.app);
+    public String getUniqueAppId() {
+        return Objects.requireNonNull(this.app.getUniqueAppId(this.topics));
     }
 
     /**
-     * Get topic configuration
-     * @return topic configuration
+     * Create an {@code ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
+     * @return {@code ExecutableStreamsApp}
      */
-    public StreamsTopicConfig getTopics() {
-        return this.configuration.getTopics();
+    @Override
+    public ExecutableConsumerProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        final Map<String, Object> consumerProperties = this.getKafkaConsumerProperties(runtimeConfiguration);
+        final Map<String, Object> producerProperties = this.getKafkaProducerProperties(runtimeConfiguration);
+        return ExecutableConsumerProducerApp.<T>builder()
+                .consumerProperties(consumerProperties)
+                .producerProperties(producerProperties)
+                .app(this.app)
+                .topics(this.topics)
+                .groupId(this.getUniqueAppId())
+                .build();
     }
 
     @Override
@@ -118,13 +126,12 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implem
         this.app.close();
     }
 
-    private KafkaPropertiesFactory createPropertiesFactory(final KafkaEndpointConfig endpointConfig) {
-        final Map<String, Object> baseConfig = createBaseConfig();
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfiguration, final Map<String, Object> baseConfig) {
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
-                .configuration(this.configuration)
-                .endpointConfig(endpointConfig)
+                .runtimeConfig(runtimeConfiguration)
                 .build();
     }
+
 }

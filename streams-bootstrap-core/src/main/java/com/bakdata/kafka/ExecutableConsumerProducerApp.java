@@ -26,6 +26,7 @@ package com.bakdata.kafka;
 
 import java.util.Map;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ import lombok.RequiredArgsConstructor;
  * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig} and Kafka configuration
  * @param <T> type of {@link ProducerApp}
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@Builder(access = AccessLevel.PACKAGE)
 @Getter
 public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
         implements ExecutableApp<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions> {
@@ -42,6 +43,7 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     private final @NonNull Map<String, Object> producerProperties;
     private final @NonNull Map<String, Object> consumerProperties;
     private final @NonNull T app;
+    private final @NonNull String groupId;
 
     /**
      * Create {@code ProducerCleanUpRunner} in order to clean application
@@ -49,9 +51,9 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
      */
     @Override
     public ConsumerProducerCleanUpRunner createCleanUpRunner() {
-        final EffectiveAppConfiguration<StreamsTopicConfig> configuration = this.createEffectiveConfiguration();
-        final ConsumerProducerCleanUpConfiguration configurer = this.app.setupCleanUp(configuration);
-        return ConsumerProducerCleanUpRunner.create(this.topics, this.producerProperties, this.consumerProperties, configurer);
+        final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
+        final StreamsCleanUpConfiguration streamsCleanUpConfiguration = this.app.setupCleanUp(configuration);
+        return ConsumerProducerCleanUpRunner.create(this.topics, this.consumerProperties, this.groupId, streamsCleanUpConfiguration);
     }
 
     /**
@@ -64,11 +66,13 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     }
 
     @Override
-    public ProducerRunner createRunner(final ProducerExecutionOptions options) {
-        final ConsumerProducerBuilder producerBuilder = new ConsumerProducerBuilder(this.topics, this.producerProperties, this.consumerProperties);
-        final EffectiveAppConfiguration<StreamsTopicConfig> configuration = this.createEffectiveConfiguration();
+    public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
+        final ConsumerBuilder consumerBuilder = new ConsumerBuilder(ConsumerTopicConfig.fromStreamsTopicConfig(this.topics), this.consumerProperties);
+        final ProducerBuilder producerBuilder = new ProducerBuilder(ProducerTopicConfig.fromStreamsTopicConfig(this.topics), this.producerProperties);
+        final ConsumerProducerBuilder consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
+        final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerProducerRunner(this.app.buildRunnable(producerBuilder));
+        return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder));
     }
 
     @Override
@@ -76,7 +80,8 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
         this.app.close();
     }
 
-    private EffectiveAppConfiguration<StreamsTopicConfig> createEffectiveConfiguration() {
-        return new EffectiveAppConfiguration<>(this.topics, this.producerProperties, this.consumerProperties);
+    private AppConfiguration<StreamsTopicConfig> createConfiguration() {
+        return new AppConfiguration<>(this.topics, this.consumerProperties);
     }
+
 }

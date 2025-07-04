@@ -44,7 +44,7 @@ public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull ConsumerTopicConfig topics;
 
-    private static Map<String, Object> createBaseConfig() {
+    public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");

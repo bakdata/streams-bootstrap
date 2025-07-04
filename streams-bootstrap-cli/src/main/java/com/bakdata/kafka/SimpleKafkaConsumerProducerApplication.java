@@ -24,48 +24,26 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
-import java.util.Map;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import java.util.function.Supplier;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Provides topic configuration for a {@link ProducerApp}
+ * {@code KafkaStreamsApplication} without any additional configuration options.
+ *
+ * @param <T> type of {@link StreamsApp} created by this application
  */
-@Builder
-@Value
-@EqualsAndHashCode
-public class ProducerTopicConfig {
+@RequiredArgsConstructor
+public final class SimpleKafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends KafkaConsumerProducerApplication<T> {
+    private final @NonNull Supplier<T> appFactory;
 
-    String outputTopic;
-    /**
-     * Output topics that are identified by a label
-     */
-    @Builder.Default
-    @NonNull
-    Map<String, String> labeledOutputTopics = emptyMap();
 
-    /**
-     * Get output topic for a specified label
-     *
-     * @param label label of output topic
-     * @return topic name
-     */
-    public String getOutputTopic(final String label) {
-        final String topic = this.labeledOutputTopics.get(label);
-        if (topic == null) {
-            throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
-        }
-        return topic;
-    }
+    // TODO update javadocs
+    // TODO fix input pattern
+    // TODO add helm charts
 
-    public static ProducerTopicConfig fromStreamsTopicConfig(final StreamsTopicConfig config) {
-        return builder()
-                .outputTopic(config.getOutputTopic())
-                .labeledOutputTopics(config.getLabeledOutputTopics())
-                .build();
+    @Override
+    public T createApp() {
+        return this.appFactory.get();
     }
 }

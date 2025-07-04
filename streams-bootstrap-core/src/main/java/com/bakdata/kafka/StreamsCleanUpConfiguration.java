@@ -82,4 +82,18 @@ public class StreamsCleanUpConfiguration
     void runTopicDeletionHooks(final String topic) {
         this.topicHooks.forEach(hook -> hook.deleted(topic));
     }
+
+    ConsumerCleanUpConfiguration toConsumerCleanUpConfiguration() {
+        final ConsumerCleanUpConfiguration configuration = new ConsumerCleanUpConfiguration();
+        this.cleanHooks.forEach(configuration::registerCleanHook);
+        this.resetHooks.forEach(configuration::registerResetHook);
+        return configuration;
+    }
+
+    ProducerCleanUpConfiguration toProducerCleanUpConfiguration() {
+        final ProducerCleanUpConfiguration configuration = new ProducerCleanUpConfiguration();
+        this.cleanHooks.forEach(configuration::registerCleanHook);
+        this.topicHooks.forEach(configuration::registerTopicHook);
+        return configuration;
+    }
 }
