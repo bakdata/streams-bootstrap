@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -386,7 +387,7 @@ class StreamJoinedXTest {
             final List<String> stores = information.getStores();
             final List<StateStore> stateStores = stores.stream()
                     .map(testDriver::getWindowStore)
-                    .toList();
+                    .collect(Collectors.toList());
             this.softly.assertThat(stateStores)
                     .allSatisfy(stateStore -> this.softly.assertThat(stateStore.persistent()).isFalse());
         }
@@ -421,7 +422,7 @@ class StreamJoinedXTest {
             final List<String> stores = information.getStores();
             final List<StateStore> stateStores = stores.stream()
                     .map(testDriver::getWindowStore)
-                    .toList();
+                    .collect(Collectors.toList());
             this.softly.assertThat(stateStores)
                     .allSatisfy(stateStore -> this.softly.assertThat(stateStore.persistent()).isFalse());
         }
