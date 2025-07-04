@@ -28,7 +28,6 @@ import static com.bakdata.kafka.producer.ProducerCleanUpRunnerTest.createStringA
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.TestHelper;
-import com.bakdata.kafka.TestHelper;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
