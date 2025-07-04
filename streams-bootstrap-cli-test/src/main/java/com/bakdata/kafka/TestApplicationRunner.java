@@ -27,6 +27,9 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.streams.ConfiguredStreamsApp;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.StreamsApp;
 import com.google.common.collect.ImmutableList;
 import java.nio.file.Path;
 import java.time.Duration;

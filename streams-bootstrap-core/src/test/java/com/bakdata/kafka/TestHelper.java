@@ -24,15 +24,13 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import lombok.experimental.UtilityClass;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.streams.KeyValue;
 
 @UtilityClass
 public class TestHelper {
-
-    static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        final TestTopology<K, V> topology = new TestTopologyFactory().createTopology(app);
-        topology.start();
-        return topology;
+    public static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<K, V> consumerRecord) {
+        return new KeyValue<>(consumerRecord.key(), consumerRecord.value());
     }
 }

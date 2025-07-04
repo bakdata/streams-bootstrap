@@ -24,11 +24,15 @@
 
 package com.bakdata.kafka;
 
-import static com.bakdata.kafka.TestApplicationTopologyFactoryTest.INPUT_TOPIC;
-import static com.bakdata.kafka.TestApplicationTopologyFactoryTest.OUTPUT_TOPIC;
-import static com.bakdata.kafka.TestApplicationTopologyFactoryTest.createApp;
+import static com.bakdata.kafka.streams.TestApplicationTopologyFactoryTest.INPUT_TOPIC;
+import static com.bakdata.kafka.streams.TestApplicationTopologyFactoryTest.OUTPUT_TOPIC;
+import static com.bakdata.kafka.streams.TestApplicationTopologyFactoryTest.createApp;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.TestApplicationTopologyFactoryTest;
+import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;

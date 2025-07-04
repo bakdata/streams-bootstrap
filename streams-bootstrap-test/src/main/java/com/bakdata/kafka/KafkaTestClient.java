@@ -26,10 +26,10 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.util.AdminClientX;
-import com.bakdata.kafka.util.TopicClient;
-import com.bakdata.kafka.util.TopicSettings;
-import com.bakdata.kafka.util.TopicSettings.TopicSettingsBuilder;
+import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.admin.TopicSettings;
+import com.bakdata.kafka.admin.TopicSettings.TopicSettingsBuilder;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
