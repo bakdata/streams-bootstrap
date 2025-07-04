@@ -30,12 +30,43 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.NonNull;
 
+/**
+ * Creates properties for a Kafka app.
+ */
 @Builder
 public class KafkaPropertiesFactory {
     private final @NonNull Map<String, Object> baseConfig;
     private final @NonNull App<?, ?> app;
     private final @NonNull RuntimeConfiguration runtimeConfig;
 
+    /**
+     * <p>This method creates the configuration to run a Kafka app.</p>
+     * Configuration is created in the following order
+     * <ul>
+     *     <li>
+     *         Configs provided by {@link KafkaPropertiesFactory#baseConfig}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link App#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided via environment variables (see
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link App#defaultSerializationConfig()}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@code configOverrides} parameter
+     *     </li>
+     * </ul>
+     *
+     * @param configOverrides over
+     * @return Kafka properties
+     */
     public Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
         return new Task().createKafkaProperties(configOverrides);
     }
