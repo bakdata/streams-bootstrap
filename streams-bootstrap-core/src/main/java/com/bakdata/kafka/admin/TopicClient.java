@@ -152,8 +152,8 @@ public final class TopicClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToDeleteTopic(topicName, ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToDeleteTopic(topicName, ex);
         } catch (final TimeoutException ex) {
@@ -201,8 +201,8 @@ public final class TopicClient implements AutoCloseable {
             return config.entries().stream()
                     .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
         } catch (final ExecutionException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
+            if (e.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToRetrieveTopicConfig(topicName, e);
         } catch (final InterruptedException e) {
@@ -242,8 +242,8 @@ public final class TopicClient implements AutoCloseable {
                     this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
             return kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final ExecutionException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
+            if (e.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToRetrieveTopicDescription(topicName, e);
         } catch (final InterruptedException e) {
@@ -267,8 +267,8 @@ public final class TopicClient implements AutoCloseable {
             return this.adminClient.listOffsets(offsetRequest).all()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final ExecutionException e) {
-            if (e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
+            if (e.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToListOffsets(e);
         } catch (final InterruptedException e) {
@@ -298,8 +298,8 @@ public final class TopicClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToCreateTopic(topicName, ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToCreateTopic(topicName, ex);
         } catch (final TimeoutException ex) {
@@ -337,8 +337,8 @@ public final class TopicClient implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw failedToListTopics(ex);
         } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof final RuntimeException cause) {
+                throw cause;
             }
             throw failedToListTopics(ex);
         } catch (final TimeoutException ex) {

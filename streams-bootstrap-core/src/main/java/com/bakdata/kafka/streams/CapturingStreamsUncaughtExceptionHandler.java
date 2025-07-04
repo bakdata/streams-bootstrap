@@ -42,8 +42,8 @@ class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaughtExcepti
     }
 
     void throwException() {
-        if (this.lastException instanceof RuntimeException) {
-            throw (RuntimeException) this.lastException;
+        if (this.lastException instanceof final RuntimeException runtimeException) {
+            throw runtimeException;
         }
         throw new StreamsApplicationException("Kafka Streams has transitioned to error", this.lastException);
     }

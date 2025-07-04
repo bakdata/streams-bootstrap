@@ -43,7 +43,6 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
@@ -181,7 +180,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(TestHelper::toKeyValue)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -153,7 +152,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
                     }
                     return exists;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

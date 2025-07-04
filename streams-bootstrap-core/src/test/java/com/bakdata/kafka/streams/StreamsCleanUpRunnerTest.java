@@ -39,6 +39,7 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
+import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupClient;
@@ -55,7 +56,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.LongDeserializer;
@@ -387,7 +387,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             run(executableApp);
             final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
-                    .collect(Collectors.toList());
+                    .toList();
             this.assertContent(app.getTopics().getOutputTopic(), entriesTwice,
                     "All entries are twice in the input topic after the 2nd run");
         }
@@ -689,7 +689,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(TestHelper::toKeyValue)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void assertContent(final String outputTopic,

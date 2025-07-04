@@ -34,7 +34,6 @@ import com.bakdata.kafka.streams.apps.CloseFlagApp;
 import com.bakdata.kafka.streams.apps.WordCount;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -140,7 +139,7 @@ class KafkaStreamsApplicationCleanTest extends KafkaTest {
 
             final List<KeyValue<String, Long>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
-                    .collect(Collectors.toList());
+                    .toList();
             this.runAndAssertContent(entriesTwice, "All entries are twice in the input topic after the 2nd run", app);
         }
     }
@@ -192,7 +191,7 @@ class KafkaStreamsApplicationCleanTest extends KafkaTest {
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(consumerRecord -> new KeyValue<>(consumerRecord.key(), consumerRecord.value()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void runAndAssertContent(final Iterable<? extends KeyValue<String, Long>> expectedValues,
