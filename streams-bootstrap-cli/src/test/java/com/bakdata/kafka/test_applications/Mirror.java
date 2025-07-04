@@ -24,11 +24,11 @@
 
 package com.bakdata.kafka.test_applications;
 
-import com.bakdata.kafka.KStreamX;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsBuilderX;
-import com.bakdata.kafka.StreamsTopicConfig;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 

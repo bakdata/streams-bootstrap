@@ -31,6 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.SimpleKafkaStreamsApplication;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;
 import java.util.List;

@@ -26,14 +26,14 @@ package com.bakdata.kafka.integration;
 
 
 import com.bakdata.kafka.CloseFlagApp;
-import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
+import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.WordCount;
-import com.bakdata.kafka.util.AdminClientX;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;

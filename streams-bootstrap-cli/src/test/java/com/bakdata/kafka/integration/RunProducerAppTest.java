@@ -26,16 +26,16 @@ package com.bakdata.kafka.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaProducerApplication;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.ProducerApp;
-import com.bakdata.kafka.ProducerBuilder;
-import com.bakdata.kafka.ProducerRunnable;
-import com.bakdata.kafka.SerializerConfig;
-import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.producer.KafkaProducerApplication;
+import com.bakdata.kafka.producer.ProducerApp;
+import com.bakdata.kafka.producer.ProducerBuilder;
+import com.bakdata.kafka.producer.ProducerRunnable;
+import com.bakdata.kafka.producer.SerializerConfig;
+import com.bakdata.kafka.producer.SimpleKafkaProducerApplication;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.producer.Producer;

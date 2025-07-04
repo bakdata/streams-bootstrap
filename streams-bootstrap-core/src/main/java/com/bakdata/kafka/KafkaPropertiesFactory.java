@@ -31,12 +31,12 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-class KafkaPropertiesFactory {
+public class KafkaPropertiesFactory {
     private final @NonNull Map<String, Object> baseConfig;
     private final @NonNull App<?, ?> app;
     private final @NonNull RuntimeConfiguration runtimeConfig;
 
-    Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
+    public Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
         return new Task().createKafkaProperties(configOverrides);
     }
 

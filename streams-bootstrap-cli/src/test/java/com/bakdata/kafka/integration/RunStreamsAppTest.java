@@ -26,12 +26,12 @@ package com.bakdata.kafka.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaStreamsApplication;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.TestApplicationRunner;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SimpleKafkaStreamsApplication;
 import com.bakdata.kafka.test_applications.Mirror;
 import java.nio.file.Path;
 import java.util.List;
