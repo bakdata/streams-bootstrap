@@ -85,7 +85,7 @@ public class ApacheKafkaContainerCluster implements Startable {
                         .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", internalTopicsRf + "")
                         .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", internalTopicsRf + "")
                         .withStartupTimeout(Duration.ofMinutes(1)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static int getNumberOfReadyBrokers(final ContainerState container)
