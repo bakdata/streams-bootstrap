@@ -34,7 +34,7 @@ class SimpleStreamsApp implements StreamsApp {
     }
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
         return "group";
     }
 

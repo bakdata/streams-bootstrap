@@ -64,7 +64,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -96,7 +96,7 @@ class CliTest {
             }
 
             @Override
-            public String getUniqueAppId(final StreamsTopicConfig topics) {
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                 throw new UnsupportedOperationException();
             }
 
@@ -124,7 +124,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -160,7 +160,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -194,7 +194,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         return "my-id";
                     }
 
@@ -228,7 +228,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         return "app";
                     }
 
@@ -266,7 +266,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         return "app";
                     }
 
@@ -315,7 +315,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -345,7 +345,7 @@ class CliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 

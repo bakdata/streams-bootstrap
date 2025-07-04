@@ -24,32 +24,31 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import java.util.Optional;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-abstract class StringApp implements StreamsApp {
+/**
+ * Configuration of a {@link StreamsApp}
+ */
+@RequiredArgsConstructor
+public class StreamsAppConfiguration {
 
-    @Override
-    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-        return "my-app";
+    @Getter
+    private final @NonNull StreamsTopicConfig topics;
+    private final String uniqueAppId;
+
+    /**
+     * Create a new {@code StreamsAppConfiguration} with no provided {@link #uniqueAppId}
+     *
+     * @param topics topics to use for app
+     */
+    public StreamsAppConfiguration(final StreamsTopicConfig topics) {
+        this(topics, null);
     }
 
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, StringSerde.class);
-    }
-
-    TestTopology<String, String> startApp(final StreamsTopicConfig topicConfig) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(this, new StreamsAppConfiguration(topicConfig));
-        return TestHelper.startApp(configuredApp);
-    }
-
-    TestTopology<String, String> startApp() {
-        return this.startApp(StreamsTopicConfig.builder().build());
-    }
-
-    ConfiguredStreamsApp<StreamsApp> configureApp() {
-        return new ConfiguredStreamsApp<>(this, new StreamsAppConfiguration(StreamsTopicConfig.builder().build()));
+    public Optional<String> getUniqueAppId() {
+        return Optional.ofNullable(this.uniqueAppId);
     }
 }

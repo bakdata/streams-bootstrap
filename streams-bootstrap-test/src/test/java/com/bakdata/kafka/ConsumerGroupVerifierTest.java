@@ -47,10 +47,10 @@ class ConsumerGroupVerifierTest extends KafkaTest {
     void shouldVerify() {
         final StreamsApp app = new SimpleStreamsApp();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
+                new ConfiguredStreamsApp<>(app, new StreamsAppConfiguration(StreamsTopicConfig.builder()
                         .inputTopics(List.of("input"))
                         .outputTopic("output")
-                        .build());
+                        .build()));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.getBootstrapServers())
                 .withNoStateStoreCaching()
                 .withSessionTimeout(SESSION_TIMEOUT);

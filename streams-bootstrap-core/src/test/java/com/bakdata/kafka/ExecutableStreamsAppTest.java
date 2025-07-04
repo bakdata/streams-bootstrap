@@ -55,7 +55,7 @@ class ExecutableStreamsAppTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), topics);
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -71,7 +71,7 @@ class ExecutableStreamsAppTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), topics);
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -87,7 +87,7 @@ class ExecutableStreamsAppTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), topics);
+                new ConfiguredStreamsApp<>(new TestApplication(), new StreamsAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableStreamsApp<StreamsApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -116,7 +116,7 @@ class ExecutableStreamsAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final StreamsTopicConfig topics) {
+        public String getUniqueAppId(final StreamsAppConfiguration configuration) {
             return "foo";
         }
 
