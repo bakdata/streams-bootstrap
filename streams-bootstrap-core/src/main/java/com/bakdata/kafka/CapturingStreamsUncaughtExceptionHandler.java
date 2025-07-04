@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,8 @@ class CapturingStreamsUncaughtExceptionHandler implements StreamsUncaughtExcepti
     }
 
     void throwException() {
-        if (this.lastException instanceof RuntimeException) {
-            throw (RuntimeException) this.lastException;
+        if (this.lastException instanceof final RuntimeException runtimeException) {
+            throw runtimeException;
         }
         throw new StreamsApplicationException("Kafka Streams has transitioned to error", this.lastException);
     }

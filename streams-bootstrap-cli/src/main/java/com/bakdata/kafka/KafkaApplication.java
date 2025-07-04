@@ -55,8 +55,8 @@ import picocli.CommandLine.ParseResult;
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
- * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
- * {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
+ * To implement your Kafka application inherit from this class and add your custom options. Run it by creating an
+ * instance of your class and calling {@link #startApplication(String[])} from your main.
  *
  * @param <R> type of {@link Runner} used by this app
  * @param <CR> type of {@link CleanUpRunner} used by this app
@@ -96,32 +96,27 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> kafkaConfig = emptyMap();
 
     /**
-     * <p>This method needs to be called in the executable custom application class inheriting from
-     * {@code KafkaApplication}.</p>
+     * <p>This method should be called in the main method of your application</p>
      * <p>This method calls System exit</p>
      *
-     * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
-     * @see #startApplicationWithoutExit(KafkaApplication, String[])
+     * @see #startApplicationWithoutExit(String[])
      */
-    public static void startApplication(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
-        final int exitCode = startApplicationWithoutExit(app, args);
+    public void startApplication(final String[] args) {
+        final int exitCode = this.startApplicationWithoutExit(args);
         System.exit(exitCode);
     }
 
     /**
-     * <p>This method needs to be called in the executable custom application class inheriting from
-     * {@code KafkaApplication}.</p>
+     * <p>This method should be called in the main method of your application</p>
      *
-     * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
-    public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app,
-            final String[] args) {
+    public int startApplicationWithoutExit(final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = new CommandLine(app)
-                .setExecutionStrategy(app::execute);
+        final CommandLine commandLine = new CommandLine(this)
+                .setExecutionStrategy(this::execute);
         return commandLine.execute(populatedArgs);
     }
 
