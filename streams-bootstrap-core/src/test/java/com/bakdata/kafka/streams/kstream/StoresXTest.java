@@ -25,7 +25,7 @@
 package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import com.bakdata.kafka.streams.test.DoubleApp;
+import com.bakdata.kafka.streams.apps.DoubleApp;
 import java.time.Duration;
 import java.util.Set;
 import org.apache.kafka.common.serialization.Serdes;

@@ -22,20 +22,33 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.test;
+package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import com.bakdata.kafka.streams.ConfiguredStreamsApp;
+import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.TestTopologyFactory;
-import lombok.experimental.UtilityClass;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import lombok.NoArgsConstructor;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
-@UtilityClass
-class TestHelper {
+@NoArgsConstructor
+public class MirrorValueWithAvro implements StreamsApp {
+    @Override
+    public void buildTopology(final StreamsBuilderX builder) {
+        final KStreamX<String, TestRecord> input = builder.streamInput();
+        input.toOutputTopic();
+    }
 
-    static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        final TestTopology<K, V> topology = new TestTopologyFactory().createTopology(app);
-        topology.start();
-        return topology;
+    @Override
+    public String getUniqueAppId(final StreamsTopicConfig topics) {
+        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    }
+
+    @Override
+    public SerdeConfig defaultSerializationConfig() {
+        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
     }
 }

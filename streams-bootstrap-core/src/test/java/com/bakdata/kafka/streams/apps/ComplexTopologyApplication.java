@@ -22,22 +22,46 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.test;
+package com.bakdata.kafka.streams.apps;
 
+import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.kstream.KTableX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import lombok.NoArgsConstructor;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.time.Duration;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.Windowed;
 
-@NoArgsConstructor
-public class Mirror implements StreamsApp {
+public class ComplexTopologyApplication implements StreamsApp {
+
+    public static final String THROUGH_TOPIC = "through-topic";
+
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, String> input = builder.streamInput();
-        input.toOutputTopic();
+        final KStreamX<String, TestRecord> input = builder.streamInput();
+
+        input.to(THROUGH_TOPIC);
+        final KStreamX<String, TestRecord> through = builder.stream(THROUGH_TOPIC);
+        final KTableX<Windowed<String>, TestRecord> reduce = through
+                .groupByKey()
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(5L)))
+                .reduce((a, b) -> a);
+
+        reduce.toStream()
+                .map((k, v) -> KeyValue.pair(v.getContent(), v))
+                .groupByKey()
+                .count(Materialized.with(Serdes.String(), Serdes.Long()))
+                .toStream()
+                .toOutputTopic(Produced.with(Serdes.String(), Serdes.Long()));
     }
 
     @Override
@@ -47,7 +71,6 @@ public class Mirror implements StreamsApp {
 
     @Override
     public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, StringSerde.class);
+        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
     }
-
 }

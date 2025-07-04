@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.streams.test.MirrorWithNonDefaultSerde;
+import com.bakdata.kafka.streams.apps.MirrorWithNonDefaultSerde;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

@@ -38,7 +38,7 @@ import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsRunner;
-import com.bakdata.kafka.streams.test.StringApp;
+import com.bakdata.kafka.streams.apps.StringApp;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.util.List;
 import org.apache.kafka.clients.producer.ProducerRecord;

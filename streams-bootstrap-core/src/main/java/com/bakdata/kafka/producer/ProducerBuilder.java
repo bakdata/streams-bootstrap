@@ -75,7 +75,7 @@ public class ProducerBuilder {
 
     /**
      * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
-     * {@link org.apache.kafka.common.serialization.Serializer} using {@link #kafkaProperties}.
+     * {@link Serializer} using {@link #kafkaProperties}.
      * @return {@code Configurator}
      */
     public Configurator createConfigurator() {

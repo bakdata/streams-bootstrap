@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -33,17 +33,18 @@ import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
-public class WordCount implements StreamsApp {
+public class WordCountPattern implements StreamsApp {
 
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, String> textLines = builder.streamInput();
+        final KStreamX<String, String> textLines = builder.streamInputPattern();
 
         final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
         final KTableX<String, Long> wordCounts = textLines
@@ -51,7 +52,8 @@ public class WordCount implements StreamsApp {
                 .groupBy((key, word) -> word)
                 .count(Materialized.as("counts"));
 
-        wordCounts.toStream().toOutputTopic(Produced.valueSerde(Serdes.Long()));
+        final Serde<Long> longValueSerde = Serdes.Long();
+        wordCounts.toStream().toOutputTopic(Produced.valueSerde(longValueSerde));
     }
 
     @Override

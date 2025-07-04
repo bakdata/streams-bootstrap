@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.integration;
+package com.bakdata.kafka.producer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,12 +30,6 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.producer.KafkaProducerApplication;
-import com.bakdata.kafka.producer.ProducerApp;
-import com.bakdata.kafka.producer.ProducerBuilder;
-import com.bakdata.kafka.producer.ProducerRunnable;
-import com.bakdata.kafka.producer.SerializerConfig;
-import com.bakdata.kafka.producer.SimpleKafkaProducerApplication;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.producer.Producer;
@@ -44,7 +38,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 
-class RunProducerAppTest extends KafkaTest {
+class KafkaProducerApplicationRunTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {

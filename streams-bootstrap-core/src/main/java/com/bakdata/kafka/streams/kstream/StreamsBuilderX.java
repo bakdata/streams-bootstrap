@@ -26,7 +26,6 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Collection;
 import java.util.Map;
@@ -45,9 +44,10 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 
 /**
- * Provides all runtime configurations and supports building a {@link Topology} of a {@link StreamsApp}
+ * Provides all runtime configurations and supports building a {@link Topology} of a
+ * {@link com.bakdata.kafka.streams.StreamsApp}
  *
- * @see StreamsApp#buildTopology(StreamsBuilderX)
+ * @see com.bakdata.kafka.streams.StreamsApp#buildTopology(StreamsBuilderX)
  */
 @RequiredArgsConstructor
 @Value

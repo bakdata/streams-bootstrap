@@ -27,8 +27,8 @@ package com.bakdata.kafka.streams.kstream;
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.test.DoubleApp;
-import com.bakdata.kafka.streams.test.StringApp;
+import com.bakdata.kafka.streams.apps.DoubleApp;
+import com.bakdata.kafka.streams.apps.StringApp;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -591,8 +591,7 @@ class StreamsBuilderXTest {
 
     @Test
     void shouldProcessUsingStore() {
-        final ProcessorSupplier<String, String, String, String> processor =
-                () -> new com.bakdata.kafka.streams.kstream.SimpleProcessor<>() {
+        final ProcessorSupplier<String, String, String, String> processor = () -> new SimpleProcessor<>() {
 
             @Override
             public void process(final Record<String, String> inputRecord) {
@@ -601,8 +600,7 @@ class StreamsBuilderXTest {
                 this.forward(inputRecord.withValue(inputRecord.value() + value));
             }
         };
-        final ProcessorSupplier<String, String, Void, Void> storeUpdater =
-                () -> new com.bakdata.kafka.streams.kstream.SimpleProcessor<>() {
+        final ProcessorSupplier<String, String, Void, Void> storeUpdater = () -> new SimpleProcessor<>() {
             @Override
             public void process(final Record<String, String> inputRecord) {
                 final KeyValueStore<String, String> store = this.getStateStore("my-store");

@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.test.StringApp;
+import com.bakdata.kafka.streams.apps.StringApp;
 import java.util.Map;
 import java.util.function.Function;
 import org.apache.kafka.streams.kstream.Named;

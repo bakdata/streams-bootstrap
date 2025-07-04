@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.producer.test;
+package com.bakdata.kafka.producer.apps;
 
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.producer.ProducerApp;

@@ -26,7 +26,6 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
-import com.bakdata.kafka.producer.ProducerApp;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,7 +37,7 @@ import org.apache.kafka.streams.Topology;
 /**
  * A {@link StreamsApp} with a corresponding {@link Topology} and {@link StreamsConfig}
  *
- * @param <T> type of {@link ProducerApp}
+ * @param <T> type of {@link StreamsApp}
  */
 @Builder(access = AccessLevel.PACKAGE)
 @Getter

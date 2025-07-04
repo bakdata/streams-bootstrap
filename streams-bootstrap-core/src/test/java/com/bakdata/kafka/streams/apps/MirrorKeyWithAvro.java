@@ -22,40 +22,24 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.test;
+package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.kstream.ConsumedX;
 import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.ProducedX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 @NoArgsConstructor
-public class MirrorWithNonDefaultSerde implements StreamsApp {
-
-    public static Preconfigured<Serde<TestRecord>> newKeySerde() {
-        return Preconfigured.create(new SpecificAvroSerde<>());
-    }
-
-    public static Preconfigured<Serde<TestRecord>> newValueSerde() {
-        return Preconfigured.create(new SpecificAvroSerde<>());
-    }
-
+public class MirrorKeyWithAvro implements StreamsApp {
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final Preconfigured<Serde<TestRecord>> valueSerde = newValueSerde();
-        final Preconfigured<Serde<TestRecord>> keySerde = newKeySerde();
-        final KStreamX<TestRecord, TestRecord> input =
-                builder.streamInput(ConsumedX.with(keySerde, valueSerde));
-        input.toOutputTopic(ProducedX.with(keySerde, valueSerde));
+        final KStreamX<TestRecord, String> input = builder.streamInput();
+        input.toOutputTopic();
     }
 
     @Override
@@ -65,6 +49,6 @@ public class MirrorWithNonDefaultSerde implements StreamsApp {
 
     @Override
     public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, StringSerde.class);
+        return new SerdeConfig(SpecificAvroSerde.class, StringSerde.class);
     }
 }

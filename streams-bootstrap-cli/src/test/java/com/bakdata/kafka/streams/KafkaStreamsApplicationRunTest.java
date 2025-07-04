@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.integration;
+package com.bakdata.kafka.streams;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,9 +30,7 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestApplicationRunner;
-import com.bakdata.kafka.streams.KafkaStreamsApplication;
-import com.bakdata.kafka.streams.SimpleKafkaStreamsApplication;
-import com.bakdata.kafka.test_applications.Mirror;
+import com.bakdata.kafka.streams.apps.Mirror;
 import java.nio.file.Path;
 import java.util.List;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -40,7 +38,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-class RunStreamsAppTest extends KafkaTest {
+class KafkaStreamsApplicationRunTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 

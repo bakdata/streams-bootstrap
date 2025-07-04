@@ -22,31 +22,20 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams;
+package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.streams.StreamsExecutionOptions.StreamsExecutionOptionsBuilder;
-import java.util.function.Consumer;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
+import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.kafka.streams.ConfiguredStreamsApp;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.TestTopologyFactory;
+import lombok.experimental.UtilityClass;
 
-/**
- * A running {@link KafkaStreams} instance along with its {@link StreamsConfig} and
- * {@link Topology}
- *
- * @see StreamsExecutionOptionsBuilder#onStart(Consumer)
- */
-@Builder
-@Value
-public class RunningStreams {
+@UtilityClass
+class TestHelper {
 
-    @NonNull
-    StreamsConfigX config;
-    @NonNull
-    Topology topology;
-    @NonNull
-    KafkaStreams streams;
+    static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
+        final TestTopology<K, V> topology = new TestTopologyFactory().createTopology(app);
+        topology.start();
+        return topology;
+    }
 }

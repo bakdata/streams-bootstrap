@@ -32,7 +32,7 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.TestApplicationTopologyFactoryTest;
-import com.bakdata.kafka.streams.test.SimpleStreamsApp;
+import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;

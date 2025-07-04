@@ -22,56 +22,49 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.Preconfigured;
+import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.ConsumedX;
 import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.kstream.ProducedX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import lombok.Getter;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 @NoArgsConstructor
-@Getter
-@Setter
-public class CloseFlagApp extends KafkaStreamsApplication<StreamsApp> {
+public class MirrorWithNonDefaultSerde implements StreamsApp {
 
-    private boolean closed = false;
-    private boolean appClosed = false;
+    public static Preconfigured<Serde<TestRecord>> newKeySerde() {
+        return Preconfigured.create(new SpecificAvroSerde<>());
+    }
 
-    @Override
-    public void close() {
-        super.close();
-        this.closed = true;
+    public static Preconfigured<Serde<TestRecord>> newValueSerde() {
+        return Preconfigured.create(new SpecificAvroSerde<>());
     }
 
     @Override
-    public StreamsApp createApp() {
-        return new StreamsApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KStreamX<String, String> input = builder.streamInput();
-                input.toOutputTopic();
-            }
+    public void buildTopology(final StreamsBuilderX builder) {
+        final Preconfigured<Serde<TestRecord>> valueSerde = newValueSerde();
+        final Preconfigured<Serde<TestRecord>> keySerde = newKeySerde();
+        final KStreamX<TestRecord, TestRecord> input =
+                builder.streamInput(ConsumedX.with(keySerde, valueSerde));
+        input.toOutputTopic(ProducedX.with(keySerde, valueSerde));
+    }
 
-            @Override
-            public String getUniqueAppId(final StreamsTopicConfig topics) {
-                return CloseFlagApp.this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
-            }
+    @Override
+    public String getUniqueAppId(final StreamsTopicConfig topics) {
+        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    }
 
-            @Override
-            public SerdeConfig defaultSerializationConfig() {
-                return new SerdeConfig(StringSerde.class, StringSerde.class);
-            }
-
-            @Override
-            public void close() {
-                CloseFlagApp.this.appClosed = true;
-            }
-        };
+    @Override
+    public SerdeConfig defaultSerializationConfig() {
+        return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
 }

@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.Preconfigured;
-import com.bakdata.kafka.streams.test.StringApp;
+import com.bakdata.kafka.streams.apps.StringApp;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;

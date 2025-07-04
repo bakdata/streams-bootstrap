@@ -25,8 +25,8 @@
 package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import com.bakdata.kafka.streams.test.DoubleApp;
-import com.bakdata.kafka.streams.test.StringApp;
+import com.bakdata.kafka.streams.apps.DoubleApp;
+import com.bakdata.kafka.streams.apps.StringApp;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Named;

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.streams.test.SimpleStreamsApp;
+import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.List;
 import org.junit.jupiter.api.Test;

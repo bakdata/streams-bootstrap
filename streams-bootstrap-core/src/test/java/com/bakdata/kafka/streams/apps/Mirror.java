@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.test;
+package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -33,10 +33,10 @@ import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 @NoArgsConstructor
-public class LabeledInputTopics implements StreamsApp {
+public class Mirror implements StreamsApp {
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, String> input = builder.streamInput("label");
+        final KStreamX<String, String> input = builder.streamInput();
         input.toOutputTopic();
     }
 
@@ -49,4 +49,5 @@ public class LabeledInputTopics implements StreamsApp {
     public SerdeConfig defaultSerializationConfig() {
         return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
+
 }

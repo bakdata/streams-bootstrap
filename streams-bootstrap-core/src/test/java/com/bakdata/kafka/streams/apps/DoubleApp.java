@@ -22,28 +22,33 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.test;
+package com.bakdata.kafka.streams.apps;
 
+import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.common.serialization.Serdes.DoubleSerde;
 
-public class SimpleStreamsApp implements StreamsApp {
-
-    @Override
-    public void buildTopology(final StreamsBuilderX builder) {
-        builder.streamInput().toOutputTopic();
-    }
+public abstract class DoubleApp implements StreamsApp {
 
     @Override
     public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return "group";
+        return "my-app";
     }
 
     @Override
     public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, StringSerde.class);
+        return new SerdeConfig(DoubleSerde.class, DoubleSerde.class);
+    }
+
+    public TestTopology<Double, Double> startApp(final StreamsTopicConfig topicConfig) {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this, topicConfig);
+        return TestHelper.startApp(configuredApp);
+    }
+
+    public TestTopology<Double, Double> startApp() {
+        return this.startApp(StreamsTopicConfig.builder().build());
     }
 }

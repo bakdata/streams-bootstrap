@@ -22,24 +22,36 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.test;
+package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.kstream.KTableX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
-public class MirrorKeyWithAvro implements StreamsApp {
+public class WordCount implements StreamsApp {
+
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<TestRecord, String> input = builder.streamInput();
-        input.toOutputTopic();
+        final KStreamX<String, String> textLines = builder.streamInput();
+
+        final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
+        final KTableX<String, Long> wordCounts = textLines
+                .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
+                .groupBy((key, word) -> word)
+                .count(Materialized.as("counts"));
+
+        wordCounts.toStream().toOutputTopic(Produced.valueSerde(Serdes.Long()));
     }
 
     @Override
@@ -49,6 +61,6 @@ public class MirrorKeyWithAvro implements StreamsApp {
 
     @Override
     public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(SpecificAvroSerde.class, StringSerde.class);
+        return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
 }

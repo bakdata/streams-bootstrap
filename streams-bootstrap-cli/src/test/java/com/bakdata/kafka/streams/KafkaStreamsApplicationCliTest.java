@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.streams;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.newCluster;
@@ -30,12 +30,10 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.streams.KafkaStreamsApplication;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.SimpleKafkaStreamsApplication;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;
@@ -51,7 +49,7 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.kafka.KafkaContainer;
 
-class CliTest {
+class KafkaStreamsApplicationCliTest {
 
     private static CompletableFuture<Void> runApp(final KafkaStreamsApplication<?> app, final String... args) {
         return runAsync(() -> KafkaApplication.startApplication(app, args));

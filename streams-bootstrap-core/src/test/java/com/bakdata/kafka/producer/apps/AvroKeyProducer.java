@@ -22,28 +22,31 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.producer.test;
+package com.bakdata.kafka.producer.apps;
 
+import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.producer.ProducerApp;
 import com.bakdata.kafka.producer.ProducerBuilder;
 import com.bakdata.kafka.producer.ProducerRunnable;
 import com.bakdata.kafka.producer.SerializerConfig;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-public class StringProducer implements ProducerApp {
+public class AvroKeyProducer implements ProducerApp {
     @Override
     public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
         return () -> {
-            try (final Producer<String, String> producer = builder.createProducer()) {
-                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", "bar"));
+            try (final Producer<TestRecord, String> producer = builder.createProducer()) {
+                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
+                        TestRecord.newBuilder().setContent("key").build(), "value"));
             }
         };
     }
 
     @Override
     public SerializerConfig defaultSerializationConfig() {
-        return new SerializerConfig(StringSerializer.class, StringSerializer.class);
+        return new SerializerConfig(SpecificAvroSerializer.class, StringSerializer.class);
     }
 }

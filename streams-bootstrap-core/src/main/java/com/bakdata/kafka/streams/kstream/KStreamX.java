@@ -32,7 +32,6 @@ import com.bakdata.kafka.ErrorCapturingProcessor;
 import com.bakdata.kafka.ErrorCapturingValueMapper;
 import com.bakdata.kafka.ErrorCapturingValueMapperWithKey;
 import com.bakdata.kafka.ErrorCapturingValueProcessor;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.ForeachAction;
@@ -519,34 +518,34 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     void to(TopicNameExtractor<K, V> topicExtractor, ProducedX<K, V> produced);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic()}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getOutputTopic()}
      * @see #to(String)
      */
     void toOutputTopic();
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic()}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getOutputTopic()}
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
     void toOutputTopic(Produced<K, V> produced);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic()}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getOutputTopic()}
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
     void toOutputTopic(ProducedX<K, V> produced);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic(String)}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getOutputTopic(String)}
      * @param label label of output topic
      * @see #to(String)
      */
     void toOutputTopic(String label);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic(String)}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getOutputTopic(String)}
      * @param label label of output topic
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
@@ -554,7 +553,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     void toOutputTopic(String label, Produced<K, V> produced);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getOutputTopic(String)}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getOutputTopic(String)}
      * @param label label of output topic
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
@@ -562,20 +561,20 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     void toOutputTopic(String label, ProducedX<K, V> produced);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getErrorTopic()}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getErrorTopic()}
      * @see #to(String)
      */
     void toErrorTopic();
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getErrorTopic()}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getErrorTopic()}
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
     void toErrorTopic(Produced<K, V> produced);
 
     /**
-     * Materialize {@link KStream} to {@link StreamsTopicConfig#getErrorTopic()}
+     * Materialize {@link KStream} to {@link com.bakdata.kafka.streams.StreamsTopicConfig#getErrorTopic()}
      * @param produced define optional parameters for materializing the stream
      * @see #to(String, Produced)
      */
