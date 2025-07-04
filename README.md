@@ -68,7 +68,7 @@ import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
     public static void main(final String[] args) {
-      startApplication(new MyStreamsApplication(), args);
+      new MyStreamsApplication().startApplication(args);
     }
 
     @Override
@@ -159,7 +159,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 public class MyProducerApplication extends KafkaProducerApplication<ProducerApp> {
     public static void main(final String[] args) {
-      startApplication(new MyProducerApplication(), args);
+      new MyProducerApplication().startApplication(args);
     }
 
     @Override
