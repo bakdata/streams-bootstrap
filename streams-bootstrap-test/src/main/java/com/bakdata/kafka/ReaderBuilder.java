@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +72,7 @@ public final class ReaderBuilder<K, V> {
         final List<PartitionInfo> partitionInfos = consumer.listTopics().get(topic);
         final List<TopicPartition> topicPartitions = partitionInfos.stream()
                 .map(ReaderBuilder::toTopicPartition)
-                .collect(Collectors.toList());
+                .toList();
         consumer.assign(topicPartitions);
         return pollAll(consumer, timeout);
     }

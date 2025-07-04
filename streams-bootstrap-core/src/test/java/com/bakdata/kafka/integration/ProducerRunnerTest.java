@@ -31,7 +31,6 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerRunner;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
@@ -66,7 +65,7 @@ class ProducerRunnerTest extends KafkaTest {
                 .from(outputTopic, POLL_TIMEOUT);
         return records.stream()
                 .map(StreamsCleanUpRunnerTest::toKeyValue)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }
