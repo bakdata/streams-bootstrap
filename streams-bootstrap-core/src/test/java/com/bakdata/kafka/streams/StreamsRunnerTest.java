@@ -94,16 +94,16 @@ class StreamsRunnerTest extends KafkaTest {
     private static ConfiguredStreamsApp<StreamsApp> createLabeledInputTopicsApplication() {
         return new ConfiguredStreamsApp<>(new LabeledInputTopics(),
                 new StreamsAppConfiguration(StreamsTopicConfig.builder()
-                .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
-                .outputTopic("output")
+                        .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
+                        .outputTopic("output")
                         .build()));
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createErrorApplication() {
         return new ConfiguredStreamsApp<>(new ErrorApplication(),
                 new StreamsAppConfiguration(StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
+                        .inputTopics(List.of("input"))
+                        .outputTopic("output")
                         .build()));
     }
 

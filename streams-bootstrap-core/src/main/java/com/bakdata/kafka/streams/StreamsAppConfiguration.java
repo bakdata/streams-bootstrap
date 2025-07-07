@@ -48,6 +48,12 @@ public class StreamsAppConfiguration {
         this(topics, null);
     }
 
+    /**
+     * Get the provided unique application ID. If user did not provide a unique application ID, this will return empty.
+     *
+     * @return provided unique application ID
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     */
     public Optional<String> getUniqueAppId() {
         return Optional.ofNullable(this.uniqueAppId);
     }

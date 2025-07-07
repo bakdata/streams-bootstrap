@@ -662,8 +662,8 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
         this.newTestClient().createTopic(ComplexTopologyApplication.THROUGH_TOPIC);
         return new ConfiguredStreamsApp<>(new ComplexTopologyApplication(),
                 new StreamsAppConfiguration(StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
+                        .inputTopics(List.of("input"))
+                        .outputTopic("output")
                         .build()));
     }
 
