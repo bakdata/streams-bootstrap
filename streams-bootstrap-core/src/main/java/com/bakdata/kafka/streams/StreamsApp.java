@@ -45,7 +45,7 @@ public interface StreamsApp extends App<StreamsTopicConfig, StreamsCleanUpConfig
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
      * state encapsulation. Could be set to: className-outputTopic
      *
-     * @param configuration provides runtime topic configuration
+     * @param configuration provides runtime configuration
      * @return unique application identifier
      */
     default String getUniqueAppId(final StreamsAppConfiguration configuration) {
