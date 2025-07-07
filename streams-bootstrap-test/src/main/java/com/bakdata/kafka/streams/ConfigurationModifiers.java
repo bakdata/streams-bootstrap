@@ -38,7 +38,7 @@ class ConfigurationModifiers {
                 schemaRegistry.getSchemaRegistryUrl());
     }
 
-    static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, Object> kafkaProperties) {
+    static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, ?> kafkaProperties) {
         return runtimeConfiguration -> runtimeConfiguration.with(kafkaProperties);
     }
 
