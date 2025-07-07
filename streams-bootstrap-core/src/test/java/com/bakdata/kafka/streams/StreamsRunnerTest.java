@@ -85,24 +85,26 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
-        return new ConfiguredStreamsApp<>(new Mirror(), StreamsTopicConfig.builder()
+        return new ConfiguredStreamsApp<>(new Mirror(), new StreamsAppConfiguration(StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
-                .build());
+                .build()));
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createLabeledInputTopicsApplication() {
-        return new ConfiguredStreamsApp<>(new LabeledInputTopics(), StreamsTopicConfig.builder()
-                .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
-                .outputTopic("output")
-                .build());
+        return new ConfiguredStreamsApp<>(new LabeledInputTopics(),
+                new StreamsAppConfiguration(StreamsTopicConfig.builder()
+                        .labeledInputTopics(Map.of("label", List.of("input1", "input2")))
+                        .outputTopic("output")
+                        .build()));
     }
 
     private static ConfiguredStreamsApp<StreamsApp> createErrorApplication() {
-        return new ConfiguredStreamsApp<>(new ErrorApplication(), StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build());
+        return new ConfiguredStreamsApp<>(new ErrorApplication(),
+                new StreamsAppConfiguration(StreamsTopicConfig.builder()
+                        .inputTopics(List.of("input"))
+                        .outputTopic("output")
+                        .build()));
     }
 
     @Test
@@ -216,8 +218,8 @@ class StreamsRunnerTest extends KafkaTest {
         }
 
         @Override
-        public String getUniqueAppId(final StreamsTopicConfig topics) {
-            return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+        public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+            return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
         }
 
         @Override

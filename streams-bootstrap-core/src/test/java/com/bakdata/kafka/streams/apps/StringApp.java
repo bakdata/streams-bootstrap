@@ -28,13 +28,14 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 public abstract class StringApp implements StreamsApp {
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
         return "my-app";
     }
 
@@ -44,7 +45,8 @@ public abstract class StringApp implements StreamsApp {
     }
 
     public TestTopology<String, String> startApp(final StreamsTopicConfig topicConfig) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this, topicConfig);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(this, new StreamsAppConfiguration(topicConfig));
         return TestHelper.startApp(configuredApp);
     }
 
@@ -53,6 +55,6 @@ public abstract class StringApp implements StreamsApp {
     }
 
     public ConfiguredStreamsApp<StreamsApp> configureApp() {
-        return new ConfiguredStreamsApp<>(this, StreamsTopicConfig.builder().build());
+        return new ConfiguredStreamsApp<>(this, new StreamsAppConfiguration(StreamsTopicConfig.builder().build()));
     }
 }

@@ -50,7 +50,7 @@ import picocli.CommandLine.Command;
 @Command(description = "Run a Kafka Producer application")
 public abstract class KafkaProducerApplication<T extends ProducerApp> extends
         KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ExecutableProducerApp<T>,
-                ConfiguredProducerApp<T>, ProducerTopicConfig, T> {
+                ConfiguredProducerApp<T>, ProducerTopicConfig, T, ProducerAppConfiguration> {
 
     /**
      * Delete all output topics associated with the Kafka Producer application.
@@ -75,7 +75,13 @@ public abstract class KafkaProducerApplication<T extends ProducerApp> extends
     }
 
     @Override
-    public final ConfiguredProducerApp<T> createConfiguredApp(final T app, final ProducerTopicConfig topics) {
-        return new ConfiguredProducerApp<>(app, topics);
+    public final ConfiguredProducerApp<T> createConfiguredApp(final T app,
+            final ProducerAppConfiguration configuration) {
+        return new ConfiguredProducerApp<>(app, configuration);
+    }
+
+    @Override
+    public ProducerAppConfiguration createConfiguration(final ProducerTopicConfig topics) {
+        return new ProducerAppConfiguration(topics);
     }
 }

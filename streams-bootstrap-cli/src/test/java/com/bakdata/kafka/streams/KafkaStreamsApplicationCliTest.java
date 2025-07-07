@@ -67,7 +67,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -99,7 +99,7 @@ class KafkaStreamsApplicationCliTest {
             }
 
             @Override
-            public String getUniqueAppId(final StreamsTopicConfig topics) {
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                 throw new UnsupportedOperationException();
             }
 
@@ -127,7 +127,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -163,7 +163,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -197,7 +197,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         return "my-id";
                     }
 
@@ -231,7 +231,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         return "app";
                     }
 
@@ -269,7 +269,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         return "app";
                     }
 
@@ -318,7 +318,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -348,7 +348,7 @@ class KafkaStreamsApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 

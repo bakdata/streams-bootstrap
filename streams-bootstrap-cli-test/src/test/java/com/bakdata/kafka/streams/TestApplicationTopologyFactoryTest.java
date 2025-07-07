@@ -126,10 +126,11 @@ public class TestApplicationTopologyFactoryTest {
     void shouldCallPrepareRun() {
         final KafkaStreamsApplication<StreamsApp> app = mock();
         when(app.createConfiguredApp()).thenReturn(
-                new ConfiguredStreamsApp<>(new SimpleStreamsApp(), StreamsTopicConfig.builder()
-                        .inputTopics(List.of(INPUT_TOPIC))
-                        .outputTopic(OUTPUT_TOPIC)
-                        .build()));
+                new ConfiguredStreamsApp<>(new SimpleStreamsApp(),
+                        new StreamsAppConfiguration(StreamsTopicConfig.builder()
+                                .inputTopics(List.of(INPUT_TOPIC))
+                                .outputTopic(OUTPUT_TOPIC)
+                                .build())));
         final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
         try (final TestTopology<String, String> testTopology = factory.createTopology(app)) {
             verify(app).prepareRun();

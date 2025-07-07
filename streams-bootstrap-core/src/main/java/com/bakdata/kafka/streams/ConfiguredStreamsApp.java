@@ -41,14 +41,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 
 /**
- * A {@link StreamsApp} with a corresponding {@link StreamsTopicConfig}
+ * A {@link StreamsApp} with a corresponding {@link StreamsAppConfiguration}
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
-@Getter
 public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp<ExecutableStreamsApp<T>> {
+    @Getter
     private final @NonNull T app;
-    private final @NonNull StreamsTopicConfig topics;
+    private final @NonNull StreamsAppConfiguration configuration;
 
     private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -96,7 +96,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *     </li>
      *     <li>
      *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
-     *         {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
+     *         {@link StreamsApp#getUniqueAppId(StreamsAppConfiguration)}
      *     </li>
      * </ul>
      *
@@ -111,12 +111,28 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Get unique application identifier of {@code StreamsApp}
+     * Get unique application identifier of {@link StreamsApp}
      * @return unique application identifier
-     * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
+     * provided application identifier in {@link StreamsAppConfiguration}
      */
     public String getUniqueAppId() {
-        return Objects.requireNonNull(this.app.getUniqueAppId(this.topics));
+        final String uniqueAppId =
+                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
+        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
+            throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
+        }
+        return uniqueAppId;
+    }
+
+    /**
+     * Get topic configuration
+     *
+     * @return topic configuration
+     */
+    public StreamsTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
     /**
@@ -131,7 +147,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
                 .topology(topology)
                 .kafkaProperties(kafkaProperties)
                 .app(this.app)
-                .topics(this.topics)
+                .topics(this.getTopics())
                 .build();
     }
 
@@ -142,7 +158,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * @return topology of the Kafka Streams app
      */
     public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.topics, kafkaProperties);
+        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
         this.app.buildTopology(streamsBuilder);
         return streamsBuilder.build();
     }

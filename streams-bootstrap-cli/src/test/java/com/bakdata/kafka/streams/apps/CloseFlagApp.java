@@ -27,7 +27,7 @@ package com.bakdata.kafka.streams.apps;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.KStreamX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import lombok.Getter;
@@ -59,8 +59,8 @@ public class CloseFlagApp extends KafkaStreamsApplication<StreamsApp> {
             }
 
             @Override
-            public String getUniqueAppId(final StreamsTopicConfig topics) {
-                return CloseFlagApp.this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                return CloseFlagApp.this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
             }
 
             @Override

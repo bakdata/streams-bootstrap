@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.KStreamX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import lombok.NoArgsConstructor;
@@ -41,8 +41,8 @@ public class Mirror implements StreamsApp {
     }
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+        return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
     }
 
     @Override

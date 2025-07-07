@@ -69,21 +69,21 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        return new ConfiguredProducerApp<>(new StringProducer(), topics);
+        return new ConfiguredProducerApp<>(new StringProducer(), new ProducerAppConfiguration(topics));
     }
 
     private static ConfiguredProducerApp<ProducerApp> createAvroKeyApplication() {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        return new ConfiguredProducerApp<>(new AvroKeyProducer(), topics);
+        return new ConfiguredProducerApp<>(new AvroKeyProducer(), new ProducerAppConfiguration(topics));
     }
 
     private static ConfiguredProducerApp<ProducerApp> createAvroValueApplication() {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
                 .outputTopic("output")
                 .build();
-        return new ConfiguredProducerApp<>(new AvroValueProducer(), topics);
+        return new ConfiguredProducerApp<>(new AvroValueProducer(), new ProducerAppConfiguration(topics));
     }
 
     private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
@@ -168,9 +168,9 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(ProducerCleanUpRunnerTest.this.topicHook);
             }
-        }, ProducerTopicConfig.builder()
+        }, new ProducerAppConfiguration(ProducerTopicConfig.builder()
                 .outputTopic("output")
-                .build());
+                .build()));
     }
 
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {

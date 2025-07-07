@@ -30,6 +30,7 @@ import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
@@ -53,10 +54,10 @@ class ConsumerGroupVerifierTest extends KafkaTest {
     void shouldVerify() {
         final StreamsApp app = new SimpleStreamsApp();
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(app, StreamsTopicConfig.builder()
+                new ConfiguredStreamsApp<>(app, new StreamsAppConfiguration(StreamsTopicConfig.builder()
                         .inputTopics(List.of("input"))
                         .outputTopic("output")
-                        .build());
+                        .build()));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.getBootstrapServers())
                 .withNoStateStoreCaching()
                 .withSessionTimeout(SESSION_TIMEOUT);

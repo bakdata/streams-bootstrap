@@ -55,7 +55,7 @@ class ExecutableProducerAppTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), topics);
+                new ConfiguredProducerApp<>(new TestProducer(), new ProducerAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -70,7 +70,7 @@ class ExecutableProducerAppTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), topics);
+                new ConfiguredProducerApp<>(new TestProducer(), new ProducerAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -85,7 +85,7 @@ class ExecutableProducerAppTest {
                 .outputTopic("output")
                 .build();
         final ConfiguredProducerApp<ProducerApp> configuredApp =
-                new ConfiguredProducerApp<>(new TestProducer(), topics);
+                new ConfiguredProducerApp<>(new TestProducer(), new ProducerAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableProducerApp<ProducerApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);

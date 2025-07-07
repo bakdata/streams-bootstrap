@@ -65,6 +65,7 @@ import picocli.CommandLine.ParseResult;
  * @param <CA> type of {@link ConfiguredApp} used by this app
  * @param <T> type of topic config used by this app
  * @param <A> type of app
+ * @param <AC> type of configuration used by this app
  */
 @ToString
 @Getter
@@ -73,7 +74,7 @@ import picocli.CommandLine.ParseResult;
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
 public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunner, O, E extends ExecutableApp<R, CR,
-        O>, CA extends ConfiguredApp<E>, T, A>
+        O>, CA extends ConfiguredApp<E>, T, A, AC>
         implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @ToString.Exclude
@@ -215,8 +216,17 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public final CA createConfiguredApp() {
         final T topics = this.createTopicConfig();
         final A app = this.createApp();
-        return this.createConfiguredApp(app, topics);
+        final AC appConfiguration = this.createConfiguration(topics);
+        return this.createConfiguredApp(app, appConfiguration);
     }
+
+    /**
+     * Create configuration to configure app
+     *
+     * @param topics topic configuration
+     * @return configuration
+     */
+    public abstract AC createConfiguration(T topics);
 
     /**
      * Create a new {@code RunnableApp}
@@ -268,10 +278,10 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Create a new {@code ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
-     * @param topics topic configuration
+     * @param configuration configuration for app
      * @return {@code ConfiguredApp}
      */
-    protected abstract CA createConfiguredApp(final A app, T topics);
+    protected abstract CA createConfiguredApp(final A app, AC configuration);
 
     private void startApplication() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));

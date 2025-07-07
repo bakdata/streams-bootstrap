@@ -22,28 +22,18 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.apps;
+package com.bakdata.kafka.producer;
 
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public class SimpleStreamsApp implements StreamsApp {
+/**
+ * Configuration of a {@link ProducerApp}
+ */
+@RequiredArgsConstructor
+public class ProducerAppConfiguration {
 
-    @Override
-    public void buildTopology(final StreamsBuilderX builder) {
-        builder.streamInput().toOutputTopic();
-    }
-
-    @Override
-    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-        return "group";
-    }
-
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, StringSerde.class);
-    }
+    @Getter
+    private final @NonNull ProducerTopicConfig topics;
 }

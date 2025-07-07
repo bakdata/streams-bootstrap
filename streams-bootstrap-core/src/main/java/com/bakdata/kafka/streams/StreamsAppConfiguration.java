@@ -22,28 +22,39 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.apps;
+package com.bakdata.kafka.streams;
 
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import java.util.Optional;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public class SimpleStreamsApp implements StreamsApp {
+/**
+ * Configuration of a {@link StreamsApp}
+ */
+@RequiredArgsConstructor
+public class StreamsAppConfiguration {
 
-    @Override
-    public void buildTopology(final StreamsBuilderX builder) {
-        builder.streamInput().toOutputTopic();
+    @Getter
+    private final @NonNull StreamsTopicConfig topics;
+    private final String uniqueAppId;
+
+    /**
+     * Create a new {@code StreamsAppConfiguration} with no provided {@link #uniqueAppId}
+     *
+     * @param topics topics to use for app
+     */
+    public StreamsAppConfiguration(final StreamsTopicConfig topics) {
+        this(topics, null);
     }
 
-    @Override
-    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-        return "group";
-    }
-
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, StringSerde.class);
+    /**
+     * Get the provided unique application ID. If user did not provide a unique application ID, this will return empty.
+     *
+     * @return provided unique application ID
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     */
+    public Optional<String> getUniqueAppId() {
+        return Optional.ofNullable(this.uniqueAppId);
     }
 }

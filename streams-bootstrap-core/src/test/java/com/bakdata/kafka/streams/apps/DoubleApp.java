@@ -28,13 +28,14 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import org.apache.kafka.common.serialization.Serdes.DoubleSerde;
 
 public abstract class DoubleApp implements StreamsApp {
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
         return "my-app";
     }
 
@@ -44,7 +45,8 @@ public abstract class DoubleApp implements StreamsApp {
     }
 
     public TestTopology<Double, Double> startApp(final StreamsTopicConfig topicConfig) {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(this, topicConfig);
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(this, new StreamsAppConfiguration(topicConfig));
         return TestHelper.startApp(configuredApp);
     }
 

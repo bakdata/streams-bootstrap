@@ -34,6 +34,7 @@ import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
@@ -52,13 +53,17 @@ class ConfiguredStreamsAppTest {
         return StreamsTopicConfig.builder().build();
     }
 
+    private static StreamsAppConfiguration newAppConfiguration() {
+        return new StreamsAppConfiguration(emptyTopicConfig());
+    }
+
     @Test
     void shouldPrioritizeConfigCLIParameters() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), emptyTopicConfig());
+                )), newAppConfiguration());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         "foo", "baz",
@@ -77,7 +82,7 @@ class ConfiguredStreamsAppTest {
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), emptyTopicConfig());
+                )), newAppConfiguration());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -87,7 +92,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldSetDefaultSerde() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), newAppConfiguration());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry(DEFAULT_KEY_SERDE_CLASS_CONFIG, StringSerde.class)
                 .containsEntry(DEFAULT_VALUE_SERDE_CLASS_CONFIG, LongSerde.class);
@@ -96,7 +101,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfKeySerdeHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         DEFAULT_KEY_SERDE_CLASS_CONFIG, ByteArraySerde.class
@@ -109,7 +114,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfValueSerdeHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         DEFAULT_VALUE_SERDE_CLASS_CONFIG, ByteArraySerde.class
@@ -122,7 +127,7 @@ class ConfiguredStreamsAppTest {
     @Test
     void shouldThrowIfAppIdHasBeenConfiguredDifferently() {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(), emptyTopicConfig());
+                new ConfiguredStreamsApp<>(new TestApplication(), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         StreamsConfig.APPLICATION_ID_CONFIG, "my-app"
@@ -137,7 +142,7 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
-                )), emptyTopicConfig());
+                )), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -149,12 +154,74 @@ class ConfiguredStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(Map.of(
                         AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-                )), emptyTopicConfig());
+                )), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .withSchemaRegistryUrl("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");
+    }
+
+    @Test
+    void shouldThrowIfAppIdIsInconsistent() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                return "foo";
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig(), "not_foo"));
+        assertThatThrownBy(configuredApp::getUniqueAppId)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Provided application ID does not match StreamsApp#getUniqueAppId()");
+    }
+
+    @Test
+    void shouldThrowIfAppIdIsNull() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                return null;
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig(), "foo"));
+        assertThatThrownBy(configuredApp::getUniqueAppId)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Application ID cannot be null");
+    }
+
+    @Test
+    void shouldReturnConfiguredAppId() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig(), "foo"));
+        assertThat(configuredApp.getUniqueAppId()).isEqualTo("foo");
     }
 
     @RequiredArgsConstructor
@@ -172,7 +239,7 @@ class ConfiguredStreamsAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final StreamsTopicConfig topics) {
+        public String getUniqueAppId(final StreamsAppConfiguration configuration) {
             return "foo";
         }
 
