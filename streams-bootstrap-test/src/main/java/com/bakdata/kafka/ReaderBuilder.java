@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -38,14 +38,24 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.Deserializer;
 
 /**
  * Read data from a Kafka cluster
+ * @param <K> type of keys deserialized by the reader
+ * @param <V> type of values deserialized by the reader
  */
-@RequiredArgsConstructor
-public class ReaderBuilder {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReaderBuilder<K, V> {
 
     private final @NonNull Map<String, Object> properties;
+    private final @NonNull Preconfigured<Deserializer<K>> keyDeserializer;
+    private final @NonNull Preconfigured<Deserializer<V>> valueDeserializer;
+
+    static <K, V> ReaderBuilder<K, V> create(final Map<String, Object> properties) {
+        return new ReaderBuilder<>(properties, Preconfigured.defaultDeserializer(),
+                Preconfigured.defaultDeserializer());
+    }
 
     private static <K, V> List<ConsumerRecord<K, V>> pollAll(final Consumer<K, V> consumer, final Duration timeout) {
         final List<ConsumerRecord<K, V>> records = new ArrayList<>();
@@ -62,7 +72,7 @@ public class ReaderBuilder {
         final List<PartitionInfo> partitionInfos = consumer.listTopics().get(topic);
         final List<TopicPartition> topicPartitions = partitionInfos.stream()
                 .map(ReaderBuilder::toTopicPartition)
-                .collect(Collectors.toList());
+                .toList();
         consumer.assign(topicPartitions);
         return pollAll(consumer, timeout);
     }
@@ -73,26 +83,26 @@ public class ReaderBuilder {
 
     /**
      * Add a consumer configuration
+     *
      * @param key configuration key
      * @param value configuration value
      * @return {@code ReaderBuilder} with added configuration
      */
-    public ReaderBuilder with(final String key, final Object value) {
+    public ReaderBuilder<K, V> with(final String key, final Object value) {
         final Map<String, Object> newProperties = new HashMap<>(this.properties);
         newProperties.put(key, value);
-        return new ReaderBuilder(Map.copyOf(newProperties));
+        return new ReaderBuilder<>(Map.copyOf(newProperties), this.keyDeserializer, this.valueDeserializer);
     }
 
     /**
-     * Read all data from a topic. This method is idempotent, meaning calling it multiple times will read the same
-     * data unless the data in the topic changes.
+     * Read all data from a topic. This method is idempotent, meaning calling it multiple times will read the same data
+     * unless the data in the topic changes.
+     *
      * @param topic topic to read from
      * @param timeout consumer poll timeout
      * @return consumed records
-     * @param <K> type of keys
-     * @param <V> type of values
      */
-    public <K, V> List<ConsumerRecord<K, V>> from(final String topic, final Duration timeout) {
+    public List<ConsumerRecord<K, V>> from(final String topic, final Duration timeout) {
         try (final Consumer<K, V> consumer = this.createConsumer()) {
             return readAll(consumer, topic, timeout);
         }
@@ -100,12 +110,83 @@ public class ReaderBuilder {
 
     /**
      * Create a new {@code Consumer} for a Kafka cluster
+     *
      * @return {@code Consumer}
-     * @param <K> type of keys
-     * @param <V> type of values
      */
-    public <K, V> Consumer<K, V> createConsumer() {
-        return new KafkaConsumer<>(this.properties);
+    public Consumer<K, V> createConsumer() {
+        return new KafkaConsumer<>(this.properties,
+                this.keyDeserializer.configureForKeys(this.properties),
+                this.valueDeserializer.configureForValues(this.properties));
+    }
+
+    /**
+     * Provide custom deserializers for keys and values. Deserializers are configured automatically.
+     *
+     * @param keyDeserializer serializer for keys
+     * @param valueDeserializer serializer for values
+     * @param <KN> type of keys
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom deserializers
+     */
+    public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Preconfigured<Deserializer<KN>> keyDeserializer,
+            final Preconfigured<Deserializer<VN>> valueDeserializer) {
+        return new ReaderBuilder<>(this.properties, keyDeserializer, valueDeserializer);
+    }
+
+    /**
+     * Provide custom deserializers for keys and values. Deserializers are configured automatically.
+     * @param keyDeserializer serializer for keys
+     * @param valueDeserializer serializer for values
+     * @param <KN> type of keys
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom deserializers
+     * @see ReaderBuilder#withDeserializers(Preconfigured, Preconfigured)
+     */
+    public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Deserializer<KN> keyDeserializer,
+            final Deserializer<VN> valueDeserializer) {
+        return this.withDeserializers(Preconfigured.create(keyDeserializer), Preconfigured.create(valueDeserializer));
+    }
+
+    /**
+     * Provide custom deserializers for keys. Deserializer is configured automatically.
+     * @param keyDeserializer serializer for keys
+     * @param <KN> type of keys
+     * @return {@code SenderBuilder} with custom key deserializer
+     */
+    public <KN> ReaderBuilder<KN, V> withKeyDeserializer(final Preconfigured<Deserializer<KN>> keyDeserializer) {
+        return this.withDeserializers(keyDeserializer, this.valueDeserializer);
+    }
+
+    /**
+     * Provide custom deserializers for keys. Deserializer is configured automatically.
+     * @param keyDeserializer serializer for keys
+     * @param <KN> type of keys
+     * @return {@code SenderBuilder} with custom key deserializer
+     * @see ReaderBuilder#withKeyDeserializer(Preconfigured)
+     */
+    public <KN> ReaderBuilder<KN, V> withKeyDeserializer(final Deserializer<KN> keyDeserializer) {
+        return this.withKeyDeserializer(Preconfigured.create(keyDeserializer));
+    }
+
+    /**
+     * Provide custom deserializers for values. Deserializer is configured automatically.
+     * @param valueDeserializer serializer for values
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom values deserializer
+     */
+    public <VN> ReaderBuilder<K, VN> withValueDeserializer(final Preconfigured<Deserializer<VN>> valueDeserializer) {
+        return this.withDeserializers(this.keyDeserializer, valueDeserializer);
+    }
+
+    /**
+     * Provide custom deserializers for values. Deserializer is configured automatically.
+     * @param valueDeserializer serializer for values
+     * @param <VN> type of values
+     * @return {@code SenderBuilder} with custom values deserializer
+     * @see ReaderBuilder#withValueDeserializer(Preconfigured)
+     */
+    public <VN> ReaderBuilder<K, VN> withValueDeserializer(final Deserializer<VN> valueDeserializer) {
+        return this.withValueDeserializer(Preconfigured.create(valueDeserializer));
     }
 
 }

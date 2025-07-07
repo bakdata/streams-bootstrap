@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ImprovedAdminClient;
+import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -33,10 +33,10 @@ import lombok.Value;
 /**
  * Configuration for setting up an app
  * @param <T> type of topic config
- * @see StreamsApp#setup(AppConfiguration)
- * @see StreamsApp#setupCleanUp(AppConfiguration)
- * @see ProducerApp#setup(AppConfiguration)
- * @see ProducerApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.streams.StreamsApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.streams.StreamsApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.producer.ProducerApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.producer.ProducerApp#setupCleanUp(AppConfiguration)
  */
 @Value
 @EqualsAndHashCode
@@ -47,11 +47,11 @@ public class AppConfiguration<T> {
     Map<String, Object> kafkaProperties;
 
     /**
-     * Create a new {@code ImprovedAdminClient} using {@link #kafkaProperties}
+     * Create a new {@link AdminClientX} using {@link #kafkaProperties}
      *
-     * @return {@code ImprovedAdminClient}
+     * @return {@link AdminClientX}
      */
-    public ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    public AdminClientX createAdminClient() {
+        return AdminClientX.create(this.kafkaProperties);
     }
 }
