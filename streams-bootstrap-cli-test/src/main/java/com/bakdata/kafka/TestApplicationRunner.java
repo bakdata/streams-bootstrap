@@ -27,6 +27,9 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.streams.ConfiguredStreamsApp;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.StreamsApp;
 import com.google.common.collect.ImmutableList;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -135,9 +138,9 @@ public final class TestApplicationRunner {
      * @param args CLI arguments to pass to the application
      * @return {@link CompletableFuture} providing the application exit code
      */
-    public CompletableFuture<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
+    public CompletableFuture<Integer> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, emptyList());
-        return CompletableFuture.supplyAsync(() -> KafkaApplication.startApplicationWithoutExit(app, newArgs));
+        return CompletableFuture.supplyAsync(() -> app.startApplicationWithoutExit(newArgs));
     }
 
     /**
@@ -148,9 +151,9 @@ public final class TestApplicationRunner {
      * @param args CLI arguments to pass to the application
      * @return application exit code
      */
-    public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String... args) {
+    public int clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("clean"));
-        return KafkaApplication.startApplicationWithoutExit(app, newArgs);
+        return app.startApplicationWithoutExit(newArgs);
     }
 
     /**
@@ -163,7 +166,7 @@ public final class TestApplicationRunner {
      */
     public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("reset"));
-        return KafkaApplication.startApplicationWithoutExit(app, newArgs);
+        return app.startApplicationWithoutExit(newArgs);
     }
 
     /**
@@ -173,7 +176,7 @@ public final class TestApplicationRunner {
      * @param app application to run
      * @return {@link CompletableFuture} to await execution
      */
-    public CompletableFuture<Void> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+    public CompletableFuture<Void> run(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         return CompletableFuture.runAsync(app);
     }
@@ -183,7 +186,7 @@ public final class TestApplicationRunner {
      *
      * @param app application to clean
      */
-    public void clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+    public void clean(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {
         this.prepareExecution(app);
         app.clean();
     }
@@ -230,7 +233,7 @@ public final class TestApplicationRunner {
      *
      * @param app application to configure
      */
-    public void configure(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+    public void configure(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {
         app.setBootstrapServers(this.bootstrapServers);
         final Map<String, String> mergedConfig = merge(app.getKafkaConfig(), this.kafkaConfig);
         app.setKafkaConfig(mergedConfig);
@@ -239,7 +242,7 @@ public final class TestApplicationRunner {
         }
     }
 
-    private void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app) {
+    private void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {
         this.configure(app);
         app.onApplicationStart();
     }

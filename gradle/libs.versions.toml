@@ -33,12 +33,12 @@ mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version
 testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
 testcontainers-kafka = { group = "org.testcontainers", name = "kafka", version.ref = "testcontainers" }
 fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.4.0" }
-log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.24.3" }
+log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.25.0" }
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
 
 [plugins]
 release = { id = "com.bakdata.release", version = "1.9.1" }
 sonar = { id = "com.bakdata.sonar", version = "1.9.1" }
 sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
-lombok = { id = "io.freefair.lombok", version = "8.13.1" }
+lombok = { id = "io.freefair.lombok", version = "8.14" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
