@@ -27,7 +27,7 @@ package com.bakdata.kafka.streams.apps;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.KStreamX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import lombok.Getter;
