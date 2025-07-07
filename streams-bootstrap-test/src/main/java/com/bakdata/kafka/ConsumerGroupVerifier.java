@@ -24,9 +24,11 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.AdminClientX;
-import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.TopicClient;
+import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.admin.ConsumerGroupClient;
+import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.streams.ExecutableStreamsApp;
+import com.bakdata.kafka.streams.StreamsConfigX;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
