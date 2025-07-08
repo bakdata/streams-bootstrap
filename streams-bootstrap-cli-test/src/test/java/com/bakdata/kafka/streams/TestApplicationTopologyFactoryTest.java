@@ -36,7 +36,6 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -141,7 +140,6 @@ public class TestApplicationTopologyFactoryTest {
         }
     }
 
-    @Disabled
     @Test
     void shouldConfigureKafkaConfig() {
         final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
