@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +41,6 @@ import lombok.RequiredArgsConstructor;
  * Class that provides helpers for using Fluent Kafka Streams Tests with {@link KafkaStreamsApplication}
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class TestApplicationTopologyFactory {
 
     private final @NonNull Function<RuntimeConfiguration, RuntimeConfiguration> configurationModifier;
