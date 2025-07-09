@@ -47,6 +47,13 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
+    void shouldNotDescribeTopic() {
+        try (final TopicClient client = this.createClient()) {
+            assertThat(client.describe("does_not_exist")).isNotPresent();
+        }
+    }
+
+    @Test
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", defaultTopicSettings().build());
@@ -87,7 +94,7 @@ class TopicClientTest extends KafkaTest {
             client.createTopic("topic", settings, emptyMap());
             assertThat(client.exists("topic")).isTrue();
             assertThat(client.describe("topic"))
-                    .satisfies(info -> {
+                    .hasValueSatisfying(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
                         assertThat(info.getPartitions()).isEqualTo(5);
                     });

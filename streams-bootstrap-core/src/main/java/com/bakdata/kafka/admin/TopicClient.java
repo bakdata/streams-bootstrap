@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -53,6 +54,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.ConfigResource.Type;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.jooq.lambda.Seq;
 
 /**
@@ -166,24 +168,28 @@ public final class TopicClient implements AutoCloseable {
         }
     }
 
+    private static TopicSettings describe(final TopicDescription description) {
+        final List<TopicPartitionInfo> partitions = description.partitions();
+        final int replicationFactor = partitions.stream()
+                .findFirst()
+                .map(TopicPartitionInfo::replicas)
+                .map(List::size)
+                .orElseThrow(() -> new IllegalStateException("Topic " + description.name() + " has no partitions"));
+        return TopicSettings.builder()
+                .replicationFactor((short) replicationFactor)
+                .partitions(partitions.size())
+                .build();
+    }
+
     /**
      * Describes the current configuration of a Kafka topic.
      *
      * @param topicName the topic name
      * @return settings of topic including number of partitions and replicationFactor
      */
-    public TopicSettings describe(final String topicName) {
-        final TopicDescription description = this.getDescription(topicName);
-        final List<TopicPartitionInfo> partitions = description.partitions();
-        final int replicationFactor = partitions.stream()
-                .findFirst()
-                .map(TopicPartitionInfo::replicas)
-                .map(List::size)
-                .orElseThrow(() -> new IllegalStateException("Topic " + topicName + " has no partitions"));
-        return TopicSettings.builder()
-                .replicationFactor((short) replicationFactor)
-                .partitions(partitions.size())
-                .build();
+    public Optional<TopicSettings> describe(final String topicName) {
+        final Optional<TopicDescription> d = this.getDescription(topicName);
+        return d.map(TopicClient::describe);
     }
 
     /**
@@ -236,12 +242,15 @@ public final class TopicClient implements AutoCloseable {
      * @param topicName the topic name
      * @return topic description
      */
-    public TopicDescription getDescription(final String topicName) {
+    public Optional<TopicDescription> getDescription(final String topicName) {
         try {
             final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
                     this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
-            return kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+            return Optional.of(kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS));
         } catch (final ExecutionException e) {
+            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                return Optional.empty();
+            }
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;
             }
