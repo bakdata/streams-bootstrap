@@ -1,8 +1,20 @@
 # Change Log
 
-## [5.0.0](https://github.com/bakdata/streams-bootstrap/tree/5.0.0) (2025-07-07)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.0...5.0.0)
+## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) (2025-07-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.0.1)
 
+
+## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) (2025-07-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.0...5.0.1)
+
+**Merged pull requests:**
+
+- Remove unnecessary getters [\#343](https://github.com/bakdata/streams-bootstrap/pull/343) ([@philipp94831](https://github.com/philipp94831))
+- Use Kafka config from StreamsApplication [\#341](https://github.com/bakdata/streams-bootstrap/pull/341) ([@philipp94831](https://github.com/philipp94831))
+
+**Upgraded dependencies:**
+
+- Bump the test\-dependencies group across 1 directory with 5 updates [\#334](https://github.com/bakdata/streams-bootstrap/pull/334) ([@dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [5.0.0](https://github.com/bakdata/streams-bootstrap/tree/5.0.0) (2025-07-07)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.3...5.0.0)
