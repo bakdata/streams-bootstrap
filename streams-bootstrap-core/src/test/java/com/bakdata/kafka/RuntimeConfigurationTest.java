@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -43,6 +44,16 @@ class RuntimeConfigurationTest {
         assertThatThrownBy(() -> configuration.with(properties))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Property 'schema.registry.url' already configured");
+    }
+
+    @Test
+    void shouldConfigureSchemaRegistry() {
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
+        final Map<String, String> properties = Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
+        );
+        assertThat(configuration.with(properties).createKafkaProperties())
+                .containsEntry(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081");
     }
 
     @Test
