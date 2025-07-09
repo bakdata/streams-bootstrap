@@ -188,8 +188,8 @@ public final class TopicClient implements AutoCloseable {
      * @return settings of topic including number of partitions and replicationFactor
      */
     public Optional<TopicSettings> describe(final String topicName) {
-        final Optional<TopicDescription> d = this.getDescription(topicName);
-        return d.map(TopicClient::describe);
+        final Optional<TopicDescription> description = this.getDescription(topicName);
+        return description.map(TopicClient::describe);
     }
 
     /**
