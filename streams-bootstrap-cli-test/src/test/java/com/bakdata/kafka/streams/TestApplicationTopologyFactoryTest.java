@@ -32,8 +32,10 @@ import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -135,6 +137,35 @@ public class TestApplicationTopologyFactoryTest {
         try (final TestTopology<String, String> testTopology = factory.createTopology(app)) {
             verify(app).prepareRun();
             testTopology.start();
+        }
+    }
+
+    @Test
+    void shouldConfigureKafkaConfig() {
+        final TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
+        final SimpleStreamsApp app = new SimpleStreamsApp() {
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                return super.defaultSerializationConfig()
+                        .withValueSerde(SpecificAvroSerde.class);
+            }
+        };
+        final KafkaStreamsApplication<SimpleStreamsApp> cliApp = createApp(app);
+        cliApp.setKafkaConfig(Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"
+        ));
+        try (final TestTopology<String, TestRecord> testTopology = factory.createTopology(cliApp)) {
+            testTopology.start();
+            final TestRecord value = TestRecord.newBuilder()
+                    .setContent("content")
+                    .build();
+            testTopology.input()
+                    .add("foo", value);
+            testTopology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue(value)
+                    .expectNoMoreRecord();
         }
     }
 

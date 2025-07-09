@@ -86,7 +86,7 @@ public final class TestApplicationTopologyFactory {
      * @param kafkaProperties properties to configure
      * @return a copy of this {@code TestApplicationTopologyFactory} with provided properties
      */
-    public TestApplicationTopologyFactory with(final Map<String, Object> kafkaProperties) {
+    public TestApplicationTopologyFactory with(final Map<String, ?> kafkaProperties) {
         return new TestApplicationTopologyFactory(
                 this.configurationModifier.andThen(configureProperties(kafkaProperties)));
     }
@@ -104,7 +104,7 @@ public final class TestApplicationTopologyFactory {
     public <K, V> TestTopology<K, V> createTopology(final KafkaStreamsApplication<? extends StreamsApp> app) {
         final ConfiguredStreamsApp<? extends StreamsApp> configuredApp = createConfiguredApp(app);
         final TestTopologyFactory testTopologyFactory = this.createTestTopologyFactory();
-        return testTopologyFactory.createTopology(configuredApp);
+        return testTopologyFactory.with(app.getKafkaConfig()).createTopology(configuredApp);
     }
 
     /**

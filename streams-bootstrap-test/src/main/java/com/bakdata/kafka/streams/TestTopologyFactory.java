@@ -78,7 +78,7 @@ public final class TestTopologyFactory {
      * @param kafkaProperties properties to configure
      * @return a copy of this {@code TestTopologyFactory} with provided properties
      */
-    public TestTopologyFactory with(final Map<String, Object> kafkaProperties) {
+    public TestTopologyFactory with(final Map<String, ?> kafkaProperties) {
         return new TestTopologyFactory(
                 this.configurationModifier.andThen(ConfigurationModifiers.configureProperties(kafkaProperties)));
     }
