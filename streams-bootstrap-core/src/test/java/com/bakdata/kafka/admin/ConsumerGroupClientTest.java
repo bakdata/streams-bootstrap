@@ -50,6 +50,13 @@ class ConsumerGroupClientTest extends KafkaTest {
         }
     }
 
+    @Test
+    void shouldNotListOffsets() {
+        try (final ConsumerGroupClient client = this.createClient()) {
+            assertThat(client.listOffsets("does_not_exist")).isEmpty();
+        }
+    }
+
     private ConsumerGroupClient createClient() {
         final String brokerList = this.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);

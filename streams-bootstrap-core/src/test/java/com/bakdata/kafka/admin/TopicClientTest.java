@@ -54,6 +54,13 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
+    void shouldNotGetTopicConfigs() {
+        try (final TopicClient client = this.createClient()) {
+            assertThat(client.getConfig("does_not_exist")).isEmpty();
+        }
+    }
+
+    @Test
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             client.createTopic("exists", defaultTopicSettings().build());

@@ -207,6 +207,9 @@ public final class TopicClient implements AutoCloseable {
             return config.entries().stream()
                     .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
         } catch (final ExecutionException e) {
+            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                return emptyMap();
+            }
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;
             }
