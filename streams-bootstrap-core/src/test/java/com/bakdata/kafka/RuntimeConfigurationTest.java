@@ -37,10 +37,10 @@ class RuntimeConfigurationTest {
     void shouldThrowIfSchemaRegistryAlreadyConfigured() {
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092")
                 .withSchemaRegistryUrl("localhost:8081");
-        assertThatThrownBy(() -> configuration
-                .with(Map.of(
-                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
-                )))
+        final Map<String, String> properties = Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
+        );
+        assertThatThrownBy(() -> configuration.with(properties))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Property 'schema.registry.url' already configured");
     }
@@ -48,10 +48,10 @@ class RuntimeConfigurationTest {
     @Test
     void shouldThrowIfBoostrapServersAlreadyConfigured() {
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
-        assertThatThrownBy(() -> configuration
-                .with(Map.of(
-                        CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
-                )))
+        final Map<String, String> properties = Map.of(
+                CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
+        );
+        assertThatThrownBy(() -> configuration.with(properties))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Property 'bootstrap.servers' already configured");
     }
