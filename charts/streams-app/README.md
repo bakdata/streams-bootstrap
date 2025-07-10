@@ -11,8 +11,9 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Deployment
 
 | Parameter                       | Description                                                                                                                                                                                                                                                | Default                                    |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `nameOverride`                  | The name of the Kubernetes deployment.                                                                                                                                                                                                                     | `bakdata-streams-app`                      |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `nameOverride`                  | The name of the chart.                                                                                                                                                                                                                                     |                                            |
+| `fullnameOverride`              | The full qualified app name.                                                                                                                                                                                                                               |                                            |
 | `replicaCount`                  | The number of Kafka Streams replicas.                                                                                                                                                                                                                      | `1`                                        |
 | `resources`                     | See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/                                                                                                                                                                         | see [values.yaml](values.yaml) for details |
 | `annotations`                   | Map of custom annotations to attach to the deployment.                                                                                                                                                                                                     | `{}`                                       |
@@ -79,21 +80,34 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### JMX Configuration
 
-| Parameter         | Description                                       | Default  |
-| ----------------- | ------------------------------------------------- | -------- |
-| `jmx.port`        | The jmx port which JMX style metrics are exposed. | `5555`   |
-| `jmx.metricRules` | List of JMX metric rules.                         | `[".*"]` |
+| Parameter     | Description                                                             | Default     |
+|---------------|-------------------------------------------------------------------------|-------------|
+| `jmx.enabled` | Whether or not to open JMX port for remote access (e.g., for debugging) | `false`     |
+| `jmx.port`    | The JMX port which JMX style metrics are exposed.                       | `5555`      |
+| `jmx.host`    | The host to use for JMX remote access.                                  | `localhost` |
 
 ### Prometheus JMX Exporter Configuration
 
-| Parameter                        | Description                                                                                                    | Default                                                            |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `prometheus.jmx.enabled`         | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `true`                                                             |
-| `prometheus.jmx.image`           | Docker Image for Prometheus JMX Exporter container.                                                            | `solsson/kafka-prometheus-jmx-exporter@sha256`                     |
-| `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143` |
-| `prometheus.jmx.imagePullPolicy` | Docker Image Pull Policy for Prometheus JMX Exporter container.                                                | `IfNotPresent`                                                     |
-| `prometheus.jmx.port`            | JMX Exporter Port which exposes metrics in Prometheus format for scraping.                                     | `5556`                                                             |
-| `prometheus.jmx.resources`       | JMX Exporter resources configuration.                                                                          | see [values.yaml](values.yaml) for details                         |
+| Parameter                        | Description                                                                                                    | Default                                    |
+|----------------------------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `prometheus.jmx.enabled`         | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `false`                                    |
+| `prometheus.jmx.image`           | Docker Image for Prometheus JMX Exporter container.                                                            | `bitnami/jmx-exporter`                     |
+| `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `1.1.0`                                    |
+| `prometheus.jmx.imagePullPolicy` | Docker Image Pull Policy for Prometheus JMX Exporter container.                                                | `Always`                                   |
+| `prometheus.jmx.port`            | JMX Exporter Port which exposes metrics in Prometheus format for scraping.                                     | `5556`                                     |
+| `prometheus.jmx.metricRules`     | List of JMX metric rules.                                                                                      | `[pattern: ".*"]`                          |
+| `prometheus.jmx.resources`       | JMX Exporter resources configuration.                                                                          | see [values.yaml](values.yaml) for details |
+
+Prometheus can scrape your metrics by deploying
+a [PodMonitor](https://github.com/bakdata/streams-bootstrap/blob/master/monitoring/pod_monitor.yaml) or adding pod
+annotations
+
+```yaml
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: 5556 # needs to match prometheus.jmx.port
+```
 
 ### Auto-Scaling
 
