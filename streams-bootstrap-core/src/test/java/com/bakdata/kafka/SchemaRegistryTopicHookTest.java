@@ -47,7 +47,7 @@ class SchemaRegistryTopicHookTest extends KafkaTest {
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers(),
                 AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl()
         );
-        this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isNotPresent();
+        this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isPresent();
     }
 
     @Test
