@@ -56,7 +56,6 @@ import org.jooq.lambda.Seq;
 /**
  * This class offers helpers to interact with Kafka topics.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class TopicClient implements AutoCloseable {
 
@@ -67,7 +66,12 @@ public final class TopicClient implements AutoCloseable {
             .waitDuration(Duration.ofSeconds(5L))
             .build();
     private final @NonNull Admin adminClient;
-    private final @NonNull Duration timeout;
+    private final @NonNull Timeout timeout;
+
+    public TopicClient(@NonNull final Admin adminClient, @NonNull final Duration timeout) {
+        this.adminClient = adminClient;
+        this.timeout = new Timeout(timeout);
+    }
 
     /**
      * Creates a new {@code TopicClient} using the specified configuration.
@@ -102,7 +106,7 @@ public final class TopicClient implements AutoCloseable {
     public Map<TopicPartition, ListOffsetsResultInfo> listOffsets(final Iterable<TopicPartition> topicPartitions) {
         final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
                 .toMap(Function.identity(), o -> OffsetSpec.latest());
-        return this.get(this.adminClient.listOffsets(offsetRequest).all(), TopicClient::failedToListOffsets);
+        return this.timeout.get(this.adminClient.listOffsets(offsetRequest).all(), TopicClient::failedToListOffsets);
     }
 
     /**
@@ -111,18 +115,13 @@ public final class TopicClient implements AutoCloseable {
      * @return name of all existing Kafka topics
      */
     public Collection<String> listTopics() {
-        return this.get(this.adminClient
+        return this.timeout.get(this.adminClient
                 .listTopics()
                 .names(), TopicClient::failedToListTopics);
     }
 
     public ForTopic forTopic(final String topicName) {
         return new ForTopic(topicName);
-    }
-
-    private <T> T get(final KafkaFuture<T> future,
-            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper) {
-        return Helper.get(future, exceptionMapper, this.timeout);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -176,7 +175,7 @@ public final class TopicClient implements AutoCloseable {
          */
         public void deleteTopic() {
             log.info("Deleting topic '{}'", this.topicName);
-            TopicClient.this.get(TopicClient.this.adminClient.deleteTopics(List.of(this.topicName))
+            TopicClient.this.timeout.get(TopicClient.this.adminClient.deleteTopics(List.of(this.topicName))
                     .all(), this::failedToDeleteTopic);
             final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
             final boolean exists = Retry.decorateSupplier(retry, this::exists).get();
@@ -229,7 +228,8 @@ public final class TopicClient implements AutoCloseable {
                 final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
                         TopicClient.this.adminClient.describeTopics(List.of(this.topicName)).topicNameValues();
                 final TopicDescription description =
-                        TopicClient.this.get(kafkaTopicMap.get(this.topicName), this::failedToRetrieveTopicDescription);
+                        TopicClient.this.timeout.get(kafkaTopicMap.get(this.topicName),
+                                this::failedToRetrieveTopicDescription);
                 return Optional.of(description);
             } catch (final UnknownTopicOrPartitionException e) {
                 return Optional.empty();
@@ -245,7 +245,7 @@ public final class TopicClient implements AutoCloseable {
         public void createTopic(final TopicSettings settings, final Map<String, String> config) {
             final NewTopic newTopic =
                     new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor());
-            TopicClient.this.get(TopicClient.this.adminClient
+            TopicClient.this.timeout.get(TopicClient.this.adminClient
                     .createTopics(List.of(newTopic.configs(config)))
                     .all(), this::failedToCreateTopic);
             final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);

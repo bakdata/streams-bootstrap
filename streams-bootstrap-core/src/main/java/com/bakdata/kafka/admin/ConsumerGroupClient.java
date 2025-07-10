@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,6 @@ import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.ConfigResource.Type;
@@ -50,12 +48,16 @@ import org.apache.kafka.common.errors.GroupIdNotFoundException;
 /**
  * This class offers helpers to interact with Kafka consumer groups.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class ConsumerGroupClient implements AutoCloseable {
 
     private final @NonNull Admin adminClient;
-    private final @NonNull Duration timeout;
+    private final @NonNull Timeout timeout;
+
+    public ConsumerGroupClient(@NonNull final Admin adminClient, @NonNull final Duration timeout) {
+        this.adminClient = adminClient;
+        this.timeout = new Timeout(timeout);
+    }
 
     /**
      * Creates a new {@code ConsumerGroupClient} using the specified configuration.
@@ -83,18 +85,13 @@ public final class ConsumerGroupClient implements AutoCloseable {
      * @return consumer groups
      */
     public Collection<ConsumerGroupListing> listGroups() {
-        return this.get(this.adminClient
+        return this.timeout.get(this.adminClient
                 .listConsumerGroups()
                 .all(), ConsumerGroupClient::failedToListGroups);
     }
 
     public ForGroup forGroup(final String groupName) {
         return new ForGroup(groupName);
-    }
-
-    private <T> T get(final KafkaFuture<T> future,
-            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper) {
-        return Helper.get(future, exceptionMapper, this.timeout);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -106,7 +103,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public void deleteConsumerGroup() {
             log.info("Deleting consumer group '{}'", this.groupName);
-            ConsumerGroupClient.this.get(ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
+            ConsumerGroupClient.this.timeout.get(
+                    ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
                     .all(), this::failedToDeleteGroup);
             log.info("Deleted consumer group '{}'", this.groupName);
         }
@@ -120,7 +118,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
             log.info("Describing consumer group '{}'", this.groupName);
             try {
                 final ConsumerGroupDescription description =
-                        ConsumerGroupClient.this.get(ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
+                        ConsumerGroupClient.this.timeout.get(
+                                        ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
                                 .all(), this::failedToDescribeGroup)
                                 .get(this.groupName);
                 log.info("Described consumer group '{}'", this.groupName);
@@ -138,7 +137,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
         public Map<TopicPartition, OffsetAndMetadata> listOffsets() {
             log.info("Listing offsets for consumer group '{}'", this.groupName);
             final Map<TopicPartition, OffsetAndMetadata> offsets =
-                    ConsumerGroupClient.this.get(ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
+                    ConsumerGroupClient.this.timeout.get(
+                            ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
                             .partitionsToOffsetAndMetadata(this.groupName), this::failedToListOffsets);
             log.info("Listed offsets for consumer group '{}'", this.groupName);
             return offsets;

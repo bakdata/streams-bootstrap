@@ -24,11 +24,9 @@
 
 package com.bakdata.kafka.admin;
 
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -44,15 +42,10 @@ import org.apache.kafka.common.config.ConfigResource;
 @RequiredArgsConstructor
 class ConfigClient {
     private final @NonNull Admin adminClient;
-    private final @NonNull Duration timeout;
+    private final @NonNull Timeout timeout;
 
     ForResource forResource(final ConfigResource resource) {
         return new ForResource(resource);
-    }
-
-    private <T> T get(final KafkaFuture<T> future,
-            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper) {
-        return Helper.get(future, exceptionMapper, this.timeout);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -63,7 +56,7 @@ class ConfigClient {
                 final Map<ConfigResource, KafkaFuture<Config>> configMap =
                         ConfigClient.this.adminClient.describeConfigs(List.of(this.resource)).values();
                 final Config config =
-                        ConfigClient.this.get(configMap.get(this.resource), this::failedToRetrieveConfig);
+                        ConfigClient.this.timeout.get(configMap.get(this.resource), this::failedToRetrieveConfig);
                 return config.entries().stream()
                         .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
         }
@@ -71,7 +64,7 @@ class ConfigClient {
         void addConfig(final ConfigEntry configEntry) {
             final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
             final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
-            ConfigClient.this.get(ConfigClient.this.adminClient.incrementalAlterConfigs(configs).all(),
+            ConfigClient.this.timeout.get(ConfigClient.this.adminClient.incrementalAlterConfigs(configs).all(),
                     this::failedToAddConfigs);
         }
 

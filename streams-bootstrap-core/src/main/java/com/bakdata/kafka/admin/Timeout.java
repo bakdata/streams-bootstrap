@@ -29,15 +29,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-import lombok.experimental.UtilityClass;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.KafkaFuture;
 
-@UtilityClass
-class Helper {
-    static <T> T get(final KafkaFuture<T> future,
-            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper, final Duration timeout) {
+@RequiredArgsConstructor
+class Timeout {
+    private final @NonNull Duration timeout;
+
+    <T> T get(final KafkaFuture<T> future,
+            final Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         try {
-            return future.get(timeout.toSeconds(), TimeUnit.SECONDS);
+            return future.get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;
