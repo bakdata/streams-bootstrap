@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,34 @@
 
 package com.bakdata.kafka;
 
-import static java.util.Collections.emptyMap;
-
+import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 /**
- * Configuration of an app. This includes topics and Kafka configuration
+ * Configuration for setting up an app
  * @param <T> type of topic config
+ * @see com.bakdata.kafka.streams.StreamsApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.streams.StreamsApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.producer.ProducerApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.producer.ProducerApp#setupCleanUp(AppConfiguration)
  */
 @Value
-@RequiredArgsConstructor
 @EqualsAndHashCode
 public class AppConfiguration<T> {
     @NonNull
     T topics;
     @NonNull
-    Map<String, ?> kafkaConfig;
+    Map<String, Object> kafkaProperties;
 
     /**
-     * Create a new {@code AppConfiguration} with empty Kafka configuration
-     * @param topics topics to use for app
+     * Create a new {@link AdminClientX} using {@link #kafkaProperties}
+     *
+     * @return {@link AdminClientX}
      */
-    public AppConfiguration(final T topics) {
-        this(topics, emptyMap());
+    public AdminClientX createAdminClient() {
+        return AdminClientX.create(this.kafkaProperties);
     }
 }

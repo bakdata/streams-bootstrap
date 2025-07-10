@@ -1,33 +1,37 @@
 description = "Base classes to create standalone Java applications using picocli"
 
 plugins {
-    id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
+    id("java-library")
+    alias(libs.plugins.avro)
 }
 
 dependencies {
     api(project(":streams-bootstrap-core"))
-    api(group = "info.picocli", name = "picocli", version = "4.7.5")
+    api(libs.picocli)
+    implementation(libs.slf4j)
 
-    val junitVersion: String by project
-    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
-    val assertJVersion: String by project
-    testImplementation(group = "org.assertj", name = "assertj-core", version = assertJVersion)
-    val mockitoVersion: String by project
-    testImplementation(group = "org.mockito", name = "mockito-core", version = mockitoVersion)
-    testImplementation(group = "org.mockito", name = "mockito-junit-jupiter", version = mockitoVersion)
-    val kafkaJunitVersion: String by project
-    testImplementation(group = "net.mguenther.kafka", name = "kafka-junit", version = kafkaJunitVersion) {
-        exclude(group = "org.slf4j", module = "slf4j-log4j12")
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.assertj)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit)
+    testImplementation(testFixtures(project(":streams-bootstrap-test")))
+    testImplementation(project(":streams-bootstrap-cli-test"))
+    testImplementation(libs.junit.systemExit)
+    testImplementation(libs.kafka.streams.avro.serde) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
-    testImplementation(group = "com.ginsberg", name = "junit5-system-exit", version = "1.1.2")
-    val fluentKafkaVersion: String by project
-    testImplementation(
-        group = "com.bakdata.fluent-kafka-streams-tests",
-        name = "schema-registry-mock-junit5",
-        version = fluentKafkaVersion
-    )
-    val log4jVersion: String by project
-    testImplementation(group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = log4jVersion)
+    testImplementation(libs.log4j.slf4j2)
+}
+
+tasks.withType<Test> {
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "-javaagent:${
+                configurations.testRuntimeClasspath.get().files.find {
+                    it.name.contains("junit5-system-exit")
+                }
+            }"
+        )
+    })
 }

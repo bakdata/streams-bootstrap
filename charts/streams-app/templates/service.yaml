@@ -2,18 +2,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "streams-app.fullname" . }}
+  name: {{ include "streams-app.fullname" . }}
+  {{- include "streams-app.annotations" . }}
   labels:
-    app: {{ template "streams-app.name" . }}
-    chart: {{ template "streams-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "streams-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.service.labels }}
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
   selector:
-    app: {{ template "streams-app.name" . }}
-    release: {{ .Release.Name }}
+    {{- include "streams-app.selectorLabels" . | nindent 4 }}
   ports:
   {{- range .Values.ports }}
     {{- if .servicePort }}

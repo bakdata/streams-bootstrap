@@ -1,11 +1,26 @@
 description = "Utils for testing your Kafka Streams Application"
 
+plugins {
+    id("java-library")
+    alias(libs.plugins.avro)
+}
+
 dependencies {
     api(project(":streams-bootstrap-core"))
-    val fluentKafkaVersion: String by project
-    api(
-        group = "com.bakdata.fluent-kafka-streams-tests",
-        name = "fluent-kafka-streams-tests-junit5",
-        version = fluentKafkaVersion
-    )
+    api(libs.fluentKafkaStreamsTests)
+    implementation(libs.slf4j)
+
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.assertj)
+    testImplementation(libs.kafka.streams.avro.serde) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
+    testImplementation(libs.kafka.protobuf.provider) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
+    testFixturesApi(libs.testcontainers.junit)
+    testFixturesApi(libs.testcontainers.kafka)
+    testImplementation(libs.log4j.slf4j2)
+    testFixturesApi(libs.awaitility)
 }
