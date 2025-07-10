@@ -43,7 +43,6 @@ import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
-import org.apache.kafka.common.config.ConfigResource.Type;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
 @RequiredArgsConstructor
@@ -51,19 +50,22 @@ class ConfigClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
 
-    private static KafkaAdminException failedToRetrieveConfig(final String entityName, final Type type,
+    private static KafkaAdminException failedToRetrieveConfig(final ConfigResource configResource,
             final Throwable e) {
-        return new KafkaAdminException("Failed to retrieve config of " + type.name().toLowerCase() + " " + entityName,
+        return new KafkaAdminException(
+                "Failed to retrieve config of " + configResource.type().name().toLowerCase() + " "
+                + configResource.name(),
                 e);
     }
 
-    private static KafkaAdminException failedToAddConfigs(final String entityName, final Type type, final Throwable e) {
-        return new KafkaAdminException("Failed to add config to " + type.name().toLowerCase() + " " + entityName, e);
+    private static KafkaAdminException failedToAddConfigs(final ConfigResource configResource, final Throwable e) {
+        return new KafkaAdminException(
+                "Failed to add config to " + configResource.type().name().toLowerCase() + " " + configResource.name(),
+                e);
     }
 
-    Map<String, String> getConfigs(final Type type, final String entityName) {
+    Map<String, String> getConfigs(final ConfigResource configResource) {
         try {
-            final ConfigResource configResource = new ConfigResource(type, entityName);
             final Map<ConfigResource, KafkaFuture<Config>> configMap =
                     this.adminClient.describeConfigs(List.of(configResource)).values();
             final Config config = configMap.get(configResource).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
@@ -76,31 +78,30 @@ class ConfigClient {
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;
             }
-            throw failedToRetrieveConfig(entityName, type, e);
+            throw failedToRetrieveConfig(configResource, e);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw failedToRetrieveConfig(entityName, type, e);
+            throw failedToRetrieveConfig(configResource, e);
         } catch (final TimeoutException e) {
-            throw failedToRetrieveConfig(entityName, type, e);
+            throw failedToRetrieveConfig(configResource, e);
         }
     }
 
-    void addConfig(final Type type, final String entityName, final ConfigEntry configEntry) {
-        final ConfigResource configResource = new ConfigResource(type, entityName);
+    void addConfig(final ConfigResource configResource, final ConfigEntry configEntry) {
         final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
         final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(configResource, List.of(alterConfig));
         try {
             this.adminClient.incrementalAlterConfigs(configs).all().get(this.timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw failedToAddConfigs(entityName, type, e);
+            throw failedToAddConfigs(configResource, e);
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;
             }
-            throw failedToAddConfigs(entityName, type, e);
+            throw failedToAddConfigs(configResource, e);
         } catch (final TimeoutException e) {
-            throw failedToAddConfigs(entityName, type, e);
+            throw failedToAddConfigs(configResource, e);
         }
     }
 }

@@ -43,6 +43,7 @@ import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.ConfigResource.Type;
 import org.apache.kafka.common.errors.GroupIdNotFoundException;
 
@@ -220,7 +221,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public void addConfig(final ConfigEntry configEntry) {
             new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout).addConfig(
-                    Type.GROUP, this.groupName, configEntry);
+                    new ConfigResource(Type.GROUP, this.groupName), configEntry);
         }
 
         /**
@@ -230,7 +231,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public Map<String, String> getConfig() {
             return new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout).getConfigs(
-                    Type.GROUP, this.groupName);
+                    new ConfigResource(Type.GROUP, this.groupName));
         }
 
         private KafkaAdminException failedToDeleteGroup(final Throwable ex) {

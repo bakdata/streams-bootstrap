@@ -50,6 +50,7 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.ConfigResource.Type;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.jooq.lambda.Seq;
@@ -236,8 +237,8 @@ public final class TopicClient implements AutoCloseable {
          * @return config of topic
          */
         public Map<String, String> getConfig() {
-            return new ConfigClient(TopicClient.this.adminClient, TopicClient.this.timeout).getConfigs(Type.TOPIC,
-                    this.topicName);
+            return new ConfigClient(TopicClient.this.adminClient, TopicClient.this.timeout).getConfigs(
+                    new ConfigResource(Type.TOPIC, this.topicName));
         }
 
         /**
