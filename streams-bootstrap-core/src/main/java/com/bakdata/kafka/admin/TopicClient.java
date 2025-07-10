@@ -207,7 +207,8 @@ public final class TopicClient implements AutoCloseable {
             try {
                 return this.getConfigClient().getConfigs();
             } catch (final UnknownTopicOrPartitionException e) {
-                return emptyMap(); // topic does not exist
+                // topic does not exist
+                return emptyMap();
             }
         }
 
@@ -237,7 +238,8 @@ public final class TopicClient implements AutoCloseable {
                         TopicClient.this.timeout.get(future, this::failedToRetrieveTopicDescription);
                 return Optional.of(description);
             } catch (final UnknownTopicOrPartitionException e) {
-                return Optional.empty(); // topic does not exist
+                // topic does not exist
+                return Optional.empty();
             }
         }
 
