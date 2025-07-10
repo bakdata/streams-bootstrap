@@ -7,26 +7,19 @@ apiVersion: apps/v1beta1
 {{- end }}
 kind: Deployment
 metadata:
-  name: {{ template "producer-app.fullname" . }}
-{{- if .Values.annotations }}
-  annotations:
-  {{- range $key, $value := .Values.annotations }}
-    {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
-{{- end }}
+  name: {{ include "producer-app.fullname" . }}
+  {{- include "producer-app.annotations" . }}
   labels:
-    app: {{ template "producer-app.name" . }}
-    chart: {{ template "producer-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "producer-app.labels" . | nindent 4 }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "producer-app.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "producer-app.selectorLabels" . | nindent 6 }}
   template:
 {{ include "producer-app.podTemplate" . | indent 4 }}
 {{- end }}

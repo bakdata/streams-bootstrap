@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * A {@link TopicHook} that resets the schema registry for a topic when it is deleted.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class SchemaRegistryTopicHook implements TopicHook {
@@ -69,13 +72,13 @@ public class SchemaRegistryTopicHook implements TopicHook {
      * Creates a new {@code SchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
-     * {@link SchemaRegistryClientFactory#newClient(List, int, List, Map, Map)}
+     * {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
      * @param schemaRegistryUrl URL of schema registry
      * @return {@code SchemaRegistryClient}
      */
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
-        return SchemaRegistryClientFactory.newClient(List.of(schemaRegistryUrl), CACHE_CAPACITY, null, configs, null);
+        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
     }
 
     @Override

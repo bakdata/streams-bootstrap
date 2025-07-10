@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/bakdata/streams-bootstrap/actions/workflows/build-and-publish.yaml/badge.svg?event=push)](https://github.com/bakdata/streams-bootstrap/actions/workflows/build-and-publish.yaml/badge.svg?event=push)
 [![Sonarcloud status](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
 [![Code coverage](https://sonarcloud.io/api/project_badges/measure?project=com.bakdata.kafka%3Astreams-bootstrap&metric=coverage)](https://sonarcloud.io/dashboard?id=com.bakdata.kafka%3Astreams-bootstrap)
-[![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap&core=gav)
+[![Maven](https://img.shields.io/maven-central/v/com.bakdata.kafka/streams-bootstrap-cli.svg)](https://search.maven.org/search?q=g:com.bakdata.kafka%20AND%20a:streams-bootstrap-cli&core=gav)
 
 # streams-bootstrap
 
@@ -26,13 +26,13 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '3.0.0'
+implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '5.0.1'
 ```
 
 With Kotlin DSL
 
 ```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "3.0.0")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "5.0.1")
 ```
 
 #### Maven
@@ -42,7 +42,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>3.0.0</version>
+  <version>5.0.1</version>
 </dependency>
 ```
 
@@ -57,30 +57,30 @@ Create a subclass of `KafkaStreamsApplication` and implement the abstract method
 and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`.
 
 ```java
-import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TopologyBuilder;
+import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
-import org.apache.kafka.streams.kstream.KStream;
 
-public class MyStreamsApplication extends KafkaStreamsApplication {
+public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
     public static void main(final String[] args) {
-      startApplication(new MyStreamsApplication(), args);
+      new MyStreamsApplication().startApplication(args);
     }
 
     @Override
     public StreamsApp createApp() {
       return new StreamsApp() {
         @Override
-        public void buildTopology(final TopologyBuilder builder) {
-          final KStream<String, String> input = builder.streamInput();
+        public void buildTopology(final StreamsBuilderX builder) {
+          final KStreamX<String, String> input = builder.streamInput();
 
           // your topology
 
-          input.to(builder.getTopics().getOutputTopic());
+          input.toOutputTopic();
         }
 
         @Override
@@ -146,18 +146,18 @@ Additionally, the following commands are available:
 Create a subclass of `KafkaProducerApplication`.
 
 ```java
-import com.bakdata.kafka.KafkaProducerApplication;
-import com.bakdata.kafka.ProducerApp;
-import com.bakdata.kafka.ProducerBuilder;
-import com.bakdata.kafka.ProducerRunnable;
-import com.bakdata.kafka.SerializerConfig;
+import com.bakdata.kafka.producer.KafkaProducerApplication;
+import com.bakdata.kafka.producer.ProducerApp;
+import com.bakdata.kafka.producer.ProducerBuilder;
+import com.bakdata.kafka.producer.ProducerRunnable;
+import com.bakdata.kafka.producer.SerializerConfig;
 import java.util.Map;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-public class MyProducerApplication extends KafkaProducerApplication {
+public class MyProducerApplication extends KafkaProducerApplication<ProducerApp> {
     public static void main(final String[] args) {
-      startApplication(new MyProducerApplication(), args);
+      new MyProducerApplication().startApplication(args);
     }
 
     @Override

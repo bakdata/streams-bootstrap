@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,44 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.NonNull;
 
+/**
+ * Creates properties for a Kafka app.
+ */
 @Builder
-class KafkaPropertiesFactory {
+public class KafkaPropertiesFactory {
     private final @NonNull Map<String, Object> baseConfig;
     private final @NonNull App<?, ?> app;
-    private final @NonNull AppConfiguration<?> configuration;
-    private final @NonNull KafkaEndpointConfig endpointConfig;
+    private final @NonNull RuntimeConfiguration runtimeConfig;
 
-    Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
+    /**
+     * <p>This method creates the configuration to run a Kafka app.</p>
+     * Configuration is created in the following order
+     * <ul>
+     *     <li>
+     *         Configs provided by {@link KafkaPropertiesFactory#baseConfig}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link App#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided via environment variables (see
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link App#defaultSerializationConfig()}
+     *     </li>
+     *     <li>
+     *         Configs provided by {@code configOverrides} parameter
+     *     </li>
+     * </ul>
+     *
+     * @param configOverrides over
+     * @return Kafka properties
+     */
+    public Map<String, Object> createKafkaProperties(final Map<String, Object> configOverrides) {
         return new Task().createKafkaProperties(configOverrides);
     }
 
@@ -48,8 +78,8 @@ class KafkaPropertiesFactory {
             this.putAll(KafkaPropertiesFactory.this.baseConfig);
             this.putAll(KafkaPropertiesFactory.this.app.createKafkaProperties());
             this.putAll(EnvironmentKafkaConfigParser.parseVariables(System.getenv()));
-            this.putAll(KafkaPropertiesFactory.this.configuration.getKafkaConfig());
-            this.putAllValidating(KafkaPropertiesFactory.this.endpointConfig.createKafkaProperties());
+            KafkaPropertiesFactory.this.runtimeConfig.getProvidedProperties().forEach(this::validateNotSet);
+            this.putAll(KafkaPropertiesFactory.this.runtimeConfig.createKafkaProperties());
             final SerializationConfig serializationConfig =
                     KafkaPropertiesFactory.this.app.defaultSerializationConfig();
             this.putAllValidating(serializationConfig.createProperties());

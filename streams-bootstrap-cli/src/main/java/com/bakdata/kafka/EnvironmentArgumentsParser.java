@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -92,7 +91,7 @@ public class EnvironmentArgumentsParser {
         return environment.entrySet().stream()
                 .filter(e -> e.getKey().startsWith(this.environmentPrefix))
                 .flatMap(this::convertEnvironmentVariable)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 

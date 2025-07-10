@@ -14,51 +14,39 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ template "streams-app.fullname" . }}
-{{- if or .Values.kafka.applicationId .Values.annotations }}
-  annotations:
-  {{- range $key, $value := .Values.annotations }}
-    {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
-  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.kafka.applicationId | quote }}
-  {{- end }}
-{{- end }}
+  name: {{ include "streams-app.fullname" . }}
+  {{- include "streams-app.deployment-annotations" . }}
   labels:
-    app: {{ template "streams-app.name" . }}
-    chart: {{ template "streams-app.chart" . }}
-    release: {{ .Release.Name }}
+    {{- include "streams-app.labels" . | nindent 4 }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value }}
+    {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
-  serviceName: {{ template "streams-app.name" . }}
+  serviceName: {{ include "streams-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
+  {{- if (not .Values.autoscaling.enabled) }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: {{ template "streams-app.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "streams-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-    {{- if or .Values.prometheus.jmx.enabled .Values.podAnnotations .Values.files }}
+    {{- if or .Values.podAnnotations .Values.files }}
       annotations:
       {{- if .Values.files }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      {{- end }}
-      {{- if .Values.prometheus.jmx.enabled }}
-        prometheus.io/scrape: "true"
-        prometheus.io/port: {{ .Values.prometheus.jmx.port | quote }}
       {{- end }}
       {{- range $key, $value := .Values.podAnnotations }}
         {{ $key | quote }}: {{ $value | quote }}
       {{- end }}
     {{- end }}
       labels:
-        app: {{ template "streams-app.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "streams-app.selectorLabels" . | nindent 8 }}
+        streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
         {{- end }}
@@ -83,7 +71,7 @@ spec:
 {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ template "streams-app.name" . }}
+        - name: "kafka-app"
           image: "{{ .Values.image }}:{{ .Values.imageTag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           resources:
@@ -110,10 +98,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- end }}
-          {{- if .Values.prometheus.jmx.enabled }}
-            - name: KAFKA_JMX_PORT
-              value: "{{ .Values.jmx.port }}"
           {{- end }}
           {{- if not .Values.statefulSet }}
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
@@ -160,7 +144,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "streams-app.fullname" $ }}
+                  name: {{ include "streams-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.secretRefs }}
@@ -182,6 +166,10 @@ spec:
               value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
                 -Dcom.sun.management.jmxremote.authenticate=false
                 -Dcom.sun.management.jmxremote.ssl=false
+                {{- if .Values.jmx.enabled }}
+                -Djava.rmi.server.hostname={{ .Values.jmx.host }}
+                -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.port }}
+                {{- end }}
                 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
                 {{ .Values.javaOptions.others | join " " }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
@@ -206,7 +194,7 @@ spec:
               mountPath: /tmp/kafka-streams
             {{- end }}
         {{- end }}
-        {{- if or (.Values.prometheus.jmx.enabled) (.Values.ports) }}
+        {{- if or (.Values.jmx.enabled) (.Values.ports) }}
           ports:
             {{- range .Values.ports }}
             - containerPort: {{ .containerPort }}
@@ -215,7 +203,7 @@ spec:
               protocol: {{ .protocol | quote }}
               {{- end }}
             {{- end }}
-            {{- if .Values.prometheus.jmx.enabled }}
+            {{- if .Values.jmx.enabled }}
             - containerPort: {{ .Values.jmx.port }}
               name: jmx
             {{- end }}
@@ -231,18 +219,16 @@ spec:
       {{- if .Values.prometheus.jmx.enabled }}
         - name: prometheus-jmx-exporter
           image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
-          command:
-            - java
-            - -XX:+UnlockExperimentalVMOptions
-            - -XX:+UseCGroupMemoryLimitForHeap
-            - -XX:MaxRAMFraction=1
-            - -XshowSettings:vm
-            - -jar
-            - jmx_prometheus_httpserver.jar
+          imagePullPolicy: "{{ .Values.prometheus.jmx.imagePullPolicy }}"
+          args:
             - {{ .Values.prometheus.jmx.port | quote }}
             - /etc/jmx-streams-app/jmx-kafka-streams-app-prometheus.yml
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=90.0"
           ports:
             - containerPort: {{ .Values.prometheus.jmx.port }}
+              name: prometheus
           resources:
 {{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
           volumeMounts:
@@ -254,12 +240,12 @@ spec:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ template "streams-app.name" . }}-jmx-configmap
+            name: {{ include "streams-app.fullname" . }}-jmx
         {{- end }}
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ template "streams-app.name" . }}
+            name: {{ include "streams-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
