@@ -30,9 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +41,7 @@ import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.ConfigResource.Type;
@@ -84,26 +83,18 @@ public final class ConsumerGroupClient implements AutoCloseable {
      * @return consumer groups
      */
     public Collection<ConsumerGroupListing> listGroups() {
-        try {
-            return this.adminClient
-                    .listConsumerGroups()
-                    .all()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToListGroups(ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToListGroups(ex);
-        } catch (final TimeoutException ex) {
-            throw failedToListGroups(ex);
-        }
+        return this.get(this.adminClient
+                .listConsumerGroups()
+                .all(), ConsumerGroupClient::failedToListGroups);
     }
 
     public ForGroup forGroup(final String groupName) {
         return new ForGroup(groupName);
+    }
+
+    private <T> T get(final KafkaFuture<T> future,
+            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper) {
+        return Helper.get(future, exceptionMapper, this.timeout);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -115,22 +106,9 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public void deleteConsumerGroup() {
             log.info("Deleting consumer group '{}'", this.groupName);
-            try {
-                ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
-                        .all()
-                        .get(ConsumerGroupClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
-                log.info("Deleted consumer group '{}'", this.groupName);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw this.failedToDeleteGroup(ex);
-            } catch (final ExecutionException ex) {
-                if (ex.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToDeleteGroup(ex);
-            } catch (final TimeoutException ex) {
-                throw this.failedToDeleteGroup(ex);
-            }
+            ConsumerGroupClient.this.get(ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
+                    .all(), this::failedToDeleteGroup);
+            log.info("Deleted consumer group '{}'", this.groupName);
         }
 
         /**
@@ -142,25 +120,13 @@ public final class ConsumerGroupClient implements AutoCloseable {
             log.info("Describing consumer group '{}'", this.groupName);
             try {
                 final ConsumerGroupDescription description =
-                        ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
-                                .all()
-                                .get(ConsumerGroupClient.this.timeout.toSeconds(), TimeUnit.SECONDS)
+                        ConsumerGroupClient.this.get(ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
+                                .all(), this::failedToDescribeGroup)
                                 .get(this.groupName);
                 log.info("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw this.failedToDescribeGroup(ex);
-            } catch (final ExecutionException ex) {
-                if (ex.getCause() instanceof GroupIdNotFoundException) {
-                    return Optional.empty();
-                }
-                if (ex.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToDescribeGroup(ex);
-            } catch (final TimeoutException ex) {
-                throw this.failedToDescribeGroup(ex);
+            } catch (final GroupIdNotFoundException ex) {
+                return Optional.empty();
             }
         }
 
@@ -171,24 +137,11 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public Map<TopicPartition, OffsetAndMetadata> listOffsets() {
             log.info("Listing offsets for consumer group '{}'", this.groupName);
-            try {
-                final Map<TopicPartition, OffsetAndMetadata> offsets =
-                        ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
-                                .partitionsToOffsetAndMetadata(this.groupName)
-                                .get(ConsumerGroupClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
-                log.info("Listed offsets for consumer group '{}'", this.groupName);
-                return offsets;
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw this.failedToListOffsets(ex);
-            } catch (final ExecutionException ex) {
-                if (ex.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToListOffsets(ex);
-            } catch (final TimeoutException ex) {
-                throw this.failedToListOffsets(ex);
-            }
+            final Map<TopicPartition, OffsetAndMetadata> offsets =
+                    ConsumerGroupClient.this.get(ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
+                            .partitionsToOffsetAndMetadata(this.groupName), this::failedToListOffsets);
+            log.info("Listed offsets for consumer group '{}'", this.groupName);
+            return offsets;
         }
 
         /**

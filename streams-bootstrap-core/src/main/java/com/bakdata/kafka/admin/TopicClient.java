@@ -34,9 +34,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -103,22 +100,9 @@ public final class TopicClient implements AutoCloseable {
      * @return partition offsets
      */
     public Map<TopicPartition, ListOffsetsResultInfo> listOffsets(final Iterable<TopicPartition> topicPartitions) {
-        try {
-            final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
-                    .toMap(Function.identity(), o -> OffsetSpec.latest());
-            return this.adminClient.listOffsets(offsetRequest).all()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToListOffsets(e);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToListOffsets(e);
-        } catch (final TimeoutException e) {
-            throw failedToListOffsets(e);
-        }
+        final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
+                .toMap(Function.identity(), o -> OffsetSpec.latest());
+        return this.get(this.adminClient.listOffsets(offsetRequest).all(), TopicClient::failedToListOffsets);
     }
 
     /**
@@ -127,26 +111,18 @@ public final class TopicClient implements AutoCloseable {
      * @return name of all existing Kafka topics
      */
     public Collection<String> listTopics() {
-        try {
-            return this.adminClient
-                    .listTopics()
-                    .names()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToListTopics(ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToListTopics(ex);
-        } catch (final TimeoutException ex) {
-            throw failedToListTopics(ex);
-        }
+        return this.get(this.adminClient
+                .listTopics()
+                .names(), TopicClient::failedToListTopics);
     }
 
     public ForTopic forTopic(final String topicName) {
         return new ForTopic(topicName);
+    }
+
+    private <T> T get(final KafkaFuture<T> future,
+            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper) {
+        return Helper.get(future, exceptionMapper, this.timeout);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -200,21 +176,8 @@ public final class TopicClient implements AutoCloseable {
          */
         public void deleteTopic() {
             log.info("Deleting topic '{}'", this.topicName);
-            try {
-                TopicClient.this.adminClient.deleteTopics(List.of(this.topicName))
-                        .all()
-                        .get(TopicClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw this.failedToDeleteTopic(ex);
-            } catch (final ExecutionException ex) {
-                if (ex.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToDeleteTopic(ex);
-            } catch (final TimeoutException ex) {
-                throw this.failedToDeleteTopic(ex);
-            }
+            TopicClient.this.get(TopicClient.this.adminClient.deleteTopics(List.of(this.topicName))
+                    .all(), this::failedToDeleteTopic);
             final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
             final boolean exists = Retry.decorateSupplier(retry, this::exists).get();
             if (exists) {
@@ -261,21 +224,11 @@ public final class TopicClient implements AutoCloseable {
             try {
                 final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
                         TopicClient.this.adminClient.describeTopics(List.of(this.topicName)).topicNameValues();
-                return Optional.of(
-                        kafkaTopicMap.get(this.topicName).get(TopicClient.this.timeout.toSeconds(), TimeUnit.SECONDS));
-            } catch (final ExecutionException e) {
-                if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                    return Optional.empty();
-                }
-                if (e.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToRetrieveTopicDescription(e);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw this.failedToRetrieveTopicDescription(e);
-            } catch (final TimeoutException e) {
-                throw this.failedToRetrieveTopicDescription(e);
+                final TopicDescription description =
+                        TopicClient.this.get(kafkaTopicMap.get(this.topicName), this::failedToRetrieveTopicDescription);
+                return Optional.of(description);
+            } catch (final UnknownTopicOrPartitionException e) {
+                return Optional.empty();
             }
         }
 
@@ -286,24 +239,11 @@ public final class TopicClient implements AutoCloseable {
          * @param config topic configuration
          */
         public void createTopic(final TopicSettings settings, final Map<String, String> config) {
-            try {
-                final NewTopic newTopic =
-                        new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor());
-                TopicClient.this.adminClient
-                        .createTopics(List.of(newTopic.configs(config)))
-                        .all()
-                        .get(TopicClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw this.failedToCreateTopic(ex);
-            } catch (final ExecutionException ex) {
-                if (ex.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToCreateTopic(ex);
-            } catch (final TimeoutException ex) {
-                throw this.failedToCreateTopic(ex);
-            }
+            final NewTopic newTopic =
+                    new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor());
+            TopicClient.this.get(TopicClient.this.adminClient
+                    .createTopics(List.of(newTopic.configs(config)))
+                    .all(), this::failedToCreateTopic);
             final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
             final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists()).get();
             if (doesNotExist) {
