@@ -42,24 +42,20 @@ spec:
     resources:
 {{ toYaml .Values.resources | indent 6 }}
     args:
-    {{- if hasKey .Values.streams "brokers" }}
-      - --brokers
-      - {{ .Values.streams.brokers | quote }}
+    {{- if hasKey .Values.kafka "bootstrapServers" }}
+      - --bootstrap-servers
+      - {{ .Values.kafka.bootstrapServers | quote }}
     {{- end }}
-    {{- if hasKey .Values.streams "schemaRegistryUrl" }}
+    {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
       - --schema-registry-url
-      - {{ .Values.streams.schemaRegistryUrl | quote }}
+      - {{ .Values.kafka.schemaRegistryUrl | quote }}
     {{- end }}
-    {{- if hasKey .Values "debug" }}
-      - --debug
-      - {{ .Values.debug | quote }}
-    {{- end }}
-    {{- if hasKey .Values.streams "outputTopic" }}
+    {{- if hasKey .Values.kafka "outputTopic" }}
       - --output-topic
-      - {{ .Values.streams.outputTopic | quote }}
+      - {{ .Values.kafka.outputTopic | quote }}
     {{- end }}
-    {{- range $key, $value := .Values.streams.extraOutputTopics }}
-      - --extra-output-topics
+    {{- range $key, $value := .Values.kafka.labeledOutputTopics }}
+      - --labeled-output-topics
       - {{ $key }}={{ $value }}
     {{- end }}
     {{- range $key, $value := .Values.commandLine }}
@@ -72,8 +68,8 @@ spec:
     env:
       - name: ENV_PREFIX
         value: {{ .Values.configurationEnvPrefix }}_
-      {{- range $key, $value := .Values.streams.config }}
-      - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+      {{- range $key, $value := .Values.kafka.config }}
+      - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
         value: {{ $value | quote }}
         {{- end }}
         {{- range $key, $value := .Values.secrets }}

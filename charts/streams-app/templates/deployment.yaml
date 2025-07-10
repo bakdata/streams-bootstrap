@@ -80,45 +80,45 @@ spec:
           {{- if not .Values.statefulSet }}
             - --volatile-group-instance-id
           {{- end }}
-          {{- if hasKey .Values.streams "brokers" }}
-            - --brokers
-            - {{ .Values.streams.brokers | quote }}
+          {{- if hasKey .Values.kafka "bootstrapServers" }}
+            - --bootstrap-servers
+            - {{ .Values.kafka.bootstrapServers | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "schemaRegistryUrl" }}
+          {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
             - --schema-registry-url
-            - {{ .Values.streams.schemaRegistryUrl | quote }}
+            - {{ .Values.kafka.schemaRegistryUrl | quote }}
           {{- end }}
-          {{- if hasKey .Values "debug" }}
-            - --debug
-            - {{ .Values.debug | quote }}
-          {{- end }}
-          {{- range .Values.streams.inputTopics }}
+          {{- range .Values.kafka.inputTopics }}
             - --input-topics
             - {{ . | quote  }}
           {{- end }}
-          {{- if hasKey .Values.streams "inputPattern" }}
+          {{- if hasKey .Values.kafka "inputPattern" }}
             - --input-pattern
-            - {{ .Values.streams.inputPattern | quote }}
+            - {{ .Values.kafka.inputPattern | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "outputTopic" }}
+          {{- if hasKey .Values.kafka "outputTopic" }}
             - --output-topic
-            - {{ .Values.streams.outputTopic | quote }}
+            - {{ .Values.kafka.outputTopic | quote }}
           {{- end }}
-          {{- if hasKey .Values.streams "errorTopic" }}
+          {{- if hasKey .Values.kafka "errorTopic" }}
             - --error-topic
-            - {{ .Values.streams.errorTopic | quote }}
+            - {{ .Values.kafka.errorTopic | quote }}
           {{- end }}
-          {{- range $key, $value := .Values.streams.extraOutputTopics }}
-            - --extra-output-topics
+          {{- range $key, $value := .Values.kafka.labeledOutputTopics }}
+            - --labeled-output-topics
             - {{ $key }}={{ $value }}
           {{- end }}
-          {{- range $key, $value := .Values.streams.extraInputTopics }}
-            - --extra-input-topics
+          {{- range $key, $value := .Values.kafka.labeledInputTopics }}
+            - --labeled-input-topics
             - {{ $key }}={{ $value | join ";" }}
           {{- end }}
-          {{- range $key, $value := .Values.streams.extraInputPatterns }}
-            - --extra-input-patterns
+          {{- range $key, $value := .Values.kafka.labeledInputPatterns }}
+            - --labeled-input-patterns
             - {{ $key }}={{ $value }}
+          {{- end }}
+          {{- if hasKey .Values.kafka "applicationId" }}
+            - --application-id
+            - {{ .Values.kafka.applicationId | quote }}
           {{- end }}
           {{- range $key, $value := .Values.commandLine }}
             - {{ $key | quote  }}
