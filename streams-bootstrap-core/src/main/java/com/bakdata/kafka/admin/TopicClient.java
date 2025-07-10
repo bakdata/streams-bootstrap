@@ -68,7 +68,7 @@ public final class TopicClient implements AutoCloseable {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    public TopicClient(@NonNull final Admin adminClient, @NonNull final Duration timeout) {
+    public TopicClient(final Admin adminClient, final Duration timeout) {
         this.adminClient = adminClient;
         this.timeout = new Timeout(timeout);
     }

@@ -54,7 +54,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    public ConsumerGroupClient(@NonNull final Admin adminClient, @NonNull final Duration timeout) {
+    public ConsumerGroupClient(final Admin adminClient, final Duration timeout) {
         this.adminClient = adminClient;
         this.timeout = new Timeout(timeout);
     }

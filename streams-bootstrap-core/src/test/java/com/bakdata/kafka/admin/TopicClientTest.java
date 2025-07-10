@@ -113,6 +113,49 @@ class TopicClientTest extends KafkaTest {
     }
 
     @Test
+    void shouldCreateTopicIfNotExists() {
+        try (final TopicClient client = this.createClient()) {
+            final ForTopic topic = client.forTopic("topic");
+            assertThat(topic.exists()).isFalse();
+            final TopicSettings settings = TopicSettings.builder()
+                    .partitions(5)
+                    .replicationFactor((short) 1)
+                    .build();
+            topic.createIfNotExists(settings);
+            assertThat(topic.exists()).isTrue();
+            assertThat(topic.describe())
+                    .hasValueSatisfying(info -> {
+                        assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
+                        assertThat(info.getPartitions()).isEqualTo(5);
+                    });
+        }
+    }
+
+    @Test
+    void shouldNotCreateTopicIfExists() {
+        try (final TopicClient client = this.createClient()) {
+            final ForTopic topic = client.forTopic("topic");
+            assertThat(topic.exists()).isFalse();
+            final TopicSettings settings = TopicSettings.builder()
+                    .partitions(5)
+                    .replicationFactor((short) 1)
+                    .build();
+            topic.createTopic(settings);
+            final TopicSettings newSettings = TopicSettings.builder()
+                    .partitions(4)
+                    .replicationFactor((short) 2)
+                    .build();
+            topic.createIfNotExists(newSettings);
+            assertThat(topic.exists()).isTrue();
+            assertThat(topic.describe())
+                    .hasValueSatisfying(info -> {
+                        assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
+                        assertThat(info.getPartitions()).isEqualTo(5);
+                    });
+        }
+    }
+
+    @Test
     void shouldGetTopicConfig() {
         try (final TopicClient client = this.createClient()) {
             final Map<String, String> config = Map.of(
