@@ -24,10 +24,9 @@
 
 package com.bakdata.kafka.admin;
 
-import static com.bakdata.kafka.admin.SchemaTopicClient.createSchemaRegistryClient;
+import static com.bakdata.kafka.SchemaRegistryTopicHook.createSchemaRegistryClient;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -75,10 +74,7 @@ public final class AdminClientX implements AutoCloseable {
                     String.format("%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         }
         final Admin adminClient = AdminClient.create(properties);
-        final String schemaRegistryUrl =
-                (String) properties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        final SchemaRegistryClient schemaRegistryClient =
-                schemaRegistryUrl == null ? null : createSchemaRegistryClient(properties, schemaRegistryUrl);
+        final SchemaRegistryClient schemaRegistryClient = createSchemaRegistryClient(properties).orElse(null);
         return builder()
                 .adminClient(adminClient)
                 .schemaRegistryClient(schemaRegistryClient)
@@ -93,10 +89,6 @@ public final class AdminClientX implements AutoCloseable {
     public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
         return Optional.ofNullable(this.schemaRegistryClient)
                 .map(PooledSchemaRegistryClient::new);
-    }
-
-    public SchemaTopicClient getSchemaTopicClient() {
-        return new SchemaTopicClient(this.getTopicClient(), this.getSchemaRegistryClient().orElse(null));
     }
 
     public TopicClient getTopicClient() {

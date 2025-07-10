@@ -64,9 +64,9 @@ class ConsumerGroupClientTest extends KafkaTest {
         try (final ConsumerGroupClient client = this.createClient()) {
             final ForGroup group = client.forGroup("group");
             group.addConfig(
-                    new ConfigEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(10L).toMillis())));
+                    new ConfigEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(60L).toMillis())));
             assertThat(group.getConfig())
-                    .containsEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(10L).toMillis()));
+                    .containsEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(60L).toMillis()));
         }
     }
 

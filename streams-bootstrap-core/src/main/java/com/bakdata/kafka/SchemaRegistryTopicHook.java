@@ -22,94 +22,65 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.admin;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.CleanUpException;
+import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.time.Duration;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.AdminClient;
 
-/**
- * Client to interact with Kafka topics and its associated schema registry subjects in a unified way
- */
 @Slf4j
 @RequiredArgsConstructor
-public final class SchemaTopicClient implements AutoCloseable {
+public class SchemaRegistryTopicHook implements TopicHook {
     private static final int CACHE_CAPACITY = 100;
-    private final @NonNull TopicClient topicClient;
-    private final SchemaRegistryClient schemaRegistryClient;
+    private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
     /**
-     * Creates a new {@code SchemaTopicClient} using the specified configuration.
+     * Creates a new {@code SchemaRegistryClient} using the specified configuration if
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is configured.
      *
-     * @param configs properties passed to {@link AdminClient#create(Map)}
-     * @param schemaRegistryUrl URL of schema registry
-     * @param timeout timeout for waiting for Kafka admin calls
-     * @return {@code SchemaTopicClient}
+     * @param kafkaProperties properties for creating {@code SchemaRegistryClient}
+     * @return {@code SchemaRegistryClient} if {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is
+     * configured
+     * @see SchemaRegistryTopicHook#createSchemaRegistryClient(Map, String)
      */
-    public static SchemaTopicClient create(final Map<String, Object> configs, final String schemaRegistryUrl,
-            final Duration timeout) {
-        final SchemaRegistryClient schemaRegistryClient =
-                createSchemaRegistryClient(configs, schemaRegistryUrl);
-        final TopicClient topicClient = TopicClient.create(configs, timeout);
-        return new SchemaTopicClient(topicClient, schemaRegistryClient);
+    public static Optional<SchemaRegistryClient> createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
+        final String schemaRegistryUrl =
+                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        if (schemaRegistryUrl == null) {
+            return Optional.empty();
+        }
+        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
+        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        return Optional.of(createSchemaRegistryClient(properties, schemaRegistryUrl));
     }
 
     /**
-     * Creates a new {@code SchemaTopicClient} with no {@link SchemaRegistryClient} using the specified configuration.
-     *
-     * @param configs properties passed to {@link AdminClient#create(Map)}
-     * @param timeout timeout for waiting for Kafka admin calls
-     * @return {@code SchemaTopicClient}
-     */
-    public static SchemaTopicClient create(final Map<String, Object> configs, final Duration timeout) {
-        final TopicClient topicClient = TopicClient.create(configs, timeout);
-        return new SchemaTopicClient(topicClient, null);
-    }
-
-    /**
-     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
+     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
-     * {@link SchemaRegistryClientFactory#newClient(List, int, List, Map, Map)}
+     * {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
      * @param schemaRegistryUrl URL of schema registry
-     * @return {@link SchemaRegistryClient}
+     * @return {@code SchemaRegistryClient}
      */
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
-        return SchemaRegistryClientFactory.newClient(List.of(schemaRegistryUrl), CACHE_CAPACITY, null, configs, null);
+        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
     }
 
-    /**
-     * Delete a topic if it exists and reset the corresponding Schema Registry subjects.
-     *
-     * @param topic the topic name
-     */
-    public void deleteTopicAndResetSchemaRegistry(final String topic) {
-        this.topicClient.forTopic(topic).deleteTopicIfExists();
-        this.resetSchemaRegistry(topic);
-    }
-
-    /**
-     * Delete key and value schemas associated with a topic from the schema registry.
-     *
-     * @param topic the topic name
-     */
-    public void resetSchemaRegistry(final String topic) {
-        if (this.schemaRegistryClient == null) {
-            log.debug("No Schema Registry URL set. Skipping schema deletion for topic {}.", topic);
-            return;
-        }
+    @Override
+    public void deleted(final String topic) {
         log.info("Resetting Schema Registry for topic '{}'", topic);
         try {
             final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
@@ -134,13 +105,10 @@ public final class SchemaTopicClient implements AutoCloseable {
 
     @Override
     public void close() {
-        this.topicClient.close();
-        if (this.schemaRegistryClient != null) {
-            try {
-                this.schemaRegistryClient.close();
-            } catch (final IOException e) {
-                throw new UncheckedIOException("Error closing schema registry client", e);
-            }
+        try {
+            this.schemaRegistryClient.close();
+        } catch (final IOException e) {
+            throw new UncheckedIOException("Error closing schema registry client", e);
         }
     }
 }

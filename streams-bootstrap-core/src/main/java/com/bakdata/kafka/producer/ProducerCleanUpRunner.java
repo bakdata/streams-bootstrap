@@ -25,6 +25,7 @@
 package com.bakdata.kafka.producer;
 
 import com.bakdata.kafka.CleanUpRunner;
+import com.bakdata.kafka.SchemaRegistryTopicHook;
 import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -67,6 +68,9 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
     public static ProducerCleanUpRunner create(@NonNull final ProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final ProducerCleanUpConfiguration configuration) {
+        SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)
+                .map(SchemaRegistryTopicHook::new)
+                .ifPresent(configuration::registerTopicHook);
         return new ProducerCleanUpRunner(topics, kafkaProperties, configuration);
     }
 
@@ -106,8 +110,8 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
         }
 
         private void deleteTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .deleteTopicAndResetSchemaRegistry(topic);
+            this.adminClient.getTopicClient()
+                    .forTopic(topic).deleteTopic();
             ProducerCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
