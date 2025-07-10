@@ -35,12 +35,12 @@ import org.apache.kafka.common.KafkaFuture;
 
 @RequiredArgsConstructor
 class Timeout {
-    private final @NonNull Duration timeout;
+    private final @NonNull Duration timeoutDuration;
 
     <T> T get(final KafkaFuture<T> future,
             final Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         try {
-            return future.get(this.timeout.toSeconds(), TimeUnit.SECONDS);
+            return future.get(this.timeoutDuration.toSeconds(), TimeUnit.SECONDS);
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;

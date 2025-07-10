@@ -39,7 +39,12 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
+import org.apache.kafka.clients.admin.DeleteConsumerGroupsResult;
+import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
+import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
+import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.ConfigResource.Type;
@@ -85,9 +90,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
      * @return consumer groups
      */
     public Collection<ConsumerGroupListing> listGroups() {
-        return this.timeout.get(this.adminClient
-                .listConsumerGroups()
-                .all(), ConsumerGroupClient::failedToListGroups);
+        final ListConsumerGroupsResult result = this.adminClient.listConsumerGroups();
+        return this.timeout.get(result.all(), ConsumerGroupClient::failedToListGroups);
     }
 
     public ForGroup forGroup(final String groupName) {
@@ -103,9 +107,9 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public void deleteConsumerGroup() {
             log.info("Deleting consumer group '{}'", this.groupName);
-            ConsumerGroupClient.this.timeout.get(
-                    ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
-                            .all(), this::failedToDeleteGroup);
+            final DeleteConsumerGroupsResult result =
+                    ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName));
+            ConsumerGroupClient.this.timeout.get(result.all(), this::failedToDeleteGroup);
             log.info("Deleted consumer group '{}'", this.groupName);
         }
 
@@ -117,11 +121,12 @@ public final class ConsumerGroupClient implements AutoCloseable {
         public Optional<ConsumerGroupDescription> describe() {
             log.info("Describing consumer group '{}'", this.groupName);
             try {
+                final DescribeConsumerGroupsResult result =
+                        ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName));
+                final Map<String, KafkaFuture<ConsumerGroupDescription>> groups = result.describedGroups();
+                final KafkaFuture<ConsumerGroupDescription> future = groups.get(this.groupName);
                 final ConsumerGroupDescription description =
-                        ConsumerGroupClient.this.timeout.get(
-                                        ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
-                                                .all(), this::failedToDescribeGroup)
-                                .get(this.groupName);
+                        ConsumerGroupClient.this.timeout.get(future, this::failedToDescribeGroup);
                 log.info("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
             } catch (final GroupIdNotFoundException ex) {
@@ -136,10 +141,12 @@ public final class ConsumerGroupClient implements AutoCloseable {
          */
         public Map<TopicPartition, OffsetAndMetadata> listOffsets() {
             log.info("Listing offsets for consumer group '{}'", this.groupName);
+            final ListConsumerGroupOffsetsResult result =
+                    ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName);
+            final KafkaFuture<Map<TopicPartition, OffsetAndMetadata>> future =
+                    result.partitionsToOffsetAndMetadata(this.groupName);
             final Map<TopicPartition, OffsetAndMetadata> offsets =
-                    ConsumerGroupClient.this.timeout.get(
-                            ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
-                                    .partitionsToOffsetAndMetadata(this.groupName), this::failedToListOffsets);
+                    ConsumerGroupClient.this.timeout.get(future, this::failedToListOffsets);
             log.info("Listed offsets for consumer group '{}'", this.groupName);
             return offsets;
         }

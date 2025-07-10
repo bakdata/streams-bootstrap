@@ -41,7 +41,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.admin.TopicDescription;
@@ -106,7 +111,8 @@ public final class TopicClient implements AutoCloseable {
     public Map<TopicPartition, ListOffsetsResultInfo> listOffsets(final Iterable<TopicPartition> topicPartitions) {
         final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
                 .toMap(Function.identity(), o -> OffsetSpec.latest());
-        return this.timeout.get(this.adminClient.listOffsets(offsetRequest).all(), TopicClient::failedToListOffsets);
+        final ListOffsetsResult result = this.adminClient.listOffsets(offsetRequest);
+        return this.timeout.get(result.all(), TopicClient::failedToListOffsets);
     }
 
     /**
@@ -115,9 +121,8 @@ public final class TopicClient implements AutoCloseable {
      * @return name of all existing Kafka topics
      */
     public Collection<String> listTopics() {
-        return this.timeout.get(this.adminClient
-                .listTopics()
-                .names(), TopicClient::failedToListTopics);
+        final ListTopicsResult result = this.adminClient.listTopics();
+        return this.timeout.get(result.names(), TopicClient::failedToListTopics);
     }
 
     public ForTopic forTopic(final String topicName) {
@@ -150,8 +155,7 @@ public final class TopicClient implements AutoCloseable {
          * @see #createTopic(TopicSettings, Map)
          * @see #exists()
          */
-        public void createIfNotExists(final TopicSettings settings,
-                final Map<String, String> config) {
+        public void createIfNotExists(final TopicSettings settings, final Map<String, String> config) {
             if (this.exists()) {
                 log.info("Topic {} already exists, no need to create.", this.topicName);
             } else {
@@ -175,8 +179,8 @@ public final class TopicClient implements AutoCloseable {
          */
         public void deleteTopic() {
             log.info("Deleting topic '{}'", this.topicName);
-            TopicClient.this.timeout.get(TopicClient.this.adminClient.deleteTopics(List.of(this.topicName))
-                    .all(), this::failedToDeleteTopic);
+            final DeleteTopicsResult result = TopicClient.this.adminClient.deleteTopics(List.of(this.topicName));
+            TopicClient.this.timeout.get(result.all(), this::failedToDeleteTopic);
             final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
             final boolean exists = Retry.decorateSupplier(retry, this::exists).get();
             if (exists) {
@@ -225,11 +229,12 @@ public final class TopicClient implements AutoCloseable {
          */
         public Optional<TopicDescription> getDescription() {
             try {
-                final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
-                        TopicClient.this.adminClient.describeTopics(List.of(this.topicName)).topicNameValues();
+                final DescribeTopicsResult result =
+                        TopicClient.this.adminClient.describeTopics(List.of(this.topicName));
+                final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap = result.topicNameValues();
+                final KafkaFuture<TopicDescription> future = kafkaTopicMap.get(this.topicName);
                 final TopicDescription description =
-                        TopicClient.this.timeout.get(kafkaTopicMap.get(this.topicName),
-                                this::failedToRetrieveTopicDescription);
+                        TopicClient.this.timeout.get(future, this::failedToRetrieveTopicDescription);
                 return Optional.of(description);
             } catch (final UnknownTopicOrPartitionException e) {
                 return Optional.empty();
@@ -244,10 +249,10 @@ public final class TopicClient implements AutoCloseable {
          */
         public void createTopic(final TopicSettings settings, final Map<String, String> config) {
             final NewTopic newTopic =
-                    new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor());
-            TopicClient.this.timeout.get(TopicClient.this.adminClient
-                    .createTopics(List.of(newTopic.configs(config)))
-                    .all(), this::failedToCreateTopic);
+                    new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor())
+                            .configs(config);
+            final CreateTopicsResult result = TopicClient.this.adminClient.createTopics(List.of(newTopic));
+            TopicClient.this.timeout.get(result.all(), this::failedToCreateTopic);
             final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
             final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists()).get();
             if (doesNotExist) {

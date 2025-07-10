@@ -26,6 +26,7 @@ package com.bakdata.kafka.admin;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -34,8 +35,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AlterConfigOp;
 import org.apache.kafka.clients.admin.AlterConfigOp.OpType;
+import org.apache.kafka.clients.admin.AlterConfigsResult;
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
+import org.apache.kafka.clients.admin.DescribeConfigsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
 
@@ -53,10 +56,10 @@ class ConfigClient {
         private final @NonNull ConfigResource resource;
 
         Map<String, String> getConfigs() {
-            final Map<ConfigResource, KafkaFuture<Config>> configMap =
-                    ConfigClient.this.adminClient.describeConfigs(List.of(this.resource)).values();
-            final Config config =
-                    ConfigClient.this.timeout.get(configMap.get(this.resource), this::failedToRetrieveConfig);
+            final DescribeConfigsResult result = ConfigClient.this.adminClient.describeConfigs(List.of(this.resource));
+            final Map<ConfigResource, KafkaFuture<Config>> configMap = result.values();
+            final KafkaFuture<Config> future = configMap.get(this.resource);
+            final Config config = ConfigClient.this.timeout.get(future, this::failedToRetrieveConfig);
             return config.entries().stream()
                     .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
         }
@@ -64,8 +67,8 @@ class ConfigClient {
         void addConfig(final ConfigEntry configEntry) {
             final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
             final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
-            ConfigClient.this.timeout.get(ConfigClient.this.adminClient.incrementalAlterConfigs(configs).all(),
-                    this::failedToAddConfigs);
+            final AlterConfigsResult result = ConfigClient.this.adminClient.incrementalAlterConfigs(configs);
+            ConfigClient.this.timeout.get(result.all(), this::failedToAddConfigs);
         }
 
         private KafkaAdminException failedToRetrieveConfig(final Throwable e) {
@@ -77,7 +80,7 @@ class ConfigClient {
         }
 
         private String getName() {
-            return this.resource.type().name().toLowerCase() + " " + this.resource.name();
+            return this.resource.type().name().toLowerCase(Locale.getDefault()) + " " + this.resource.name();
         }
     }
 }
