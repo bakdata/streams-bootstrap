@@ -61,7 +61,7 @@ class TopicClientClusterTest {
                     .untilAsserted(() -> {
                         assertThat(client.exists("topic")).isTrue();
                         assertThat(client.describe("topic"))
-                                .satisfies(info -> {
+                                .hasValueSatisfying(info -> {
                                     assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
                                     assertThat(info.getPartitions()).isEqualTo(5);
                                 });
