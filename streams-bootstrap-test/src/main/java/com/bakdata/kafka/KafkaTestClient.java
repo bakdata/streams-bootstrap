@@ -91,7 +91,7 @@ public class KafkaTestClient {
     public void createTopic(final String topicName, final TopicSettings settings, final Map<String, String> config) {
         try (final AdminClientX admin = this.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(topicName, settings, config);
+            topicClient.forTopic(topicName).createTopic(settings, config);
         }
     }
 
@@ -126,7 +126,7 @@ public class KafkaTestClient {
     public boolean existsTopic(final String topicName) {
         try (final AdminClientX admin = this.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            return topicClient.exists(topicName);
+            return topicClient.forTopic(topicName).exists();
         }
     }
 }

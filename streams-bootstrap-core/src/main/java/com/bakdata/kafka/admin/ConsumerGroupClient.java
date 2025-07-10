@@ -32,15 +32,18 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.config.ConfigResource.Type;
 import org.apache.kafka.common.errors.GroupIdNotFoundException;
 
 /**
@@ -64,122 +67,13 @@ public final class ConsumerGroupClient implements AutoCloseable {
         return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 
-    private static KafkaAdminException failedToDeleteGroup(final String groupName, final Throwable ex) {
-        return new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
-    }
-
     private static KafkaAdminException failedToListGroups(final Throwable ex) {
         return new KafkaAdminException("Failed to list consumer groups", ex);
-    }
-
-    private static KafkaAdminException failedToListOffsets(final String groupName, final Throwable ex) {
-        return new KafkaAdminException("Failed to list offsets for consumer group" + groupName, ex);
-    }
-
-    private static KafkaAdminException failedToDescribeGroup(final String groupName, final Throwable ex) {
-        return new KafkaAdminException("Failed to describe consumer group" + groupName, ex);
-    }
-
-    /**
-     * Delete a consumer group.
-     *
-     * @param groupName the consumer group name
-     */
-    public void deleteConsumerGroup(final String groupName) {
-        log.info("Deleting consumer group '{}'", groupName);
-        try {
-            this.adminClient.deleteConsumerGroups(List.of(groupName))
-                    .all()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            log.info("Deleted consumer group '{}'", groupName);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToDeleteGroup(groupName, ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToDeleteGroup(groupName, ex);
-        } catch (final TimeoutException ex) {
-            throw failedToDeleteGroup(groupName, ex);
-        }
-    }
-
-    /**
-     * Describe a consumer group.
-     *
-     * @param groupName the consumer group name
-     * @return consumer group description
-     */
-    public Optional<ConsumerGroupDescription> describe(final String groupName) {
-        log.info("Describing consumer group '{}'", groupName);
-        try {
-            final ConsumerGroupDescription description =
-                    this.adminClient.describeConsumerGroups(List.of(groupName))
-                            .all()
-                            .get(this.timeout.toSeconds(), TimeUnit.SECONDS)
-                            .get(groupName);
-            log.info("Described consumer group '{}'", groupName);
-            return Optional.of(description);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToDescribeGroup(groupName, ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof GroupIdNotFoundException) {
-                return Optional.empty();
-            }
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToDescribeGroup(groupName, ex);
-        } catch (final TimeoutException ex) {
-            throw failedToDescribeGroup(groupName, ex);
-        }
-    }
-
-    /**
-     * List offsets for a consumer group.
-     *
-     * @param groupName the consumer group name
-     * @return consumer group offsets
-     */
-    public Map<TopicPartition, OffsetAndMetadata> listOffsets(final String groupName) {
-        log.info("Listing offsets for consumer group '{}'", groupName);
-        try {
-            final Map<TopicPartition, OffsetAndMetadata> offsets =
-                    this.adminClient.listConsumerGroupOffsets(groupName)
-                            .partitionsToOffsetAndMetadata(groupName)
-                            .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            log.info("Listed offsets for consumer group '{}'", groupName);
-            return offsets;
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToListOffsets(groupName, ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToListOffsets(groupName, ex);
-        } catch (final TimeoutException ex) {
-            throw failedToListOffsets(groupName, ex);
-        }
     }
 
     @Override
     public void close() {
         this.adminClient.close();
-    }
-
-    /**
-     * Checks whether a Kafka consumer group exists.
-     *
-     * @param groupName the consumer group name
-     * @return whether a Kafka consumer group with the specified name exists or not
-     */
-    public boolean exists(final String groupName) {
-        final Collection<ConsumerGroupListing> consumerGroups = this.listGroups();
-        return consumerGroups.stream()
-                .anyMatch(c -> c.groupId().equals(groupName));
     }
 
     /**
@@ -206,18 +100,149 @@ public final class ConsumerGroupClient implements AutoCloseable {
         }
     }
 
-    /**
-     * Delete a consumer group only if it exists.
-     *
-     * @param groupName the consumer group name
-     */
-    public void deleteGroupIfExists(final String groupName) {
-        if (this.exists(groupName)) {
+    public ForGroup forGroup(final String groupName) {
+        return new ForGroup(groupName);
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    public final class ForGroup {
+        private final @NonNull String groupName;
+
+        /**
+         * Delete a consumer group.
+         */
+        public void deleteConsumerGroup() {
+            log.info("Deleting consumer group '{}'", this.groupName);
             try {
-                this.deleteConsumerGroup(groupName);
-            } catch (final GroupIdNotFoundException e) {
-                // do nothing
+                ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
+                        .all()
+                        .get(ConsumerGroupClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
+                log.info("Deleted consumer group '{}'", this.groupName);
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw this.failedToDeleteGroup(ex);
+            } catch (final ExecutionException ex) {
+                if (ex.getCause() instanceof final RuntimeException cause) {
+                    throw cause;
+                }
+                throw this.failedToDeleteGroup(ex);
+            } catch (final TimeoutException ex) {
+                throw this.failedToDeleteGroup(ex);
             }
+        }
+
+        /**
+         * Describe a consumer group.
+         *
+         * @return consumer group description
+         */
+        public Optional<ConsumerGroupDescription> describe() {
+            log.info("Describing consumer group '{}'", this.groupName);
+            try {
+                final ConsumerGroupDescription description =
+                        ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
+                                .all()
+                                .get(ConsumerGroupClient.this.timeout.toSeconds(), TimeUnit.SECONDS)
+                                .get(this.groupName);
+                log.info("Described consumer group '{}'", this.groupName);
+                return Optional.of(description);
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw this.failedToDescribeGroup(ex);
+            } catch (final ExecutionException ex) {
+                if (ex.getCause() instanceof GroupIdNotFoundException) {
+                    return Optional.empty();
+                }
+                if (ex.getCause() instanceof final RuntimeException cause) {
+                    throw cause;
+                }
+                throw this.failedToDescribeGroup(ex);
+            } catch (final TimeoutException ex) {
+                throw this.failedToDescribeGroup(ex);
+            }
+        }
+
+        /**
+         * List offsets for a consumer group.
+         *
+         * @return consumer group offsets
+         */
+        public Map<TopicPartition, OffsetAndMetadata> listOffsets() {
+            log.info("Listing offsets for consumer group '{}'", this.groupName);
+            try {
+                final Map<TopicPartition, OffsetAndMetadata> offsets =
+                        ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
+                                .partitionsToOffsetAndMetadata(this.groupName)
+                                .get(ConsumerGroupClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
+                log.info("Listed offsets for consumer group '{}'", this.groupName);
+                return offsets;
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw this.failedToListOffsets(ex);
+            } catch (final ExecutionException ex) {
+                if (ex.getCause() instanceof final RuntimeException cause) {
+                    throw cause;
+                }
+                throw this.failedToListOffsets(ex);
+            } catch (final TimeoutException ex) {
+                throw this.failedToListOffsets(ex);
+            }
+        }
+
+        /**
+         * Checks whether a Kafka consumer group exists.
+         *
+         * @return whether a Kafka consumer group with the specified name exists or not
+         */
+        public boolean exists() {
+            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupClient.this.listGroups();
+            return consumerGroups.stream()
+                    .anyMatch(c -> c.groupId().equals(this.groupName));
+        }
+
+        /**
+         * Delete a consumer group only if it exists.
+         */
+        public void deleteGroupIfExists() {
+            if (this.exists()) {
+                try {
+                    this.deleteConsumerGroup();
+                } catch (final GroupIdNotFoundException e) {
+                    // do nothing
+                }
+            }
+        }
+
+        /**
+         * Add a config for a consumer group.
+         *
+         * @param configEntry the configuration entry to add
+         */
+        public void addConfig(final ConfigEntry configEntry) {
+            new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout).addConfig(
+                    Type.GROUP, this.groupName, configEntry);
+        }
+
+        /**
+         * Describes the current configuration of a consumer group.
+         *
+         * @return config of consumer group
+         */
+        public Map<String, String> getConfig() {
+            return new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout).getConfigs(
+                    Type.GROUP, this.groupName);
+        }
+
+        private KafkaAdminException failedToDeleteGroup(final Throwable ex) {
+            return new KafkaAdminException("Failed to delete consumer group " + this.groupName, ex);
+        }
+
+        private KafkaAdminException failedToListOffsets(final Throwable ex) {
+            return new KafkaAdminException("Failed to list offsets for consumer group " + this.groupName, ex);
+        }
+
+        private KafkaAdminException failedToDescribeGroup(final Throwable ex) {
+            return new KafkaAdminException("Failed to describe consumer group " + this.groupName, ex);
         }
     }
 }

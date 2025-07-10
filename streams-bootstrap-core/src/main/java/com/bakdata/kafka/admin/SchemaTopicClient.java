@@ -96,7 +96,7 @@ public final class SchemaTopicClient implements AutoCloseable {
      * @param topic the topic name
      */
     public void deleteTopicAndResetSchemaRegistry(final String topic) {
-        this.topicClient.deleteTopicIfExists(topic);
+        this.topicClient.forTopic(topic).deleteTopicIfExists();
         this.resetSchemaRegistry(topic);
     }
 

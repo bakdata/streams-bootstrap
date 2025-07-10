@@ -27,9 +27,11 @@ package com.bakdata.kafka.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.admin.ConsumerGroupClient.ForGroup;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.ConfigEntry;
 import org.junit.jupiter.api.Test;
 
 class ConsumerGroupClientTest extends KafkaTest {
@@ -39,21 +41,32 @@ class ConsumerGroupClientTest extends KafkaTest {
     @Test
     void shouldNotFindGroup() {
         try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.exists("does_not_exist")).isFalse();
+            assertThat(client.forGroup("does_not_exist").exists()).isFalse();
         }
     }
 
     @Test
     void shouldNotDescribeGroup() {
         try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.describe("does_not_exist")).isNotPresent();
+            assertThat(client.forGroup("does_not_exist").describe()).isNotPresent();
         }
     }
 
     @Test
     void shouldNotListOffsets() {
         try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.listOffsets("does_not_exist")).isEmpty();
+            assertThat(client.forGroup("does_not_exist").listOffsets()).isEmpty();
+        }
+    }
+
+    @Test
+    void shouldAddGroupConfigs() {
+        try (final ConsumerGroupClient client = this.createClient()) {
+            final ForGroup group = client.forGroup("group");
+            group.addConfig(
+                    new ConfigEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(10L).toMillis())));
+            assertThat(group.getConfig())
+                    .containsEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(10L).toMillis()));
         }
     }
 

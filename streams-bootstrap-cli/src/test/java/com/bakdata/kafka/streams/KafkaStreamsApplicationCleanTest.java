@@ -96,7 +96,7 @@ class KafkaStreamsApplicationCleanTest extends KafkaTest {
             this.clean(app);
 
             try (final AdminClientX admin = testClient.admin()) {
-                this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
+                this.softly.assertThat(admin.getTopicClient().forTopic(app.getOutputTopic()).exists())
                         .as("Output topic is deleted")
                         .isFalse();
             }
@@ -132,7 +132,7 @@ class KafkaStreamsApplicationCleanTest extends KafkaTest {
             this.reset(app);
 
             try (final AdminClientX admin = testClient.admin()) {
-                this.softly.assertThat(admin.getTopicClient().exists(app.getOutputTopic()))
+                this.softly.assertThat(admin.getTopicClient().forTopic(app.getOutputTopic()).exists())
                         .as("Output topic exists")
                         .isTrue();
             }

@@ -29,6 +29,7 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.admin.TopicClient.ForTopic;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -42,37 +43,38 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldNotFindTopic() {
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.exists("does_not_exist")).isFalse();
+            assertThat(client.forTopic("does_not_exist").exists()).isFalse();
         }
     }
 
     @Test
     void shouldNotDescribeTopic() {
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.describe("does_not_exist")).isNotPresent();
+            assertThat(client.forTopic("does_not_exist").describe()).isNotPresent();
         }
     }
 
     @Test
     void shouldNotGetTopicConfigs() {
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.getConfig("does_not_exist")).isEmpty();
+            assertThat(client.forTopic("does_not_exist").getConfig()).isEmpty();
         }
     }
 
     @Test
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("exists", defaultTopicSettings().build());
-            assertThat(client.exists("exists")).isTrue();
+            final ForTopic exists = client.forTopic("exists");
+            exists.createTopic(defaultTopicSettings().build());
+            assertThat(client.forTopic("exists").exists()).isTrue();
         }
     }
 
     @Test
     void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings().build());
-            client.createTopic("bar", defaultTopicSettings().build());
+            client.forTopic("foo").createTopic(defaultTopicSettings().build());
+            client.forTopic("bar").createTopic(defaultTopicSettings().build());
             assertThat(client.listTopics())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -82,9 +84,10 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
-            client.createTopic("foo", defaultTopicSettings().build());
-            assertThat(client.exists("foo")).isTrue();
-            client.deleteTopic("foo");
+            final ForTopic foo = client.forTopic("foo");
+            foo.createTopic(defaultTopicSettings().build());
+            assertThat(foo.exists()).isTrue();
+            foo.deleteTopic();
             assertThat(client.listTopics())
                     .isEmpty();
         }
@@ -93,14 +96,15 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldCreateTopic() {
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.exists("topic")).isFalse();
+            final ForTopic topic = client.forTopic("topic");
+            assertThat(topic.exists()).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
                     .replicationFactor((short) 1)
                     .build();
-            client.createTopic("topic", settings, emptyMap());
-            assertThat(client.exists("topic")).isTrue();
-            assertThat(client.describe("topic"))
+            topic.createTopic(settings, emptyMap());
+            assertThat(topic.exists()).isTrue();
+            assertThat(topic.describe())
                     .hasValueSatisfying(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
                         assertThat(info.getPartitions()).isEqualTo(5);
@@ -115,8 +119,9 @@ class TopicClientTest extends KafkaTest {
                     TopicConfig.CLEANUP_POLICY_CONFIG,
                     TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE
             );
-            client.createTopic("foo", defaultTopicSettings().build(), config);
-            assertThat(client.getConfig("foo"))
+            final ForTopic foo = client.forTopic("foo");
+            foo.createTopic(defaultTopicSettings().build(), config);
+            assertThat(foo.getConfig())
                     .containsEntry(TopicConfig.CLEANUP_POLICY_CONFIG,
                             TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE);
         }

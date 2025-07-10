@@ -31,6 +31,7 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.admin.TopicClient.ForTopic;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -62,8 +63,9 @@ class SchemaTopicClientTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         try (final AdminClientX admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
-            this.softly.assertThat(topicClient.exists(TOPIC))
+            final ForTopic topic = topicClient.forTopic(TOPIC);
+            topic.createTopic(defaultTopicSettings().build());
+            this.softly.assertThat(topic.exists())
                     .as("Topic is created")
                     .isTrue();
 
@@ -84,7 +86,7 @@ class SchemaTopicClientTest extends KafkaTest {
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(TOPIC + "-value");
-            this.softly.assertThat(topicClient.exists(TOPIC))
+            this.softly.assertThat(topic.exists())
                     .isFalse();
         }
     }
@@ -94,8 +96,9 @@ class SchemaTopicClientTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         try (final AdminClientX admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
-            this.softly.assertThat(topicClient.exists(TOPIC))
+            final ForTopic topic = topicClient.forTopic(TOPIC);
+            topic.createTopic(defaultTopicSettings().build());
+            this.softly.assertThat(topic.exists())
                     .as("Topic is created")
                     .isTrue();
 
@@ -116,7 +119,7 @@ class SchemaTopicClientTest extends KafkaTest {
 
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(TOPIC + "-value");
-            this.softly.assertThat(topicClient.exists(TOPIC))
+            this.softly.assertThat(topic.exists())
                     .isTrue();
         }
     }
@@ -127,8 +130,9 @@ class SchemaTopicClientTest extends KafkaTest {
         final KafkaTestClient testClient = this.newTestClient();
         try (final AdminClientX admin = testClient.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(TOPIC, defaultTopicSettings().build());
-            this.softly.assertThat(topicClient.exists(TOPIC))
+            final ForTopic topic = topicClient.forTopic(TOPIC);
+            topic.createTopic(defaultTopicSettings().build());
+            this.softly.assertThat(topic.exists())
                     .as("Topic is created")
                     .isTrue();
 
@@ -149,7 +153,7 @@ class SchemaTopicClientTest extends KafkaTest {
 
             this.softly.assertThat(client.getAllSubjects())
                     .contains(TOPIC + "-value");
-            this.softly.assertThat(topicClient.exists(TOPIC))
+            this.softly.assertThat(topic.exists())
                     .isFalse();
         }
     }

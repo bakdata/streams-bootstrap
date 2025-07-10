@@ -258,7 +258,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
         private void deleteConsumerGroup() {
             final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.config.getAppId());
+            consumerGroupClient.forGroup(StreamsCleanUpRunner.this.config.getAppId()).deleteGroupIfExists();
         }
     }
 
