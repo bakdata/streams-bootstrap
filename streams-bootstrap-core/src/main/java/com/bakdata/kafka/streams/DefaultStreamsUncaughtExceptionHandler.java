@@ -27,9 +27,9 @@ package com.bakdata.kafka.streams;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 
 /**
- * {@code StreamsUncaughtExceptionHandler} that does not handle the exception and responds with
+ * {@link StreamsUncaughtExceptionHandler} that does not handle the exception and responds with
  * {@link StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse#SHUTDOWN_CLIENT}. Mimics default behavior of
- * {@link org.apache.kafka.streams.KafkaStreams} if no {@code StreamsUncaughtExceptionHandler} has been configured.
+ * {@link org.apache.kafka.streams.KafkaStreams} if no {@link StreamsUncaughtExceptionHandler} has been configured.
  * @see org.apache.kafka.streams.KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
  */
 class DefaultStreamsUncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {

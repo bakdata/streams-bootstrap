@@ -57,7 +57,7 @@ public interface StreamsApp extends App<StreamsTopicConfig, StreamsCleanUpConfig
     }
 
     /**
-     * @return {@code StreamsCleanUpConfiguration}
+     * @return {@link StreamsCleanUpConfiguration}
      * @see StreamsCleanUpRunner
      */
     @Override
