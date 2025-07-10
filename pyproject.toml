@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "streams-bootstrap"
+version = "0.1.0"
+description = "Minimal doc tooling for streams-bootstrap"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.5"
+mkdocs-material = "^9.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
