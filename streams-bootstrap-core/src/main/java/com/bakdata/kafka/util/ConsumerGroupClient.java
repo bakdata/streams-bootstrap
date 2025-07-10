@@ -70,7 +70,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
             this.adminClient.deleteConsumerGroups(List.of(groupName))
                     .all()
                     .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            log.info("Deleted consumer group'{}'", groupName);
+            log.info("Deleted consumer group '{}'", groupName);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new KafkaAdminException("Failed to delete consumer group " + groupName, ex);
