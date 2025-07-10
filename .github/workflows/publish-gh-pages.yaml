@@ -23,10 +23,6 @@ jobs:
           echo "${HOME}/.local/bin" >> $GITHUB_PATH
           poetry install --with docs
 
-      - name: Sync gh-pages branch locally
-        run: |
-          git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
-          git reset --hard origin/gh-pages || true
       - name: Debug current directory and files
         run: |
           pwd
