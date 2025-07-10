@@ -201,7 +201,11 @@ public final class TopicClient implements AutoCloseable {
          * @return config of topic
          */
         public Map<String, String> getConfig() {
-            return this.getConfigClient().getConfigs();
+            try {
+                return this.getConfigClient().getConfigs();
+            } catch (final UnknownTopicOrPartitionException e) {
+                return emptyMap();
+            }
         }
 
         /**

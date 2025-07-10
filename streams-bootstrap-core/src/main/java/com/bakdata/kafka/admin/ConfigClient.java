@@ -24,15 +24,11 @@
 
 package com.bakdata.kafka.admin;
 
-import static java.util.Collections.emptyMap;
-
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -44,7 +40,6 @@ import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
-import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
 @RequiredArgsConstructor
 class ConfigClient {
@@ -55,51 +50,29 @@ class ConfigClient {
         return new ForResource(resource);
     }
 
+    private <T> T get(final KafkaFuture<T> future,
+            final Function<? super Throwable, ? extends KafkaAdminException> exceptionMapper) {
+        return Helper.get(future, exceptionMapper, this.timeout);
+    }
+
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     final class ForResource {
         private final @NonNull ConfigResource resource;
 
         Map<String, String> getConfigs() {
-            try {
                 final Map<ConfigResource, KafkaFuture<Config>> configMap =
                         ConfigClient.this.adminClient.describeConfigs(List.of(this.resource)).values();
                 final Config config =
-                        configMap.get(this.resource).get(ConfigClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
+                        ConfigClient.this.get(configMap.get(this.resource), this::failedToRetrieveConfig);
                 return config.entries().stream()
                         .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
-            } catch (final ExecutionException e) {
-                if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                    return emptyMap();
-                }
-                if (e.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToRetrieveConfig(e);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw this.failedToRetrieveConfig(e);
-            } catch (final TimeoutException e) {
-                throw this.failedToRetrieveConfig(e);
-            }
         }
 
         void addConfig(final ConfigEntry configEntry) {
             final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
             final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
-            try {
-                ConfigClient.this.adminClient.incrementalAlterConfigs(configs).all()
-                        .get(ConfigClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw this.failedToAddConfigs(e);
-            } catch (final ExecutionException e) {
-                if (e.getCause() instanceof final RuntimeException cause) {
-                    throw cause;
-                }
-                throw this.failedToAddConfigs(e);
-            } catch (final TimeoutException e) {
-                throw this.failedToAddConfigs(e);
-            }
+            ConfigClient.this.get(ConfigClient.this.adminClient.incrementalAlterConfigs(configs).all(),
+                    this::failedToAddConfigs);
         }
 
         private KafkaAdminException failedToRetrieveConfig(final Throwable e) {
