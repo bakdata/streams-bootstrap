@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.Admin;
@@ -50,58 +51,67 @@ class ConfigClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Duration timeout;
 
-    private static KafkaAdminException failedToRetrieveConfig(final ConfigResource configResource,
-            final Throwable e) {
-        return new KafkaAdminException(
-                "Failed to retrieve config of " + configResource.type().name().toLowerCase() + " "
-                + configResource.name(),
-                e);
+    ForResource forResource(final ConfigResource resource) {
+        return new ForResource(resource);
     }
 
-    private static KafkaAdminException failedToAddConfigs(final ConfigResource configResource, final Throwable e) {
-        return new KafkaAdminException(
-                "Failed to add config to " + configResource.type().name().toLowerCase() + " " + configResource.name(),
-                e);
-    }
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    class ForResource {
+        private final @NonNull ConfigResource resource;
 
-    Map<String, String> getConfigs(final ConfigResource configResource) {
-        try {
-            final Map<ConfigResource, KafkaFuture<Config>> configMap =
-                    this.adminClient.describeConfigs(List.of(configResource)).values();
-            final Config config = configMap.get(configResource).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            return config.entries().stream()
-                    .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                return emptyMap();
+        Map<String, String> getConfigs() {
+            try {
+                final Map<ConfigResource, KafkaFuture<Config>> configMap =
+                        ConfigClient.this.adminClient.describeConfigs(List.of(this.resource)).values();
+                final Config config =
+                        configMap.get(this.resource).get(ConfigClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
+                return config.entries().stream()
+                        .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
+            } catch (final ExecutionException e) {
+                if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                    return emptyMap();
+                }
+                if (e.getCause() instanceof final RuntimeException cause) {
+                    throw cause;
+                }
+                throw this.failedToRetrieveConfig(e);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw this.failedToRetrieveConfig(e);
+            } catch (final TimeoutException e) {
+                throw this.failedToRetrieveConfig(e);
             }
-            if (e.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToRetrieveConfig(configResource, e);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToRetrieveConfig(configResource, e);
-        } catch (final TimeoutException e) {
-            throw failedToRetrieveConfig(configResource, e);
         }
-    }
 
-    void addConfig(final ConfigResource configResource, final ConfigEntry configEntry) {
-        final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
-        final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(configResource, List.of(alterConfig));
-        try {
-            this.adminClient.incrementalAlterConfigs(configs).all().get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToAddConfigs(configResource, e);
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof final RuntimeException cause) {
-                throw cause;
+        void addConfig(final ConfigEntry configEntry) {
+            final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
+            final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
+            try {
+                ConfigClient.this.adminClient.incrementalAlterConfigs(configs).all()
+                        .get(ConfigClient.this.timeout.toSeconds(), TimeUnit.SECONDS);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw this.failedToAddConfigs(e);
+            } catch (final ExecutionException e) {
+                if (e.getCause() instanceof final RuntimeException cause) {
+                    throw cause;
+                }
+                throw this.failedToAddConfigs(e);
+            } catch (final TimeoutException e) {
+                throw this.failedToAddConfigs(e);
             }
-            throw failedToAddConfigs(configResource, e);
-        } catch (final TimeoutException e) {
-            throw failedToAddConfigs(configResource, e);
+        }
+
+        private KafkaAdminException failedToRetrieveConfig(final Throwable e) {
+            return new KafkaAdminException(
+                    "Failed to retrieve config of " + this.resource.type().name().toLowerCase() + " "
+                    + this.resource.name(), e);
+        }
+
+        private KafkaAdminException failedToAddConfigs(final Throwable e) {
+            return new KafkaAdminException(
+                    "Failed to add config to " + this.resource.type().name().toLowerCase() + " " + this.resource.name(),
+                    e);
         }
     }
 }

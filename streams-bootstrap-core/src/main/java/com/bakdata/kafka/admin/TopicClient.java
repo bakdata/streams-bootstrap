@@ -26,6 +26,7 @@ package com.bakdata.kafka.admin;
 
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.admin.ConfigClient.ForResource;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import java.time.Duration;
@@ -237,8 +238,7 @@ public final class TopicClient implements AutoCloseable {
          * @return config of topic
          */
         public Map<String, String> getConfig() {
-            return new ConfigClient(TopicClient.this.adminClient, TopicClient.this.timeout).getConfigs(
-                    new ConfigResource(Type.TOPIC, this.topicName));
+            return this.getConfigClient().getConfigs();
         }
 
         /**
@@ -327,6 +327,11 @@ public final class TopicClient implements AutoCloseable {
             if (this.exists()) {
                 this.deleteTopic();
             }
+        }
+
+        private ForResource getConfigClient() {
+            return new ConfigClient(TopicClient.this.adminClient, TopicClient.this.timeout)
+                    .forResource(new ConfigResource(Type.TOPIC, this.topicName));
         }
 
         private KafkaAdminException failedToDeleteTopic(final Throwable ex) {

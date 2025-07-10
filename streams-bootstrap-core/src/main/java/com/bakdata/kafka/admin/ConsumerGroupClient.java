@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.admin;
 
+import com.bakdata.kafka.admin.ConfigClient.ForResource;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -220,8 +221,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
          * @param configEntry the configuration entry to add
          */
         public void addConfig(final ConfigEntry configEntry) {
-            new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout).addConfig(
-                    new ConfigResource(Type.GROUP, this.groupName), configEntry);
+            this.getConfigClient().addConfig(configEntry);
         }
 
         /**
@@ -230,8 +230,12 @@ public final class ConsumerGroupClient implements AutoCloseable {
          * @return config of consumer group
          */
         public Map<String, String> getConfig() {
-            return new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout).getConfigs(
-                    new ConfigResource(Type.GROUP, this.groupName));
+            return this.getConfigClient().getConfigs();
+        }
+
+        private ForResource getConfigClient() {
+            return new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout)
+                    .forResource(new ConfigResource(Type.GROUP, this.groupName));
         }
 
         private KafkaAdminException failedToDeleteGroup(final Throwable ex) {
