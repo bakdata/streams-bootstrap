@@ -106,6 +106,7 @@ public abstract class KafkaStreamsApplication extends
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
                            + "Kafka Streams application.")
     public void reset() {
+        this.prepareClean();
         try (final CleanableApp<StreamsCleanUpRunner> app = this.createCleanableApp()) {
             final StreamsCleanUpRunner runner = app.getCleanUpRunner();
             runner.reset();
@@ -145,6 +146,14 @@ public abstract class KafkaStreamsApplication extends
                     "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
         }
         return configuredApp;
+    }
+
+    /**
+     * Called before cleaning the application, i.e., invoking {@link #clean()} or {@link #reset()}
+     */
+    @Override
+    protected void prepareClean() {
+        super.prepareClean();
     }
 
     /**

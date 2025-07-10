@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,18 +33,10 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class SimpleKafkaProducerApplication extends KafkaProducerApplication {
-    private final @NonNull Function<Boolean, ProducerApp> appFactory;
-
-    /**
-     * Create new {@code SimpleKafkaProducerApplication}
-     * @param appFactory factory to create {@code ProducerApp} without any parameters
-     */
-    public SimpleKafkaProducerApplication(final Supplier<? extends ProducerApp> appFactory) {
-        this(cleanUp -> appFactory.get());
-    }
+    private final @NonNull Supplier<ProducerApp> appFactory;
 
     @Override
-    public ProducerApp createApp(final boolean cleanUp) {
-        return this.appFactory.apply(cleanUp);
+    public ProducerApp createApp() {
+        return this.appFactory.get();
     }
 }
