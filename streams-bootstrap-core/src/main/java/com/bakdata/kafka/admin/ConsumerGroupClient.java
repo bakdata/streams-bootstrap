@@ -105,7 +105,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
             log.info("Deleting consumer group '{}'", this.groupName);
             ConsumerGroupClient.this.timeout.get(
                     ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName))
-                    .all(), this::failedToDeleteGroup);
+                            .all(), this::failedToDeleteGroup);
             log.info("Deleted consumer group '{}'", this.groupName);
         }
 
@@ -120,7 +120,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
                 final ConsumerGroupDescription description =
                         ConsumerGroupClient.this.timeout.get(
                                         ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName))
-                                .all(), this::failedToDescribeGroup)
+                                                .all(), this::failedToDescribeGroup)
                                 .get(this.groupName);
                 log.info("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
@@ -139,7 +139,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
             final Map<TopicPartition, OffsetAndMetadata> offsets =
                     ConsumerGroupClient.this.timeout.get(
                             ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName)
-                            .partitionsToOffsetAndMetadata(this.groupName), this::failedToListOffsets);
+                                    .partitionsToOffsetAndMetadata(this.groupName), this::failedToListOffsets);
             log.info("Listed offsets for consumer group '{}'", this.groupName);
             return offsets;
         }

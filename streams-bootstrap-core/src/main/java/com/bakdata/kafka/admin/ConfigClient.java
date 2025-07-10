@@ -53,12 +53,12 @@ class ConfigClient {
         private final @NonNull ConfigResource resource;
 
         Map<String, String> getConfigs() {
-                final Map<ConfigResource, KafkaFuture<Config>> configMap =
-                        ConfigClient.this.adminClient.describeConfigs(List.of(this.resource)).values();
-                final Config config =
-                        ConfigClient.this.timeout.get(configMap.get(this.resource), this::failedToRetrieveConfig);
-                return config.entries().stream()
-                        .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
+            final Map<ConfigResource, KafkaFuture<Config>> configMap =
+                    ConfigClient.this.adminClient.describeConfigs(List.of(this.resource)).values();
+            final Config config =
+                    ConfigClient.this.timeout.get(configMap.get(this.resource), this::failedToRetrieveConfig);
+            return config.entries().stream()
+                    .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
         }
 
         void addConfig(final ConfigEntry configEntry) {
@@ -69,15 +69,15 @@ class ConfigClient {
         }
 
         private KafkaAdminException failedToRetrieveConfig(final Throwable e) {
-            return new KafkaAdminException(
-                    "Failed to retrieve config of " + this.resource.type().name().toLowerCase() + " "
-                    + this.resource.name(), e);
+            return new KafkaAdminException("Failed to retrieve config of " + this.getName(), e);
         }
 
         private KafkaAdminException failedToAddConfigs(final Throwable e) {
-            return new KafkaAdminException(
-                    "Failed to add config to " + this.resource.type().name().toLowerCase() + " " + this.resource.name(),
-                    e);
+            return new KafkaAdminException("Failed to add config to " + this.getName(), e);
+        }
+
+        private String getName() {
+            return this.resource.type().name().toLowerCase() + " " + this.resource.name();
         }
     }
 }
