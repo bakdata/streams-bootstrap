@@ -56,7 +56,7 @@ class ConfigClient {
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    class ForResource {
+    final class ForResource {
         private final @NonNull ConfigResource resource;
 
         Map<String, String> getConfigs() {
