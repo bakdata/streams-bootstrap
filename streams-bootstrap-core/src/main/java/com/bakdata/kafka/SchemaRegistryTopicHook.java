@@ -40,6 +40,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * A {@link TopicHook} that resets the schema registry for a topic when it is deleted.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class SchemaRegistryTopicHook implements TopicHook {
