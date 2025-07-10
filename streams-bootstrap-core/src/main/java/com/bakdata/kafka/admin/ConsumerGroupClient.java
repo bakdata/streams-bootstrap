@@ -130,7 +130,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
                 log.info("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
             } catch (final GroupIdNotFoundException ex) {
-                return Optional.empty();
+                return Optional.empty(); // group does not exist
             }
         }
 
