@@ -1,33 +1,19 @@
-name: Deploy Documentation
+- name: Checkout
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
 
-on:
-  push:
-    branches:
-      - 'feature/wiki-gh-pages'
-    tags:
-      - '**'
+- name: Install Poetry and dependencies
+  run: |
+    curl -sSL https://install.python-poetry.org | python3 -
+    echo "${HOME}/.local/bin" >> $GITHUB_PATH
+    poetry install --with docs
 
-jobs:
-  deploy-docs:
-    runs-on: ubuntu-latest
+- name: Sync gh-pages branch locally
+  run: |
+    git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
+    git reset --hard origin/gh-pages || true
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "${HOME}/.local/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies with Poetry (including docs group)
-        run: poetry install --with docs
-
-      - name: Deploy docs with mkdocs
-        run: poetry run mkdocs gh-deploy --config-file docs/mkdocs.yml --clean
-
+- name: Deploy docs
+  run: |
+    poetry run mkdocs gh-deploy --config-file docs/mkdocs.yml --clean --force
