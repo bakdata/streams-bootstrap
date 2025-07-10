@@ -26,6 +26,7 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
+import com.bakdata.kafka.SchemaRegistryTopicHook;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupClient;
 import com.bakdata.kafka.util.TopologyInformation;

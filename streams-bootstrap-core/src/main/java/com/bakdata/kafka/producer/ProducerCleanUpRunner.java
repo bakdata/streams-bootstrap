@@ -25,6 +25,7 @@
 package com.bakdata.kafka.producer;
 
 import com.bakdata.kafka.CleanUpRunner;
+import com.bakdata.kafka.SchemaRegistryTopicHook;
 import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
 import lombok.AccessLevel;

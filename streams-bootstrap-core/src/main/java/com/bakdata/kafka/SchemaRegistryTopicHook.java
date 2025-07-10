@@ -70,13 +70,13 @@ public class SchemaRegistryTopicHook implements TopicHook {
      * Creates a new {@code SchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
-     * {@link SchemaRegistryClientFactory#newClient(List, int, List, Map, Map)}
+     * {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
      * @param schemaRegistryUrl URL of schema registry
      * @return {@code SchemaRegistryClient}
      */
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
-        return SchemaRegistryClientFactory.newClient(List.of(schemaRegistryUrl), CACHE_CAPACITY, null, configs, null);
+        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
     }
 
     @Override
