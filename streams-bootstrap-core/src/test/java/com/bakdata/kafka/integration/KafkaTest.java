@@ -49,13 +49,13 @@ abstract class KafkaTest {
 
     KafkaEndpointConfig createEndpointWithoutSchemaRegistry() {
         return KafkaEndpointConfig.builder()
-                .brokers(this.kafkaCluster.getBrokerList())
+                .bootstrapServers(this.kafkaCluster.getBrokerList())
                 .build();
     }
 
     KafkaEndpointConfig createEndpoint() {
         return KafkaEndpointConfig.builder()
-                .brokers(this.kafkaCluster.getBrokerList())
+                .bootstrapServers(this.kafkaCluster.getBrokerList())
                 .schemaRegistryUrl(this.schemaRegistryMockExtension.getUrl())
                 .build();
     }

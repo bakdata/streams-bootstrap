@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,7 +58,7 @@ class ExecutableStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -75,7 +76,7 @@ class ExecutableStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -93,7 +94,7 @@ class ExecutableStreamsAppTest {
         final ConfiguredStreamsApp<StreamsApp> configuredApp =
                 new ConfiguredStreamsApp<>(new TestApplication(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new StreamsCleanUpConfiguration());
@@ -123,6 +124,11 @@ class ExecutableStreamsAppTest {
         @Override
         public String getUniqueAppId(final StreamsTopicConfig topics) {
             return "foo";
+        }
+
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+            return new SerdeConfig(StringSerde.class, StringSerde.class);
         }
     }
 }

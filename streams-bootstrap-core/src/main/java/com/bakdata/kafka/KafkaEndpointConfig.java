@@ -33,11 +33,11 @@ import lombok.NonNull;
 import org.apache.kafka.streams.StreamsConfig;
 
 /**
- * Configuration to connect to Kafka infrastructure, i.e., brokers and optionally schema registry.
+ * Configuration to connect to Kafka infrastructure, i.e., bootstrap servers and optionally schema registry.
  */
 @Builder
 public class KafkaEndpointConfig {
-    private final @NonNull String brokers;
+    private final @NonNull String bootstrapServers;
     private final String schemaRegistryUrl;
 
     /**
@@ -51,18 +51,11 @@ public class KafkaEndpointConfig {
      */
     public Map<String, Object> createKafkaProperties() {
         final Map<String, String> kafkaConfig = new HashMap<>();
-        kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.brokers);
-        if (this.isSchemaRegistryConfigured()) {
+        kafkaConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
+        if (this.schemaRegistryUrl != null) {
             kafkaConfig.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl);
         }
         return Collections.unmodifiableMap(kafkaConfig);
     }
 
-    /**
-     * Check if schema registry has been configured
-     * @return true if {@link #schemaRegistryUrl} has been configured
-     */
-    public boolean isSchemaRegistryConfigured() {
-        return this.schemaRegistryUrl != null;
-    }
 }

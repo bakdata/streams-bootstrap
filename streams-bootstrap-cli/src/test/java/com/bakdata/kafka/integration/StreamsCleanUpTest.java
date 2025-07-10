@@ -197,7 +197,7 @@ class StreamsCleanUpTest {
     }
 
     private <T extends KafkaStreamsApplication> T configure(final T application) {
-        application.setBrokers(this.kafkaCluster.getBrokerList());
+        application.setBootstrapServers(this.kafkaCluster.getBrokerList());
         application.setKafkaConfig(Map.of(
                 StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0",
                 ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000"

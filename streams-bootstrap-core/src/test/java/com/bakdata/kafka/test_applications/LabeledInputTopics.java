@@ -28,32 +28,16 @@ import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
-import java.util.Arrays;
-import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
 
 @NoArgsConstructor
-public class WordCountPattern implements StreamsApp {
-
+public class LabeledInputTopics implements StreamsApp {
     @Override
     public void buildTopology(final TopologyBuilder builder) {
-        final KStream<String, String> textLines = builder.streamInputPattern();
-
-        final Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
-        final KTable<String, Long> wordCounts = textLines
-                .flatMapValues(value -> Arrays.asList(pattern.split(value.toLowerCase())))
-                .groupBy((key, word) -> word)
-                .count(Materialized.as("counts"));
-
-        final Serde<Long> longValueSerde = Serdes.Long();
-        wordCounts.toStream().to(builder.getTopics().getOutputTopic(), Produced.valueSerde(longValueSerde));
+        final KStream<String, String> input = builder.streamInput("label");
+        input.to(builder.getTopics().getOutputTopic());
     }
 
     @Override

@@ -38,6 +38,7 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.SendKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +53,7 @@ class CliTest {
     void shouldExitWithSuccessCode() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp(final boolean cleanUp) {
+            public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -63,6 +64,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
 
@@ -71,8 +77,7 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -91,9 +96,13 @@ class CliTest {
             public String getUniqueAppId(final StreamsTopicConfig topics) {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
         }), new String[]{
-                "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
         });
@@ -104,7 +113,7 @@ class CliTest {
     void shouldExitWithErrorCodeOnCleanupError() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp(final boolean cleanUp) {
+            public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -113,6 +122,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -123,8 +137,7 @@ class CliTest {
                 throw new RuntimeException();
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -133,10 +146,10 @@ class CliTest {
 
     @Test
     @ExpectSystemExitWithStatus(2)
-    void shouldExitWithErrorCodeOnMissingBrokerParameter() {
+    void shouldExitWithErrorCodeOnMissingBootstrapServersParameter() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp(final boolean cleanUp) {
+            public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -147,6 +160,11 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
 
@@ -155,9 +173,40 @@ class CliTest {
                 // do nothing
             }
         }, new String[]{
+                "--input-topics", "input",
+                "--output-topic", "output",
+        });
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    void shouldExitWithErrorCodeOnInconsistentAppId() {
+        KafkaApplication.startApplication(new KafkaStreamsApplication() {
+            @Override
+            public StreamsApp createApp() {
+                return new StreamsApp() {
+                    @Override
+                    public void buildTopology(final TopologyBuilder builder) {
+                        builder.streamInput().to(builder.getTopics().getOutputTopic());
+                    }
+
+                    @Override
+                    public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        return "my-id";
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
+                    }
+                };
+            }
+        }, new String[]{
+                "--bootstrap-servers", "localhost:9092",
                 "--schema-registry-url", "http://localhost:8081",
                 "--input-topics", "input",
                 "--output-topic", "output",
+                "--application-id", "my-other-id"
         });
     }
 
@@ -179,13 +228,17 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 })) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
 
             runApp(app,
-                    "--brokers", kafkaCluster.getBrokerList(),
-                    "--schema-registry-url", "http://localhost:8081",
+                    "--bootstrap-server", kafkaCluster.getBrokerList(),
                     "--input-topics", input
             );
             kafkaCluster.send(SendKeyValues.to(input, List.of(new KeyValue<>("foo", "bar"))));
@@ -210,14 +263,18 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         return "app";
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        return new SerdeConfig(StringSerde.class, StringSerde.class);
+                    }
                 })) {
             kafkaCluster.start();
             kafkaCluster.createTopic(TopicConfig.withName(input).build());
             kafkaCluster.createTopic(TopicConfig.withName(output).build());
 
             runApp(app,
-                    "--brokers", kafkaCluster.getBrokerList(),
-                    "--schema-registry-url", "http://localhost:8081",
+                    "--bootstrap-server", kafkaCluster.getBrokerList(),
                     "--input-topics", input,
                     "--output-topic", output
             );
@@ -238,7 +295,7 @@ class CliTest {
     void shouldExitWithErrorOnCleanupError() {
         KafkaApplication.startApplication(new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp(final boolean cleanUp) {
+            public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -249,11 +306,15 @@ class CliTest {
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
             }
         }, new String[]{
-                "--brokers", "localhost:9092",
-                "--schema-registry-url", "http://localhost:8081",
+                "--bootstrap-server", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
                 "clean",
@@ -264,7 +325,7 @@ class CliTest {
     void shouldParseArguments() {
         try (final KafkaStreamsApplication app = new KafkaStreamsApplication() {
             @Override
-            public StreamsApp createApp(final boolean cleanUp) {
+            public StreamsApp createApp() {
                 return new StreamsApp() {
                     @Override
                     public void buildTopology(final TopologyBuilder builder) {
@@ -273,6 +334,11 @@ class CliTest {
 
                     @Override
                     public String getUniqueAppId(final StreamsTopicConfig topics) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SerdeConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
                 };
@@ -284,34 +350,36 @@ class CliTest {
             }
         }) {
             KafkaApplication.startApplicationWithoutExit(app, new String[]{
-                    "--brokers", "brokers",
+                    "--bootstrap-server", "bootstrap-servers",
                     "--schema-registry-url", "schema-registry",
                     "--input-topics", "input1,input2",
-                    "--extra-input-topics", "role1=input3,role2=input4;input5",
+                    "--labeled-input-topics", "label1=input3,label2=input4;input5",
                     "--input-pattern", ".*",
-                    "--extra-input-patterns", "role1=.+,role2=\\d+",
+                    "--labeled-input-patterns", "label1=.+,label2=\\d+",
                     "--output-topic", "output1",
-                    "--extra-output-topics", "role1=output2,role2=output3",
+                    "--labeled-output-topics", "label1=output2,label2=output3",
                     "--kafka-config", "foo=1,bar=2",
             });
+            assertThat(app.getBootstrapServers()).isEqualTo("bootstrap-servers");
+            assertThat(app.getSchemaRegistryUrl()).isEqualTo("schema-registry");
             assertThat(app.getInputTopics()).containsExactly("input1", "input2");
-            assertThat(app.getExtraInputTopics())
+            assertThat(app.getLabeledInputTopics())
                     .hasSize(2)
-                    .containsEntry("role1", List.of("input3"))
-                    .containsEntry("role2", List.of("input4", "input5"));
+                    .containsEntry("label1", List.of("input3"))
+                    .containsEntry("label2", List.of("input4", "input5"));
             assertThat(app.getInputPattern())
                     .satisfies(pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".*").pattern()));
-            assertThat(app.getExtraInputPatterns())
+            assertThat(app.getLabeledInputPatterns())
                     .hasSize(2)
-                    .hasEntrySatisfying("role1",
+                    .hasEntrySatisfying("label1",
                             pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile(".+").pattern()))
-                    .hasEntrySatisfying("role2",
+                    .hasEntrySatisfying("label2",
                             pattern -> assertThat(pattern.pattern()).isEqualTo(Pattern.compile("\\d+").pattern()));
             assertThat(app.getOutputTopic()).isEqualTo("output1");
-            assertThat(app.getExtraOutputTopics())
+            assertThat(app.getLabeledOutputTopics())
                     .hasSize(2)
-                    .containsEntry("role1", "output2")
-                    .containsEntry("role2", "output3");
+                    .containsEntry("label1", "output2")
+                    .containsEntry("label2", "output3");
             assertThat(app.getKafkaConfig())
                     .hasSize(2)
                     .containsEntry("foo", "1")

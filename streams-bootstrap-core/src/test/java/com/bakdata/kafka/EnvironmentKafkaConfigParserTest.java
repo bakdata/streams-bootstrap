@@ -22,24 +22,40 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.test_applications;
+package com.bakdata.kafka;
 
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.TopologyBuilder;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.streams.kstream.KStream;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@NoArgsConstructor
-public class ExtraInputTopics implements StreamsApp {
-    @Override
-    public void buildTopology(final TopologyBuilder builder) {
-        final KStream<String, String> input = builder.streamInput("role");
-        input.to(builder.getTopics().getOutputTopic());
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+class EnvironmentKafkaConfigParserTest {
+
+    @Test
+    void shouldParseStreamsConfig() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO", "bar",
+                "KAFKA_BAZ", "qux"
+        )))
+                .hasSize(2)
+                .containsEntry("foo", "bar")
+                .containsEntry("baz", "qux");
     }
 
-    @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
-        return this.getClass().getSimpleName() + "-" + topics.getOutputTopic();
+    @Test
+    void shouldIgnoreVariablesWithoutPrefix() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "APP_FOO", "bar"
+        ))).isEmpty();
     }
+
+    @Test
+    void shouldConvertUnderscores() {
+        assertThat(EnvironmentKafkaConfigParser.parseVariables(Map.of(
+                "KAFKA_FOO_BAR", "baz"
+        )))
+                .hasSize(1)
+                .containsEntry("foo.bar", "baz");
+    }
+
 }

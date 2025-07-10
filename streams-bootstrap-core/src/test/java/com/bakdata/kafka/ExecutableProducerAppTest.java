@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -55,7 +56,7 @@ class ExecutableProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -72,7 +73,7 @@ class ExecutableProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         final Map<String, Object> kafkaProperties = configuredApp.getKafkaProperties(endpointConfig);
@@ -89,7 +90,7 @@ class ExecutableProducerAppTest {
         final ConfiguredProducerApp<ProducerApp> configuredApp =
                 new ConfiguredProducerApp<>(new TestProducer(), configuration);
         final KafkaEndpointConfig endpointConfig = KafkaEndpointConfig.builder()
-                .brokers("localhost:9092")
+                .bootstrapServers("localhost:9092")
                 .build();
         final ExecutableProducerApp<ProducerApp> executableApp = configuredApp.withEndpoint(endpointConfig);
         when(this.setupCleanUp.get()).thenReturn(new ProducerCleanUpConfiguration());
@@ -113,6 +114,11 @@ class ExecutableProducerAppTest {
         @Override
         public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
             return () -> {};
+        }
+
+        @Override
+        public SerializerConfig defaultSerializationConfig() {
+            return new SerializerConfig(ByteArraySerializer.class, ByteArraySerializer.class);
         }
     }
 }

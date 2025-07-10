@@ -23,8 +23,8 @@ resources:
     cpu: 500m
     memory: 2G
 
-streams:
-  # brokers: "test:9092"
+kafka:
+  # bootstrapServers: "test:9092"
   # schemaRegistryUrl: "url:1234"
   staticMembership: false
   config: {}
@@ -34,25 +34,24 @@ streams:
   inputTopics: []
   # - input
   # - input2
-  extraInputTopics: {}
-  #   role:
+  labeledInputTopics: {}
+  #   label:
   #     - input
   #     - input2
   # inputPattern: .*-input
-  extraInputPatterns: {}
-  #   role: .*-input
+  labeledInputPatterns: {}
+  #   label: .*-input
   # outputTopic: output
-  extraOutputTopics: {}
-  #   role: output
+  labeledOutputTopics: {}
+  #   label: output
   # errorTopic: error
+  # applicationId: foo
 
 commandLine: {}
 #  --my-cli-param: "foo-bar"
 commandLineList: []
 #  - --my-cli-param
 #  - foo-bar
-
-debug: false
 
 env: {}
 #  MY_ENV_VARIABLE: foo-bar
@@ -102,7 +101,6 @@ jmx:
 
 autoscaling:
   enabled: false
-  # consumerGroup: foo
   # lagThreshold: "1000"
   pollingInterval: 30
   cooldownPeriod: 300
@@ -110,7 +108,7 @@ autoscaling:
   minReplicas: 0
   maxReplicas: 1
   # idleReplicas: 0
-  ## all topics from streams.inputTopics and streams.extraInputTopics are automatically taken
+  ## all topics from kafka.inputTopics and kafka.labeledInputTopics are automatically taken
   ## only use the 'internalTopics' option for adding internal topics, i.e., auto-generated topics by Kafka Streams. Consumer group name will automatically be added as a prefix
   internalTopics: []
   #   - bar-repartition                       # results in foo-bar-repartition

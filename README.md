@@ -58,19 +58,21 @@ and `getUniqueAppId()`. You can define the topology of your application in `buil
 
 ```java
 import com.bakdata.kafka.KafkaStreamsApplication;
+import com.bakdata.kafka.SerdeConfig;
 import com.bakdata.kafka.StreamsApp;
 import com.bakdata.kafka.StreamsTopicConfig;
 import com.bakdata.kafka.TopologyBuilder;
 import java.util.Map;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.kstream.KStream;
 
-public class StreamsBootstrapApplication extends KafkaStreamsApplication {
+public class MyStreamsApplication extends KafkaStreamsApplication {
     public static void main(final String[] args) {
-        startApplication(new StreamsBootstrapApplication(), args);
+      startApplication(new MyStreamsApplication(), args);
     }
 
     @Override
-    public StreamsApp createApp(final boolean cleanUp) {
+    public StreamsApp createApp() {
       return new StreamsApp() {
         @Override
         public void buildTopology(final TopologyBuilder builder) {
@@ -84,6 +86,11 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
         @Override
         public String getUniqueAppId(final StreamsTopicConfig topics) {
           return "streams-bootstrap-app-" + topics.getOutputTopic();
+        }
+
+        @Override
+        public SerdeConfig defaultSerializationConfig() {
+          return new SerdeConfig(StringSerde.class, StringSerde.class);
         }
 
         // Optionally you can define custom Kafka properties
@@ -100,7 +107,7 @@ public class StreamsBootstrapApplication extends KafkaStreamsApplication {
 
 The following configuration options are available:
 
-- `--brokers`: List of Kafka brokers (comma-separated) (**required**)
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
 
 - `--schema-registry-url`: The URL of the Schema Registry
 
@@ -114,18 +121,19 @@ The following configuration options are available:
 
 - `--error-topic`: A topic to write errors to
 
-- `--extra-input-topics`: Additional named input topics if you need to specify multiple topics with different message
-  types (`<String=String>[,<String=String>...]`)
-
-- `--extra-input-patterns`: Additional named input patterns if you need to specify multiple topics with different
+- `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
   message types (`<String=String>[,<String=String>...]`)
 
-- `--extra-output-topics`: Additional named output topics if you need to specify multiple topics with different message
-  types (`String=String>[,<String=String>...]`)
+- `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-output-topics`: Additional labeled output topics if you need to specify multiple topics with different
+  message types (`String=String>[,<String=String>...]`)
+
+- `--application-id`: Unique application ID to use for Kafka Streams. Can also be provided by
+  implementing `StreamsApp#getUniqueAppId()`
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.
-
-- `--debug`: Configure logging to debug
 
 Additionally, the following commands are available:
 
@@ -144,16 +152,18 @@ import com.bakdata.kafka.KafkaProducerApplication;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.SerializerConfig;
 import java.util.Map;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
-public class StreamsBootstrapApplication extends KafkaProducerApplication {
+public class MyProducerApplication extends KafkaProducerApplication {
     public static void main(final String[] args) {
-        startApplication(new StreamsBootstrapApplication(), args);
+      startApplication(new MyProducerApplication(), args);
     }
 
     @Override
-    public ProducerApp createApp(final boolean cleanUp) {
+    public ProducerApp createApp() {
       return new ProducerApp() {
         @Override
         public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
@@ -162,6 +172,11 @@ public class StreamsBootstrapApplication extends KafkaProducerApplication {
               // your producer
             }
           };
+        }
+
+        @Override
+        public SerializerConfig defaultSerializationConfig() {
+          return new SerializerConfig(StringSerializer.class, StringSerializer.class);
         }
 
         // Optionally you can define custom Kafka properties
@@ -178,7 +193,7 @@ public class StreamsBootstrapApplication extends KafkaProducerApplication {
 
 The following configuration options are available:
 
-- `--brokers`: List of Kafka brokers (comma-separated) (**required**)
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
 
 - `--schema-registry-url`: The URL of the Schema Registry
 
@@ -186,9 +201,7 @@ The following configuration options are available:
 
 - `--output-topic`: The output topic
 
-- `--extra-output-topics`: Additional named output topics (`String=String>[,<String=String>...]`)
-
-- `--debug`: Configure logging to debug
+- `--labeled-output-topics`: Additional labeled output topics (`String=String>[,<String=String>...]`)
 
 Additionally, the following commands are available:
 

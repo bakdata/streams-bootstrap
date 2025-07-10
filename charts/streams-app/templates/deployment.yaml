@@ -1,4 +1,8 @@
 {{- $root := . -}}
+{{- if and .Values.persistence.enabled (not .Values.persistence.size) }}
+{{- fail "When persistence is enabled, you must set .Values.persistence.size" }}
+{{- end }}
+
 {{- if .Capabilities.APIVersions.Has "apps/v1" }}
 apiVersion: apps/v1
 {{- else }}
@@ -11,13 +15,13 @@ kind: Deployment
 {{- end }}
 metadata:
   name: {{ template "streams-app.fullname" . }}
-{{- if or .Values.autoscaling.consumerGroup .Values.annotations }}
+{{- if or .Values.kafka.applicationId .Values.annotations }}
   annotations:
   {{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
   {{- end }}
-  {{- if and .Values.autoscaling.consumerGroup (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.autoscaling.consumerGroup | quote }}
+  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ .Values.kafka.applicationId | quote }}
   {{- end }}
 {{- end }}
   labels:
@@ -138,8 +142,8 @@ spec:
           env:
             - name: ENV_PREFIX
               value: {{ .Values.configurationEnvPrefix }}_
-          {{- range $key, $value := .Values.streams.config }}
-            - name: {{ printf "STREAMS_%s" $key | replace "." "_" | upper | quote }}
+          {{- range $key, $value := .Values.kafka.config }}
+            - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
           {{- end }}
           {{- range .Values.ports }}
@@ -148,12 +152,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: STREAMS_APPLICATION_SERVER
+            - name: KAFKA_APPLICATION_SERVER
               value: "$(POD_IP):{{ .containerPort }}"
             {{- end }}
           {{- end }}
-          {{- if .Values.streams.staticMembership }}
-            - name: STREAMS_GROUP_INSTANCE_ID
+          {{- if .Values.kafka.staticMembership }}
+            - name: KAFKA_GROUP_INSTANCE_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name

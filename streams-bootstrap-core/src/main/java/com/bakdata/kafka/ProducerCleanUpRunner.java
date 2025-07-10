@@ -69,6 +69,11 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
         return new ProducerCleanUpRunner(topics, kafkaProperties, configuration);
     }
 
+    @Override
+    public void close() {
+        this.cleanHooks.close();
+    }
+
     /**
      * Delete all output topics
      */
@@ -107,7 +112,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
 
         private Iterable<String> getAllOutputTopics() {
             return Seq.of(ProducerCleanUpRunner.this.topics.getOutputTopic())
-                    .concat(ProducerCleanUpRunner.this.topics.getExtraOutputTopics().values());
+                    .concat(ProducerCleanUpRunner.this.topics.getLabeledOutputTopics().values());
         }
     }
 

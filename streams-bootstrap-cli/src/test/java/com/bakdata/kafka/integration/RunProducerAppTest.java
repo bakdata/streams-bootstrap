@@ -32,11 +32,13 @@ import com.bakdata.kafka.KafkaProducerApplication;
 import com.bakdata.kafka.ProducerApp;
 import com.bakdata.kafka.ProducerBuilder;
 import com.bakdata.kafka.ProducerRunnable;
+import com.bakdata.kafka.SerializerConfig;
 import com.bakdata.kafka.SimpleKafkaProducerApplication;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.schemaregistrymock.junit5.SchemaRegistryMockExtension;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
@@ -44,7 +46,6 @@ import net.mguenther.kafka.junit.ReadKeyValues;
 import net.mguenther.kafka.junit.TopicConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -85,13 +86,11 @@ class RunProducerAppTest {
             }
 
             @Override
-            public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class
-                );
+            public SerializerConfig defaultSerializationConfig() {
+                return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
             }
         })) {
-            app.setBrokers(this.kafkaCluster.getBrokerList());
+            app.setBootstrapServers(this.kafkaCluster.getBrokerList());
             app.setSchemaRegistryUrl(this.schemaRegistryMockExtension.getUrl());
             app.setOutputTopic(output);
             app.setKafkaConfig(Map.of(

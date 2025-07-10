@@ -29,24 +29,11 @@ package com.bakdata.kafka;
  */
 public interface LargeMessageStreamsApp extends StreamsApp {
 
-    /**
-     * Register a hook that cleans up LargeMessage files associated with a topic
-     * @param cleanUpConfiguration Configuration to register hook on
-     * @param configuration Configuration to create hook from
-     * @return {@code StreamsCleanUpConfiguration} with registered topic hook
-     * @see LargeMessageKafkaApplicationUtils#createLargeMessageCleanUpHook(EffectiveAppConfiguration)
-     */
-    static StreamsCleanUpConfiguration registerLargeMessageCleanUpHook(
-            final StreamsCleanUpConfiguration cleanUpConfiguration, final EffectiveAppConfiguration<?> configuration) {
-        return cleanUpConfiguration.registerTopicHook(
-                LargeMessageKafkaApplicationUtils.createLargeMessageCleanUpHook(configuration));
-    }
-
     @Override
     default StreamsCleanUpConfiguration setupCleanUp(
             final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
         final StreamsCleanUpConfiguration cleanUpConfiguration = StreamsApp.super.setupCleanUp(configuration);
-        return registerLargeMessageCleanUpHook(cleanUpConfiguration, configuration);
+        return LargeMessageAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
 
 }
