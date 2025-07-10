@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.streams;
+
+import com.bakdata.kafka.AppConfiguration;
+import com.bakdata.kafka.SchemaRegistryAppUtils;
 
 /**
  * {@link StreamsApp} that automatically removes schemas when deleting topics
@@ -31,7 +34,7 @@ public interface SchemaRegistryStreamsApp extends StreamsApp {
 
     @Override
     default StreamsCleanUpConfiguration setupCleanUp(
-            final EffectiveAppConfiguration<StreamsTopicConfig> configuration) {
+            final AppConfiguration<StreamsTopicConfig> configuration) {
         final StreamsCleanUpConfiguration cleanUpConfiguration = StreamsApp.super.setupCleanUp(configuration);
         return SchemaRegistryAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }

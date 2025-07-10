@@ -25,9 +25,9 @@
 package com.bakdata.kafka.producer.apps;
 
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.producer.ProducerApp;
 import com.bakdata.kafka.producer.ProducerBuilder;
 import com.bakdata.kafka.producer.ProducerRunnable;
+import com.bakdata.kafka.producer.SchemaRegistryProducerApp;
 import com.bakdata.kafka.producer.SerializerConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.producer.Producer;

@@ -26,8 +26,8 @@ package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.streams.SchemaRegistryStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.ConsumedX;
 import com.bakdata.kafka.streams.kstream.KStreamX;

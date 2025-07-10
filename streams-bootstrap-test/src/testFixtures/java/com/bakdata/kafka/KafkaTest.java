@@ -26,7 +26,9 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.time.Duration;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.kafka.common.utils.AppInfoParser;
@@ -97,7 +99,9 @@ public abstract class KafkaTest {
 
     protected RuntimeConfiguration createConfig() {
         return this.createConfigWithoutSchemaRegistry()
-                .withSchemaRegistryUrl(this.getSchemaRegistryUrl());
+                .with(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl()
+                ));
     }
 
     protected String getBootstrapServers() {

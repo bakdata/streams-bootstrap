@@ -47,7 +47,7 @@ class SchemaRegistryTopicHookTest extends KafkaTest {
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers(),
                 AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl()
         );
-        this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isPresent();
+        this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isNotNull();
     }
 
     @Test
@@ -55,7 +55,9 @@ class SchemaRegistryTopicHookTest extends KafkaTest {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
         );
-        this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isNotPresent();
+        this.softly.assertThatThrownBy(() -> SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("schema.registry.url must be specified in properties");
     }
 
 }

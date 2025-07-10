@@ -37,7 +37,9 @@ class RuntimeConfigurationTest {
     @Test
     void shouldThrowIfSchemaRegistryAlreadyConfigured() {
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092")
-                .withSchemaRegistryUrl("localhost:8081");
+                .with(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
+                ));
         final Map<String, String> properties = Map.of(
                 AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
         );

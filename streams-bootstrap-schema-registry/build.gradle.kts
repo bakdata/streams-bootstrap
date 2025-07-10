@@ -1,9 +1,18 @@
 description = "Utils for using Confluent Schema Registry with your Kafka Streams Application"
 
+plugins {
+    id("java-library")
+}
+
 dependencies {
     api(project(":streams-bootstrap-core"))
-    val confluentVersion: String by project
-    api(group = "io.confluent", name = "kafka-schema-registry-client", version = confluentVersion)
-    implementation(group = "io.confluent", name = "kafka-schema-serializer", version = confluentVersion)
-    testImplementation(group = "io.confluent", name = "kafka-streams-avro-serde", version = confluentVersion)
+    api(libs.kafka.schema.registry.client) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
+    }
+    implementation(libs.kafka.schema.serializer) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
+    }
+    implementation(libs.slf4j)
 }

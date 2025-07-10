@@ -24,11 +24,6 @@
 
 package com.bakdata.kafka.admin;
 
-import static com.bakdata.kafka.SchemaRegistryTopicHook.createSchemaRegistryClient;
-
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Map;
 import lombok.AccessLevel;

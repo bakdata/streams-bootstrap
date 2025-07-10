@@ -156,7 +156,9 @@ class ConfiguredStreamsAppTest {
                         AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
                 )), newAppConfiguration());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
-                .withSchemaRegistryUrl("fake");
+                .with(Map.of(
+                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "fake"
+                ));
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");
