@@ -73,6 +73,12 @@ public final class TopicClient implements AutoCloseable {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
+    /**
+     * Create a new topic client
+     *
+     * @param adminClient admin client
+     * @param timeout timeout when performing admin operations
+     */
     public TopicClient(final Admin adminClient, final Duration timeout) {
         this.adminClient = adminClient;
         this.timeout = new Timeout(timeout);
@@ -125,10 +131,19 @@ public final class TopicClient implements AutoCloseable {
         return this.timeout.get(result.names(), TopicClient::failedToListTopics);
     }
 
+    /**
+     * Create a client for a specific topic.
+     *
+     * @param topicName topic name
+     * @return a topic client for the specified topic
+     */
     public ForTopic forTopic(final String topicName) {
         return new ForTopic(topicName);
     }
 
+    /**
+     * A client for a specific topic.
+     */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public final class ForTopic {
         private final @NonNull String topicName;

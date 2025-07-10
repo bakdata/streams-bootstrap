@@ -59,6 +59,12 @@ public final class ConsumerGroupClient implements AutoCloseable {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
+    /**
+     * Create a new consumer group client
+     *
+     * @param adminClient admin client
+     * @param timeout timeout when performing admin operations
+     */
     public ConsumerGroupClient(final Admin adminClient, final Duration timeout) {
         this.adminClient = adminClient;
         this.timeout = new Timeout(timeout);
@@ -94,10 +100,19 @@ public final class ConsumerGroupClient implements AutoCloseable {
         return this.timeout.get(result.all(), ConsumerGroupClient::failedToListGroups);
     }
 
+    /**
+     * Create a client for a specific consumer group.
+     *
+     * @param groupName consumer group name
+     * @return a consumer group client for the specified group
+     */
     public ForGroup forGroup(final String groupName) {
         return new ForGroup(groupName);
     }
 
+    /**
+     * A client for a specific consumer group.
+     */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public final class ForGroup {
         private final @NonNull String groupName;
