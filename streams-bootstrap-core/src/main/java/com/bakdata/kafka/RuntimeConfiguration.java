@@ -112,7 +112,8 @@ public final class RuntimeConfiguration {
     }
 
     /**
-     * Create Kafka properties to connect to infrastructure and modify runtime behavior. {@code bootstrap.servers} is
+     * Create Kafka properties to connect to infrastructure and modify runtime behavior.
+     * {@link CommonClientConfigs#BOOTSTRAP_SERVERS_CONFIG bootstrap.servers} is
      * always configured.
      *
      * @return properties used for connecting to Kafka

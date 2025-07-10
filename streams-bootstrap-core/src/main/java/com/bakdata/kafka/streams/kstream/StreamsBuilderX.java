@@ -416,9 +416,9 @@ public class StreamsBuilderX {
     }
 
     /**
-     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
+     * Create {@link Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
      * {@link org.apache.kafka.common.serialization.Serializer} using {@link #kafkaProperties}.
-     * @return {@code Configurator}
+     * @return {@link Configurator}
      */
     public Configurator createConfigurator() {
         return new Configurator(this.kafkaProperties);
