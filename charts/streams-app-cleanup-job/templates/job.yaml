@@ -98,7 +98,7 @@ spec:
           {{- range .Values.commandLineList }}
             - {{ . | quote  }}
           {{- end }}
-          {{- if .Values.streams.deleteOutput }}
+          {{- if .Values.kafka.deleteOutput }}
             - clean
           {{- else }}
             - reset
