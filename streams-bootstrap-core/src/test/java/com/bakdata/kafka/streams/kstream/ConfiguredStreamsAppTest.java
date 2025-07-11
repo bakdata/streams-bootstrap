@@ -36,7 +36,6 @@ import com.bakdata.kafka.streams.SerdeConfig;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -147,21 +146,6 @@ class ConfiguredStreamsAppTest {
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");
-    }
-
-    @Test
-    void shouldThrowIfSchemaRegistryHasBeenConfiguredDifferently() {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp =
-                new ConfiguredStreamsApp<>(new TestApplication(Map.of(
-                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-                )), newAppConfiguration());
-        final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
-                .with(Map.of(
-                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "fake"
-                ));
-        assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("'schema.registry.url' should not be configured already");
     }
 
     @Test
