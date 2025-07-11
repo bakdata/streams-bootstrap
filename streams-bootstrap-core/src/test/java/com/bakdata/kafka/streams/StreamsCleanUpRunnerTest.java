@@ -129,7 +129,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteTopic() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
@@ -167,7 +167,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteConsumerGroup() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
@@ -212,7 +212,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldNotThrowAnErrorIfConsumerGroupDoesNotExist() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
@@ -258,7 +258,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteInternalTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig())) {
+                        this.createConfigWithSchemaRegistry())) {
 
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final KafkaTestClient testClient = this.newTestClient();
@@ -306,7 +306,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig())) {
+                        this.createConfigWithSchemaRegistry())) {
 
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final KafkaTestClient testClient = this.newTestClient();
@@ -348,7 +348,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteState() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
@@ -386,7 +386,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldReprocessAlreadySeenRecords() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
@@ -417,7 +417,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorValueApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig());
+                        this.createConfigWithSchemaRegistry());
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
@@ -449,7 +449,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorKeyApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig());
+                        this.createConfigWithSchemaRegistry());
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
@@ -481,7 +481,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig());
+                        this.createConfigWithSchemaRegistry());
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
@@ -519,7 +519,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             throws IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig());
+                        this.createConfigWithSchemaRegistry());
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
@@ -552,7 +552,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldCallCleanupHookForInternalAndIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig())) {
+                        this.createConfigWithSchemaRegistry())) {
             reset(executableApp);
             final String uniqueAppId = app.getUniqueAppId();
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
@@ -568,7 +568,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldCallCleanUpHookForAllTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfig())) {
+                        this.createConfigWithSchemaRegistry())) {
             clean(executableApp);
             final String uniqueAppId = app.getUniqueAppId();
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
@@ -585,7 +585,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldNotThrowExceptionOnMissingInputTopic() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
         }
     }
@@ -594,7 +594,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldThrowExceptionOnResetterError() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry());
+                        this.createConfig());
                 final StreamsRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -612,7 +612,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldReprocessAlreadySeenRecordsWithPattern() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountPatternApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithoutSchemaRegistry())) {
+                        this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()

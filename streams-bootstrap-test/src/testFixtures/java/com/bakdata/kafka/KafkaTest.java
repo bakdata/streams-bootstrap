@@ -91,12 +91,12 @@ public abstract class KafkaTest {
                 .atMost(Duration.ofSeconds(20L));
     }
 
-    protected RuntimeConfiguration createConfigWithoutSchemaRegistry() {
+    protected RuntimeConfiguration createConfig() {
         return RuntimeConfiguration.create(this.getBootstrapServers());
     }
 
-    protected RuntimeConfiguration createConfig() {
-        return this.createConfigWithoutSchemaRegistry()
+    protected RuntimeConfiguration createConfigWithSchemaRegistry() {
+        return this.createConfig()
                 .withSchemaRegistryUrl(this.getSchemaRegistryUrl());
     }
 
@@ -105,7 +105,7 @@ public abstract class KafkaTest {
     }
 
     protected KafkaTestClient newTestClient() {
-        return new KafkaTestClient(this.createConfig());
+        return new KafkaTestClient(this.createConfigWithSchemaRegistry());
     }
 
     protected String getSchemaRegistryUrl() {

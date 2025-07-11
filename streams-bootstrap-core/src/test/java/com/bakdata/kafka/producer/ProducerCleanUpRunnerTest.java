@@ -98,7 +98,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteTopic() {
         try (final ConfiguredProducerApp<ProducerApp> app = createStringApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())) {
+                        .withRuntimeConfiguration(this.createConfig())) {
             run(executableApp);
 
             final List<KeyValue<String, String>> output = this.readOutputTopic(app.getTopics().getOutputTopic());
@@ -119,7 +119,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteValueSchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroValueApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfig());
+                        .withRuntimeConfiguration(this.createConfigWithSchemaRegistry());
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             run(executableApp);
 
@@ -136,7 +136,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteKeySchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroKeyApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfig());
+                        .withRuntimeConfiguration(this.createConfigWithSchemaRegistry());
                 final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
             run(executableApp);
 
@@ -153,7 +153,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldCallCleanUpHookForAllTopics() {
         try (final ConfiguredProducerApp<ProducerApp> app = this.createCleanUpHookApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())) {
+                        .withRuntimeConfiguration(this.createConfig())) {
             clean(executableApp);
             verify(this.topicHook).deleted(app.getTopics().getOutputTopic());
             verifyNoMoreInteractions(this.topicHook);
