@@ -69,7 +69,7 @@ public final class TestApplicationTopologyFactory {
      * @return {@code TestApplicationTopologyFactory} with configured Schema Registry
      */
     public static TestApplicationTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return new TestApplicationTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
+        return new TestApplicationTopologyFactory(schemaRegistry::configure);
     }
 
     private static ConfiguredStreamsApp<? extends StreamsApp> createConfiguredApp(

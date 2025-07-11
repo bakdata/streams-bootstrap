@@ -22,15 +22,20 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.streams;
 
-import lombok.experimental.UtilityClass;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.streams.KeyValue;
+import com.bakdata.kafka.AppConfiguration;
+import com.bakdata.kafka.SchemaRegistryAppUtils;
 
-@UtilityClass
-public class TestHelper {
-    public static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<K, V> consumerRecord) {
-        return new KeyValue<>(consumerRecord.key(), consumerRecord.value());
+/**
+ * {@link StreamsApp} that automatically removes schemas when deleting topics
+ */
+public interface SchemaRegistryStreamsApp extends StreamsApp {
+
+    @Override
+    default StreamsCleanUpConfiguration setupCleanUp(final AppConfiguration<StreamsTopicConfig> configuration) {
+        final StreamsCleanUpConfiguration cleanUpConfiguration = StreamsApp.super.setupCleanUp(configuration);
+        return SchemaRegistryAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
+
 }

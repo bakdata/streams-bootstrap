@@ -22,33 +22,31 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.apps;
+package com.bakdata.kafka.producer.apps;
 
 import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import com.bakdata.kafka.producer.ProducerBuilder;
+import com.bakdata.kafka.producer.ProducerRunnable;
+import com.bakdata.kafka.producer.SchemaRegistryProducerApp;
+import com.bakdata.kafka.producer.SerializerConfig;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
+public class AvroValueProducer implements SchemaRegistryProducerApp {
     @Override
-    public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
+    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+        return () -> {
+            try (final Producer<String, TestRecord> producer = builder.createProducer()) {
+                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "key",
+                        TestRecord.newBuilder().setContent("value").build()));
+            }
+        };
     }
 
     @Override
-    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-        return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
-    }
-
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
+    public SerializerConfig defaultSerializationConfig() {
+        return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
     }
 }
