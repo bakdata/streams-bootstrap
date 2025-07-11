@@ -31,8 +31,8 @@ import static org.mockito.Mockito.when;
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.streams.apps.LabeledInputTopics;
 import com.bakdata.kafka.streams.apps.Mirror;
 import com.bakdata.kafka.streams.kstream.KStreamX;
@@ -76,13 +76,6 @@ class StreamsRunnerTest extends KafkaTest {
     private SoftAssertions softly;
     @TempDir
     private Path stateDir;
-
-    static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
-            final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
-        return app.withRuntimeConfiguration(runtimeConfiguration.withStateDir(stateDir)
-                .withNoStateStoreCaching()
-                .withSessionTimeout(SESSION_TIMEOUT));
-    }
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
         return new ConfiguredStreamsApp<>(new Mirror(), new StreamsAppConfiguration(StreamsTopicConfig.builder()
@@ -205,7 +198,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     private ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        return createExecutableApp(app, this.createConfigWithoutSchemaRegistry(), this.stateDir);
+        return TestHelper.createExecutableApp(app, this.createConfigWithoutSchemaRegistry(), this.stateDir);
     }
 
     private static class ErrorApplication implements StreamsApp {

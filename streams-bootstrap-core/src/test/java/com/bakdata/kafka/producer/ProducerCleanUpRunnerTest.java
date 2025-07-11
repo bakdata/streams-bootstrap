@@ -153,7 +153,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldCallCleanUpHookForAllTopics() {
         try (final ConfiguredProducerApp<ProducerApp> app = this.createCleanUpHookApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfig())) {
+                        .withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())) {
             clean(executableApp);
             verify(this.topicHook).deleted(app.getTopics().getOutputTopic());
             verifyNoMoreInteractions(this.topicHook);
