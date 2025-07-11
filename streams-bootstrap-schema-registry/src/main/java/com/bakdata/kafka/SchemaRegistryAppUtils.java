@@ -82,7 +82,7 @@ public class SchemaRegistryAppUtils {
      * @param configuration Configuration to create hook from
      * @param <T> type of configuration
      * @return Configuration with registered topic hook
-     * @see SchemaRegistryAppUtils#createTopicHook(AppConfiguration)
+     * @see #createTopicHook(AppConfiguration)
      */
     public static <T> T registerTopicHook(
             final HasTopicHooks<T> cleanUpConfiguration, final AppConfiguration<?> configuration) {
@@ -95,7 +95,7 @@ public class SchemaRegistryAppUtils {
      * @param kafkaProperties properties for creating {@link SchemaRegistryClient}. Must include
      * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
      * @return {@link SchemaRegistryClient}
-     * @see SchemaRegistryAppUtils#createSchemaRegistryClient(Map, String)
+     * @see #createSchemaRegistryClient(Map, String)
      */
     public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
         final String schemaRegistryUrl =
