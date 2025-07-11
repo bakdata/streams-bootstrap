@@ -51,32 +51,6 @@ public class SchemaRegistryAppUtils {
     private static final int CACHE_CAPACITY = 100;
 
     /**
-     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
-     * create a {@link SchemaRegistryClient} are part of {@code kafkaProperties}.
-     *
-     * @param kafkaProperties Kafka properties to create hook from
-     * @return hook that cleans up schemas associated with a topic
-     * @see HasTopicHooks#registerTopicHook(TopicHook)
-     */
-    public static Optional<TopicHook> createTopicHook(final Map<String, Object> kafkaProperties) {
-        final Optional<SchemaRegistryClient> schemaRegistryClient =
-                createSchemaRegistryClient(kafkaProperties);
-        return schemaRegistryClient.map(SchemaRegistryTopicHook::new);
-    }
-
-    /**
-     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
-     * create a {@link SchemaRegistryClient} are part of {@link AppConfiguration#getKafkaProperties()}.
-     *
-     * @param configuration Configuration to create hook from
-     * @return hook that cleans up schemas associated with a topic
-     * @see #createTopicHook(Map)
-     */
-    public static Optional<TopicHook> createTopicHook(final AppConfiguration<?> configuration) {
-        return createTopicHook(configuration.getKafkaProperties());
-    }
-
-    /**
      * Creates a new {@link SchemaRegistryClient} using the specified configuration if
      * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is configured.
      *
@@ -106,6 +80,32 @@ public class SchemaRegistryAppUtils {
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
         return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
+    }
+
+    /**
+     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
+     * create a {@link SchemaRegistryClient} are part of {@code kafkaProperties}.
+     *
+     * @param kafkaProperties Kafka properties to create hook from
+     * @return hook that cleans up schemas associated with a topic
+     * @see HasTopicHooks#registerTopicHook(TopicHook)
+     */
+    public static Optional<TopicHook> createTopicHook(final Map<String, Object> kafkaProperties) {
+        final Optional<SchemaRegistryClient> schemaRegistryClient =
+                createSchemaRegistryClient(kafkaProperties);
+        return schemaRegistryClient.map(SchemaRegistryTopicHook::new);
+    }
+
+    /**
+     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
+     * create a {@link SchemaRegistryClient} are part of {@link AppConfiguration#getKafkaProperties()}.
+     *
+     * @param configuration Configuration to create hook from
+     * @return hook that cleans up schemas associated with a topic
+     * @see #createTopicHook(Map)
+     */
+    public static Optional<TopicHook> createTopicHook(final AppConfiguration<?> configuration) {
+        return createTopicHook(configuration.getKafkaProperties());
     }
 
     @Slf4j
