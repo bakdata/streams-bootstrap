@@ -26,6 +26,7 @@ package com.bakdata.kafka.admin;
 
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.admin.ConfigClient.ForResource;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import java.time.Duration;
@@ -33,19 +34,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.Config;
-import org.apache.kafka.clients.admin.ConfigEntry;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.admin.TopicDescription;
@@ -60,7 +61,6 @@ import org.jooq.lambda.Seq;
 /**
  * This class offers helpers to interact with Kafka topics.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class TopicClient implements AutoCloseable {
 
@@ -71,7 +71,18 @@ public final class TopicClient implements AutoCloseable {
             .waitDuration(Duration.ofSeconds(5L))
             .build();
     private final @NonNull Admin adminClient;
-    private final @NonNull Duration timeout;
+    private final @NonNull Timeout timeout;
+
+    /**
+     * Create a new topic client
+     *
+     * @param adminClient admin client
+     * @param timeout timeout when performing admin operations
+     */
+    public TopicClient(final Admin adminClient, final Duration timeout) {
+        this.adminClient = adminClient;
+        this.timeout = new Timeout(timeout);
+    }
 
     /**
      * Creates a new {@code TopicClient} using the specified configuration.
@@ -84,186 +95,17 @@ public final class TopicClient implements AutoCloseable {
         return new TopicClient(AdminClient.create(configs), timeout);
     }
 
-    private static KafkaAdminException failedToDeleteTopic(final String topicName, final Throwable ex) {
-        return new KafkaAdminException("Failed to delete topic " + topicName, ex);
-    }
-
-    private static KafkaAdminException failedToRetrieveTopicDescription(final String topicName, final Throwable e) {
-        return new KafkaAdminException("Failed to retrieve description of topic " + topicName, e);
-    }
-
-    private static KafkaAdminException failedToRetrieveTopicConfig(final String topicName, final Throwable e) {
-        return new KafkaAdminException("Failed to retrieve config of topic " + topicName, e);
-    }
-
     private static KafkaAdminException failedToListTopics(final Throwable ex) {
         return new KafkaAdminException("Failed to list topics", ex);
-    }
-
-    private static KafkaAdminException failedToCreateTopic(final String topicName, final Throwable ex) {
-        return new KafkaAdminException("Failed to create topic " + topicName, ex);
     }
 
     private static KafkaAdminException failedToListOffsets(final Throwable ex) {
         return new KafkaAdminException("Failed to list offsets", ex);
     }
 
-    /**
-     * Creates a new Kafka topic with the specified number of partitions if it does not yet exist. If the topic exists,
-     * its configuration is not updated.
-     *
-     * @param topicName the topic name
-     * @param settings settings for number of partitions and replicationFactor
-     * @param config topic configuration
-     * @see #createTopic(String, TopicSettings, Map)
-     * @see #exists(String)
-     */
-    public void createIfNotExists(final String topicName, final TopicSettings settings,
-            final Map<String, String> config) {
-        if (this.exists(topicName)) {
-            log.info("Topic {} already exists, no need to create.", topicName);
-        } else {
-            this.createTopic(topicName, settings, config);
-        }
-    }
-
-    /**
-     * Creates a new Kafka topic with the specified number of partitions if it does not yet exist.
-     *
-     * @param topicName the topic name
-     * @param settings settings for number of partitions and replicationFactor
-     * @see #createTopic(String, TopicSettings, Map)
-     * @see #exists(String)
-     */
-    public void createIfNotExists(final String topicName, final TopicSettings settings) {
-        this.createIfNotExists(topicName, settings, emptyMap());
-    }
-
-    /**
-     * Delete a Kafka topic.
-     *
-     * @param topicName the topic name
-     */
-    public void deleteTopic(final String topicName) {
-        log.info("Deleting topic '{}'", topicName);
-        try {
-            this.adminClient.deleteTopics(List.of(topicName))
-                    .all()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToDeleteTopic(topicName, ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToDeleteTopic(topicName, ex);
-        } catch (final TimeoutException ex) {
-            throw failedToDeleteTopic(topicName, ex);
-        }
-        final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
-        final boolean exists = Retry.decorateSupplier(retry, () -> this.exists(topicName)).get();
-        if (exists) {
-            throw new IllegalStateException(String.format("Deletion of topic %s failed", topicName));
-        }
-    }
-
-    private static TopicSettings describe(final TopicDescription description) {
-        final List<TopicPartitionInfo> partitions = description.partitions();
-        final int replicationFactor = partitions.stream()
-                .findFirst()
-                .map(TopicPartitionInfo::replicas)
-                .map(List::size)
-                .orElseThrow(() -> new IllegalStateException("Topic " + description.name() + " has no partitions"));
-        return TopicSettings.builder()
-                .replicationFactor((short) replicationFactor)
-                .partitions(partitions.size())
-                .build();
-    }
-
-    /**
-     * Describes the current configuration of a Kafka topic.
-     *
-     * @param topicName the topic name
-     * @return settings of topic including number of partitions and replicationFactor
-     */
-    public Optional<TopicSettings> describe(final String topicName) {
-        final Optional<TopicDescription> description = this.getDescription(topicName);
-        return description.map(TopicClient::describe);
-    }
-
-    /**
-     * Describes the current configuration of a Kafka topic.
-     *
-     * @param topicName the topic name
-     * @return settings of topic including number of partitions and replicationFactor
-     */
-    public Map<String, String> getConfig(final String topicName) {
-        try {
-            final ConfigResource configResource = new ConfigResource(Type.TOPIC, topicName);
-            final Map<ConfigResource, KafkaFuture<Config>> kafkaTopicMap =
-                    this.adminClient.describeConfigs(List.of(configResource)).values();
-            final Config config = kafkaTopicMap.get(configResource).get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-            return config.entries().stream()
-                    .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                return emptyMap();
-            }
-            if (e.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToRetrieveTopicConfig(topicName, e);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToRetrieveTopicConfig(topicName, e);
-        } catch (final TimeoutException e) {
-            throw failedToRetrieveTopicConfig(topicName, e);
-        }
-    }
-
     @Override
     public void close() {
         this.adminClient.close();
-    }
-
-    /**
-     * Checks whether a Kafka topic exists.
-     *
-     * @param topicName the topic name
-     * @return whether a Kafka topic with the specified name exists or not
-     */
-    public boolean exists(final String topicName) {
-        final Collection<String> topics = this.listTopics();
-        return topics.stream()
-                .anyMatch(t -> t.equals(topicName));
-    }
-
-    /**
-     * Describe a Kafka topic.
-     *
-     * @param topicName the topic name
-     * @return topic description
-     */
-    public Optional<TopicDescription> getDescription(final String topicName) {
-        try {
-            final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap =
-                    this.adminClient.describeTopics(List.of(topicName)).topicNameValues();
-            return Optional.of(kafkaTopicMap.get(topicName).get(this.timeout.toSeconds(), TimeUnit.SECONDS));
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                return Optional.empty();
-            }
-            if (e.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToRetrieveTopicDescription(topicName, e);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToRetrieveTopicDescription(topicName, e);
-        } catch (final TimeoutException e) {
-            throw failedToRetrieveTopicDescription(topicName, e);
-        }
     }
 
     /**
@@ -273,65 +115,10 @@ public final class TopicClient implements AutoCloseable {
      * @return partition offsets
      */
     public Map<TopicPartition, ListOffsetsResultInfo> listOffsets(final Iterable<TopicPartition> topicPartitions) {
-        try {
-            final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
-                    .toMap(Function.identity(), o -> OffsetSpec.latest());
-            return this.adminClient.listOffsets(offsetRequest).all()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToListOffsets(e);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw failedToListOffsets(e);
-        } catch (final TimeoutException e) {
-            throw failedToListOffsets(e);
-        }
-    }
-
-    /**
-     * Creates a new Kafka topic with the specified number of partitions.
-     *
-     * @param topicName the topic name
-     * @param settings settings for number of partitions and replicationFactor
-     * @param config topic configuration
-     */
-    public void createTopic(final String topicName, final TopicSettings settings, final Map<String, String> config) {
-        try {
-            final NewTopic newTopic =
-                    new NewTopic(topicName, settings.getPartitions(), settings.getReplicationFactor());
-            this.adminClient
-                    .createTopics(List.of(newTopic.configs(config)))
-                    .all()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToCreateTopic(topicName, ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToCreateTopic(topicName, ex);
-        } catch (final TimeoutException ex) {
-            throw failedToCreateTopic(topicName, ex);
-        }
-        final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
-        final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists(topicName)).get();
-        if (doesNotExist) {
-            throw new IllegalStateException(String.format("Creation of topic %s failed", topicName));
-        }
-    }
-
-    /**
-     * Creates a new Kafka topic with the specified number of partitions.
-     *
-     * @param topicName the topic name
-     * @param settings settings for number of partitions and replicationFactor
-     */
-    public void createTopic(final String topicName, final TopicSettings settings) {
-        this.createTopic(topicName, settings, emptyMap());
+        final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
+                .toMap(Function.identity(), o -> OffsetSpec.latest());
+        final ListOffsetsResult result = this.adminClient.listOffsets(offsetRequest);
+        return this.timeout.get(result.all(), TopicClient::failedToListOffsets);
     }
 
     /**
@@ -340,32 +127,189 @@ public final class TopicClient implements AutoCloseable {
      * @return name of all existing Kafka topics
      */
     public Collection<String> listTopics() {
-        try {
-            return this.adminClient
-                    .listTopics()
-                    .names()
-                    .get(this.timeout.toSeconds(), TimeUnit.SECONDS);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw failedToListTopics(ex);
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof final RuntimeException cause) {
-                throw cause;
-            }
-            throw failedToListTopics(ex);
-        } catch (final TimeoutException ex) {
-            throw failedToListTopics(ex);
-        }
+        final ListTopicsResult result = this.adminClient.listTopics();
+        return this.timeout.get(result.names(), TopicClient::failedToListTopics);
     }
 
     /**
-     * Delete a Kafka topic only if it exists.
+     * Create a client for a specific topic.
      *
-     * @param topic the topic name
+     * @param topicName topic name
+     * @return a topic client for the specified topic
      */
-    public void deleteTopicIfExists(final String topic) {
-        if (this.exists(topic)) {
-            this.deleteTopic(topic);
+    public ForTopic forTopic(final String topicName) {
+        return new ForTopic(topicName);
+    }
+
+    /**
+     * A client for a specific topic.
+     */
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    public final class ForTopic {
+        private final @NonNull String topicName;
+
+        private static TopicSettings describe(final TopicDescription description) {
+            final List<TopicPartitionInfo> partitions = description.partitions();
+            final int replicationFactor = partitions.stream()
+                    .findFirst()
+                    .map(TopicPartitionInfo::replicas)
+                    .map(List::size)
+                    .orElseThrow(() -> new IllegalStateException("Topic " + description.name() + " has no partitions"));
+            return TopicSettings.builder()
+                    .replicationFactor((short) replicationFactor)
+                    .partitions(partitions.size())
+                    .build();
+        }
+
+        /**
+         * Creates a new Kafka topic with the specified number of partitions if it does not yet exist. If the topic
+         * exists, its configuration is not updated.
+         *
+         * @param settings settings for number of partitions and replicationFactor
+         * @param config topic configuration
+         * @see #createTopic(TopicSettings, Map)
+         * @see #exists()
+         */
+        public void createIfNotExists(final TopicSettings settings, final Map<String, String> config) {
+            if (this.exists()) {
+                log.info("Topic {} already exists, no need to create.", this.topicName);
+            } else {
+                this.createTopic(settings, config);
+            }
+        }
+
+        /**
+         * Creates a new Kafka topic with the specified number of partitions if it does not yet exist.
+         *
+         * @param settings settings for number of partitions and replicationFactor
+         * @see #createTopic(TopicSettings, Map)
+         * @see #exists()
+         */
+        public void createIfNotExists(final TopicSettings settings) {
+            this.createIfNotExists(settings, emptyMap());
+        }
+
+        /**
+         * Delete a Kafka topic.
+         */
+        public void deleteTopic() {
+            log.info("Deleting topic '{}'", this.topicName);
+            final DeleteTopicsResult result = TopicClient.this.adminClient.deleteTopics(List.of(this.topicName));
+            TopicClient.this.timeout.get(result.all(), this::failedToDeleteTopic);
+            final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
+            final boolean exists = Retry.decorateSupplier(retry, this::exists).get();
+            if (exists) {
+                throw new IllegalStateException(String.format("Deletion of topic %s failed", this.topicName));
+            }
+        }
+
+        /**
+         * Describes the current configuration of a Kafka topic.
+         *
+         * @return settings of topic including number of partitions and replicationFactor
+         */
+        public Optional<TopicSettings> describe() {
+            final Optional<TopicDescription> description = this.getDescription();
+            return description.map(ForTopic::describe);
+        }
+
+        /**
+         * Describes the current configuration of a Kafka topic.
+         *
+         * @return config of topic
+         */
+        public Map<String, String> getConfig() {
+            try {
+                return this.getConfigClient().getConfigs();
+            } catch (final UnknownTopicOrPartitionException e) {
+                // topic does not exist
+                return emptyMap();
+            }
+        }
+
+        /**
+         * Checks whether a Kafka topic exists.
+         *
+         * @return whether a Kafka topic with the specified name exists or not
+         */
+        public boolean exists() {
+            final Collection<String> topics = TopicClient.this.listTopics();
+            return topics.stream()
+                    .anyMatch(t -> t.equals(this.topicName));
+        }
+
+        /**
+         * Describe a Kafka topic.
+         *
+         * @return topic description
+         */
+        public Optional<TopicDescription> getDescription() {
+            try {
+                final DescribeTopicsResult result =
+                        TopicClient.this.adminClient.describeTopics(List.of(this.topicName));
+                final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap = result.topicNameValues();
+                final KafkaFuture<TopicDescription> future = kafkaTopicMap.get(this.topicName);
+                final TopicDescription description =
+                        TopicClient.this.timeout.get(future, this::failedToRetrieveTopicDescription);
+                return Optional.of(description);
+            } catch (final UnknownTopicOrPartitionException e) {
+                // topic does not exist
+                return Optional.empty();
+            }
+        }
+
+        /**
+         * Creates a new Kafka topic with the specified number of partitions.
+         *
+         * @param settings settings for number of partitions and replicationFactor
+         * @param config topic configuration
+         */
+        public void createTopic(final TopicSettings settings, final Map<String, String> config) {
+            final NewTopic newTopic =
+                    new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor())
+                            .configs(config);
+            final CreateTopicsResult result = TopicClient.this.adminClient.createTopics(List.of(newTopic));
+            TopicClient.this.timeout.get(result.all(), this::failedToCreateTopic);
+            final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
+            final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists()).get();
+            if (doesNotExist) {
+                throw new IllegalStateException(String.format("Creation of topic %s failed", this.topicName));
+            }
+        }
+
+        /**
+         * Creates a new Kafka topic with the specified number of partitions.
+         *
+         * @param settings settings for number of partitions and replicationFactor
+         */
+        public void createTopic(final TopicSettings settings) {
+            this.createTopic(settings, emptyMap());
+        }
+
+        /**
+         * Delete a Kafka topic only if it exists.
+         */
+        public void deleteTopicIfExists() {
+            if (this.exists()) {
+                this.deleteTopic();
+            }
+        }
+
+        private ForResource getConfigClient() {
+            return new ConfigClient(TopicClient.this.adminClient, TopicClient.this.timeout)
+                    .forResource(new ConfigResource(Type.TOPIC, this.topicName));
+        }
+
+        private KafkaAdminException failedToDeleteTopic(final Throwable ex) {
+            return new KafkaAdminException("Failed to delete topic " + this.topicName, ex);
+        }
+
+        private KafkaAdminException failedToRetrieveTopicDescription(final Throwable e) {
+            return new KafkaAdminException("Failed to retrieve description of topic " + this.topicName, e);
+        }
+
+        private KafkaAdminException failedToCreateTopic(final Throwable ex) {
+            return new KafkaAdminException("Failed to create topic " + this.topicName, ex);
         }
     }
 }

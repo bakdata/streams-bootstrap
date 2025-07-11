@@ -37,6 +37,7 @@ import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.admin.TopicClient.ForTopic;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -406,7 +407,7 @@ class MaterializedXTest {
                 try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topicClient.exists(appId + "-store-changelog")).isFalse();
+                    this.softly.assertThat(topicClient.forTopic(appId + "-store-changelog").exists()).isFalse();
                 }
             }
         }
@@ -455,8 +456,9 @@ class MaterializedXTest {
                         final TopicClient topicClient = admin.getTopicClient()) {
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     final String topicName = appId + "-store-changelog";
-                    this.softly.assertThat(topicClient.exists(topicName)).isTrue();
-                    final Map<String, String> config = topicClient.getConfig(topicName);
+                    final ForTopic topic = topicClient.forTopic(topicName);
+                    this.softly.assertThat(topic.exists()).isTrue();
+                    final Map<String, String> config = topic.getConfig();
                     this.softly.assertThat(config).containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
                 }
             }

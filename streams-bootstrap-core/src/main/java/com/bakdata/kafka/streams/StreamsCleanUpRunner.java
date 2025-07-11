@@ -253,13 +253,13 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
         private void deleteTopic(final String topic) {
             this.adminClient.getTopicClient()
-                    .deleteTopicIfExists(topic);
+                    .forTopic(topic).deleteTopicIfExists();
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteConsumerGroup() {
             final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.config.getAppId());
+            consumerGroupClient.forGroup(StreamsCleanUpRunner.this.config.getAppId()).deleteGroupIfExists();
         }
     }
 

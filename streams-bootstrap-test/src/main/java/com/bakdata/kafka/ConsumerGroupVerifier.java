@@ -86,7 +86,7 @@ public class ConsumerGroupVerifier {
     public Optional<GroupState> getState() {
         try (final AdminClientX admin = this.adminClientSupplier.get();
                 final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient()) {
-            return consumerGroupClient.describe(this.group)
+            return consumerGroupClient.forGroup(this.group).describe()
                     .map(this::getState);
         }
     }
@@ -114,7 +114,7 @@ public class ConsumerGroupVerifier {
                 final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient();
                 final TopicClient topicClient = admin.getTopicClient()) {
             final Map<TopicPartition, OffsetAndMetadata> consumerOffsets =
-                    consumerGroupClient.listOffsets(this.group);
+                    consumerGroupClient.forGroup(this.group).listOffsets();
             log.debug("Consumer group '{}' has {} subscribed partitions", this.group, consumerOffsets.size());
             if (consumerOffsets.isEmpty()) {
                 return Optional.empty();
