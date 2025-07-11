@@ -25,7 +25,7 @@
 package com.bakdata.kafka.producer;
 
 import com.bakdata.kafka.CleanUpRunner;
-import com.bakdata.kafka.SchemaRegistryTopicHook;
+import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -68,8 +68,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
     public static ProducerCleanUpRunner create(@NonNull final ProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final ProducerCleanUpConfiguration configuration) {
-        SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)
-                .map(SchemaRegistryTopicHook::new)
+        SchemaRegistryAppUtils.createTopicHook(kafkaProperties)
                 .ifPresent(configuration::registerTopicHook);
         return new ProducerCleanUpRunner(topics, kafkaProperties, configuration);
     }
