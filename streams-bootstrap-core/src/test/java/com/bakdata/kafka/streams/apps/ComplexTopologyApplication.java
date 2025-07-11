@@ -24,14 +24,12 @@
 
 package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.streams.SchemaRegistryStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.KStreamX;
 import com.bakdata.kafka.streams.kstream.KTableX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
@@ -41,23 +39,23 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.kstream.Windowed;
 
-public class ComplexTopologyApplication implements SchemaRegistryStreamsApp {
+public class ComplexTopologyApplication implements StreamsApp {
 
     public static final String THROUGH_TOPIC = "through-topic";
 
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, TestRecord> input = builder.streamInput();
+        final KStreamX<String, String> input = builder.streamInput();
 
         input.to(THROUGH_TOPIC);
-        final KStreamX<String, TestRecord> through = builder.stream(THROUGH_TOPIC);
-        final KTableX<Windowed<String>, TestRecord> reduce = through
+        final KStreamX<String, String> through = builder.stream(THROUGH_TOPIC);
+        final KTableX<Windowed<String>, String> reduce = through
                 .groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(5L)))
                 .reduce((a, b) -> a);
 
         reduce.toStream()
-                .map((k, v) -> KeyValue.pair(v.getContent(), v))
+                .map((k, v) -> KeyValue.pair(v, v))
                 .groupByKey()
                 .count(Materialized.with(Serdes.String(), Serdes.Long()))
                 .toStream()
@@ -71,6 +69,6 @@ public class ComplexTopologyApplication implements SchemaRegistryStreamsApp {
 
     @Override
     public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
+        return new SerdeConfig(StringSerde.class, StringSerde.class);
     }
 }

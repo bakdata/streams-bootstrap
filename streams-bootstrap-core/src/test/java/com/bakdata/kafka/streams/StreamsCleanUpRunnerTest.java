@@ -40,7 +40,6 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
-import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupClient;
 import com.bakdata.kafka.admin.TopicClient;
@@ -48,7 +47,6 @@ import com.bakdata.kafka.streams.apps.ComplexTopologyApplication;
 import com.bakdata.kafka.streams.apps.Mirror;
 import com.bakdata.kafka.streams.apps.WordCount;
 import com.bakdata.kafka.streams.apps.WordCountPattern;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -239,12 +237,12 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
                         this.createConfig())) {
 
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+            final String testRecord = "key 1";
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
                     .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -287,12 +285,12 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
                         this.createConfig())) {
 
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+            final String testRecord = "key 1";
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
                     .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
