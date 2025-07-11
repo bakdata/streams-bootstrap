@@ -54,9 +54,9 @@ public final class TestSchemaRegistry {
     }
 
     /**
-     * Get {@code SchemaRegistryClient} for configured URL with default providers
+     * Get {@link SchemaRegistryClient} for configured URL with default providers
      *
-     * @return {@code SchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient() {
@@ -64,10 +64,10 @@ public final class TestSchemaRegistry {
     }
 
     /**
-     * Get {@code SchemaRegistryClient} for configured URL
+     * Get {@link SchemaRegistryClient} for configured URL
      *
-     * @param providers list of {@code SchemaProvider} to use for {@code SchemaRegistryClient}
-     * @return {@code SchemaRegistryClient}
+     * @param providers list of {@link SchemaProvider} to use for {@link SchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {

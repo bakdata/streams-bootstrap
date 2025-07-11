@@ -50,6 +50,38 @@ public class SchemaRegistryAppUtils {
     private static final int CACHE_CAPACITY = 100;
 
     /**
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
+     *
+     * @param kafkaProperties properties for creating {@link SchemaRegistryClient}. Must include
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
+     * @return {@link SchemaRegistryClient}
+     * @see #createSchemaRegistryClient(Map, String)
+     */
+    public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
+        final String schemaRegistryUrl =
+                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        if (schemaRegistryUrl == null) {
+            throw new IllegalArgumentException(String.format("%s must be specified in properties",
+                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
+        }
+        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
+        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        return createSchemaRegistryClient(properties, schemaRegistryUrl);
+    }
+
+    /**
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
+     * @param schemaRegistryUrl URL of schema registry
+     * @return {@link SchemaRegistryClient}
+     */
+    public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
+            @NonNull final String schemaRegistryUrl) {
+        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
+    }
+
+    /**
      * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
      * create a {@link SchemaRegistryClient} are part of {@code kafkaProperties}.
      *
@@ -89,42 +121,11 @@ public class SchemaRegistryAppUtils {
         return cleanUpConfiguration.registerTopicHook(createTopicHook(configuration));
     }
 
-    /**
-     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
-     *
-     * @param kafkaProperties properties for creating {@link SchemaRegistryClient}. Must include
-     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
-     * @return {@link SchemaRegistryClient}
-     * @see #createSchemaRegistryClient(Map, String)
-     */
-    public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
-        final String schemaRegistryUrl =
-                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        if (schemaRegistryUrl == null) {
-            throw new IllegalArgumentException(String.format("%s must be specified in properties",
-                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
-        }
-        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
-        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        return createSchemaRegistryClient(properties, schemaRegistryUrl);
-    }
-
-    /**
-     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
-     *
-     * @param configs properties passed to {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
-     * @param schemaRegistryUrl URL of schema registry
-     * @return {@link SchemaRegistryClient}
-     */
-    public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
-            @NonNull final String schemaRegistryUrl) {
-        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
-    }
-
     @Slf4j
     @RequiredArgsConstructor
     private static class SchemaRegistryTopicHook implements TopicHook {
-        private final @NonNull SchemaRegistryClient schemaRegistryClient;
+        @NonNull
+        private final SchemaRegistryClient schemaRegistryClient;
 
         @Override
         public void deleted(final String topic) {

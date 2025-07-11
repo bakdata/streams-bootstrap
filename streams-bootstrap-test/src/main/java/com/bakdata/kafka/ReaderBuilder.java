@@ -109,9 +109,9 @@ public final class ReaderBuilder<K, V> {
     }
 
     /**
-     * Create a new {@code Consumer} for a Kafka cluster
+     * Create a new {@link Consumer} for a Kafka cluster
      *
-     * @return {@code Consumer}
+     * @return {@link Consumer}
      */
     public Consumer<K, V> createConsumer() {
         return new KafkaConsumer<>(this.properties,
@@ -126,7 +126,7 @@ public final class ReaderBuilder<K, V> {
      * @param valueDeserializer serializer for values
      * @param <KN> type of keys
      * @param <VN> type of values
-     * @return {@code SenderBuilder} with custom deserializers
+     * @return {@code ReaderBuilder} with custom deserializers
      */
     public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Preconfigured<Deserializer<KN>> keyDeserializer,
             final Preconfigured<Deserializer<VN>> valueDeserializer) {
@@ -139,7 +139,7 @@ public final class ReaderBuilder<K, V> {
      * @param valueDeserializer serializer for values
      * @param <KN> type of keys
      * @param <VN> type of values
-     * @return {@code SenderBuilder} with custom deserializers
+     * @return {@code ReaderBuilder} with custom deserializers
      * @see ReaderBuilder#withDeserializers(Preconfigured, Preconfigured)
      */
     public <KN, VN> ReaderBuilder<KN, VN> withDeserializers(final Deserializer<KN> keyDeserializer,
@@ -151,7 +151,7 @@ public final class ReaderBuilder<K, V> {
      * Provide custom deserializers for keys. Deserializer is configured automatically.
      * @param keyDeserializer serializer for keys
      * @param <KN> type of keys
-     * @return {@code SenderBuilder} with custom key deserializer
+     * @return {@code ReaderBuilder} with custom key deserializer
      */
     public <KN> ReaderBuilder<KN, V> withKeyDeserializer(final Preconfigured<Deserializer<KN>> keyDeserializer) {
         return this.withDeserializers(keyDeserializer, this.valueDeserializer);
@@ -161,7 +161,7 @@ public final class ReaderBuilder<K, V> {
      * Provide custom deserializers for keys. Deserializer is configured automatically.
      * @param keyDeserializer serializer for keys
      * @param <KN> type of keys
-     * @return {@code SenderBuilder} with custom key deserializer
+     * @return {@code ReaderBuilder} with custom key deserializer
      * @see ReaderBuilder#withKeyDeserializer(Preconfigured)
      */
     public <KN> ReaderBuilder<KN, V> withKeyDeserializer(final Deserializer<KN> keyDeserializer) {
@@ -172,7 +172,7 @@ public final class ReaderBuilder<K, V> {
      * Provide custom deserializers for values. Deserializer is configured automatically.
      * @param valueDeserializer serializer for values
      * @param <VN> type of values
-     * @return {@code SenderBuilder} with custom values deserializer
+     * @return {@code ReaderBuilder} with custom values deserializer
      */
     public <VN> ReaderBuilder<K, VN> withValueDeserializer(final Preconfigured<Deserializer<VN>> valueDeserializer) {
         return this.withDeserializers(this.keyDeserializer, valueDeserializer);
@@ -182,7 +182,7 @@ public final class ReaderBuilder<K, V> {
      * Provide custom deserializers for values. Deserializer is configured automatically.
      * @param valueDeserializer serializer for values
      * @param <VN> type of values
-     * @return {@code SenderBuilder} with custom values deserializer
+     * @return {@code ReaderBuilder} with custom values deserializer
      * @see ReaderBuilder#withValueDeserializer(Preconfigured)
      */
     public <VN> ReaderBuilder<K, VN> withValueDeserializer(final Deserializer<VN> valueDeserializer) {
