@@ -244,7 +244,7 @@ public final class TestApplicationRunner {
         if (this.schemaRegistry == null) {
             return this.kafkaConfig;
         }
-        return merge(this.kafkaConfig, this.schemaRegistry.getProperties());
+        return merge(this.kafkaConfig, this.schemaRegistry.getKafkaProperties());
     }
 
     private void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {

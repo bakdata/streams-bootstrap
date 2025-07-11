@@ -84,7 +84,7 @@ public final class TestSchemaRegistry {
      * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}
      */
     public RuntimeConfiguration configure(final RuntimeConfiguration configuration) {
-        return configuration.with(this.getProperties());
+        return configuration.with(this.getKafkaProperties());
     }
 
     /**
@@ -92,7 +92,7 @@ public final class TestSchemaRegistry {
      *
      * @return properties to use schema registry in Kafka apps
      */
-    public Map<String, String> getProperties() {
+    public Map<String, String> getKafkaProperties() {
         return Map.of(
                 AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl
         );
