@@ -29,9 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.TestApplicationRunner;
-import com.bakdata.kafka.TestRecord;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -47,8 +44,8 @@ class KafkaProducerApplicationRunTest extends KafkaTest {
             @Override
             public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
                 return () -> {
-                    try (final Producer<String, TestRecord> producer = builder.createProducer()) {
-                        final TestRecord testRecord = TestRecord.newBuilder().setContent("bar").build();
+                    try (final Producer<String, String> producer = builder.createProducer()) {
+                        final String testRecord = "bar";
                         producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", testRecord));
                     }
                 };
@@ -56,23 +53,22 @@ class KafkaProducerApplicationRunTest extends KafkaTest {
 
             @Override
             public SerializerConfig defaultSerializationConfig() {
-                return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
+                return new SerializerConfig(StringSerializer.class, StringSerializer.class);
             }
         })) {
-            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
-                    .withSchemaRegistry();
+            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers());
             app.setOutputTopic(output);
             final KafkaTestClient testClient = runner.newTestClient();
             testClient.createTopic(output);
             runner.run(app);
             assertThat(testClient.read()
                     .withKeyDeserializer(new StringDeserializer())
-                    .withValueDeserializer(new SpecificAvroDeserializer<TestRecord>())
+                    .withValueDeserializer(new StringDeserializer())
                     .from(output, POLL_TIMEOUT))
                     .hasSize(1)
                     .anySatisfy(kv -> {
                         assertThat(kv.key()).isEqualTo("foo");
-                        assertThat(kv.value().getContent()).isEqualTo("bar");
+                        assertThat(kv.value()).isEqualTo("bar");
                     });
             runner.clean(app);
             assertThat(testClient.existsTopic(app.getOutputTopic()))

@@ -2,7 +2,6 @@ description = "Base classes to create standalone Java applications using picocli
 
 plugins {
     id("java-library")
-    alias(libs.plugins.avro)
 }
 
 dependencies {
@@ -18,9 +17,6 @@ dependencies {
     testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(project(":streams-bootstrap-cli-test"))
     testImplementation(libs.junit.systemExit)
-    testImplementation(libs.kafka.streams.avro.serde) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
-    }
     testImplementation(libs.log4j.slf4j2)
 }
 

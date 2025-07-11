@@ -67,7 +67,7 @@ public final class TestTopologyFactory {
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return new TestTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
+        return new TestTopologyFactory(schemaRegistry::configure);
     }
 
     /**

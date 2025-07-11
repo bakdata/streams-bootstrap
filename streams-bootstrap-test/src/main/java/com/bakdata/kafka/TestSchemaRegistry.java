@@ -71,7 +71,17 @@ public final class TestSchemaRegistry {
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        final List<String> baseUrls = List.of(this.schemaRegistryUrl);
-        return SchemaRegistryClientFactory.newClient(baseUrls, 0, providers, emptyMap(), null);
+        return SchemaRegistryClientFactory.newClient(this.schemaRegistryUrl, 0, providers, emptyMap(), null);
+    }
+
+    /**
+     * Configure the schema registry for the provided {@link RuntimeConfiguration}
+     *
+     * @param configuration {@link RuntimeConfiguration}
+     * @return {@link RuntimeConfiguration} with configured schema registry
+     * @see RuntimeConfiguration#withSchemaRegistryUrl(String)
+     */
+    public RuntimeConfiguration configure(final RuntimeConfiguration configuration) {
+        return configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
     }
 }

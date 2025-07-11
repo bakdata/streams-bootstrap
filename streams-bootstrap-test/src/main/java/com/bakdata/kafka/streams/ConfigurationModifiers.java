@@ -25,18 +25,12 @@
 package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.RuntimeConfiguration;
-import com.bakdata.kafka.TestSchemaRegistry;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 class ConfigurationModifiers {
-
-    static UnaryOperator<RuntimeConfiguration> withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return runtimeConfiguration -> runtimeConfiguration.withSchemaRegistryUrl(
-                schemaRegistry.getSchemaRegistryUrl());
-    }
 
     static UnaryOperator<RuntimeConfiguration> configureProperties(final Map<String, ?> kafkaProperties) {
         return runtimeConfiguration -> runtimeConfiguration.with(kafkaProperties);
