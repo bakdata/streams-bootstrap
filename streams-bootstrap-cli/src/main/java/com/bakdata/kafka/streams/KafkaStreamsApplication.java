@@ -162,7 +162,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     /**
      * Create a {@link StateListener} to use for Kafka Streams.
      *
-     * @return {@code StateListener}. {@link NoOpStateListener} by default
+     * @return {@link StateListener}. {@link NoOpStateListener} by default
      * @see KafkaStreams#setStateListener(StateListener)
      */
     protected StateListener createStateListener() {
@@ -172,7 +172,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     /**
      * Create a {@link StreamsUncaughtExceptionHandler} to use for Kafka Streams.
      *
-     * @return {@code StreamsUncaughtExceptionHandler}. {@link DefaultStreamsUncaughtExceptionHandler} by default
+     * @return {@link StreamsUncaughtExceptionHandler}. {@link DefaultStreamsUncaughtExceptionHandler} by default
      * @see KafkaStreams#setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)
      */
     protected StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {

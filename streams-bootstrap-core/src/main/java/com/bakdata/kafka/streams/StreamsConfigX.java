@@ -74,8 +74,8 @@ public class StreamsConfigX {
     /**
      * Retrieves the host information based on the application server configuration.
      *
-     * @return an {@code Optional} containing the {@link HostInfo} if the
-     * {@link StreamsConfig#APPLICATION_SERVER_CONFIG} is set; otherwise, an empty {@code Optional}.
+     * @return an {@link Optional} containing the {@link HostInfo} if the
+     * {@link StreamsConfig#APPLICATION_SERVER_CONFIG} is set; otherwise, an empty {@link Optional}.
      */
     public Optional<HostInfo> getApplicationServer() {
         final String applicationServerConfig = this.streamsConfig.getString(APPLICATION_SERVER_CONFIG);

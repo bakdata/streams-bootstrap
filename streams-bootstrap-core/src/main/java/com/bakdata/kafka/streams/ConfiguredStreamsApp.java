@@ -136,8 +136,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Create an {@code ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
-     * @return {@code ExecutableStreamsApp}
+     * Create an {@link ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
+     * @return {@link ExecutableStreamsApp}
      */
     @Override
     public ExecutableStreamsApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {

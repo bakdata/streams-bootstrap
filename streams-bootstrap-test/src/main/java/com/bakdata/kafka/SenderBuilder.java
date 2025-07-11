@@ -79,9 +79,9 @@ public final class SenderBuilder<K, V> {
     }
 
     /**
-     * Create a new {@code Producer} for a Kafka cluster
+     * Create a new {@link Producer} for a Kafka cluster
      *
-     * @return {@code Producer}
+     * @return {@link Producer}
      */
     public Producer<K, V> createProducer() {
         return new KafkaProducer<>(this.properties, this.keySerializer.configureForKeys(this.properties),
