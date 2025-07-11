@@ -80,7 +80,7 @@ class SchemaRegistryStreamsAppTest extends KafkaTest {
                 final SchemaRegistryClient client = this.schemaRegistry.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
+            final KafkaTestClient testClient = this.newTestClientWithSchemaRegistry();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
                     .withKeySerializer(new StringSerializer())
@@ -112,7 +112,7 @@ class SchemaRegistryStreamsAppTest extends KafkaTest {
                 final SchemaRegistryClient client = this.schemaRegistry.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
+            final KafkaTestClient testClient = this.newTestClientWithSchemaRegistry();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
                     .withKeySerializer(new SpecificAvroSerializer<>())
@@ -137,6 +137,10 @@ class SchemaRegistryStreamsAppTest extends KafkaTest {
 
     private RuntimeConfiguration createConfigWithSchemaRegistry() {
         return this.schemaRegistry.configure(this.createConfig());
+    }
+
+    private KafkaTestClient newTestClientWithSchemaRegistry() {
+        return new KafkaTestClient(this.createConfigWithSchemaRegistry());
     }
 
 }

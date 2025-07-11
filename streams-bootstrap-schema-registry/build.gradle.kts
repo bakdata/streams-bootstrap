@@ -23,4 +23,5 @@ dependencies {
     testImplementation(libs.kafka.streams.avro.serde) {
         exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
     }
+    testImplementation(libs.log4j.slf4j2)
 }
