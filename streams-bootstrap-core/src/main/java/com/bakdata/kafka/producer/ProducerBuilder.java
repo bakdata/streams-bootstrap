@@ -49,8 +49,8 @@ public class ProducerBuilder {
     Map<String, Object> kafkaProperties;
 
     /**
-     * Create a new {@code Producer} using {@link #kafkaProperties}
-     * @return {@code Producer}
+     * Create a new {@link Producer} using {@link #kafkaProperties}
+     * @return {@link Producer}
      * @param <K> type of keys
      * @param <V> type of values
      * @see KafkaProducer#KafkaProducer(Map)
@@ -60,10 +60,10 @@ public class ProducerBuilder {
     }
 
     /**
-     * Create a new {@code Producer} using {@link #kafkaProperties} and provided {@code Serializers}
-     * @param keySerializer {@code Serializer} to use for keys
-     * @param valueSerializer {@code Serializer} to use for values
-     * @return {@code Producer}
+     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Serializer Serializers}
+     * @param keySerializer {@link Serializer} to use for keys
+     * @param valueSerializer {@link Serializer} to use for values
+     * @return {@link Producer}
      * @param <K> type of keys
      * @param <V> type of values
      * @see KafkaProducer#KafkaProducer(Map, Serializer, Serializer)
@@ -74,9 +74,9 @@ public class ProducerBuilder {
     }
 
     /**
-     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
+     * Create {@link Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
      * {@link Serializer} using {@link #kafkaProperties}.
-     * @return {@code Configurator}
+     * @return {@link Configurator}
      */
     public Configurator createConfigurator() {
         return new Configurator(this.kafkaProperties);

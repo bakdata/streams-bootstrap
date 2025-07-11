@@ -198,9 +198,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ExecutableApp} that will be executed according to the requested command.
+     * Create a new {@link ExecutableApp} that will be executed according to the requested command.
      *
-     * @return {@code ExecutableApp}
+     * @return {@link ExecutableApp}
      */
     public final E createExecutableApp() {
         final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
@@ -209,9 +209,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     * Create a new {@link ConfiguredApp} that will be executed according to this application.
      *
-     * @return {@code ConfiguredApp}
+     * @return {@link ConfiguredApp}
      */
     public final CA createConfiguredApp() {
         final T topics = this.createTopicConfig();
@@ -229,8 +229,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public abstract AC createConfiguration(T topics);
 
     /**
-     * Create a new {@code RunnableApp}
-     * @return {@code RunnableApp}
+     * Create a new {@link RunnableApp}
+     * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
         final ExecutableApp<R, ?, O> app = this.createExecutableApp();
@@ -242,8 +242,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code CleanableApp}
-     * @return {@code CleanableApp}
+     * Create a new {@link CleanableApp}
+     * @return {@link CleanableApp}
      */
     public final CleanableApp<CR> createCleanableApp() {
         final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp();
@@ -275,11 +275,11 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to the given config.
+     * Create a new {@link ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
      * @param configuration configuration for app
-     * @return {@code ConfiguredApp}
+     * @return {@link ConfiguredApp}
      */
     protected abstract CA createConfiguredApp(final A app, AC configuration);
 

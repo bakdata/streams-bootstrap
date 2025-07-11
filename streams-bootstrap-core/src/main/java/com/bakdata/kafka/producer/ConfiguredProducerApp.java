@@ -97,8 +97,8 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     }
 
     /**
-     * Create an {@code ExecutableProducerApp} using the provided {@link RuntimeConfiguration}
-     * @return {@code ExecutableProducerApp}
+     * Create an {@link ExecutableProducerApp} using the provided {@link RuntimeConfiguration}
+     * @return {@link ExecutableProducerApp}
      */
     @Override
     public ExecutableProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {

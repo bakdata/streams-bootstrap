@@ -28,7 +28,7 @@ import org.apache.kafka.streams.KafkaStreams.State;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
 
 /**
- * {@code StateListener} that does nothing.
+ * {@link StateListener} that does nothing.
  * @see org.apache.kafka.streams.KafkaStreams#setStateListener(StateListener)
  */
 class NoOpStateListener implements StateListener {
