@@ -29,6 +29,8 @@ import static com.bakdata.kafka.TestHelper.clean;
 import static com.bakdata.kafka.TestHelper.run;
 
 import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.RuntimeConfiguration;
+import com.bakdata.kafka.TestSchemaRegistry;
 import com.bakdata.kafka.producer.apps.AvroKeyProducer;
 import com.bakdata.kafka.producer.apps.AvroValueProducer;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -44,6 +46,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class SchemaRegistryProducerAppTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
+    private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
 
     private static ConfiguredProducerApp<ProducerApp> createAvroKeyApplication() {
         final ProducerTopicConfig topics = ProducerTopicConfig.builder()
@@ -63,8 +66,8 @@ class SchemaRegistryProducerAppTest extends KafkaTest {
     void shouldDeleteValueSchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroValueApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfig());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
+                        .withRuntimeConfiguration(this.createConfigWithSchemaRegistry());
+                final SchemaRegistryClient client = this.schemaRegistry.getSchemaRegistryClient()) {
             run(executableApp);
 
             final String outputTopic = app.getTopics().getOutputTopic();
@@ -80,8 +83,8 @@ class SchemaRegistryProducerAppTest extends KafkaTest {
     void shouldDeleteKeySchema() throws IOException, RestClientException {
         try (final ConfiguredProducerApp<ProducerApp> app = createAvroKeyApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfig());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
+                        .withRuntimeConfiguration(this.createConfigWithSchemaRegistry());
+                final SchemaRegistryClient client = this.schemaRegistry.getSchemaRegistryClient()) {
             run(executableApp);
 
             final String outputTopic = app.getTopics().getOutputTopic();
@@ -91,6 +94,10 @@ class SchemaRegistryProducerAppTest extends KafkaTest {
             this.softly.assertThat(client.getAllSubjects())
                     .doesNotContain(outputTopic + "-key");
         }
+    }
+
+    private RuntimeConfiguration createConfigWithSchemaRegistry() {
+        return this.schemaRegistry.configure(this.createConfig());
     }
 
 }

@@ -198,7 +198,7 @@ class StreamsRunnerTest extends KafkaTest {
     }
 
     private ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        return TestHelper.createExecutableApp(app, this.createConfigWithoutSchemaRegistry(), this.stateDir);
+        return TestHelper.createExecutableApp(app, this.createConfig(), this.stateDir);
     }
 
     private static class ErrorApplication implements StreamsApp {

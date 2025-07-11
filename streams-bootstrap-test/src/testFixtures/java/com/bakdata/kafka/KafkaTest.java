@@ -25,12 +25,7 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.time.Duration;
-import java.util.Map;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
@@ -43,8 +38,6 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class KafkaTest {
     public static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration SESSION_TIMEOUT = Duration.ofSeconds(10L);
-    @Getter(AccessLevel.PROTECTED)
-    private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
     @Container
     private final KafkaContainer kafkaCluster = newCluster();
 
@@ -93,15 +86,8 @@ public abstract class KafkaTest {
                 .atMost(Duration.ofSeconds(20L));
     }
 
-    protected RuntimeConfiguration createConfigWithoutSchemaRegistry() {
-        return RuntimeConfiguration.create(this.getBootstrapServers());
-    }
-
     protected RuntimeConfiguration createConfig() {
-        return this.createConfigWithoutSchemaRegistry()
-                .with(Map.of(
-                        AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl()
-                ));
+        return RuntimeConfiguration.create(this.getBootstrapServers());
     }
 
     protected String getBootstrapServers() {
@@ -110,14 +96,6 @@ public abstract class KafkaTest {
 
     protected KafkaTestClient newTestClient() {
         return new KafkaTestClient(this.createConfig());
-    }
-
-    protected String getSchemaRegistryUrl() {
-        return this.schemaRegistry.getSchemaRegistryUrl();
-    }
-
-    protected SchemaRegistryClient getSchemaRegistryClient() {
-        return this.schemaRegistry.getSchemaRegistryClient();
     }
 
 }

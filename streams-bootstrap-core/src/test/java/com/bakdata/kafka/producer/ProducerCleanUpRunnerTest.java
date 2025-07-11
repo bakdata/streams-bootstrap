@@ -79,7 +79,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteTopic() {
         try (final ConfiguredProducerApp<ProducerApp> app = createStringApplication();
                 final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfigWithoutSchemaRegistry())) {
+                        .withRuntimeConfiguration(this.createConfig())) {
             run(executableApp);
 
             final List<KeyValue<String, String>> output = this.readOutputTopic(app.getTopics().getOutputTopic());

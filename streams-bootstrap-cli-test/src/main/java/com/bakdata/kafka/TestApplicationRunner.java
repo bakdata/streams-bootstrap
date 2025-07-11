@@ -31,7 +31,6 @@ import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.google.common.collect.ImmutableList;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
@@ -245,10 +244,7 @@ public final class TestApplicationRunner {
         if (this.schemaRegistry == null) {
             return this.kafkaConfig;
         }
-        return merge(this.kafkaConfig, Map.of(
-                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                this.schemaRegistry.getSchemaRegistryUrl()
-        ));
+        return merge(this.kafkaConfig, this.schemaRegistry.getProperties());
     }
 
     private void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {

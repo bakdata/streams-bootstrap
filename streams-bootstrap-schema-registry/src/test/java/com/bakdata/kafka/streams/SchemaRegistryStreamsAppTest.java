@@ -31,8 +31,10 @@ import static com.bakdata.kafka.TestHelper.run;
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.TestSchemaRegistry;
 import com.bakdata.kafka.streams.apps.MirrorKeyWithAvro;
 import com.bakdata.kafka.streams.apps.MirrorValueWithAvro;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -51,6 +53,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class SchemaRegistryStreamsAppTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
+    private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorValueApplication() {
         final StreamsApp app = new MirrorValueWithAvro();
@@ -72,8 +75,9 @@ class SchemaRegistryStreamsAppTest extends KafkaTest {
     void shouldDeleteValueSchema()
             throws IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorValueApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = createExecutableApp(app, this.createConfig());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
+                final ExecutableStreamsApp<StreamsApp> executableApp = createExecutableApp(app,
+                        this.createConfigWithSchemaRegistry());
+                final SchemaRegistryClient client = this.schemaRegistry.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final KafkaTestClient testClient = this.newTestClient();
@@ -103,8 +107,9 @@ class SchemaRegistryStreamsAppTest extends KafkaTest {
     void shouldDeleteKeySchema()
             throws IOException, RestClientException {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorKeyApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = createExecutableApp(app, this.createConfig());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
+                final ExecutableStreamsApp<StreamsApp> executableApp = createExecutableApp(app,
+                        this.createConfigWithSchemaRegistry());
+                final SchemaRegistryClient client = this.schemaRegistry.getSchemaRegistryClient()) {
             final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final KafkaTestClient testClient = this.newTestClient();
@@ -128,6 +133,10 @@ class SchemaRegistryStreamsAppTest extends KafkaTest {
                     .doesNotContain(outputTopic + "-key")
                     .contains(inputTopic + "-key");
         }
+    }
+
+    private RuntimeConfiguration createConfigWithSchemaRegistry() {
+        return this.schemaRegistry.configure(this.createConfig());
     }
 
 }
