@@ -31,15 +31,15 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Utility class that provides helpers for cleaning {@code LargeMessageSerde} artifacts
+ * Utility class that provides helpers for removing schemas associated with topics
  */
 @UtilityClass
 @Slf4j
 public class SchemaRegistryAppUtils {
 
     /**
-     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary
-     * properties to create a {@link SchemaRegistryClient} are part of {@code kafkaProperties}.
+     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
+     * create a {@link SchemaRegistryClient} are part of {@code kafkaProperties}.
      *
      * @param kafkaProperties Kafka properties to create hook from
      * @return hook that cleans up schemas associated with a topic
@@ -52,9 +52,8 @@ public class SchemaRegistryAppUtils {
     }
 
     /**
-     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary
-     * properties to create a {@link SchemaRegistryClient} are part of
-     * {@link AppConfiguration#getKafkaProperties()}.
+     * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
+     * create a {@link SchemaRegistryClient} are part of {@link AppConfiguration#getKafkaProperties()}.
      *
      * @param configuration Configuration to create hook from
      * @return hook that cleans up schemas associated with a topic
@@ -66,15 +65,16 @@ public class SchemaRegistryAppUtils {
 
     /**
      * Register a hook that cleans up schemas associated with a topic
+     *
      * @param cleanUpConfiguration Configuration to register hook on
      * @param configuration Configuration to create hook from
-     * @return {@code StreamsCleanUpConfiguration} with registered topic hook
+     * @param <T> type of configuration
+     * @return Configuration with registered topic hook
      * @see SchemaRegistryAppUtils#createTopicHook(AppConfiguration)
      */
     public static <T> T registerTopicHook(
             final HasTopicHooks<T> cleanUpConfiguration, final AppConfiguration<?> configuration) {
-        return cleanUpConfiguration.registerTopicHook(
-                createTopicHook(configuration));
+        return cleanUpConfiguration.registerTopicHook(createTopicHook(configuration));
     }
 
 }

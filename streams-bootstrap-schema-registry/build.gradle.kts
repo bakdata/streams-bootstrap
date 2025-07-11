@@ -15,4 +15,7 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
     implementation(libs.slf4j)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.assertj)
 }

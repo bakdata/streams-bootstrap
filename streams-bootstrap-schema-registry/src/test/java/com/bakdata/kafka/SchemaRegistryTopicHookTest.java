@@ -37,15 +37,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-class SchemaRegistryTopicHookTest extends KafkaTest {
+class SchemaRegistryTopicHookTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
     @Test
     void shouldCreateClient() {
         final Map<String, Object> kafkaProperties = Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers(),
-                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryUrl()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
         );
         this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isNotNull();
     }
@@ -53,7 +53,7 @@ class SchemaRegistryTopicHookTest extends KafkaTest {
     @Test
     void shouldNotCreateClient() {
         final Map<String, Object> kafkaProperties = Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
         );
         this.softly.assertThatThrownBy(() -> SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties))
                 .isInstanceOf(IllegalArgumentException.class)

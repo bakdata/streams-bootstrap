@@ -49,11 +49,11 @@ public class SchemaRegistryTopicHook implements TopicHook {
     private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
     /**
-     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
      *
-     * @param kafkaProperties properties for creating {@code SchemaRegistryClient}. Must include
+     * @param kafkaProperties properties for creating {@link SchemaRegistryClient}. Must include
      * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
-     * @return {@code SchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      * @see SchemaRegistryTopicHook#createSchemaRegistryClient(Map, String)
      */
     public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
@@ -69,12 +69,12 @@ public class SchemaRegistryTopicHook implements TopicHook {
     }
 
     /**
-     * Creates a new {@code SchemaRegistryClient} using the specified configuration.
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
      *
      * @param configs properties passed to
      * {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
      * @param schemaRegistryUrl URL of schema registry
-     * @return {@code SchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      */
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
