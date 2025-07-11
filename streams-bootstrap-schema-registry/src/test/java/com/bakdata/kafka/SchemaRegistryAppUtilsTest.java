@@ -37,7 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-class SchemaRegistryTopicHookTest {
+class SchemaRegistryAppUtilsTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
@@ -47,7 +47,7 @@ class SchemaRegistryTopicHookTest {
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
                 AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
         );
-        this.softly.assertThat(SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties)).isNotNull();
+        this.softly.assertThat(SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties)).isNotNull();
     }
 
     @Test
@@ -55,7 +55,7 @@ class SchemaRegistryTopicHookTest {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
         );
-        this.softly.assertThatThrownBy(() -> SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties))
+        this.softly.assertThatThrownBy(() -> SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("schema.registry.url must be specified in properties");
     }

@@ -26,7 +26,17 @@ package com.bakdata.kafka;
 
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 @Slf4j
 public class SchemaRegistryAppUtils {
+
+    private static final int CACHE_CAPACITY = 100;
 
     /**
      * Create a hook that cleans up schemas associated with a topic. It is expected that all necessary properties to
@@ -47,7 +59,7 @@ public class SchemaRegistryAppUtils {
      */
     public static TopicHook createTopicHook(final Map<String, Object> kafkaProperties) {
         final SchemaRegistryClient schemaRegistryClient =
-                SchemaRegistryTopicHook.createSchemaRegistryClient(kafkaProperties);
+                createSchemaRegistryClient(kafkaProperties);
         return new SchemaRegistryTopicHook(schemaRegistryClient);
     }
 
@@ -77,4 +89,74 @@ public class SchemaRegistryAppUtils {
         return cleanUpConfiguration.registerTopicHook(createTopicHook(configuration));
     }
 
+    /**
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
+     *
+     * @param kafkaProperties properties for creating {@link SchemaRegistryClient}. Must include
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
+     * @return {@link SchemaRegistryClient}
+     * @see SchemaRegistryAppUtils#createSchemaRegistryClient(Map, String)
+     */
+    public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
+        final String schemaRegistryUrl =
+                (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        if (schemaRegistryUrl == null) {
+            throw new IllegalArgumentException(String.format("%s must be specified in properties",
+                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
+        }
+        final Map<String, Object> properties = new HashMap<>(kafkaProperties);
+        properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        return createSchemaRegistryClient(properties, schemaRegistryUrl);
+    }
+
+    /**
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
+     *
+     * @param configs properties passed to {@link SchemaRegistryClientFactory#newClient(String, int, List, Map, Map)}
+     * @param schemaRegistryUrl URL of schema registry
+     * @return {@link SchemaRegistryClient}
+     */
+    public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
+            @NonNull final String schemaRegistryUrl) {
+        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
+    }
+
+    @Slf4j
+    @RequiredArgsConstructor
+    private static class SchemaRegistryTopicHook implements TopicHook {
+        private final @NonNull SchemaRegistryClient schemaRegistryClient;
+
+        @Override
+        public void deleted(final String topic) {
+            log.info("Resetting Schema Registry for topic '{}'", topic);
+            try {
+                final Collection<String> allSubjects = this.schemaRegistryClient.getAllSubjects();
+                final String keySubject = topic + "-key";
+                if (allSubjects.contains(keySubject)) {
+                    this.schemaRegistryClient.deleteSubject(keySubject);
+                    log.info("Cleaned key schema of topic {}", topic);
+                } else {
+                    log.info("No key schema for topic {} available", topic);
+                }
+                final String valueSubject = topic + "-value";
+                if (allSubjects.contains(valueSubject)) {
+                    this.schemaRegistryClient.deleteSubject(valueSubject);
+                    log.info("Cleaned value schema of topic {}", topic);
+                } else {
+                    log.info("No value schema for topic {} available", topic);
+                }
+            } catch (final IOException | RestClientException e) {
+                throw new CleanUpException("Could not reset schema registry for topic " + topic, e);
+            }
+        }
+
+        @Override
+        public void close() {
+            try {
+                this.schemaRegistryClient.close();
+            } catch (final IOException e) {
+                throw new UncheckedIOException("Error closing schema registry client", e);
+            }
+        }
+    }
 }
