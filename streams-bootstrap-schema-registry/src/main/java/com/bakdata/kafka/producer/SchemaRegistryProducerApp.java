@@ -33,8 +33,7 @@ import com.bakdata.kafka.SchemaRegistryAppUtils;
 public interface SchemaRegistryProducerApp extends ProducerApp {
 
     @Override
-    default ProducerCleanUpConfiguration setupCleanUp(
-            final AppConfiguration<ProducerTopicConfig> configuration) {
+    default ProducerCleanUpConfiguration setupCleanUp(final AppConfiguration<ProducerTopicConfig> configuration) {
         final ProducerCleanUpConfiguration cleanUpConfiguration = ProducerApp.super.setupCleanUp(configuration);
         return SchemaRegistryAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }

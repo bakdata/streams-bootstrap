@@ -2,6 +2,7 @@ description = "Utils for using Confluent Schema Registry with your Kafka Streams
 
 plugins {
     id("java-library")
+    alias(libs.plugins.avro)
 }
 
 dependencies {
@@ -18,4 +19,8 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj)
+    testImplementation(testFixtures(project(":streams-bootstrap-test")))
+    testImplementation(libs.kafka.streams.avro.serde) {
+        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+    }
 }

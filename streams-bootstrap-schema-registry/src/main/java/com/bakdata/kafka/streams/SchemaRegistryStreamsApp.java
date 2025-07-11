@@ -33,8 +33,7 @@ import com.bakdata.kafka.SchemaRegistryAppUtils;
 public interface SchemaRegistryStreamsApp extends StreamsApp {
 
     @Override
-    default StreamsCleanUpConfiguration setupCleanUp(
-            final AppConfiguration<StreamsTopicConfig> configuration) {
+    default StreamsCleanUpConfiguration setupCleanUp(final AppConfiguration<StreamsTopicConfig> configuration) {
         final StreamsCleanUpConfiguration cleanUpConfiguration = StreamsApp.super.setupCleanUp(configuration);
         return SchemaRegistryAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
