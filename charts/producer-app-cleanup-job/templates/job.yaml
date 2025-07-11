@@ -48,6 +48,29 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           args:
+          {{- if hasKey .Values.kafka "bootstrapServers" }}
+            - --bootstrap-servers
+            - {{ .Values.kafka.bootstrapServers | quote }}
+          {{- end }}
+          {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
+            - --schema-registry-url
+            - {{ .Values.kafka.schemaRegistryUrl | quote }}
+          {{- end }}
+          {{- if hasKey .Values.kafka "outputTopic" }}
+            - --output-topic
+            - {{ .Values.kafka.outputTopic | quote }}
+          {{- end }}
+          {{- range $key, $value := .Values.kafka.labeledOutputTopics }}
+            - --labeled-output-topics
+            - {{ $key }}={{ $value }}
+          {{- end }}
+          {{- range $key, $value := .Values.commandLine }}
+            - {{ $key | quote  }}
+            - {{ $value | quote }}
+          {{- end }}
+          {{- range .Values.commandLineList }}
+            - {{ . | quote  }}
+          {{- end }}
             - clean
           env:
             - name: ENV_PREFIX
@@ -55,22 +78,6 @@ spec:
             {{- range $key, $value := .Values.kafka.config }}
             - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "bootstrapServers" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
-              value: {{ .Values.kafka.bootstrapServers | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-              value: {{ .Values.kafka.schemaRegistryUrl | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "outputTopic" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-              value: {{ .Values.kafka.outputTopic | quote }}
-            {{- end }}
-            {{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
             {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
@@ -85,10 +92,6 @@ spec:
                 secretKeyRef:
                   name: {{ $value.name }}
                   key: "{{ $value.key }}"
-            {{- end }}
-            {{- range $key, $value := .Values.commandLine }}
-            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-              value: {{ $value | quote }}
             {{- end }}
             {{- range $key, $value := .Values.env }}
             - name: {{ $key | quote }}
