@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -110,7 +111,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
      * @param groupName the consumer group name
      * @return consumer group description
      */
-    public ConsumerGroupDescription describe(final String groupName) {
+    public Optional<ConsumerGroupDescription> describe(final String groupName) {
         log.info("Describing consumer group '{}'", groupName);
         try {
             final ConsumerGroupDescription description =
@@ -119,11 +120,14 @@ public final class ConsumerGroupClient implements AutoCloseable {
                             .get(this.timeout.toSeconds(), TimeUnit.SECONDS)
                             .get(groupName);
             log.info("Described consumer group '{}'", groupName);
-            return description;
+            return Optional.of(description);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw failedToDescribeGroup(groupName, ex);
         } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof GroupIdNotFoundException) {
+                return Optional.empty();
+            }
             if (ex.getCause() instanceof final RuntimeException cause) {
                 throw cause;
             }

@@ -54,9 +54,9 @@ public class ExecutableStreamsApp<T extends StreamsApp>
     private final @NonNull StreamsTopicConfig topics;
 
     /**
-     * Create {@code StreamsCleanUpRunner} in order to clean application
+     * Create {@link StreamsCleanUpRunner} in order to clean application
      *
-     * @return {@code StreamsCleanUpRunner}
+     * @return {@link StreamsCleanUpRunner}
      */
     @Override
     public StreamsCleanUpRunner createCleanUpRunner() {
@@ -65,9 +65,9 @@ public class ExecutableStreamsApp<T extends StreamsApp>
     }
 
     /**
-     * Create {@code StreamsRunner} in order to run application with default {@link StreamsExecutionOptions}
+     * Create {@link StreamsRunner} in order to run application with default {@link StreamsExecutionOptions}
      *
-     * @return {@code StreamsRunner}
+     * @return {@link StreamsRunner}
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig)
      */
     @Override
@@ -77,10 +77,10 @@ public class ExecutableStreamsApp<T extends StreamsApp>
     }
 
     /**
-     * Create {@code StreamsRunner} in order to run application
+     * Create {@link StreamsRunner} in order to run application
      *
      * @param executionOptions options for running Kafka Streams application
-     * @return {@code StreamsRunner}
+     * @return {@link StreamsRunner}
      * @see StreamsRunner#StreamsRunner(Topology, StreamsConfig, StreamsExecutionOptions)
      */
     @Override

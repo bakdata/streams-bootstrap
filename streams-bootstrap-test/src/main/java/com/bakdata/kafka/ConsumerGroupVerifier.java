@@ -52,7 +52,7 @@ public class ConsumerGroupVerifier {
     private final @NonNull Supplier<AdminClientX> adminClientSupplier;
 
     /**
-     * Create a new verifier from an {@code ExecutableStreamsApp}
+     * Create a new verifier from an {@link ExecutableStreamsApp}
      * @param app app to create verifier from
      * @return verifier
      */
@@ -67,7 +67,7 @@ public class ConsumerGroupVerifier {
      * @return true if consumer group has state {@link GroupState#STABLE}
      */
     public boolean isActive() {
-        return this.getState() == GroupState.STABLE;
+        return this.getState().filter(s -> s == GroupState.STABLE).isPresent();
     }
 
     /**
@@ -75,7 +75,7 @@ public class ConsumerGroupVerifier {
      * @return true if consumer group has state {@link GroupState#EMPTY}
      */
     public boolean isClosed() {
-        return this.getState() == GroupState.EMPTY;
+        return this.getState().filter(s -> s == GroupState.EMPTY).isPresent();
     }
 
     /**
@@ -83,14 +83,18 @@ public class ConsumerGroupVerifier {
      *
      * @return current state of consumer group
      */
-    public GroupState getState() {
+    public Optional<GroupState> getState() {
         try (final AdminClientX admin = this.adminClientSupplier.get();
                 final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient()) {
-            final ConsumerGroupDescription description = consumerGroupClient.describe(this.group);
-            final GroupState state = description.groupState();
-            log.debug("Consumer group '{}' has state {}", this.group, state);
-            return state;
+            return consumerGroupClient.describe(this.group)
+                    .map(this::getState);
         }
+    }
+
+    private GroupState getState(final ConsumerGroupDescription description) {
+        final GroupState state = description.groupState();
+        log.debug("Consumer group '{}' has state {}", this.group, state);
+        return state;
     }
 
     /**
@@ -103,7 +107,7 @@ public class ConsumerGroupVerifier {
 
     /**
      * Compute lag of consumer group
-     * @return lag of consumer group. If no partitions are assigned, an empty {@code Optional} is returned
+     * @return lag of consumer group. If no partitions are assigned, an empty {@link Optional} is returned
      */
     public Optional<Long> computeLag() {
         try (final AdminClientX admin = this.adminClientSupplier.get();

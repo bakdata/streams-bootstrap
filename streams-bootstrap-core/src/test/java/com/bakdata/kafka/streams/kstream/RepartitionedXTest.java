@@ -419,8 +419,10 @@ class RepartitionedXTest {
                 try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    final TopicSettings settings = topicClient.describe(appId + "-repartition-repartition");
-                    this.softly.assertThat(settings.getPartitions()).isEqualTo(2);
+                    final Optional<TopicSettings> settings = topicClient.describe(appId + "-repartition-repartition");
+                    this.softly.assertThat(settings)
+                            .map(TopicSettings::getPartitions)
+                            .hasValue(2);
                 }
             }
         }
@@ -467,8 +469,10 @@ class RepartitionedXTest {
                 try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    final TopicSettings settings = topicClient.describe(appId + "-repartition-repartition");
-                    this.softly.assertThat(settings.getPartitions()).isEqualTo(2);
+                    final Optional<TopicSettings> settings = topicClient.describe(appId + "-repartition-repartition");
+                    this.softly.assertThat(settings)
+                            .map(TopicSettings::getPartitions)
+                            .hasValue(2);
                 }
             }
         }
