@@ -22,3 +22,24 @@ jobs:
       ossrh-username: ${{ secrets.SONATYPE_OSSRH_USERNAME }}
       ossrh-password: ${{ secrets.SONATYPE_OSSRH_PASSWORD }}
       github-token: ${{ secrets.GH_TOKEN }}
+
+  extract-javadoc:
+    name: Extract Javadoc JARs into docs/javadoc
+    runs-on: ubuntu-20.04
+    needs: [prepare-release]
+    shell: bash
+    run: |
+          MODULES=("streams-bootstrap-cli")
+          mkdir -p docs/javadoc
+          for module in "${MODULES[@]}"; do
+            echo "Looking for javadoc jar in $module..."
+            jar_path=$(find "$module/build/libs" -type f -name '*-javadoc.jar' | sort | tail -n 1)
+            if [ -z "$jar_path" ]; then
+              echo "No javadoc jar found for $module"
+              continue
+            fi
+            target_dir="docs/javadoc/$module"
+            mkdir -p "$target_dir"
+            echo "Extracting $jar_path to $target_dir"
+            unzip -q "$jar_path" -d "$target_dir"
+          done

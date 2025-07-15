@@ -17,25 +17,6 @@ runs:
     - uses: actions/setup-python@v1
       with:
         python-version: 3.11
-
-    - name: Extract Javadoc JARs into docs/javadoc
-      shell: bash
-      run: |
-        MODULES=("streams-bootstrap-cli")
-        mkdir -p docs/javadoc
-        for module in "${MODULES[@]}"; do
-          echo "Looking for javadoc jar in $module..."
-          jar_path=$(find "$module/build/libs" -type f -name '*-javadoc.jar' | sort | tail -n 1)
-          if [ -z "$jar_path" ]; then
-            echo "No javadoc jar found for $module"
-            continue
-          fi
-          target_dir="docs/javadoc/$module"
-          mkdir -p "$target_dir"
-          echo "Extracting $jar_path to $target_dir"
-          unzip -q "$jar_path" -d "$target_dir"
-        done
-
     - name: Update documentation branch with mike
       shell: bash
       run: |
