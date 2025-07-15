@@ -17,17 +17,24 @@ runs:
     - uses: actions/setup-python@v1
       with:
         python-version: 3.11
-    - name: Download and extract Javadoc
+
+    - name: Extract Javadoc JARs into docs/javadoc
       shell: bash
       run: |
+        MODULES=("producer-app" "producer-app-cleanup-job" "streams-app" "streams-app-cleanup-job")
         mkdir -p docs/javadoc
-        curl -L "https://central.sonatype.com/repository/maven-snapshots/com/bakdata/kafka/streams-bootstrap-test/5.0.2-SNAPSHOT/streams-bootstrap-test-5.0.2-20250715.101853-34-javadoc.jar" --output javadoc.jar
-        unzip -q javadoc.jar -d docs/javadoc/
-    - name: Build MkDocs site
-      shell: bash
-      run: |
-        pip install -r ./docs/requirements.txt
-        mkdocs build --clean --config-file ./docs/mkdocs.yml
+        for module in "${MODULES[@]}"; do
+          echo "Looking for javadoc jar in $module..."
+          jar_path=$(find "$module/build/libs" -type f -name '*-javadoc.jar' | sort | tail -n 1)
+          if [ -z "$jar_path" ]; then
+            echo "No javadoc jar found for $module"
+            continue
+          fi
+          target_dir="docs/javadoc/$module"
+          mkdir -p "$target_dir"
+          echo "Extracting $jar_path to $target_dir"
+          unzip -q "$jar_path" -d "$target_dir"
+        done
 
     - name: Update documentation branch with mike
       shell: bash
