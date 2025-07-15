@@ -1,0 +1,1205 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://bakdata.github.io/streams-bootstrap/dev/producer-app/">
+      
+      
+        <link rel="prev" href="../streams-app/">
+      
+      
+        <link rel="next" href="../app-lifecycle/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
+    
+    
+      
+        <title>Kafka Producer Applications - streams-bootstrap</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kafka-producer-applications" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="streams-bootstrap" class="md-header__button md-logo" aria-label="streams-bootstrap" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            streams-bootstrap
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kafka Producer Applications
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bakdata/streams-bootstrap" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bakdata/streams-bootstrap
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="streams-bootstrap" class="md-nav__button md-logo" aria-label="streams-bootstrap" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    streams-bootstrap
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bakdata/streams-bootstrap" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bakdata/streams-bootstrap
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streams-app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Kafka Streams Applications
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Kafka Producer Applications
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Kafka Producer Applications
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-components-and-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Components and Responsibilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-kafka-producer-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Kafka Producer Application
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Kafka Producer Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Steps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-producer-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Producer Application
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-simplekafkaproducerapplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using SimpleKafkaProducerApplication
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI Arguments
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variable-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variable Support
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Precedence
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serialization-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serialization Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Kafka Properties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-registry-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema Registry Integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Cleanup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Cleanup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Hook
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes Deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kubernetes Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#helm-charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Charts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Modes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../app-lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Application Lifecycle Management Test
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Framework
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-components-and-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Components and Responsibilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-kafka-producer-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Kafka Producer Application
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Kafka Producer Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Steps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-producer-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Producer Application
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-simplekafkaproducerapplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using SimpleKafkaProducerApplication
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI Arguments
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variable-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variable Support
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Precedence
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serialization-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serialization Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Kafka Properties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-registry-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema Registry Integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Cleanup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Cleanup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Hook
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes Deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kubernetes Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#helm-charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Charts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Modes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="kafka-producer-applications">Kafka Producer Applications</h1>
+<p>This document provides technical documentation for Kafka Producer Applications within the <code>streams-bootstrap</code> framework.
+Kafka Producer Applications extend the <code>KafkaApplication</code> base class to create applications that produce messages to
+Kafka topics with standardized CLI options, configuration management, and deployment patterns.</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>Kafka Producer Applications in <code>streams-bootstrap</code> provide a structured framework for building applications that produce
+data to Kafka topics. The framework handles:</p>
+<ul>
+<li>CLI argument parsing</li>
+<li>Kafka configuration</li>
+<li>Schema Registry integration</li>
+<li>Resource lifecycle management via the <code>KafkaApplication</code> base class</li>
+</ul>
+<hr />
+<h2 id="architecture">Architecture</h2>
+<h3 id="core-components-and-responsibilities">Core Components and Responsibilities</h3>
+<ul>
+<li><strong>KafkaApplication</strong>: Abstract base with lifecycle methods</li>
+<li><strong>KafkaProducerApplication</strong>: Implementation with producer-specific lifecycle</li>
+<li><strong>ProducerApp</strong>: Interface defining producer logic and configuration</li>
+<li><strong>ConfiguredProducerApp</strong>: Wraps app logic with configuration</li>
+<li><strong>ExecutableProducerApp</strong>: Responsible for running and cleaning up</li>
+<li><strong>ProducerRunner</strong>: Executes the producer</li>
+<li><strong>ProducerCleanUpRunner</strong>: Handles resource cleanup</li>
+<li><strong>ProducerRunnable</strong>: User-defined message production logic</li>
+</ul>
+<hr />
+<h2 id="creating-a-kafka-producer-application">Creating a Kafka Producer Application</h2>
+<h3 id="implementation-steps">Implementation Steps</h3>
+<ol>
+<li><strong>Extend <code>KafkaProducerApplication</code></strong> with your specific app type</li>
+<li><strong>Implement <code>createApp()</code></strong> to define your producer logic</li>
+<li><strong>Implement <code>buildRunnable()</code></strong> inside <code>ProducerApp</code></li>
+<li><strong>Configure serialization</strong> using <code>defaultSerializationConfig()</code></li>
+</ol>
+<hr />
+<h2 id="implementation-example">Implementation Example</h2>
+<h3 id="basic-producer-application">Basic Producer Application</h3>
+<pre><code class="language-java">public class MyProducerApplication extends KafkaProducerApplication&lt;ProducerApp&gt; {
+
+    public static void main(final String[] args) {
+
+        new MyProducerApplication().startApplication(args);
+    }
+
+    @Override
+    public ProducerApp createApp() {
+        return new ProducerApp() {
+            @Override
+            public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+                return () -&gt; {
+                    try (final Producer&lt;Object, Object&gt; producer = builder.createProducer()) {
+                        producer.send(new ProducerRecord&lt;&gt;(
+                                builder.getTopics().getOutputTopic(), &quot;key&quot;, &quot;value&quot;
+                        ));
+                    }
+                };
+            }
+
+            @Override
+            public SerializerConfig defaultSerializationConfig() {
+                return new SerializerConfig(StringSerializer.class, StringSerializer.class);
+            }
+        };
+    }
+}
+</code></pre>
+<hr />
+<h2 id="using-simplekafkaproducerapplication">Using <code>SimpleKafkaProducerApplication</code></h2>
+<p>For programmatic usage without custom CLI:</p>
+<pre><code class="language-java">try(final KafkaProducerApplication&lt;?&gt; app=new SimpleKafkaProducerApplication&lt;&gt;(()-&gt;
+        new ProducerApp(){
+@Override
+public ProducerRunnable buildRunnable(final ProducerBuilder builder){
+        return()-&gt;{
+        try(final Producer&lt;Object, Object&gt; producer=builder.createProducer()){
+// Producer logic
+        }
+        };
+        }
+
+@Override
+public SerializerConfig defaultSerializationConfig(){
+        return new SerializerConfig(StringSerializer.class,StringSerializer.class);
+        }
+        }
+        )){
+        app.setBootstrapServers(&quot;localhost:9092&quot;);
+        app.setOutputTopic(&quot;output-topic&quot;);
+        app.run();
+        }
+</code></pre>
+<hr />
+<h2 id="configuration-options">Configuration Options</h2>
+<h3 id="cli-arguments">CLI Arguments</h3>
+<p>Kafka Producer applications inherit configuration options from KafkaApplication and support the following CLI arguments:</p>
+<pre><code class="language-text">--bootstrap-servers         Kafka bootstrap servers (comma-separated)          (Required)
+--bootstrap-server          Alias for --bootstrap-servers                      (Required)
+--schema-registry-url       URL for Avro schema registry                       (Optional)
+--kafka-config              Additional Kafka config (key=value,...)            (Optional)
+--output-topic              Main Kafka topic to produce to                     (Optional)
+--labeled-output-topics     Named output topics (label1=topic1,...)            (Optional)
+</code></pre>
+<hr />
+<h2 id="environment-variable-support">Environment Variable Support</h2>
+<p>The framework automatically parses environment variables with the <code>APP_ prefix</code> (configurable via <code>ENV_PREFIX</code>).
+Environment variables are converted to CLI arguments:</p>
+<pre><code class="language-text">APP_BOOTSTRAP_SERVERS       → --bootstrap-servers
+APP_SCHEMA_REGISTRY_URL     → --schema-registry-url
+APP_OUTPUT_TOPIC            → --output-topic
+</code></pre>
+<p>Additionally, Kafka-specific environment variables with the <code>KAFKA_</code> prefix are automatically added to the Kafka
+configuration.</p>
+<hr />
+<h2 id="configuration-precedence">Configuration Precedence</h2>
+<p>Kafka properties are merged in the following order (later values override earlier ones):</p>
+<ol>
+<li>Base configuration</li>
+<li>App config from ProducerApp.createKafkaProperties()</li>
+<li>Environment variables (<code>KAFKA_</code>)</li>
+<li>Runtime args (--bootstrap-servers, etc.)</li>
+<li>Serialization config from ProducerApp.defaultSerializationConfig()</li>
+<li>CLI overrides via --kafka-config</li>
+</ol>
+<hr />
+<h2 id="serialization-configuration">Serialization Configuration</h2>
+<p>Producer applications specify key and value serializers via the defaultSerializationConfig() method in your ProducerApp
+implementation:</p>
+<pre><code class="language-java">@Override
+public SerializerConfig defaultSerializationConfig(){
+        return new SerializerConfig(StringSerializer.class,SpecificAvroSerializer.class);
+        }
+</code></pre>
+<p>Common serializer configurations:</p>
+<table>
+<thead>
+<tr>
+<th>Key Serializer</th>
+<th>Value Serializer</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>StringSerializer</td>
+<td>StringSerializer</td>
+<td>Simple string messages</td>
+</tr>
+<tr>
+<td>StringSerializer</td>
+<td>SpecificAvroSerializer</td>
+<td>Avro schema evolution</td>
+</tr>
+<tr>
+<td>StringSerializer</td>
+<td>GenericAvroSerializer</td>
+<td>Dynamic Avro schemas</td>
+</tr>
+<tr>
+<td>ByteArraySerializer</td>
+<td>ByteArraySerializer</td>
+<td>Binary data</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="custom-kafka-properties">Custom Kafka Properties</h2>
+<p>Override createKafkaProperties() to add custom producer configuration:</p>
+<pre><code class="language-java">@Override
+public Map&lt;String, Object&gt; createKafkaProperties(){
+        return Map.of(
+        ProducerConfig.ACKS_CONFIG,&quot;all&quot;,
+        ProducerConfig.RETRIES_CONFIG,3,
+        ProducerConfig.BATCH_SIZE_CONFIG,16384,
+        ProducerConfig.LINGER_MS_CONFIG,5
+        );
+        }
+</code></pre>
+<hr />
+<h2 id="schema-registry-integration">Schema Registry Integration</h2>
+<p>When <code>--schema-registry-url</code> is set:</p>
+<ul>
+<li>Schema registration happens automatically</li>
+<li>Schema cleanup is handled during clean</li>
+<li>Schema evolution is supported</li>
+</ul>
+<pre><code class="language-java">props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG,schemaRegistryUrl);
+</code></pre>
+<hr />
+<h2 id="resource-cleanup">Resource Cleanup</h2>
+<h3 id="command">Command</h3>
+<p>The clean command provides comprehensive resource cleanup for producer applications:</p>
+<pre><code class="language-bash">java -jar my-producer-app.jar --bootstrap-servers localhost:9092 --output-topic my-topic clean
+</code></pre>
+<h3 id="operations">Operations</h3>
+<ul>
+<li>Delete output topics</li>
+<li>Delete schemas</li>
+<li>Run custom cleanup hooks via ProducerApp.setupCleanUp()</li>
+</ul>
+<h3 id="custom-hook">Custom Hook</h3>
+<p>Producer applications can register custom cleanup logic:</p>
+<pre><code class="language-java">@Override
+public void setupCleanUp(final EffectiveAppConfiguration configuration){
+        configuration.addCleanupHook(()-&gt;{
+// Your cleanup logic
+        });
+        }
+</code></pre>
+<hr />
+<h2 id="kubernetes-deployment">Kubernetes Deployment</h2>
+<h3 id="helm-charts">Helm Charts</h3>
+<ul>
+<li><code>producer-app</code>: Main deployment</li>
+<li><code>producer-app-cleanup-job</code>: Cleanup job</li>
+</ul>
+<h3 id="deployment-modes">Deployment Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Use Case</th>
+<th>Resource Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deployment</td>
+<td>Long-running producer</td>
+<td>apps/v1/Deployment</td>
+</tr>
+<tr>
+<td>Job</td>
+<td>One-time run</td>
+<td>batch/v1/Job</td>
+</tr>
+<tr>
+<td>CronJob</td>
+<td>Scheduled job</td>
+<td>batch/v1/CronJob</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configuration">Configuration</h3>
+<p>Values from <code>values.yaml</code> are converted into:</p>
+<ul>
+<li>CLI arguments</li>
+<li>Environment variables</li>
+<li>Kafka properties</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.56ea9cef.min.js"></script>
+      
+    
+  </body>
+</html>
