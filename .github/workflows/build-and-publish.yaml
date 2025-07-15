@@ -26,6 +26,7 @@ jobs:
   extract-javadoc:
     name: Extract Javadoc JARs into docs/javadoc
     runs-on: ubuntu-20.04
+    needs: [ build-and-publish ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -61,6 +62,7 @@ jobs:
 
   update-docs:
     runs-on: ubuntu-24.04
+    needs: [ extract-javadoc ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
