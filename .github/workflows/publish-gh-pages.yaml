@@ -4,25 +4,18 @@ on:
   push:
     branches:
       - 'feature/wiki-gh-pages'
-    tags:
-      - '**'
+  workflow_dispatch:
 
 jobs:
-  deploy-docs:
-    runs-on: ubuntu-latest
-
+  update-docs:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Update gh-pages
+        uses: ./.github/actions/update-docs
         with:
-          fetch-depth: 0
-
-      - name: Install Poetry and dependencies
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "${HOME}/.local/bin" >> $GITHUB_PATH
-          poetry install --with docs
-
-      - name: Deploy docs
-        run: |
-          poetry run mkdocs gh-deploy --config-file docs/mkdocs.yml --clean --force
+          username: ${{ secrets.GH_USERNAME }}
+          email: ${{ secrets.GH_EMAIL }}
+          token: ${{ secrets.GH_TOKEN }}

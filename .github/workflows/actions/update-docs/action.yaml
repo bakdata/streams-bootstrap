@@ -1,0 +1,30 @@
+name: "Update documentation in gh-pages (dev)"
+
+inputs:
+  username:
+    description: "GitHub username"
+    required: true
+  email:
+    description: "GitHub email"
+    required: true
+  token:
+    description: "GitHub Token (must be a PAT for repository dispatch)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.11
+
+    - name: Update documentation branch with mike
+      shell: bash
+      run: |
+        pip install -r ./docs/requirements.txt
+        git config --local user.name  ${{ inputs.username }}
+        git config --local user.email ${{ inputs.email }}
+        git config --local user.password ${{ inputs.token }}
+        git fetch origin gh-pages
+
+        mike deploy dev --push --rebase --config-file ./docs/mkdocs.yml
