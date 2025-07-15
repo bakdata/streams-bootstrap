@@ -7,4 +7,8 @@ theme:
   name: material
 
 nav:
-  - Home: markdown.md
+  - Overview: index.md
+  - Kafka Streams Applications: streams-app.md
+  - Kafka Producer Applications: producer-app.md
+  - Application Lifecycle Management Test: app-lifecycle.md
+  - Testing Framework: testing.md
