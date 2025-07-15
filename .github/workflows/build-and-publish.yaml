@@ -27,8 +27,13 @@ jobs:
     name: Extract Javadoc JARs into docs/javadoc
     runs-on: ubuntu-20.04
     needs: [prepare-release]
-    shell: bash
-    run: |
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract Javadoc JARs
+        shell: bash
+        run: |
           MODULES=("streams-bootstrap-cli")
           mkdir -p docs/javadoc
           for module in "${MODULES[@]}"; do
@@ -43,3 +48,17 @@ jobs:
             echo "Extracting $jar_path to $target_dir"
             unzip -q "$jar_path" -d "$target_dir"
           done
+
+  update-docs:
+    runs-on: ubuntu-24.04
+    needs: [extract-javadoc]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update gh-pages
+        uses: ./.github/actions/update-docs
+        with:
+          username: ${{ secrets.GH_USERNAME }}
+          email: ${{ secrets.GH_EMAIL }}
+          token: ${{ secrets.GH_TOKEN }}
