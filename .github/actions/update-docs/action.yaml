@@ -21,7 +21,7 @@ runs:
     - name: Extract Javadoc JARs into docs/javadoc
       shell: bash
       run: |
-        MODULES=("producer-app" "producer-app-cleanup-job" "streams-app" "streams-app-cleanup-job")
+        MODULES=("streams-bootstrap-cli")
         mkdir -p docs/javadoc
         for module in "${MODULES[@]}"; do
           echo "Looking for javadoc jar in $module..."

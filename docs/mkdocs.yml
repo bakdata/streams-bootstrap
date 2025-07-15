@@ -12,4 +12,4 @@ nav:
   - Kafka Producer Applications: producer-app.md
   - Application Lifecycle Management: app-lifecycle.md
   - Testing Framework: testing.md
-  - Javadoc: javadoc/index.html
+  - Javadoc: javadoc/streams-bootstrap-cli/index.html
