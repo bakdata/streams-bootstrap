@@ -1,3 +1,5 @@
+# Application Lifecycle Management
+
 This section documents the lifecycle management aspects of applications built with streams-bootstrap, focusing on how
 applications are started, stopped, cleaned up, and reset. The framework provides standardized ways to manage the
 complete lifecycle of both Kafka Streams and Producer applications.
