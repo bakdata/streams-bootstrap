@@ -23,35 +23,46 @@ jobs:
       ossrh-password: ${{ secrets.SONATYPE_OSSRH_PASSWORD }}
       github-token: ${{ secrets.GH_TOKEN }}
 
-  extract-javadoc:
-    name: Extract Javadoc JARs into docs/javadoc
-    runs-on: ubuntu-20.04
-    needs: [build-and-publish]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
-      - name: Extract Javadoc JARs
-        shell: bash
-        run: |
-          MODULES=("streams-bootstrap-cli")
-          mkdir -p docs/javadoc
-          for module in "${MODULES[@]}"; do
-            echo "Looking for javadoc jar in $module..."
-            jar_path=$(find "$module/build/libs" -type f -name '*-javadoc.jar' | sort | tail -n 1)
-            if [ -z "$jar_path" ]; then
-              echo "No javadoc jar found for $module"
-              continue
-            fi
+extract-javadoc:
+  name: Extract Javadoc JARs into docs/javadoc
+  runs-on: ubuntu-20.04
+  needs: build-and-publish
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifact
+        path: build-artifact
+
+    - name: Extract Javadoc JARs per module
+      shell: bash
+      run: |
+        MODULES=("streams-bootstrap-cli" "streams-bootstrap-test") 
+        mkdir -p docs/javadoc
+
+        for module in "${MODULES[@]}"; do
+          jar_path="build-artifact/$module/build/libs/${module}-*-javadoc.jar"
+
+          echo "Looking for javadoc JAR in: $jar_path"
+
+          if compgen -G "$jar_path" > /dev/null; then
             target_dir="docs/javadoc/$module"
             mkdir -p "$target_dir"
-            echo "Extracting $jar_path to $target_dir"
-            unzip -q "$jar_path" -d "$target_dir"
-          done
+            actual_jar=$(ls $jar_path | head -n 1)
+
+            echo "Extracting $actual_jar to $target_dir"
+            unzip -q "$actual_jar" -d "$target_dir"
+          else
+            echo "No Javadoc JAR found for module: $module"
+          fi
+        done
 
   update-docs:
     runs-on: ubuntu-24.04
-    needs: [extract-javadoc]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
