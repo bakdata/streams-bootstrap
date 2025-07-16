@@ -82,19 +82,36 @@ public final class AdminClientX implements AutoCloseable {
                 .build();
     }
 
+    /**
+     * Get the underlying {@link Admin} client.
+     *
+     * @return admin client
+     */
     public Admin admin() {
         return new PooledAdmin(this.adminClient);
     }
 
+    /**
+     * Create a {@link SchemaRegistryClient} if schema registry is configured.
+     * @return schema registry client
+     */
     public Optional<SchemaRegistryClient> schemaRegistry() {
         return Optional.ofNullable(this.schemaRegistryClient)
                 .map(PooledSchemaRegistryClient::new);
     }
 
+    /**
+     * Create a {@link TopicsClient} to perform topic-related administrative actions.
+     * @return topic client
+     */
     public TopicsClient topics() {
         return new TopicsClient(this.adminClient, this.timeout);
     }
 
+    /**
+     * Create a {@link ConsumerGroupsClient} to perform consumer group-related administrative actions
+     * @return consumer group client
+     */
     public ConsumerGroupsClient consumerGroups() {
         return new ConsumerGroupsClient(this.adminClient, this.timeout);
     }

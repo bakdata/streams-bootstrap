@@ -112,13 +112,13 @@ public class ConsumerGroupVerifier {
     public Optional<Long> computeLag() {
         try (final AdminClientX admin = this.adminClientSupplier.get()) {
             final ConsumerGroupsClient groups = admin.consumerGroups();
-            final TopicsClient topics = admin.topics();
             final Map<TopicPartition, OffsetAndMetadata> consumerOffsets =
                     groups.group(this.group).listOffsets();
             log.debug("Consumer group '{}' has {} subscribed partitions", this.group, consumerOffsets.size());
             if (consumerOffsets.isEmpty()) {
                 return Optional.empty();
             }
+            final TopicsClient topics = admin.topics();
             final Map<TopicPartition, ListOffsetsResultInfo> partitionOffsets =
                     topics.listOffsets(consumerOffsets.keySet());
             final long lag = consumerOffsets.entrySet().stream()
