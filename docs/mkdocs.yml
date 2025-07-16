@@ -1,0 +1,13 @@
+site_name: streams-bootstrap
+repo_url: https://github.com/bakdata/streams-bootstrap
+repo_name: bakdata/streams-bootstrap
+site_url: https://bakdata.github.io/streams-bootstrap/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - versioning
+nav:
+  - Index: index.md

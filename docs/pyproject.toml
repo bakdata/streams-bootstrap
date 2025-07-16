@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "streams-bootstrap"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.11"
+mkdocs = ">=1.5,<2.0"
+mkdocs-material = ">=9.5,<10.0"
+mike = ">=1.1,<2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

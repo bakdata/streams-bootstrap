@@ -1,0 +1,21 @@
+name: Update Docs
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update gh-pages
+        uses: ./.github/actions/update-docs
+        with:
+          username: ${{ secrets.GH_USERNAME }}
+          email: ${{ secrets.GH_EMAIL }}
+          token: ${{ secrets.GH_TOKEN }}
+          tag: ${{ github.ref_name }}
