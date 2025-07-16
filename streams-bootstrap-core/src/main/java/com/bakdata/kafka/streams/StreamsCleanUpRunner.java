@@ -28,7 +28,7 @@ import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.ConsumerGroupClient;
+import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -201,7 +201,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {
-            final Collection<String> allTopics = this.adminClient.getTopicClient().list();
+            final Collection<String> allTopics = this.adminClient.topics().list();
             this.reset(allTopics);
         }
 
@@ -225,7 +225,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void cleanAndReset() {
-            final Collection<String> allTopics = this.adminClient.getTopicClient().list();
+            final Collection<String> allTopics = this.adminClient.topics().list();
             this.reset(allTopics);
             this.clean(allTopics);
         }
@@ -252,14 +252,14 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void deleteTopic(final String topic) {
-            this.adminClient.getTopicClient()
-                    .forTopic(topic).deleteIfExists();
+            this.adminClient.topics()
+                    .topic(topic).deleteIfExists();
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteConsumerGroup() {
-            final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.forGroup(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
+            final ConsumerGroupsClient groups = this.adminClient.consumerGroups();
+            groups.group(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
         }
     }
 

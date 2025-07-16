@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import com.bakdata.kafka.ApacheKafkaContainerCluster;
-import com.bakdata.kafka.admin.TopicClient.ForTopic;
+import com.bakdata.kafka.admin.TopicsClient.TopicClient;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -39,16 +39,18 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-class TopicClientClusterTest {
+class TopicsClientClusterTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
     @Container
-    private final ApacheKafkaContainerCluster kafkaCluster = new ApacheKafkaContainerCluster(AppInfoParser.getVersion(), 3, 2);
+    private final ApacheKafkaContainerCluster kafkaCluster =
+            new ApacheKafkaContainerCluster(AppInfoParser.getVersion(), 3, 2);
 
     @Test
     void shouldCreateTopicWithReplication() {
-        try (final TopicClient client = this.createClient()) {
-            final ForTopic topic = client.forTopic("topic");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            final TopicClient topic = client.topic("topic");
             assertThat(topic.exists()).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
@@ -71,10 +73,10 @@ class TopicClientClusterTest {
         }
     }
 
-    private TopicClient createClient() {
+    private AdminClientX createAdminClient() {
         final String brokerList = this.kafkaCluster.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
-        return TopicClient.create(config, CLIENT_TIMEOUT);
+        return AdminClientX.create(config, CLIENT_TIMEOUT);
     }
 
 }

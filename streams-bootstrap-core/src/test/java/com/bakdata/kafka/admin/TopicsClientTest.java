@@ -29,52 +29,57 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
-import com.bakdata.kafka.admin.TopicClient.ForTopic;
+import com.bakdata.kafka.admin.TopicsClient.TopicClient;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.common.config.TopicConfig;
 import org.junit.jupiter.api.Test;
 
-class TopicClientTest extends KafkaTest {
+class TopicsClientTest extends KafkaTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
 
     @Test
     void shouldNotFindTopic() {
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.forTopic("does_not_exist").exists()).isFalse();
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            assertThat(client.topic("does_not_exist").exists()).isFalse();
         }
     }
 
     @Test
     void shouldNotDescribeTopic() {
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.forTopic("does_not_exist").describe()).isNotPresent();
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            assertThat(client.topic("does_not_exist").describe()).isNotPresent();
         }
     }
 
     @Test
     void shouldNotGetTopicConfigs() {
-        try (final TopicClient client = this.createClient()) {
-            assertThat(client.forTopic("does_not_exist").config().describe()).isEmpty();
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            assertThat(client.topic("does_not_exist").config().describe()).isEmpty();
         }
     }
 
     @Test
     void shouldFindTopic() {
-        try (final TopicClient client = this.createClient()) {
-            final ForTopic exists = client.forTopic("exists");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            final TopicClient exists = client.topic("exists");
             exists.create(defaultTopicSettings().build());
-            assertThat(client.forTopic("exists").exists()).isTrue();
+            assertThat(client.topic("exists").exists()).isTrue();
         }
     }
 
     @Test
     void shouldListTopics() {
-        try (final TopicClient client = this.createClient()) {
-            client.forTopic("foo").create(defaultTopicSettings().build());
-            client.forTopic("bar").create(defaultTopicSettings().build());
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            client.topic("foo").create(defaultTopicSettings().build());
+            client.topic("bar").create(defaultTopicSettings().build());
             assertThat(client.list())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
@@ -83,8 +88,9 @@ class TopicClientTest extends KafkaTest {
 
     @Test
     void shouldDeleteTopic() {
-        try (final TopicClient client = this.createClient()) {
-            final ForTopic foo = client.forTopic("foo");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            final TopicClient foo = client.topic("foo");
             foo.create(defaultTopicSettings().build());
             assertThat(foo.exists()).isTrue();
             foo.delete();
@@ -95,8 +101,9 @@ class TopicClientTest extends KafkaTest {
 
     @Test
     void shouldCreateTopic() {
-        try (final TopicClient client = this.createClient()) {
-            final ForTopic topic = client.forTopic("topic");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            final TopicClient topic = client.topic("topic");
             assertThat(topic.exists()).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
@@ -114,8 +121,9 @@ class TopicClientTest extends KafkaTest {
 
     @Test
     void shouldCreateTopicIfNotExists() {
-        try (final TopicClient client = this.createClient()) {
-            final ForTopic topic = client.forTopic("topic");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            final TopicClient topic = client.topic("topic");
             assertThat(topic.exists()).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
@@ -133,8 +141,9 @@ class TopicClientTest extends KafkaTest {
 
     @Test
     void shouldNotCreateTopicIfExists() {
-        try (final TopicClient client = this.createClient()) {
-            final ForTopic topic = client.forTopic("topic");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
+            final TopicClient topic = client.topic("topic");
             assertThat(topic.exists()).isFalse();
             final TopicSettings settings = TopicSettings.builder()
                     .partitions(5)
@@ -157,12 +166,13 @@ class TopicClientTest extends KafkaTest {
 
     @Test
     void shouldGetTopicConfig() {
-        try (final TopicClient client = this.createClient()) {
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final TopicsClient client = admin.topics();
             final Map<String, String> config = Map.of(
                     TopicConfig.CLEANUP_POLICY_CONFIG,
                     TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE
             );
-            final ForTopic foo = client.forTopic("foo");
+            final TopicClient foo = client.topic("foo");
             foo.create(defaultTopicSettings().build(), config);
             assertThat(foo.config().describe())
                     .containsEntry(TopicConfig.CLEANUP_POLICY_CONFIG,
@@ -170,10 +180,10 @@ class TopicClientTest extends KafkaTest {
         }
     }
 
-    private TopicClient createClient() {
+    private AdminClientX createAdminClient() {
         final String brokerList = this.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
-        return TopicClient.create(config, CLIENT_TIMEOUT);
+        return AdminClientX.create(config, CLIENT_TIMEOUT);
     }
 
 }

@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka.admin;
 
-import com.bakdata.kafka.admin.ConfigClient.ForResource;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +33,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.DeleteConsumerGroupsResult;
@@ -53,40 +50,14 @@ import org.apache.kafka.common.errors.GroupIdNotFoundException;
  * This class offers helpers to interact with Kafka consumer groups.
  */
 @Slf4j
-public final class ConsumerGroupClient implements AutoCloseable {
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+public final class ConsumerGroupsClient {
 
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    /**
-     * Create a new consumer group client
-     *
-     * @param adminClient admin client
-     * @param timeout timeout when performing admin operations
-     */
-    public ConsumerGroupClient(final Admin adminClient, final Duration timeout) {
-        this.adminClient = adminClient;
-        this.timeout = new Timeout(timeout);
-    }
-
-    /**
-     * Creates a new {@code ConsumerGroupClient} using the specified configuration.
-     *
-     * @param configs properties passed to {@link AdminClient#create(Map)}
-     * @param timeout timeout for waiting for Kafka admin calls
-     * @return {@code ConsumerGroupClient}
-     */
-    public static ConsumerGroupClient create(final Map<String, Object> configs, final Duration timeout) {
-        return new ConsumerGroupClient(AdminClient.create(configs), timeout);
-    }
-
     private static KafkaAdminException failedToList(final Throwable ex) {
         return new KafkaAdminException("Failed to list consumer groups", ex);
-    }
-
-    @Override
-    public void close() {
-        this.adminClient.close();
     }
 
     /**
@@ -96,7 +67,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
      */
     public Collection<ConsumerGroupListing> list() {
         final ListConsumerGroupsResult result = this.adminClient.listConsumerGroups();
-        return this.timeout.get(result.all(), ConsumerGroupClient::failedToList);
+        return this.timeout.get(result.all(), ConsumerGroupsClient::failedToList);
     }
 
     /**
@@ -105,15 +76,15 @@ public final class ConsumerGroupClient implements AutoCloseable {
      * @param groupName consumer group name
      * @return a consumer group client for the specified group
      */
-    public ForGroup forGroup(final String groupName) {
-        return new ForGroup(groupName);
+    public ConsumerGroupClient group(final String groupName) {
+        return new ConsumerGroupClient(groupName);
     }
 
     /**
      * A client for a specific consumer group.
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public final class ForGroup {
+    public final class ConsumerGroupClient {
         private final @NonNull String groupName;
 
         /**
@@ -122,8 +93,8 @@ public final class ConsumerGroupClient implements AutoCloseable {
         public void delete() {
             log.info("Deleting consumer group '{}'", this.groupName);
             final DeleteConsumerGroupsResult result =
-                    ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName));
-            ConsumerGroupClient.this.timeout.get(result.all(), this::failedToDelete);
+                    ConsumerGroupsClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName));
+            ConsumerGroupsClient.this.timeout.get(result.all(), this::failedToDelete);
             log.info("Deleted consumer group '{}'", this.groupName);
         }
 
@@ -136,11 +107,11 @@ public final class ConsumerGroupClient implements AutoCloseable {
             log.debug("Describing consumer group '{}'", this.groupName);
             try {
                 final DescribeConsumerGroupsResult result =
-                        ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName));
+                        ConsumerGroupsClient.this.adminClient.describeConsumerGroups(List.of(this.groupName));
                 final Map<String, KafkaFuture<ConsumerGroupDescription>> groups = result.describedGroups();
                 final KafkaFuture<ConsumerGroupDescription> future = groups.get(this.groupName);
                 final ConsumerGroupDescription description =
-                        ConsumerGroupClient.this.timeout.get(future, this::failedToDescribe);
+                        ConsumerGroupsClient.this.timeout.get(future, this::failedToDescribe);
                 log.debug("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
             } catch (final GroupIdNotFoundException ex) {
@@ -157,11 +128,11 @@ public final class ConsumerGroupClient implements AutoCloseable {
         public Map<TopicPartition, OffsetAndMetadata> listOffsets() {
             log.debug("Listing offsets for consumer group '{}'", this.groupName);
             final ListConsumerGroupOffsetsResult result =
-                    ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName);
+                    ConsumerGroupsClient.this.adminClient.listConsumerGroupOffsets(this.groupName);
             final KafkaFuture<Map<TopicPartition, OffsetAndMetadata>> future =
                     result.partitionsToOffsetAndMetadata(this.groupName);
             final Map<TopicPartition, OffsetAndMetadata> offsets =
-                    ConsumerGroupClient.this.timeout.get(future, this::failedToListOffsets);
+                    ConsumerGroupsClient.this.timeout.get(future, this::failedToListOffsets);
             log.debug("Listed offsets for consumer group '{}'", this.groupName);
             return offsets;
         }
@@ -172,7 +143,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
          * @return whether a Kafka consumer group with the specified name exists or not
          */
         public boolean exists() {
-            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupClient.this.list();
+            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupsClient.this.list();
             return consumerGroups.stream()
                     .anyMatch(this::isThisGroup);
         }
@@ -195,9 +166,9 @@ public final class ConsumerGroupClient implements AutoCloseable {
          *
          * @return config client
          */
-        public ForResource config() {
-            return new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout)
-                    .forResource(new ConfigResource(Type.GROUP, this.groupName));
+        public ConfigClient config() {
+            return new ConfigClient(ConsumerGroupsClient.this.adminClient, ConsumerGroupsClient.this.timeout,
+                    new ConfigResource(Type.GROUP, this.groupName));
         }
 
         private boolean isThisGroup(final ConsumerGroupListing listing) {

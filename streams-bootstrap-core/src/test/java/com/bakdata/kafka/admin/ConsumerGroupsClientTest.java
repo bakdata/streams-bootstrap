@@ -27,8 +27,7 @@ package com.bakdata.kafka.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
-import com.bakdata.kafka.admin.ConfigClient.ForResource;
-import com.bakdata.kafka.admin.ConsumerGroupClient.ForGroup;
+import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -36,47 +35,51 @@ import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.coordinator.group.GroupConfig;
 import org.junit.jupiter.api.Test;
 
-class ConsumerGroupClientTest extends KafkaTest {
+class ConsumerGroupsClientTest extends KafkaTest {
 
     private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
 
     @Test
     void shouldNotFindGroup() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.forGroup("does_not_exist").exists()).isFalse();
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final ConsumerGroupsClient client = admin.consumerGroups();
+            assertThat(client.group("does_not_exist").exists()).isFalse();
         }
     }
 
     @Test
     void shouldNotDescribeGroup() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.forGroup("does_not_exist").describe()).isNotPresent();
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final ConsumerGroupsClient client = admin.consumerGroups();
+            assertThat(client.group("does_not_exist").describe()).isNotPresent();
         }
     }
 
     @Test
     void shouldNotListOffsets() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.forGroup("does_not_exist").listOffsets()).isEmpty();
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final ConsumerGroupsClient client = admin.consumerGroups();
+            assertThat(client.group("does_not_exist").listOffsets()).isEmpty();
         }
     }
 
     @Test
     void shouldAddGroupConfigs() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            final ForGroup group = client.forGroup("group");
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final ConsumerGroupsClient client = admin.consumerGroups();
+            final ConsumerGroupClient group = client.group("group");
             final String timeout = Long.toString(Duration.ofSeconds(60L).toMillis());
-            final ForResource config = group.config();
+            final ConfigClient config = group.config();
             config.add(new ConfigEntry(GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG, timeout));
             assertThat(config.describe())
                     .containsEntry(GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG, timeout);
         }
     }
 
-    private ConsumerGroupClient createClient() {
+    private AdminClientX createAdminClient() {
         final String brokerList = this.getBootstrapServers();
         final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
-        return ConsumerGroupClient.create(config, CLIENT_TIMEOUT);
+        return AdminClientX.create(config, CLIENT_TIMEOUT);
     }
 
 }

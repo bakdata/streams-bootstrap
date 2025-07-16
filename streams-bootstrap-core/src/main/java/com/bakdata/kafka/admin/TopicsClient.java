@@ -26,7 +26,6 @@ package com.bakdata.kafka.admin;
 
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.admin.ConfigClient.ForResource;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import java.time.Duration;
@@ -40,7 +39,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
@@ -62,7 +60,8 @@ import org.jooq.lambda.Seq;
  * This class offers helpers to interact with Kafka topics.
  */
 @Slf4j
-public final class TopicClient implements AutoCloseable {
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+public final class TopicsClient {
 
     private static final RetryConfig RETRY_CONFIG = RetryConfig.<Boolean>custom()
             .retryOnResult(result -> result)
@@ -73,39 +72,12 @@ public final class TopicClient implements AutoCloseable {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    /**
-     * Create a new topic client
-     *
-     * @param adminClient admin client
-     * @param timeout timeout when performing admin operations
-     */
-    public TopicClient(final Admin adminClient, final Duration timeout) {
-        this.adminClient = adminClient;
-        this.timeout = new Timeout(timeout);
-    }
-
-    /**
-     * Creates a new {@code TopicClient} using the specified configuration.
-     *
-     * @param configs properties passed to {@link AdminClient#create(Map)}
-     * @param timeout timeout for waiting for Kafka admin calls
-     * @return {@code TopicClient}
-     */
-    public static TopicClient create(final Map<String, Object> configs, final Duration timeout) {
-        return new TopicClient(AdminClient.create(configs), timeout);
-    }
-
     private static KafkaAdminException failedToList(final Throwable ex) {
         return new KafkaAdminException("Failed to list topics", ex);
     }
 
     private static KafkaAdminException failedToListOffsets(final Throwable ex) {
         return new KafkaAdminException("Failed to list offsets", ex);
-    }
-
-    @Override
-    public void close() {
-        this.adminClient.close();
     }
 
     /**
@@ -118,7 +90,7 @@ public final class TopicClient implements AutoCloseable {
         final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
                 .toMap(Function.identity(), o -> OffsetSpec.latest());
         final ListOffsetsResult result = this.adminClient.listOffsets(offsetRequest);
-        return this.timeout.get(result.all(), TopicClient::failedToListOffsets);
+        return this.timeout.get(result.all(), TopicsClient::failedToListOffsets);
     }
 
     /**
@@ -128,7 +100,7 @@ public final class TopicClient implements AutoCloseable {
      */
     public Collection<String> list() {
         final ListTopicsResult result = this.adminClient.listTopics();
-        return this.timeout.get(result.names(), TopicClient::failedToList);
+        return this.timeout.get(result.names(), TopicsClient::failedToList);
     }
 
     /**
@@ -137,15 +109,15 @@ public final class TopicClient implements AutoCloseable {
      * @param topicName topic name
      * @return a topic client for the specified topic
      */
-    public ForTopic forTopic(final String topicName) {
-        return new ForTopic(topicName);
+    public TopicClient topic(final String topicName) {
+        return new TopicClient(topicName);
     }
 
     /**
      * A client for a specific topic.
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public final class ForTopic {
+    public final class TopicClient {
         private final @NonNull String topicName;
 
         private static TopicSettings toSettings(final TopicDescription description) {
@@ -194,8 +166,8 @@ public final class TopicClient implements AutoCloseable {
          */
         public void delete() {
             log.info("Deleting topic '{}'", this.topicName);
-            final DeleteTopicsResult result = TopicClient.this.adminClient.deleteTopics(List.of(this.topicName));
-            TopicClient.this.timeout.get(result.all(), this::failedToDelete);
+            final DeleteTopicsResult result = TopicsClient.this.adminClient.deleteTopics(List.of(this.topicName));
+            TopicsClient.this.timeout.get(result.all(), this::failedToDelete);
             final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
             final boolean exists = Retry.decorateSupplier(retry, this::exists).get();
             if (exists) {
@@ -210,7 +182,7 @@ public final class TopicClient implements AutoCloseable {
          */
         public Optional<TopicSettings> getSettings() {
             final Optional<TopicDescription> description = this.describe();
-            return description.map(ForTopic::toSettings);
+            return description.map(TopicClient::toSettings);
         }
 
         /**
@@ -219,7 +191,7 @@ public final class TopicClient implements AutoCloseable {
          * @return whether a Kafka topic with the specified name exists or not
          */
         public boolean exists() {
-            final Collection<String> topics = TopicClient.this.list();
+            final Collection<String> topics = TopicsClient.this.list();
             return topics.stream()
                     .anyMatch(t -> t.equals(this.topicName));
         }
@@ -232,11 +204,11 @@ public final class TopicClient implements AutoCloseable {
         public Optional<TopicDescription> describe() {
             try {
                 final DescribeTopicsResult result =
-                        TopicClient.this.adminClient.describeTopics(List.of(this.topicName));
+                        TopicsClient.this.adminClient.describeTopics(List.of(this.topicName));
                 final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap = result.topicNameValues();
                 final KafkaFuture<TopicDescription> future = kafkaTopicMap.get(this.topicName);
                 final TopicDescription description =
-                        TopicClient.this.timeout.get(future, this::failedToRetrieveDescription);
+                        TopicsClient.this.timeout.get(future, this::failedToRetrieveDescription);
                 return Optional.of(description);
             } catch (final UnknownTopicOrPartitionException e) {
                 // topic does not exist
@@ -254,8 +226,8 @@ public final class TopicClient implements AutoCloseable {
             final NewTopic newTopic =
                     new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor())
                             .configs(config);
-            final CreateTopicsResult result = TopicClient.this.adminClient.createTopics(List.of(newTopic));
-            TopicClient.this.timeout.get(result.all(), this::failedToCreate);
+            final CreateTopicsResult result = TopicsClient.this.adminClient.createTopics(List.of(newTopic));
+            TopicsClient.this.timeout.get(result.all(), this::failedToCreate);
             final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
             final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists()).get();
             if (doesNotExist) {
@@ -286,9 +258,9 @@ public final class TopicClient implements AutoCloseable {
          *
          * @return config client
          */
-        public ForResource config() {
-            return new ConfigClient(TopicClient.this.adminClient, TopicClient.this.timeout)
-                    .forResource(new ConfigResource(Type.TOPIC, this.topicName));
+        public ConfigClient config() {
+            return new ConfigClient(TopicsClient.this.adminClient, TopicsClient.this.timeout,
+                    new ConfigResource(Type.TOPIC, this.topicName));
         }
 
         private KafkaAdminException failedToDelete(final Throwable ex) {

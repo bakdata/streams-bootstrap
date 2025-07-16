@@ -26,7 +26,6 @@ package com.bakdata.kafka.admin;
 
 import static java.util.Collections.emptyMap;
 
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -50,84 +49,51 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
  * This class offers helpers to interact with Kafka resource configs.
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class ConfigClient implements AutoCloseable {
+public class ConfigClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
+    private final @NonNull ConfigResource resource;
 
     /**
-     * Create a new config client
+     * Describes the current configuration of a Kafka resource.
      *
-     * @param adminClient admin client
-     * @param timeout timeout when performing admin operations
+     * @return config of resource
      */
-    public ConfigClient(final Admin adminClient, final Duration timeout) {
-        this(adminClient, new Timeout(timeout));
-    }
-
-    @Override
-    public void close() {
-        this.adminClient.close();
+    public Map<String, String> describe() {
+        try {
+            final DescribeConfigsResult result = this.adminClient.describeConfigs(List.of(this.resource));
+            final Map<ConfigResource, KafkaFuture<Config>> configMap = result.values();
+            final KafkaFuture<Config> future = configMap.get(this.resource);
+            final Config config = this.timeout.get(future, this::failedToGet);
+            return config.entries().stream()
+                    .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
+        } catch (final UnknownTopicOrPartitionException e) {
+            // topic does not exist
+            return emptyMap();
+        }
     }
 
     /**
-     * Create a client for a specific resource.
+     * Add a config for a Kafka resource.
      *
-     * @param resource resource
-     * @return a config client for the specified resource
+     * @param configEntry the configuration entry to add
      */
-    public ForResource forResource(final ConfigResource resource) {
-        return new ForResource(resource);
+    public void add(final ConfigEntry configEntry) {
+        final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
+        final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
+        final AlterConfigsResult result = this.adminClient.incrementalAlterConfigs(configs);
+        this.timeout.get(result.all(), this::failedToAdd);
     }
 
-    /**
-     * A client for a specific Kafka resource.
-     */
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public final class ForResource {
-        private final @NonNull ConfigResource resource;
+    private KafkaAdminException failedToGet(final Throwable e) {
+        return new KafkaAdminException("Failed to describe config of " + this.getName(), e);
+    }
 
-        /**
-         * Describes the current configuration of a Kafka resource.
-         *
-         * @return config of resource
-         */
-        public Map<String, String> describe() {
-            try {
-                final DescribeConfigsResult result =
-                        ConfigClient.this.adminClient.describeConfigs(List.of(this.resource));
-                final Map<ConfigResource, KafkaFuture<Config>> configMap = result.values();
-                final KafkaFuture<Config> future = configMap.get(this.resource);
-                final Config config = ConfigClient.this.timeout.get(future, this::failedToGet);
-                return config.entries().stream()
-                        .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
-            } catch (final UnknownTopicOrPartitionException e) {
-                // topic does not exist
-                return emptyMap();
-            }
-        }
+    private KafkaAdminException failedToAdd(final Throwable e) {
+        return new KafkaAdminException("Failed to add config to " + this.getName(), e);
+    }
 
-        /**
-         * Add a config for a Kafka resource.
-         *
-         * @param configEntry the configuration entry to add
-         */
-        public void add(final ConfigEntry configEntry) {
-            final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
-            final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
-            final AlterConfigsResult result = ConfigClient.this.adminClient.incrementalAlterConfigs(configs);
-            ConfigClient.this.timeout.get(result.all(), this::failedToAdd);
-        }
-
-        private KafkaAdminException failedToGet(final Throwable e) {
-            return new KafkaAdminException("Failed to describe config of " + this.getName(), e);
-        }
-
-        private KafkaAdminException failedToAdd(final Throwable e) {
-            return new KafkaAdminException("Failed to add config to " + this.getName(), e);
-        }
-
-        private String getName() {
-            return this.resource.type().name().toLowerCase(Locale.getDefault()) + " " + this.resource.name();
-        }
+    private String getName() {
+        return this.resource.type().name().toLowerCase(Locale.getDefault()) + " " + this.resource.name();
     }
 }
