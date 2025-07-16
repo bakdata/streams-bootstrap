@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.admin;
 
-import static com.bakdata.kafka.SchemaRegistryTopicHook.createSchemaRegistryClient;
+import static com.bakdata.kafka.SchemaRegistryAppUtils.createSchemaRegistryClient;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.io.IOException;

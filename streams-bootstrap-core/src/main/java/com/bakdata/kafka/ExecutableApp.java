@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,21 +36,21 @@ public interface ExecutableApp<R, C, O> extends AutoCloseable {
     void close();
 
     /**
-     * Create {@code Runner} in order to run application with default options
-     * @return {@code Runner}
+     * Create {@link Runner} in order to run application with default options
+     * @return {@link Runner}
      */
     R createRunner();
 
     /**
-     * Create {@code Runner} in order to run application
+     * Create {@link Runner} in order to run application
      * @param options options for creating runner
-     * @return {@code Runner}
+     * @return {@link Runner}
      */
     R createRunner(O options);
 
     /**
-     * Create {@code CleanUpRunner} in order to clean application
-     * @return {@code CleanUpRunner}
+     * Create {@link CleanUpRunner} in order to clean application
+     * @return {@link CleanUpRunner}
      */
     C createCleanUpRunner();
 }

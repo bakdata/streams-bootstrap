@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
-import com.bakdata.kafka.SchemaRegistryTopicHook;
+import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupClient;
 import com.bakdata.kafka.util.TopologyInformation;
@@ -85,8 +85,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final StreamsConfigX config = new StreamsConfigX(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
-        SchemaRegistryTopicHook.createSchemaRegistryClient(config.getKafkaProperties())
-                .map(SchemaRegistryTopicHook::new)
+        SchemaRegistryAppUtils.createTopicHook(config.getKafkaProperties())
                 .ifPresent(configuration::registerTopicHook);
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }

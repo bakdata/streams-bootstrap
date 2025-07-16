@@ -35,12 +35,12 @@ public interface ProducerApp extends App<ProducerTopicConfig, ProducerCleanUpCon
     /**
      * Create a runnable that produces Kafka messages
      * @param builder provides all runtime application configurations
-     * @return {@code ProducerRunnable}
+     * @return {@link ProducerRunnable}
      */
     ProducerRunnable buildRunnable(ProducerBuilder builder);
 
     /**
-     * @return {@code ProducerCleanUpConfiguration}
+     * @return {@link ProducerCleanUpConfiguration}
      * @see ProducerCleanUpRunner
      */
     @Override

@@ -45,8 +45,8 @@ public class ExecutableProducerApp<T extends ProducerApp>
     private final @NonNull T app;
 
     /**
-     * Create {@code ProducerCleanUpRunner} in order to clean application
-     * @return {@code ProducerCleanUpRunner}
+     * Create {@link ProducerCleanUpRunner} in order to clean application
+     * @return {@link ProducerCleanUpRunner}
      */
     @Override
     public ProducerCleanUpRunner createCleanUpRunner() {
@@ -56,8 +56,8 @@ public class ExecutableProducerApp<T extends ProducerApp>
     }
 
     /**
-     * Create {@code ProducerRunner} in order to run application
-     * @return {@code ProducerRunner}
+     * Create {@link ProducerRunner} in order to run application
+     * @return {@link ProducerRunner}
      */
     @Override
     public ProducerRunner createRunner() {

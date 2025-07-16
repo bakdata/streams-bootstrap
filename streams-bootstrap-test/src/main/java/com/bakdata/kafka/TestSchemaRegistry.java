@@ -54,9 +54,9 @@ public final class TestSchemaRegistry {
     }
 
     /**
-     * Get {@code SchemaRegistryClient} for configured URL with default providers
+     * Get {@link SchemaRegistryClient} for configured URL with default providers
      *
-     * @return {@code SchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient() {
@@ -64,14 +64,24 @@ public final class TestSchemaRegistry {
     }
 
     /**
-     * Get {@code SchemaRegistryClient} for configured URL
+     * Get {@link SchemaRegistryClient} for configured URL
      *
-     * @param providers list of {@code SchemaProvider} to use for {@code SchemaRegistryClient}
-     * @return {@code SchemaRegistryClient}
+     * @param providers list of {@link SchemaProvider} to use for {@link SchemaRegistryClient}
+     * @return {@link SchemaRegistryClient}
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient(final List<SchemaProvider> providers) {
-        final List<String> baseUrls = List.of(this.schemaRegistryUrl);
-        return SchemaRegistryClientFactory.newClient(baseUrls, 0, providers, emptyMap(), null);
+        return SchemaRegistryClientFactory.newClient(this.schemaRegistryUrl, 0, providers, emptyMap(), null);
+    }
+
+    /**
+     * Configure the schema registry for the provided {@link RuntimeConfiguration}
+     *
+     * @param configuration {@link RuntimeConfiguration}
+     * @return {@link RuntimeConfiguration} with configured schema registry
+     * @see RuntimeConfiguration#withSchemaRegistryUrl(String)
+     */
+    public RuntimeConfiguration configure(final RuntimeConfiguration configuration) {
+        return configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
     }
 }

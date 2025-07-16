@@ -67,7 +67,7 @@ public final class TestTopologyFactory {
      * @return {@code TestTopologyFactory} with configured Schema Registry
      */
     public static TestTopologyFactory withSchemaRegistry(final TestSchemaRegistry schemaRegistry) {
-        return new TestTopologyFactory(ConfigurationModifiers.withSchemaRegistry(schemaRegistry));
+        return new TestTopologyFactory(schemaRegistry::configure);
     }
 
     /**
@@ -82,13 +82,13 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a {@code TestTopology} from a {@code ConfiguredStreamsApp}. It injects a {@link RuntimeConfiguration} for
+     * Create a {@link TestTopology} from a {@link ConfiguredStreamsApp}. It injects a {@link RuntimeConfiguration} for
      * test purposes with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to create TestTopology from
      * @param <K> Default type of keys
      * @param <V> Default type of values
-     * @return {@code TestTopology} that uses topology and configuration provided by {@code ConfiguredStreamsApp}
+     * @return {@link TestTopology} that uses topology and configuration provided by {@link ConfiguredStreamsApp}
      * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
@@ -97,14 +97,14 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Create a {@code TestTopologyExtension} from a {@code ConfiguredStreamsApp}. It injects a
+     * Create a {@link TestTopologyExtension} from a {@link ConfiguredStreamsApp}. It injects a
      * {@link RuntimeConfiguration} for test purposes with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to create TestTopology from
      * @param <K> Default type of keys
      * @param <V> Default type of values
-     * @return {@code TestTopologyExtension} that uses topology and configuration provided by
-     * {@code ConfiguredStreamsApp}
+     * @return {@link TestTopologyExtension} that uses topology and configuration provided by
+     * {@link ConfiguredStreamsApp}
      * @see ConfiguredStreamsApp#getKafkaProperties(RuntimeConfiguration)
      * @see ConfiguredStreamsApp#createTopology(Map)
      */
@@ -114,7 +114,7 @@ public final class TestTopologyFactory {
     }
 
     /**
-     * Get Kafka properties from a {@code ConfiguredStreamsApp} using a {@link RuntimeConfiguration} for test purposes
+     * Get Kafka properties from a {@link ConfiguredStreamsApp} using a {@link RuntimeConfiguration} for test purposes
      * with Schema Registry optionally configured.
      *
      * @param app ConfiguredStreamsApp to get Kafka properties of

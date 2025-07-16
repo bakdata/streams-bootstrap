@@ -52,7 +52,7 @@ public class ConsumerGroupVerifier {
     private final @NonNull Supplier<AdminClientX> adminClientSupplier;
 
     /**
-     * Create a new verifier from an {@code ExecutableStreamsApp}
+     * Create a new verifier from an {@link ExecutableStreamsApp}
      * @param app app to create verifier from
      * @return verifier
      */
@@ -107,7 +107,7 @@ public class ConsumerGroupVerifier {
 
     /**
      * Compute lag of consumer group
-     * @return lag of consumer group. If no partitions are assigned, an empty {@code Optional} is returned
+     * @return lag of consumer group. If no partitions are assigned, an empty {@link Optional} is returned
      */
     public Optional<Long> computeLag() {
         try (final AdminClientX admin = this.adminClientSupplier.get();

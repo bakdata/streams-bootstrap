@@ -46,7 +46,7 @@ public class KafkaTestClient {
     private final @NonNull RuntimeConfiguration configuration;
 
     /**
-     * Create a new {@code TopicSettingsBuilder} which uses a single partition and no replicas
+     * Create a new {@link TopicSettingsBuilder} which uses a single partition and no replicas
      * @return default topic settings
      */
     public static TopicSettingsBuilder defaultTopicSettings() {
@@ -57,7 +57,7 @@ public class KafkaTestClient {
 
     /**
      * Prepare sending new data to the cluster
-     * @return configured {@code SenderBuilder}
+     * @return configured {@link SenderBuilder}
      */
     public <K, V> SenderBuilder<K, V> send() {
         return SenderBuilder.create(this.configuration.createKafkaProperties());
@@ -66,7 +66,7 @@ public class KafkaTestClient {
     /**
      * Prepare reading data from the cluster. {@link ConsumerConfig#AUTO_OFFSET_RESET_CONFIG} is configured to
      * {@link AutoOffsetResetStrategy#EARLIEST}
-     * @return configured {@code ReaderBuilder}
+     * @return configured {@link ReaderBuilder}
      */
     public <K, V> ReaderBuilder<K, V> read() {
         return ReaderBuilder.<K, V>create(this.configuration.createKafkaProperties())
