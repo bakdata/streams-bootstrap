@@ -28,7 +28,7 @@ import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.KafkaFuture;
@@ -37,20 +37,19 @@ import org.apache.kafka.common.KafkaFuture;
 class Timeout {
     private final @NonNull Duration duration;
 
-    <T> T get(final KafkaFuture<T> future,
-            final Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+    <T> T get(final KafkaFuture<T> future, final Supplier<String> messageSupplier) {
         try {
             return future.get(this.duration.toSeconds(), TimeUnit.SECONDS);
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof final RuntimeException cause) {
                 throw cause;
             }
-            throw exceptionMapper.apply(e);
+            throw new KafkaAdminException(messageSupplier.get(), e);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw exceptionMapper.apply(e);
+            throw new KafkaAdminException(messageSupplier.get(), e);
         } catch (final TimeoutException e) {
-            throw exceptionMapper.apply(e);
+            throw new KafkaAdminException(messageSupplier.get(), e);
         }
     }
 }

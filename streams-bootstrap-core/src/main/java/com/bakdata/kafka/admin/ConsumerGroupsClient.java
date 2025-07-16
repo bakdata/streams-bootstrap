@@ -56,8 +56,8 @@ public final class ConsumerGroupsClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    private static KafkaAdminException failedToList(final Throwable ex) {
-        return new KafkaAdminException("Failed to list consumer groups", ex);
+    private static String failedToList() {
+        return "Failed to list consumer groups";
     }
 
     /**
@@ -175,16 +175,16 @@ public final class ConsumerGroupsClient {
             return listing.groupId().equals(this.groupName);
         }
 
-        private KafkaAdminException failedToDelete(final Throwable ex) {
-            return new KafkaAdminException("Failed to delete consumer group " + this.groupName, ex);
+        private String failedToDelete() {
+            return "Failed to delete consumer group " + this.groupName;
         }
 
-        private KafkaAdminException failedToListOffsets(final Throwable ex) {
-            return new KafkaAdminException("Failed to list offsets for consumer group " + this.groupName, ex);
+        private String failedToListOffsets() {
+            return "Failed to list offsets for consumer group " + this.groupName;
         }
 
-        private KafkaAdminException failedToDescribe(final Throwable ex) {
-            return new KafkaAdminException("Failed to describe consumer group " + this.groupName, ex);
+        private String failedToDescribe() {
+            return "Failed to describe consumer group " + this.groupName;
         }
     }
 }

@@ -72,12 +72,12 @@ public final class TopicsClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    private static KafkaAdminException failedToList(final Throwable ex) {
-        return new KafkaAdminException("Failed to list topics", ex);
+    private static String failedToList() {
+        return "Failed to list topics";
     }
 
-    private static KafkaAdminException failedToListOffsets(final Throwable ex) {
-        return new KafkaAdminException("Failed to list offsets", ex);
+    private static String failedToListOffsets() {
+        return "Failed to list offsets";
     }
 
     /**
@@ -263,16 +263,16 @@ public final class TopicsClient {
                     new ConfigResource(Type.TOPIC, this.topicName));
         }
 
-        private KafkaAdminException failedToDelete(final Throwable ex) {
-            return new KafkaAdminException("Failed to delete topic " + this.topicName, ex);
+        private String failedToDelete() {
+            return "Failed to delete topic " + this.topicName;
         }
 
-        private KafkaAdminException failedToRetrieveDescription(final Throwable e) {
-            return new KafkaAdminException("Failed to retrieve description of topic " + this.topicName, e);
+        private String failedToRetrieveDescription() {
+            return "Failed to retrieve description of topic " + this.topicName;
         }
 
-        private KafkaAdminException failedToCreate(final Throwable ex) {
-            return new KafkaAdminException("Failed to create topic " + this.topicName, ex);
+        private String failedToCreate() {
+            return "Failed to create topic " + this.topicName;
         }
     }
 }

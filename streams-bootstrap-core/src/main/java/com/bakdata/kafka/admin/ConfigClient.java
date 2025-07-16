@@ -85,12 +85,12 @@ public class ConfigClient {
         this.timeout.get(result.all(), this::failedToAdd);
     }
 
-    private KafkaAdminException failedToGet(final Throwable e) {
-        return new KafkaAdminException("Failed to describe config of " + this.getName(), e);
+    private String failedToGet() {
+        return "Failed to describe config of " + this.getName();
     }
 
-    private KafkaAdminException failedToAdd(final Throwable e) {
-        return new KafkaAdminException("Failed to add config to " + this.getName(), e);
+    private String failedToAdd() {
+        return "Failed to add config to " + this.getName();
     }
 
     private String getName() {
