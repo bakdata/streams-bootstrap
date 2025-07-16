@@ -25,6 +25,7 @@
 package com.bakdata.kafka.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
@@ -60,6 +61,15 @@ class ConsumerGroupsClientTest extends KafkaTest {
         try (final AdminClientX admin = this.createAdminClient()) {
             final ConsumerGroupsClient client = admin.consumerGroups();
             assertThat(client.group("does_not_exist").listOffsets()).isEmpty();
+        }
+    }
+
+    @Test
+    void shouldDeleteGroupIfNotExists() {
+        try (final AdminClientX admin = this.createAdminClient()) {
+            final ConsumerGroupsClient client = admin.consumerGroups();
+            final ConsumerGroupClient doesNotExist = client.group("does_not_exist");
+            assertThatCode(doesNotExist::deleteIfExists).doesNotThrowAnyException();
         }
     }
 
