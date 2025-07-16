@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConfigEntry;
+import org.apache.kafka.coordinator.group.GroupConfig;
 import org.junit.jupiter.api.Test;
 
 class ConsumerGroupClientTest extends KafkaTest {
@@ -64,9 +65,12 @@ class ConsumerGroupClientTest extends KafkaTest {
         try (final ConsumerGroupClient client = this.createClient()) {
             final ForGroup group = client.forGroup("group");
             group.addConfig(
-                    new ConfigEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(60L).toMillis())));
+                    new ConfigEntry(
+                            GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG,
+                            Long.toString(Duration.ofSeconds(60L).toMillis())));
             assertThat(group.getConfig())
-                    .containsEntry("consumer.session.timeout.ms", Long.toString(Duration.ofSeconds(60L).toMillis()));
+                    .containsEntry(GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG,
+                            Long.toString(Duration.ofSeconds(60L).toMillis()));
         }
     }
 
