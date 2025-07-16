@@ -54,7 +54,7 @@ class TopicClientClusterTest {
                     .partitions(5)
                     .replicationFactor((short) 2)
                     .build();
-            topic.createTopic(settings, emptyMap());
+            topic.create(settings, emptyMap());
             // topic needs to be propagated to all KRaft controllers
             // topic creation only verifies existence on one controller
             await()
@@ -62,7 +62,7 @@ class TopicClientClusterTest {
                     .atMost(Duration.ofSeconds(20L))
                     .untilAsserted(() -> {
                         assertThat(topic.exists()).isTrue();
-                        assertThat(topic.describe())
+                        assertThat(topic.getSettings())
                                 .hasValueSatisfying(info -> {
                                     assertThat(info.getReplicationFactor()).isEqualTo((short) 2);
                                     assertThat(info.getPartitions()).isEqualTo(5);

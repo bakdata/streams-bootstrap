@@ -110,7 +110,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
 
         private void deleteTopic(final String topic) {
             this.adminClient.getTopicClient()
-                    .forTopic(topic).deleteTopicIfExists();
+                    .forTopic(topic).deleteIfExists();
             ProducerCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 

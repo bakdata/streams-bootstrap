@@ -201,7 +201,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {
-            final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            final Collection<String> allTopics = this.adminClient.getTopicClient().list();
             this.reset(allTopics);
         }
 
@@ -225,7 +225,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void cleanAndReset() {
-            final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            final Collection<String> allTopics = this.adminClient.getTopicClient().list();
             this.reset(allTopics);
             this.clean(allTopics);
         }
@@ -253,13 +253,13 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
         private void deleteTopic(final String topic) {
             this.adminClient.getTopicClient()
-                    .forTopic(topic).deleteTopicIfExists();
+                    .forTopic(topic).deleteIfExists();
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteConsumerGroup() {
             final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.forGroup(StreamsCleanUpRunner.this.config.getAppId()).deleteGroupIfExists();
+            consumerGroupClient.forGroup(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
         }
     }
 

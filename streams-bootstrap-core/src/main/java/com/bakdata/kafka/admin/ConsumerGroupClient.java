@@ -36,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.DeleteConsumerGroupsResult;
@@ -81,7 +80,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
         return new ConsumerGroupClient(AdminClient.create(configs), timeout);
     }
 
-    private static KafkaAdminException failedToListGroups(final Throwable ex) {
+    private static KafkaAdminException failedToList(final Throwable ex) {
         return new KafkaAdminException("Failed to list consumer groups", ex);
     }
 
@@ -95,9 +94,9 @@ public final class ConsumerGroupClient implements AutoCloseable {
      *
      * @return consumer groups
      */
-    public Collection<ConsumerGroupListing> listGroups() {
+    public Collection<ConsumerGroupListing> list() {
         final ListConsumerGroupsResult result = this.adminClient.listConsumerGroups();
-        return this.timeout.get(result.all(), ConsumerGroupClient::failedToListGroups);
+        return this.timeout.get(result.all(), ConsumerGroupClient::failedToList);
     }
 
     /**
@@ -120,11 +119,11 @@ public final class ConsumerGroupClient implements AutoCloseable {
         /**
          * Delete a consumer group.
          */
-        public void deleteConsumerGroup() {
+        public void delete() {
             log.info("Deleting consumer group '{}'", this.groupName);
             final DeleteConsumerGroupsResult result =
                     ConsumerGroupClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName));
-            ConsumerGroupClient.this.timeout.get(result.all(), this::failedToDeleteGroup);
+            ConsumerGroupClient.this.timeout.get(result.all(), this::failedToDelete);
             log.info("Deleted consumer group '{}'", this.groupName);
         }
 
@@ -134,15 +133,15 @@ public final class ConsumerGroupClient implements AutoCloseable {
          * @return consumer group description
          */
         public Optional<ConsumerGroupDescription> describe() {
-            log.info("Describing consumer group '{}'", this.groupName);
+            log.debug("Describing consumer group '{}'", this.groupName);
             try {
                 final DescribeConsumerGroupsResult result =
                         ConsumerGroupClient.this.adminClient.describeConsumerGroups(List.of(this.groupName));
                 final Map<String, KafkaFuture<ConsumerGroupDescription>> groups = result.describedGroups();
                 final KafkaFuture<ConsumerGroupDescription> future = groups.get(this.groupName);
                 final ConsumerGroupDescription description =
-                        ConsumerGroupClient.this.timeout.get(future, this::failedToDescribeGroup);
-                log.info("Described consumer group '{}'", this.groupName);
+                        ConsumerGroupClient.this.timeout.get(future, this::failedToDescribe);
+                log.debug("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
             } catch (final GroupIdNotFoundException ex) {
                 // group does not exist
@@ -156,14 +155,14 @@ public final class ConsumerGroupClient implements AutoCloseable {
          * @return consumer group offsets
          */
         public Map<TopicPartition, OffsetAndMetadata> listOffsets() {
-            log.info("Listing offsets for consumer group '{}'", this.groupName);
+            log.debug("Listing offsets for consumer group '{}'", this.groupName);
             final ListConsumerGroupOffsetsResult result =
                     ConsumerGroupClient.this.adminClient.listConsumerGroupOffsets(this.groupName);
             final KafkaFuture<Map<TopicPartition, OffsetAndMetadata>> future =
                     result.partitionsToOffsetAndMetadata(this.groupName);
             final Map<TopicPartition, OffsetAndMetadata> offsets =
                     ConsumerGroupClient.this.timeout.get(future, this::failedToListOffsets);
-            log.info("Listed offsets for consumer group '{}'", this.groupName);
+            log.debug("Listed offsets for consumer group '{}'", this.groupName);
             return offsets;
         }
 
@@ -173,18 +172,18 @@ public final class ConsumerGroupClient implements AutoCloseable {
          * @return whether a Kafka consumer group with the specified name exists or not
          */
         public boolean exists() {
-            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupClient.this.listGroups();
+            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupClient.this.list();
             return consumerGroups.stream()
-                    .anyMatch(c -> c.groupId().equals(this.groupName));
+                    .anyMatch(this::isThisGroup);
         }
 
         /**
          * Delete a consumer group only if it exists.
          */
-        public void deleteGroupIfExists() {
+        public void deleteIfExists() {
             if (this.exists()) {
                 try {
-                    this.deleteConsumerGroup();
+                    this.delete();
                 } catch (final GroupIdNotFoundException e) {
                     // do nothing
                 }
@@ -192,29 +191,20 @@ public final class ConsumerGroupClient implements AutoCloseable {
         }
 
         /**
-         * Add a config for a consumer group.
+         * Create a client for the configuration of this consumer group.
          *
-         * @param configEntry the configuration entry to add
+         * @return config client
          */
-        public void addConfig(final ConfigEntry configEntry) {
-            this.getConfigClient().addConfig(configEntry);
-        }
-
-        /**
-         * Describes the current configuration of a consumer group.
-         *
-         * @return config of consumer group
-         */
-        public Map<String, String> getConfig() {
-            return this.getConfigClient().getConfigs();
-        }
-
-        private ForResource getConfigClient() {
+        public ForResource config() {
             return new ConfigClient(ConsumerGroupClient.this.adminClient, ConsumerGroupClient.this.timeout)
                     .forResource(new ConfigResource(Type.GROUP, this.groupName));
         }
 
-        private KafkaAdminException failedToDeleteGroup(final Throwable ex) {
+        private boolean isThisGroup(final ConsumerGroupListing listing) {
+            return listing.groupId().equals(this.groupName);
+        }
+
+        private KafkaAdminException failedToDelete(final Throwable ex) {
             return new KafkaAdminException("Failed to delete consumer group " + this.groupName, ex);
         }
 
@@ -222,7 +212,7 @@ public final class ConsumerGroupClient implements AutoCloseable {
             return new KafkaAdminException("Failed to list offsets for consumer group " + this.groupName, ex);
         }
 
-        private KafkaAdminException failedToDescribeGroup(final Throwable ex) {
+        private KafkaAdminException failedToDescribe(final Throwable ex) {
             return new KafkaAdminException("Failed to describe consumer group " + this.groupName, ex);
         }
     }

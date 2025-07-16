@@ -584,7 +584,7 @@ class StreamJoinedXTest {
                 try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topicClient.listTopics())
+                    this.softly.assertThat(topicClient.list())
                             .noneSatisfy(topic -> this.softly.assertThat(topic)
                                     .startsWith(appId)
                                     .endsWith("-store-changelog"));
@@ -642,10 +642,10 @@ class StreamJoinedXTest {
                 try (final AdminClientX admin = testClient.admin();
                         final TopicClient topicClient = admin.getTopicClient()) {
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topicClient.listTopics())
+                    this.softly.assertThat(topicClient.list())
                             .filteredOn(topic -> topic.startsWith(appId) && topic.endsWith("-store-changelog"))
                             .allSatisfy(topic -> {
-                                final Map<String, String> config = topicClient.forTopic(topic).getConfig();
+                                final Map<String, String> config = topicClient.forTopic(topic).config().describe();
                                 this.softly.assertThat(config)
                                         .containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
                             });

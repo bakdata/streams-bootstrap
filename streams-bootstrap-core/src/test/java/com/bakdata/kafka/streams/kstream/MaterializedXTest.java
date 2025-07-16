@@ -458,7 +458,7 @@ class MaterializedXTest {
                     final String topicName = appId + "-store-changelog";
                     final ForTopic topic = topicClient.forTopic(topicName);
                     this.softly.assertThat(topic.exists()).isTrue();
-                    final Map<String, String> config = topic.getConfig();
+                    final Map<String, String> config = topic.config().describe();
                     this.softly.assertThat(config).containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
                 }
             }

@@ -245,7 +245,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
-                consumerGroupClient.forGroup(app.getUniqueAppId()).deleteConsumerGroup();
+                consumerGroupClient.forGroup(app.getUniqueAppId()).delete();
                 this.softly.assertThat(consumerGroupClient.forGroup(app.getUniqueAppId()).exists())
                         .as("Consumer group is deleted")
                         .isFalse();

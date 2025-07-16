@@ -57,7 +57,7 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldNotGetTopicConfigs() {
         try (final TopicClient client = this.createClient()) {
-            assertThat(client.forTopic("does_not_exist").getConfig()).isEmpty();
+            assertThat(client.forTopic("does_not_exist").config().describe()).isEmpty();
         }
     }
 
@@ -65,7 +65,7 @@ class TopicClientTest extends KafkaTest {
     void shouldFindTopic() {
         try (final TopicClient client = this.createClient()) {
             final ForTopic exists = client.forTopic("exists");
-            exists.createTopic(defaultTopicSettings().build());
+            exists.create(defaultTopicSettings().build());
             assertThat(client.forTopic("exists").exists()).isTrue();
         }
     }
@@ -73,9 +73,9 @@ class TopicClientTest extends KafkaTest {
     @Test
     void shouldListTopics() {
         try (final TopicClient client = this.createClient()) {
-            client.forTopic("foo").createTopic(defaultTopicSettings().build());
-            client.forTopic("bar").createTopic(defaultTopicSettings().build());
-            assertThat(client.listTopics())
+            client.forTopic("foo").create(defaultTopicSettings().build());
+            client.forTopic("bar").create(defaultTopicSettings().build());
+            assertThat(client.list())
                     .hasSize(2)
                     .containsExactlyInAnyOrder("foo", "bar");
         }
@@ -85,10 +85,10 @@ class TopicClientTest extends KafkaTest {
     void shouldDeleteTopic() {
         try (final TopicClient client = this.createClient()) {
             final ForTopic foo = client.forTopic("foo");
-            foo.createTopic(defaultTopicSettings().build());
+            foo.create(defaultTopicSettings().build());
             assertThat(foo.exists()).isTrue();
-            foo.deleteTopic();
-            assertThat(client.listTopics())
+            foo.delete();
+            assertThat(client.list())
                     .isEmpty();
         }
     }
@@ -102,9 +102,9 @@ class TopicClientTest extends KafkaTest {
                     .partitions(5)
                     .replicationFactor((short) 1)
                     .build();
-            topic.createTopic(settings, emptyMap());
+            topic.create(settings, emptyMap());
             assertThat(topic.exists()).isTrue();
-            assertThat(topic.describe())
+            assertThat(topic.getSettings())
                     .hasValueSatisfying(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
                         assertThat(info.getPartitions()).isEqualTo(5);
@@ -123,7 +123,7 @@ class TopicClientTest extends KafkaTest {
                     .build();
             topic.createIfNotExists(settings);
             assertThat(topic.exists()).isTrue();
-            assertThat(topic.describe())
+            assertThat(topic.getSettings())
                     .hasValueSatisfying(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
                         assertThat(info.getPartitions()).isEqualTo(5);
@@ -140,14 +140,14 @@ class TopicClientTest extends KafkaTest {
                     .partitions(5)
                     .replicationFactor((short) 1)
                     .build();
-            topic.createTopic(settings);
+            topic.create(settings);
             final TopicSettings newSettings = TopicSettings.builder()
                     .partitions(4)
                     .replicationFactor((short) 2)
                     .build();
             topic.createIfNotExists(newSettings);
             assertThat(topic.exists()).isTrue();
-            assertThat(topic.describe())
+            assertThat(topic.getSettings())
                     .hasValueSatisfying(info -> {
                         assertThat(info.getReplicationFactor()).isEqualTo((short) 1);
                         assertThat(info.getPartitions()).isEqualTo(5);
@@ -163,8 +163,8 @@ class TopicClientTest extends KafkaTest {
                     TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE
             );
             final ForTopic foo = client.forTopic("foo");
-            foo.createTopic(defaultTopicSettings().build(), config);
-            assertThat(foo.getConfig())
+            foo.create(defaultTopicSettings().build(), config);
+            assertThat(foo.config().describe())
                     .containsEntry(TopicConfig.CLEANUP_POLICY_CONFIG,
                             TopicConfig.CLEANUP_POLICY_COMPACT + "," + TopicConfig.CLEANUP_POLICY_DELETE);
         }

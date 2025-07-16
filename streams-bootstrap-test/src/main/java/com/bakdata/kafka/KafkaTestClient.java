@@ -91,7 +91,7 @@ public class KafkaTestClient {
     public void createTopic(final String topicName, final TopicSettings settings, final Map<String, String> config) {
         try (final AdminClientX admin = this.admin();
                 final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.forTopic(topicName).createTopic(settings, config);
+            topicClient.forTopic(topicName).create(settings, config);
         }
     }
 

@@ -27,6 +27,7 @@ package com.bakdata.kafka.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.admin.ConfigClient.ForResource;
 import com.bakdata.kafka.admin.ConsumerGroupClient.ForGroup;
 import java.time.Duration;
 import java.util.Map;
@@ -64,13 +65,11 @@ class ConsumerGroupClientTest extends KafkaTest {
     void shouldAddGroupConfigs() {
         try (final ConsumerGroupClient client = this.createClient()) {
             final ForGroup group = client.forGroup("group");
-            group.addConfig(
-                    new ConfigEntry(
-                            GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG,
-                            Long.toString(Duration.ofSeconds(60L).toMillis())));
-            assertThat(group.getConfig())
-                    .containsEntry(GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG,
-                            Long.toString(Duration.ofSeconds(60L).toMillis()));
+            final String timeout = Long.toString(Duration.ofSeconds(60L).toMillis());
+            final ForResource config = group.config();
+            config.add(new ConfigEntry(GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG, timeout));
+            assertThat(config.describe())
+                    .containsEntry(GroupConfig.CONSUMER_SESSION_TIMEOUT_MS_CONFIG, timeout);
         }
     }
 
