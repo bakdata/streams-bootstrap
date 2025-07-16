@@ -50,7 +50,7 @@ import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
  * This class offers helpers to interact with Kafka resource configs.
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class ConfigClient {
+public class ConfigClient implements AutoCloseable {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
@@ -62,6 +62,11 @@ public class ConfigClient {
      */
     public ConfigClient(final Admin adminClient, final Duration timeout) {
         this(adminClient, new Timeout(timeout));
+    }
+
+    @Override
+    public void close() {
+        this.adminClient.close();
     }
 
     /**
