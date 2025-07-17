@@ -22,3 +22,69 @@ jobs:
       ossrh-username: ${{ secrets.SONATYPE_OSSRH_USERNAME }}
       ossrh-password: ${{ secrets.SONATYPE_OSSRH_PASSWORD }}
       github-token: ${{ secrets.GH_TOKEN }}
+  docs:
+    name: Build Docs
+    runs-on: ubuntu-24.04
+    needs: build-and-publish
+    if: ${{ needs.build-and-publish.result == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.8.2"
+
+      - name: Install docs dependencies
+        run: poetry install --no-root
+
+      - name: Build docs
+        run: poetry run mkdocs build -f docs/mkdocs.yml
+
+  publish-docs-from-main:
+    name: Publish Docs (main)
+    runs-on: ubuntu-24.04
+    needs: docs
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish docs from main branch
+        uses: ./.github/actions/update-docs
+        with:
+          username: ${{ secrets.GH_USERNAME }}
+          email: ${{ secrets.GH_EMAIL }}
+          token: ${{ secrets.GH_TOKEN }}
+          tag: main
+
+  publish-dev-docs-from-pr:
+    name: Publish Docs (dev)
+    runs-on: ubuntu-24.04
+    needs: docs
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Check if files in docs folder have changed
+        uses: dorny/paths-filter@v3
+        id: docs-changes
+        with:
+          filters: |
+            docs:
+              - added|deleted|modified: 'docs/**'
+
+      - name: Publish dev docs from PR
+        if: steps.docs-changes.outputs.docs == 'true'
+        uses: ./.github/actions/update-docs
+        with:
+          username: ${{ secrets.GH_USERNAME }}
+          email: ${{ secrets.GH_EMAIL }}
+          token: ${{ secrets.GH_TOKEN }}
+          tag: dev

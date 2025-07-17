@@ -9,5 +9,10 @@ theme:
     - navigation.tabs
     - navigation.sections
     - versioning
+extra:
+  version:
+    provider: mike
+plugins:
+  - search
 nav:
   - Index: index.md

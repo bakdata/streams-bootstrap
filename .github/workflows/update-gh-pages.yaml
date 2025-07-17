@@ -19,3 +19,4 @@ jobs:
           email: ${{ secrets.GH_EMAIL }}
           token: ${{ secrets.GH_TOKEN }}
           tag: ${{ github.ref_name }}
+          release: true
