@@ -1,5 +1,5 @@
 [versions]
-junit = "5.13.2"
+junit = "5.13.3"
 mockito = "5.18.0"
 testcontainers = "1.21.3"
 kafkaUtils = "1.2.0"
@@ -32,7 +32,7 @@ mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mo
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
 testcontainers-kafka = { group = "org.testcontainers", name = "kafka", version.ref = "testcontainers" }
-fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.4.0" }
+fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.4.1" }
 log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.25.0" }
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
 
