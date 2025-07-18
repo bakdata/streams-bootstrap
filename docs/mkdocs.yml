@@ -1,0 +1,15 @@
+site_name: streams-bootstrap
+repo_url: https://github.com/bakdata/streams-bootstrap
+repo_name: bakdata/streams-bootstrap
+site_url: https://bakdata.github.io/streams-bootstrap/
+
+theme:
+  name: material
+
+nav:
+  - Overview: index.md
+  - Kafka Streams Applications: streams-app.md
+  - Kafka Producer Applications: producer-app.md
+  - Application Lifecycle Management: app-lifecycle.md
+  - Testing Framework: testing.md
+  - Javadoc: javadoc/streams-bootstrap-cli/index.html
