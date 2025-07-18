@@ -22,33 +22,20 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams.apps;
+package com.bakdata.kafka.producer;
 
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import com.bakdata.kafka.AppConfiguration;
+import com.bakdata.kafka.SchemaRegistryAppUtils;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements StreamsApp {
-    @Override
-    public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
-    }
+/**
+ * {@link ProducerApp} that automatically removes schemas when deleting topics
+ */
+public interface SchemaRegistryProducerApp extends ProducerApp {
 
     @Override
-    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-        return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
+    default ProducerCleanUpConfiguration setupCleanUp(final AppConfiguration<ProducerTopicConfig> configuration) {
+        final ProducerCleanUpConfiguration cleanUpConfiguration = ProducerApp.super.setupCleanUp(configuration);
+        return SchemaRegistryAppUtils.registerTopicHook(cleanUpConfiguration, configuration);
     }
 
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
-    }
 }
