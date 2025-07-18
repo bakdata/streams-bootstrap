@@ -14,7 +14,7 @@ inputs:
     description: "Version tag to be deployed by mike"
     required: true
   release:
-    description: "Determines if the set version is a stable and latest version, otherwise it is a dev version. (Default false)"
+    description: "Determines if the set version is a stable and latest version, otherwise it is a dev version"
     default: "false"
     required: false
 
@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Set up Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: 3.11
     - name: Install Poetry
@@ -34,16 +34,11 @@ runs:
       run: poetry install --no-root
     - name: Update documentation branch with mike
       shell: bash
-      env:
-        NEW_TAG: ${{ inputs.tag }}
       run: |
         git config --local user.name  ${{ inputs.username }}
         git config --local user.email ${{ inputs.email }}
         git config --local user.password ${{ inputs.token }}
         git fetch origin gh-pages
-
-        new_tag=${NEW_TAG%.*}
-        poetry run mike deploy "${NEW_TAG%.*}" latest --update-aliases --push --rebase --config-file ./docs/mkdocs.yml
 
     - name: Deploy ${{ inputs.tag }} version of the documentation with mike
       shell: bash
@@ -57,4 +52,4 @@ runs:
       run: |
         sem_version=${{ inputs.tag }}
         major_minor_version=${sem_version%.*}
-        poetry run mike deploy "${NEW_TAG%.*}" latest --update-aliases --push --rebase --config-file ./docs/mkdocs.yml
+        poetry run mike deploy "$major_minor_version" latest --update-aliases --push --config-file ./docs/mkdocs.yml

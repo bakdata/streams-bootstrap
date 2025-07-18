@@ -9,8 +9,10 @@ jobs:
   update-docs:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout code
+      - name: checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Update gh-pages
         uses: ./.github/actions/update-docs
