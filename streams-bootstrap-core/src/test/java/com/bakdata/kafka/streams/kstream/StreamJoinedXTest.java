@@ -35,7 +35,7 @@ import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -581,10 +581,10 @@ class StreamJoinedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
                         });
-                try (final AdminClientX admin = testClient.admin();
-                        final TopicClient topicClient = admin.getTopicClient()) {
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topicClient.listTopics())
+                    this.softly.assertThat(topics.list())
                             .noneSatisfy(topic -> this.softly.assertThat(topic)
                                     .startsWith(appId)
                                     .endsWith("-store-changelog"));
@@ -639,13 +639,13 @@ class StreamJoinedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
                         });
-                try (final AdminClientX admin = testClient.admin();
-                        final TopicClient topicClient = admin.getTopicClient()) {
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topicClient.listTopics())
+                    this.softly.assertThat(topics.list())
                             .filteredOn(topic -> topic.startsWith(appId) && topic.endsWith("-store-changelog"))
                             .allSatisfy(topic -> {
-                                final Map<String, String> config = topicClient.getConfig(topic);
+                                final Map<String, String> config = topics.topic(topic).config().describe();
                                 this.softly.assertThat(config)
                                         .containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
                             });

@@ -36,7 +36,8 @@ import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.admin.TopicsClient;
+import com.bakdata.kafka.admin.TopicsClient.TopicClient;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -403,10 +404,10 @@ class MaterializedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final AdminClientX admin = testClient.admin();
-                        final TopicClient topicClient = admin.getTopicClient()) {
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topicClient.exists(appId + "-store-changelog")).isFalse();
+                    this.softly.assertThat(topics.topic(appId + "-store-changelog").exists()).isFalse();
                 }
             }
         }
@@ -451,13 +452,15 @@ class MaterializedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final AdminClientX admin = testClient.admin();
-                        final TopicClient topicClient = admin.getTopicClient()) {
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
                     final String topicName = appId + "-store-changelog";
-                    this.softly.assertThat(topicClient.exists(topicName)).isTrue();
-                    final Map<String, String> config = topicClient.getConfig(topicName);
-                    this.softly.assertThat(config).containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
+                    final TopicClient topic = topics.topic(topicName);
+                    this.softly.assertThat(topic.exists()).isTrue();
+                    final Map<String, String> config = topic.config().describe();
+                    this.softly.assertThat(config)
+                            .containsEntry(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.1");
                 }
             }
         }
