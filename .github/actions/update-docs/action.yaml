@@ -1,0 +1,55 @@
+name: "Update documentation in gh-pages"
+
+inputs:
+  username:
+    description: "GitHub username"
+    required: true
+  email:
+    description: "GitHub email"
+    required: true
+  token:
+    description: "GitHub Token (must be a PAT for repository dispatch)"
+    required: true
+  tag:
+    description: "Version tag to be deployed by mike"
+    required: true
+  release:
+    description: "Determines if the set version is a stable and latest version, otherwise it is a dev version"
+    default: "false"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: 1.8.2
+    - name: Install docs dependencies with Poetry
+      shell: bash
+      run: poetry install --no-root
+    - name: Update documentation branch with mike
+      shell: bash
+      run: |
+        git config --local user.name  ${{ inputs.username }}
+        git config --local user.email ${{ inputs.email }}
+        git config --local user.password ${{ inputs.token }}
+        git fetch origin gh-pages
+
+    - name: Deploy ${{ inputs.tag }} version of the documentation with mike
+      shell: bash
+      if: ${{ inputs.release == 'false' }}
+      run: |
+        poetry run mike deploy ${{ inputs.tag }} --push --config-file ./docs/mkdocs.yml
+
+    - name: Deploy ${{ inputs.tag }} version (latest) of the documentation with mike
+      shell: bash
+      if: ${{ inputs.release == 'true' }}
+      run: |
+        sem_version=${{ inputs.tag }}
+        major_minor_version=${sem_version%.*}
+        poetry run mike deploy "$major_minor_version" latest --update-aliases --push --config-file ./docs/mkdocs.yml
