@@ -64,7 +64,7 @@ public class ConfigClient {
             final DescribeConfigsResult result = this.adminClient.describeConfigs(List.of(this.resource));
             final Map<ConfigResource, KafkaFuture<Config>> configMap = result.values();
             final KafkaFuture<Config> future = configMap.get(this.resource);
-            final Config config = this.timeout.get(future, this::failedToGet);
+            final Config config = this.timeout.get(future, () -> "Failed to describe config of " + this.getName());
             return config.entries().stream()
                     .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value));
         } catch (final UnknownTopicOrPartitionException e) {
@@ -82,15 +82,7 @@ public class ConfigClient {
         final AlterConfigOp alterConfig = new AlterConfigOp(configEntry, OpType.SET);
         final Map<ConfigResource, Collection<AlterConfigOp>> configs = Map.of(this.resource, List.of(alterConfig));
         final AlterConfigsResult result = this.adminClient.incrementalAlterConfigs(configs);
-        this.timeout.get(result.all(), this::failedToAdd);
-    }
-
-    private String failedToGet() {
-        return "Failed to describe config of " + this.getName();
-    }
-
-    private String failedToAdd() {
-        return "Failed to add config to " + this.getName();
+        this.timeout.get(result.all(), () -> "Failed to add config to " + this.getName());
     }
 
     private String getName() {

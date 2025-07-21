@@ -56,10 +56,6 @@ public final class ConsumerGroupsClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    private static String failedToList() {
-        return "Failed to list consumer groups";
-    }
-
     /**
      * List consumer groups.
      *
@@ -67,7 +63,7 @@ public final class ConsumerGroupsClient {
      */
     public Collection<ConsumerGroupListing> list() {
         final ListConsumerGroupsResult result = this.adminClient.listConsumerGroups();
-        return this.timeout.get(result.all(), ConsumerGroupsClient::failedToList);
+        return this.timeout.get(result.all(), () -> "Failed to list consumer groups");
     }
 
     /**
@@ -94,7 +90,8 @@ public final class ConsumerGroupsClient {
             log.info("Deleting consumer group '{}'", this.groupName);
             final DeleteConsumerGroupsResult result =
                     ConsumerGroupsClient.this.adminClient.deleteConsumerGroups(List.of(this.groupName));
-            ConsumerGroupsClient.this.timeout.get(result.all(), this::failedToDelete);
+            ConsumerGroupsClient.this.timeout.get(result.all(),
+                    () -> "Failed to delete consumer group " + this.groupName);
             log.info("Deleted consumer group '{}'", this.groupName);
         }
 
@@ -111,7 +108,8 @@ public final class ConsumerGroupsClient {
                 final Map<String, KafkaFuture<ConsumerGroupDescription>> groups = result.describedGroups();
                 final KafkaFuture<ConsumerGroupDescription> future = groups.get(this.groupName);
                 final ConsumerGroupDescription description =
-                        ConsumerGroupsClient.this.timeout.get(future, this::failedToDescribe);
+                        ConsumerGroupsClient.this.timeout.get(future,
+                                () -> "Failed to describe consumer group " + this.groupName);
                 log.debug("Described consumer group '{}'", this.groupName);
                 return Optional.of(description);
             } catch (final GroupIdNotFoundException ex) {
@@ -132,7 +130,8 @@ public final class ConsumerGroupsClient {
             final KafkaFuture<Map<TopicPartition, OffsetAndMetadata>> future =
                     result.partitionsToOffsetAndMetadata(this.groupName);
             final Map<TopicPartition, OffsetAndMetadata> offsets =
-                    ConsumerGroupsClient.this.timeout.get(future, this::failedToListOffsets);
+                    ConsumerGroupsClient.this.timeout.get(future,
+                            () -> "Failed to list offsets for consumer group " + this.groupName);
             log.debug("Listed offsets for consumer group '{}'", this.groupName);
             return offsets;
         }
@@ -175,16 +174,5 @@ public final class ConsumerGroupsClient {
             return listing.groupId().equals(this.groupName);
         }
 
-        private String failedToDelete() {
-            return "Failed to delete consumer group " + this.groupName;
-        }
-
-        private String failedToListOffsets() {
-            return "Failed to list offsets for consumer group " + this.groupName;
-        }
-
-        private String failedToDescribe() {
-            return "Failed to describe consumer group " + this.groupName;
-        }
     }
 }

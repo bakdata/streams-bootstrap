@@ -25,7 +25,7 @@
 package com.bakdata.kafka.admin;
 
 /**
- * Exception thrown by {@link TopicsClient}.
+ * Exception thrown by if admin operations fail.
  */
 public class KafkaAdminException extends RuntimeException {
 

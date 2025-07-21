@@ -72,14 +72,6 @@ public final class TopicsClient {
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
 
-    private static String failedToList() {
-        return "Failed to list topics";
-    }
-
-    private static String failedToListOffsets() {
-        return "Failed to list offsets";
-    }
-
     /**
      * List offsets for a set of partitions.
      *
@@ -90,7 +82,7 @@ public final class TopicsClient {
         final Map<TopicPartition, OffsetSpec> offsetRequest = Seq.seq(topicPartitions)
                 .toMap(Function.identity(), o -> OffsetSpec.latest());
         final ListOffsetsResult result = this.adminClient.listOffsets(offsetRequest);
-        return this.timeout.get(result.all(), TopicsClient::failedToListOffsets);
+        return this.timeout.get(result.all(), () -> "Failed to list offsets");
     }
 
     /**
@@ -100,7 +92,7 @@ public final class TopicsClient {
      */
     public Collection<String> list() {
         final ListTopicsResult result = this.adminClient.listTopics();
-        return this.timeout.get(result.names(), TopicsClient::failedToList);
+        return this.timeout.get(result.names(), () -> "Failed to list topics");
     }
 
     /**
@@ -167,7 +159,7 @@ public final class TopicsClient {
         public void delete() {
             log.info("Deleting topic '{}'", this.topicName);
             final DeleteTopicsResult result = TopicsClient.this.adminClient.deleteTopics(List.of(this.topicName));
-            TopicsClient.this.timeout.get(result.all(), this::failedToDelete);
+            TopicsClient.this.timeout.get(result.all(), () -> "Failed to delete topic " + this.topicName);
             final Retry retry = Retry.of("topic-deleted", RETRY_CONFIG);
             final boolean exists = Retry.decorateSupplier(retry, this::exists).get();
             if (exists) {
@@ -208,7 +200,8 @@ public final class TopicsClient {
                 final Map<String, KafkaFuture<TopicDescription>> kafkaTopicMap = result.topicNameValues();
                 final KafkaFuture<TopicDescription> future = kafkaTopicMap.get(this.topicName);
                 final TopicDescription description =
-                        TopicsClient.this.timeout.get(future, this::failedToRetrieveDescription);
+                        TopicsClient.this.timeout.get(future,
+                                () -> "Failed to retrieve description of topic " + this.topicName);
                 return Optional.of(description);
             } catch (final UnknownTopicOrPartitionException e) {
                 // topic does not exist
@@ -227,7 +220,7 @@ public final class TopicsClient {
                     new NewTopic(this.topicName, settings.getPartitions(), settings.getReplicationFactor())
                             .configs(config);
             final CreateTopicsResult result = TopicsClient.this.adminClient.createTopics(List.of(newTopic));
-            TopicsClient.this.timeout.get(result.all(), this::failedToCreate);
+            TopicsClient.this.timeout.get(result.all(), () -> "Failed to create topic " + this.topicName);
             final Retry retry = Retry.of("topic-exists", RETRY_CONFIG);
             final boolean doesNotExist = Retry.decorateSupplier(retry, () -> !this.exists()).get();
             if (doesNotExist) {
@@ -263,16 +256,5 @@ public final class TopicsClient {
                     new ConfigResource(Type.TOPIC, this.topicName));
         }
 
-        private String failedToDelete() {
-            return "Failed to delete topic " + this.topicName;
-        }
-
-        private String failedToRetrieveDescription() {
-            return "Failed to retrieve description of topic " + this.topicName;
-        }
-
-        private String failedToCreate() {
-            return "Failed to create topic " + this.topicName;
-        }
     }
 }
