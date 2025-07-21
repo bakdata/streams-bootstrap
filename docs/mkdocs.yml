@@ -14,12 +14,8 @@ extra:
     provider: mike
 plugins:
   - search
+markdown_extensions:
+  - attr_list
 nav:
   - Index: index.md
-  - Javadoc:
-       - streams-bootstrap-cli: javadoc/streams-bootstrap-bom/index.html
-       - streams-bootstrap-cli: javadoc/streams-bootstrap-cli/index.html
-       - streams-bootstrap-cli: javadoc/streams-bootstrap-cli-test/index.html
-       - streams-bootstrap-cli: javadoc/streams-bootstrap-core/index.html
-       - streams-bootstrap-cli: javadoc/streams-bootstrap-large-messages/index.html
-       - streams-bootstrap-cli: javadoc/streams-bootstrap-test/index.html
+  - Javadoc: javadoc.md
