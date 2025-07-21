@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           MODULES=("streams-bootstrap-bom", "streams-bootstrap-cli", "streams-bootstrap-cli-test", "streams-bootstrap-core", "streams-bootstrap-large-messages", "streams-bootstrap-test")
-          mkdir -p docs/docs/javadoc
+          mkdir -p docs/javadoc
 
           for module in "${MODULES[@]}"; do
             jar_path="build-artifact/$module/build/libs/${module}-*-javadoc.jar"
@@ -50,7 +50,7 @@ jobs:
             echo "Looking for javadoc JAR in: $jar_path"
 
             if compgen -G "$jar_path" > /dev/null; then
-              target_dir="docs/docs/javadoc/$module"
+              target_dir="docs/javadoc/$module"
               mkdir -p "$target_dir"
               actual_jar=$(ls $jar_path | head -n 1)
 
