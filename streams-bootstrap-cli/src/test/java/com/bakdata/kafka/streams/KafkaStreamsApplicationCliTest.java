@@ -365,7 +365,6 @@ class KafkaStreamsApplicationCliTest {
         }) {
             app.startApplicationWithoutExit(new String[]{
                     "--bootstrap-server", "bootstrap-servers",
-                    "--schema-registry-url", "schema-registry",
                     "--input-topics", "input1,input2",
                     "--labeled-input-topics", "label1=input3,label2=input4;input5",
                     "--input-pattern", ".*",
@@ -375,7 +374,6 @@ class KafkaStreamsApplicationCliTest {
                     "--kafka-config", "foo=1,bar=2",
             });
             assertThat(app.getBootstrapServers()).isEqualTo("bootstrap-servers");
-            assertThat(app.getSchemaRegistryUrl()).isEqualTo("schema-registry");
             assertThat(app.getInputTopics()).containsExactly("input1", "input2");
             assertThat(app.getLabeledInputTopics())
                     .hasSize(2)

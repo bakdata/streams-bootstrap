@@ -40,20 +40,13 @@ import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
-import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.apps.ComplexTopologyApplication;
 import com.bakdata.kafka.streams.apps.Mirror;
-import com.bakdata.kafka.streams.apps.MirrorKeyWithAvro;
-import com.bakdata.kafka.streams.apps.MirrorValueWithAvro;
 import com.bakdata.kafka.streams.apps.WordCount;
 import com.bakdata.kafka.streams.apps.WordCountPattern;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -103,22 +96,6 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
     private static ConfiguredStreamsApp<StreamsApp> createMirrorApplication() {
         final StreamsApp app = new Mirror();
-        return new ConfiguredStreamsApp<>(app, new StreamsAppConfiguration(StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build()));
-    }
-
-    private static ConfiguredStreamsApp<StreamsApp> createMirrorValueApplication() {
-        final StreamsApp app = new MirrorValueWithAvro();
-        return new ConfiguredStreamsApp<>(app, new StreamsAppConfiguration(StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build()));
-    }
-
-    private static ConfiguredStreamsApp<StreamsApp> createMirrorKeyApplication() {
-        final StreamsApp app = new MirrorKeyWithAvro();
         return new ConfiguredStreamsApp<>(app, new StreamsAppConfiguration(StreamsTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
@@ -258,14 +235,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteInternalTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry())) {
+                        this.createConfig())) {
 
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+            final String testRecord = "key 1";
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
                     .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -306,14 +283,14 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldDeleteIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry())) {
+                        this.createConfig())) {
 
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
+            final String testRecord = "key 1";
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
                     .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
+                    .withValueSerializer(new StringSerializer())
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>("key 1", testRecord)
                     ));
@@ -413,146 +390,10 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldDeleteValueSchema()
-            throws IOException, RestClientException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorValueApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getTopics().getOutputTopic());
-            testClient.send()
-                    .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>(null, testRecord)
-                    ));
-
-            run(executableApp);
-
-            // Wait until all stream applications are completely stopped before triggering cleanup
-            awaitClosed(executableApp);
-            final String outputTopic = app.getTopics().getOutputTopic();
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(outputTopic + "-value", inputTopic + "-value");
-            clean(executableApp);
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(outputTopic + "-value")
-                    .contains(inputTopic + "-value");
-        }
-    }
-
-    @Test
-    void shouldDeleteKeySchema()
-            throws IOException, RestClientException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorKeyApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getTopics().getOutputTopic());
-            testClient.send()
-                    .withKeySerializer(new SpecificAvroSerializer<>())
-                    .withValueSerializer(new StringSerializer())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>(testRecord, "val")
-                    ));
-
-            run(executableApp);
-
-            // Wait until all stream applications are completely stopped before triggering cleanup
-            awaitClosed(executableApp);
-            final String outputTopic = app.getTopics().getOutputTopic();
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(outputTopic + "-key", inputTopic + "-key");
-            clean(executableApp);
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(outputTopic + "-key")
-                    .contains(inputTopic + "-key");
-        }
-    }
-
-    @Test
-    void shouldDeleteSchemaOfInternalTopics()
-            throws IOException, RestClientException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getTopics().getOutputTopic());
-            testClient.send()
-                    .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>("key 1", testRecord)
-                    ));
-
-            run(executableApp);
-
-            // Wait until all stream applications are completely stopped before triggering cleanup
-            awaitClosed(executableApp);
-            final String inputSubject = inputTopic + "-value";
-            final String uniqueAppId = app.getUniqueAppId();
-            final String internalSubject =
-                    uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition" + "-value";
-            final String backingSubject =
-                    uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog" + "-value";
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(inputSubject, internalSubject, backingSubject);
-            reset(executableApp);
-
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(internalSubject, backingSubject)
-                    .contains(inputSubject);
-        }
-    }
-
-    @Test
-    void shouldDeleteSchemaOfIntermediateTopics()
-            throws IOException, RestClientException {
-        try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexApplication();
-                final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("key 1").build();
-            final String inputTopic = app.getTopics().getInputTopics().get(0);
-            final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getTopics().getOutputTopic());
-            testClient.send()
-                    .withKeySerializer(new StringSerializer())
-                    .withValueSerializer(new SpecificAvroSerializer<>())
-                    .to(app.getTopics().getInputTopics().get(0), List.of(
-                            new SimpleProducerRecord<>("key 1", testRecord)
-                    ));
-
-            run(executableApp);
-
-            // Wait until all stream applications are completely stopped before triggering cleanup
-            awaitClosed(executableApp);
-            final String inputSubject = inputTopic + "-value";
-            final String manualSubject = ComplexTopologyApplication.THROUGH_TOPIC + "-value";
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(inputSubject, manualSubject);
-            reset(executableApp);
-
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(manualSubject)
-                    .contains(inputSubject);
-        }
-    }
-
-    @Test
     void shouldCallCleanupHookForInternalAndIntermediateTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry())) {
+                        this.createConfig())) {
             reset(executableApp);
             final String uniqueAppId = app.getUniqueAppId();
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
@@ -568,7 +409,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     void shouldCallCleanUpHookForAllTopics() {
         try (final ConfiguredStreamsApp<StreamsApp> app = this.createComplexCleanUpHookApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
-                        this.createConfigWithSchemaRegistry())) {
+                        this.createConfig())) {
             clean(executableApp);
             final String uniqueAppId = app.getUniqueAppId();
             verify(this.topicHook).deleted(uniqueAppId + "-KSTREAM-AGGREGATE-STATE-STORE-0000000008-repartition");
