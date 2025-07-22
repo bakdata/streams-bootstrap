@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           MODULES=("streams-bootstrap-bom", "streams-bootstrap-cli", "streams-bootstrap-cli-test", "streams-bootstrap-core", "streams-bootstrap-large-messages", "streams-bootstrap-test")
-          mkdir -p docs/javadoc
+          mkdir -p docs/docs/javadoc
 
           for module in "${MODULES[@]}"; do
             jar_path="build-artifact/$module/build/libs/${module}-*-javadoc.jar"
@@ -50,7 +50,7 @@ jobs:
             echo "Looking for javadoc JAR in: $jar_path"
 
             if compgen -G "$jar_path" > /dev/null; then
-              target_dir="docs/javadoc/$module"
+              target_dir="docs/docs/javadoc/$module"
               mkdir -p "$target_dir"
               actual_jar=$(ls $jar_path | head -n 1)
 
@@ -62,6 +62,11 @@ jobs:
               echo "No Javadoc JAR found for module: $module"
             fi
           done
+      - name: Upload extracted Javadoc
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc
+          path: docs/docs/javadoc
 
   docs:
     name: Build Docs
@@ -95,6 +100,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: DL extracted Javadoc
+        uses: actions/download-artifact@v4
+        with:
+          name: javadoc
+          path: docs/docs/javadoc
+
       - name: Publish docs from main branch
         uses: ./.github/actions/update-docs
         with:
@@ -112,6 +123,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+
+      - name: DL extracted Javadoc
+        uses: actions/download-artifact@v4
+        with:
+          name: javadoc
+          path: docs/docs/javadoc
 
       - name: Check if files in docs folder have changed
         uses: dorny/paths-filter@v3

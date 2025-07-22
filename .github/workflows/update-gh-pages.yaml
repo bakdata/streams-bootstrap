@@ -14,6 +14,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: DL extracted Javadoc
+        uses: actions/download-artifact@v4
+        with:
+          name: javadoc
+          path: docs/docs/javadoc
+
       - name: Update gh-pages
         uses: ./.github/actions/update-docs
         with:
