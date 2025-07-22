@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
 import lombok.AccessLevel;
@@ -38,8 +39,8 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 public abstract class KafkaTest {
-    protected static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
-    protected static final Duration SESSION_TIMEOUT = Duration.ofSeconds(10L);
+    public static final Duration POLL_TIMEOUT = Duration.ofSeconds(10);
+    public static final Duration SESSION_TIMEOUT = Duration.ofSeconds(10L);
     @Getter(AccessLevel.PROTECTED)
     private final TestSchemaRegistry schemaRegistry = new TestSchemaRegistry();
     @Container
@@ -50,7 +51,7 @@ public abstract class KafkaTest {
                 .withTag(AppInfoParser.getVersion()));
     }
 
-    protected static void awaitProcessing(final ExecutableStreamsApp<?> app) {
+    public static void awaitProcessing(final ExecutableStreamsApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         awaitProcessing(verifier);
     }
@@ -62,7 +63,7 @@ public abstract class KafkaTest {
                 .until(verifier::hasFinishedProcessing);
     }
 
-    protected static void awaitActive(final ExecutableStreamsApp<?> app) {
+    public static void awaitActive(final ExecutableStreamsApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         awaitActive(verifier);
     }
@@ -112,12 +113,12 @@ public abstract class KafkaTest {
                 .atMost(Duration.ofSeconds(20L));
     }
 
-    protected RuntimeConfiguration createConfigWithoutSchemaRegistry() {
+    protected RuntimeConfiguration createConfig() {
         return RuntimeConfiguration.create(this.getBootstrapServers());
     }
 
-    protected RuntimeConfiguration createConfig() {
-        return this.createConfigWithoutSchemaRegistry()
+    protected RuntimeConfiguration createConfigWithSchemaRegistry() {
+        return this.createConfig()
                 .withSchemaRegistryUrl(this.getSchemaRegistryUrl());
     }
 
@@ -126,7 +127,7 @@ public abstract class KafkaTest {
     }
 
     protected KafkaTestClient newTestClient() {
-        return new KafkaTestClient(this.createConfig());
+        return new KafkaTestClient(this.createConfigWithSchemaRegistry());
     }
 
     protected String getSchemaRegistryUrl() {

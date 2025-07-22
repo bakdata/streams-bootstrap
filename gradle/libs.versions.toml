@@ -1,8 +1,8 @@
 [versions]
-junit = "5.12.2"
-mockito = "5.17.0"
-testcontainers = "1.21.0"
-kafkaUtils = "1.2.0"
+junit = "5.13.3"
+mockito = "5.18.0"
+testcontainers = "1.21.3"
+kafkaUtils = "1.2.1"
 
 [libraries]
 kafka-bom = { group = "com.bakdata.kafka", name = "kafka-bom", version.ref = "kafkaUtils" }
@@ -10,13 +10,14 @@ kafka-streams-utils = { group = "com.bakdata.kafka", name = "kafka-streams-utils
 kafka-tools = { group = "org.apache.kafka", name = "kafka-tools" }
 kafka-streams = { group = "org.apache.kafka", name = "kafka-streams" }
 kafka-clients = { group = "org.apache.kafka", name = "kafka-clients" }
+kafka-group-coordinator = { group = "org.apache.kafka", name = "kafka-group-coordinator" }
 kafka-schema-serializer = { group = "io.confluent", name = "kafka-schema-serializer" }
 kafka-schema-registry-client = { group = "io.confluent", name = "kafka-schema-registry-client" }
 kafka-streams-avro-serde = { group = "io.confluent", name = "kafka-streams-avro-serde" }
 kafka-protobuf-provider = { group = "io.confluent", name = "kafka-protobuf-provider" }
-largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "2.13.0" }
+largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "3.0.0" }
 largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
-errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "1.9.0" }
+errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "2.0.0" }
 errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
 picocli = { group = "info.picocli", name = "picocli", version = "4.7.7" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.17" }
@@ -32,13 +33,13 @@ mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mo
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
 testcontainers-kafka = { group = "org.testcontainers", name = "kafka", version.ref = "testcontainers" }
-fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.4.0" }
-log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.24.3" }
+fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.4.1" }
+log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.25.1" }
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
 
 [plugins]
-release = { id = "com.bakdata.release", version = "1.9.1" }
-sonar = { id = "com.bakdata.sonar", version = "1.9.1" }
+release = { id = "com.bakdata.release", version = "1.10.0" }
+sonar = { id = "com.bakdata.sonar", version = "1.10.0" }
 sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
-lombok = { id = "io.freefair.lombok", version = "8.13.1" }
+lombok = { id = "io.freefair.lombok", version = "8.14" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }

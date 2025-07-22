@@ -24,15 +24,57 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import static java.util.concurrent.CompletableFuture.runAsync;
+
+import com.bakdata.kafka.streams.ConfiguredStreamsApp;
+import com.bakdata.kafka.streams.ExecutableStreamsApp;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsCleanUpRunner;
+import com.bakdata.kafka.streams.StreamsRunner;
+import java.nio.file.Path;
 import lombok.experimental.UtilityClass;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.streams.KeyValue;
 
 @UtilityClass
 public class TestHelper {
+    public static <K, V> KeyValue<K, V> toKeyValue(final ConsumerRecord<K, V> consumerRecord) {
+        return new KeyValue<>(consumerRecord.key(), consumerRecord.value());
+    }
 
-    static <K, V> TestTopology<K, V> startApp(final ConfiguredStreamsApp<StreamsApp> app) {
-        final TestTopology<K, V> topology = new TestTopologyFactory().createTopology(app);
-        topology.start();
-        return topology;
+    public static ExecutableStreamsApp<StreamsApp> createExecutableApp(final ConfiguredStreamsApp<StreamsApp> app,
+            final RuntimeConfiguration runtimeConfiguration, final Path stateDir) {
+        return createExecutableApp(app, runtimeConfiguration.withStateDir(stateDir));
+    }
+
+    public static ExecutableStreamsApp<StreamsApp> createExecutableApp(
+            final ConfiguredStreamsApp<StreamsApp> app, final RuntimeConfiguration runtimeConfiguration) {
+        return app.withRuntimeConfiguration(runtimeConfiguration
+                .withNoStateStoreCaching()
+                .withSessionTimeout(KafkaTest.SESSION_TIMEOUT));
+    }
+
+    public static void run(final ExecutableStreamsApp<?> app) {
+        try (final StreamsRunner runner = app.createRunner()) {
+            runAsync(runner);
+            // Wait until stream application has consumed all data
+            KafkaTest.awaitProcessing(app);
+        }
+    }
+
+    public static void run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
+        executableApp.createRunner().run();
+    }
+
+    public static void reset(final ExecutableApp<?, StreamsCleanUpRunner, ?> app) {
+        try (final StreamsCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
+            cleanUpRunner.reset();
+        }
+    }
+
+    public static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
+        try (final CleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
+            cleanUpRunner.clean();
+        }
     }
 }

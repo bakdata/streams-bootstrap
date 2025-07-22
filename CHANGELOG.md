@@ -1,8 +1,68 @@
 # Change Log
 
-## [4.1.3](https://github.com/bakdata/streams-bootstrap/tree/4.1.3) (2025-05-06)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.3...4.1.3)
+## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.0)
 
+
+## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.1.0)
+
+**Merged pull requests:**
+
+- Update Kafka dependencies [\#357](https://github.com/bakdata/streams-bootstrap/pull/357) ([@philipp94831](https://github.com/philipp94831))
+- Refactor admin clients [\#347](https://github.com/bakdata/streams-bootstrap/pull/347) ([@philipp94831](https://github.com/philipp94831))
+- Use topic hook for schema registry reset [\#251](https://github.com/bakdata/streams-bootstrap/pull/251) ([@philipp94831](https://github.com/philipp94831))
+- Run dependabot monthly [\#352](https://github.com/bakdata/streams-bootstrap/pull/352) ([@philipp94831](https://github.com/philipp94831))
+- Reduce avro usage in tests [\#348](https://github.com/bakdata/streams-bootstrap/pull/348) ([@philipp94831](https://github.com/philipp94831))
+- Replace usages of `@code` with `@link` [\#346](https://github.com/bakdata/streams-bootstrap/pull/346) ([@philipp94831](https://github.com/philipp94831))
+- Handle non\-existent topics and consumer groups [\#345](https://github.com/bakdata/streams-bootstrap/pull/345) ([@philipp94831](https://github.com/philipp94831))
+- Update version in README [\#344](https://github.com/bakdata/streams-bootstrap/pull/344) ([@philipp94831](https://github.com/philipp94831))
+
+**Upgraded dependencies:**
+
+- Bump the plugins group with 2 updates [\#326](https://github.com/bakdata/streams-bootstrap/pull/326) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.junit.jupiter:junit\-jupiter from 5.13.2 to 5.13.3 in the test\-dependencies group across 1 directory [\#355](https://github.com/bakdata/streams-bootstrap/pull/355) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.logging.log4j:log4j\-slf4j2\-impl from 2.25.0 to 2.25.1 in the log\-dependencies group [\#350](https://github.com/bakdata/streams-bootstrap/pull/350) ([@dependabot[bot]](https://github.com/apps/dependabot))
+
+## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) (2025-07-09)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.0...5.0.1)
+
+**Merged pull requests:**
+
+- Remove unnecessary getters [\#343](https://github.com/bakdata/streams-bootstrap/pull/343) ([@philipp94831](https://github.com/philipp94831))
+- Use Kafka config from StreamsApplication [\#341](https://github.com/bakdata/streams-bootstrap/pull/341) ([@philipp94831](https://github.com/philipp94831))
+
+**Upgraded dependencies:**
+
+- Bump the test\-dependencies group across 1 directory with 5 updates [\#334](https://github.com/bakdata/streams-bootstrap/pull/334) ([@dependabot[bot]](https://github.com/apps/dependabot))
+
+## [5.0.0](https://github.com/bakdata/streams-bootstrap/tree/5.0.0) (2025-07-07)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.3...5.0.0)
+
+**Merged pull requests:**
+
+- Upgrade to Gradle 8.14 [\#329](https://github.com/bakdata/streams-bootstrap/pull/329) ([@philipp94831](https://github.com/philipp94831))
+- Pass application ID to getUniqueAppId [\#336](https://github.com/bakdata/streams-bootstrap/pull/336) ([@philipp94831](https://github.com/philipp94831))
+- Rename packages [\#339](https://github.com/bakdata/streams-bootstrap/pull/339) ([@philipp94831](https://github.com/philipp94831))
+- Fix Java 17 code issues [\#340](https://github.com/bakdata/streams-bootstrap/pull/340) ([@philipp94831](https://github.com/philipp94831))
+- Convert start application methods to instance methods [\#338](https://github.com/bakdata/streams-bootstrap/pull/338) ([@philipp94831](https://github.com/philipp94831))
+- Rename ImprovedAdminClient and ImprovedStreamsConfig [\#335](https://github.com/bakdata/streams-bootstrap/pull/335) ([@philipp94831](https://github.com/philipp94831))
+- Use preconfigured for reading/sending test messages [\#316](https://github.com/bakdata/streams-bootstrap/pull/316) ([@philipp94831](https://github.com/philipp94831))
+- Fix publication [\#331](https://github.com/bakdata/streams-bootstrap/pull/331) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to Kafka 4.0 [\#288](https://github.com/bakdata/streams-bootstrap/pull/288) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to Java 17 [\#289](https://github.com/bakdata/streams-bootstrap/pull/289) ([@philipp94831](https://github.com/philipp94831))
+- Add test module for CLI [\#276](https://github.com/bakdata/streams-bootstrap/pull/276) ([@philipp94831](https://github.com/philipp94831))
+- Refactor endpoint config [\#313](https://github.com/bakdata/streams-bootstrap/pull/313) ([@philipp94831](https://github.com/philipp94831))
+- Migrate to Central Portal [\#325](https://github.com/bakdata/streams-bootstrap/pull/325) ([@philipp94831](https://github.com/philipp94831))
+- Separate schema registry from TestTopologyFactory [\#315](https://github.com/bakdata/streams-bootstrap/pull/315) ([@philipp94831](https://github.com/philipp94831))
+- Upgrade to Kafka 3.9.1 [\#318](https://github.com/bakdata/streams-bootstrap/pull/318) ([@philipp94831](https://github.com/philipp94831))
+- Reflect current release in installation instructions [\#314](https://github.com/bakdata/streams-bootstrap/pull/314) ([@jkbe](https://github.com/jkbe))
+- Add tests for test module [\#290](https://github.com/bakdata/streams-bootstrap/pull/290) ([@philipp94831](https://github.com/philipp94831))
+
+**Upgraded dependencies:**
+
+- Bump org.apache.logging.log4j:log4j\-slf4j2\-impl from 2.24.3 to 2.25.0 in the log\-dependencies group [\#322](https://github.com/bakdata/streams-bootstrap/pull/322) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump the kafka\-dependencies group across 1 directory with 3 updates [\#333](https://github.com/bakdata/streams-bootstrap/pull/333) ([@dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [4.1.3](https://github.com/bakdata/streams-bootstrap/tree/4.1.3) (2025-05-06)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.2...4.1.3)

@@ -27,6 +27,7 @@ package com.bakdata.kafka;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ import org.apache.kafka.streams.StreamsConfig;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuntimeConfiguration {
-    static final Set<String> PROVIDED_PROPERTIES = Set.of(
+    private static final Set<String> PROVIDED_PROPERTIES = Set.of(
             CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
             AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
     );
@@ -59,30 +60,25 @@ public final class RuntimeConfiguration {
         return new RuntimeConfiguration(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
     }
 
-    private static void validate(final String key) {
-        if (PROVIDED_PROPERTIES.contains(key)) {
-            throw new IllegalArgumentException(
-                    String.format("Cannot configure '%s'. Please use provided methods", key));
-        }
+    /**
+     * Configure arbitrary Kafka properties
+     *
+     * @param newProperties properties to configure
+     * @return a copy of this runtime configuration with provided properties
+     */
+    public RuntimeConfiguration with(final Map<String, ?> newProperties) {
+        newProperties.keySet().forEach(this::validate);
+        return this.withInternal(newProperties);
     }
 
     /**
      * Configure a schema registry for (de-)serialization.
+     *
      * @param schemaRegistryUrl schema registry url
      * @return a copy of this runtime configuration with configured schema registry
      */
     public RuntimeConfiguration withSchemaRegistryUrl(final String schemaRegistryUrl) {
         return this.withInternal(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl));
-    }
-
-    /**
-     * Configure arbitrary Kafka properties
-     * @param newProperties properties to configure
-     * @return a copy of this runtime configuration with provided properties
-     */
-    public RuntimeConfiguration with(final Map<String, ?> newProperties) {
-        newProperties.keySet().forEach(RuntimeConfiguration::validate);
-        return this.withInternal(newProperties);
     }
 
     /**
@@ -97,6 +93,7 @@ public final class RuntimeConfiguration {
 
     /**
      * Disable for Kafka Streams. Useful for testing
+     *
      * @return a copy of this runtime configuration with Kafka Streams state store caching disabled
      */
     public RuntimeConfiguration withNoStateStoreCaching() {
@@ -105,6 +102,7 @@ public final class RuntimeConfiguration {
 
     /**
      * Configure {@link ConsumerConfig#SESSION_TIMEOUT_MS_CONFIG} for Kafka consumers. Useful for testing
+     *
      * @param sessionTimeout session timeout
      * @return a copy of this runtime configuration with configured consumer session timeout
      */
@@ -114,13 +112,30 @@ public final class RuntimeConfiguration {
     }
 
     /**
-     * Create Kafka properties to connect to infrastructure and modify runtime behavior. {@code bootstrap.servers} is
+     * Create Kafka properties to connect to infrastructure and modify runtime behavior.
+     * {@link CommonClientConfigs#BOOTSTRAP_SERVERS_CONFIG bootstrap.servers} is
      * always configured.
      *
      * @return properties used for connecting to Kafka
      */
     public Map<String, Object> createKafkaProperties() {
         return this.properties;
+    }
+
+    Collection<String> getProvidedProperties() {
+        return PROVIDED_PROPERTIES.stream()
+                .filter(this::isSet)
+                .toList();
+    }
+
+    private void validate(final String key) {
+        if (PROVIDED_PROPERTIES.contains(key) && this.isSet(key)) {
+            throw new IllegalArgumentException(String.format("Property '%s' already configured", key));
+        }
+    }
+
+    private boolean isSet(final String key) {
+        return this.properties.containsKey(key);
     }
 
     private RuntimeConfiguration withInternal(final Map<String, ?> newProperties) {

@@ -65,6 +65,7 @@ import picocli.CommandLine.ParseResult;
  * @param <CA> type of {@link ConfiguredApp} used by this app
  * @param <T> type of topic config used by this app
  * @param <A> type of app
+ * @param <AC> type of configuration used by this app
  */
 @ToString
 @Getter
@@ -73,7 +74,7 @@ import picocli.CommandLine.ParseResult;
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
 public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunner, O, E extends ExecutableApp<R, CR,
-        O>, CA extends ConfiguredApp<E>, T, A>
+        O>, CA extends ConfiguredApp<E>, T, A, AC>
         implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @ToString.Exclude
@@ -199,9 +200,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ExecutableApp} that will be executed according to the requested command.
+     * Create a new {@link ExecutableApp} that will be executed according to the requested command.
      *
-     * @return {@code ExecutableApp}
+     * @return {@link ExecutableApp}
      */
     public final E createExecutableApp() {
         final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
@@ -210,19 +211,28 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     * Create a new {@link ConfiguredApp} that will be executed according to this application.
      *
-     * @return {@code ConfiguredApp}
+     * @return {@link ConfiguredApp}
      */
     public final CA createConfiguredApp() {
         final T topics = this.createTopicConfig();
         final A app = this.createApp();
-        return this.createConfiguredApp(app, topics);
+        final AC appConfiguration = this.createConfiguration(topics);
+        return this.createConfiguredApp(app, appConfiguration);
     }
 
     /**
-     * Create a new {@code RunnableApp}
-     * @return {@code RunnableApp}
+     * Create configuration to configure app
+     *
+     * @param topics topic configuration
+     * @return configuration
+     */
+    public abstract AC createConfiguration(T topics);
+
+    /**
+     * Create a new {@link RunnableApp}
+     * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
         final ExecutableApp<R, ?, O> app = this.createExecutableApp();
@@ -234,8 +244,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code CleanableApp}
-     * @return {@code CleanableApp}
+     * Create a new {@link CleanableApp}
+     * @return {@link CleanableApp}
      */
     public final CleanableApp<CR> createCleanableApp() {
         final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp();
@@ -267,13 +277,13 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to the given config.
+     * Create a new {@link ConfiguredApp} that will be executed according to the given config.
      *
      * @param app app to configure.
-     * @param topics topic configuration
-     * @return {@code ConfiguredApp}
+     * @param configuration configuration for app
+     * @return {@link ConfiguredApp}
      */
-    protected abstract CA createConfiguredApp(final A app, T topics);
+    protected abstract CA createConfiguredApp(final A app, AC configuration);
 
     private void startApplication() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));

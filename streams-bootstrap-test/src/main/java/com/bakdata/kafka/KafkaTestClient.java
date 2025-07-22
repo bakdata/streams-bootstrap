@@ -26,10 +26,10 @@ package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.util.AdminClientX;
-import com.bakdata.kafka.util.TopicClient;
-import com.bakdata.kafka.util.TopicSettings;
-import com.bakdata.kafka.util.TopicSettings.TopicSettingsBuilder;
+import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.admin.TopicSettings;
+import com.bakdata.kafka.admin.TopicSettings.TopicSettingsBuilder;
+import com.bakdata.kafka.admin.TopicsClient;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class KafkaTestClient {
     private final @NonNull RuntimeConfiguration configuration;
 
     /**
-     * Create a new {@code TopicSettingsBuilder} which uses a single partition and no replicas
+     * Create a new {@link TopicSettingsBuilder} which uses a single partition and no replicas
      * @return default topic settings
      */
     public static TopicSettingsBuilder defaultTopicSettings() {
@@ -57,7 +57,7 @@ public class KafkaTestClient {
 
     /**
      * Prepare sending new data to the cluster
-     * @return configured {@code SenderBuilder}
+     * @return configured {@link SenderBuilder}
      */
     public <K, V> SenderBuilder<K, V> send() {
         return SenderBuilder.create(this.configuration.createKafkaProperties());
@@ -66,7 +66,7 @@ public class KafkaTestClient {
     /**
      * Prepare reading data from the cluster. {@link ConsumerConfig#AUTO_OFFSET_RESET_CONFIG} is configured to
      * {@link AutoOffsetResetStrategy#EARLIEST}
-     * @return configured {@code ReaderBuilder}
+     * @return configured {@link ReaderBuilder}
      */
     public <K, V> ReaderBuilder<K, V> read() {
         return ReaderBuilder.<K, V>create(this.configuration.createKafkaProperties())
@@ -89,9 +89,9 @@ public class KafkaTestClient {
      * @param config topic configuration
      */
     public void createTopic(final String topicName, final TopicSettings settings, final Map<String, String> config) {
-        try (final AdminClientX admin = this.admin();
-                final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(topicName, settings, config);
+        try (final AdminClientX admin = this.admin()) {
+            final TopicsClient topics = admin.topics();
+            topics.topic(topicName).create(settings, config);
         }
     }
 
@@ -124,9 +124,9 @@ public class KafkaTestClient {
      * @return whether a Kafka topic with the specified name exists or not
      */
     public boolean existsTopic(final String topicName) {
-        try (final AdminClientX admin = this.admin();
-                final TopicClient topicClient = admin.getTopicClient()) {
-            return topicClient.exists(topicName);
+        try (final AdminClientX admin = this.admin()) {
+            final TopicsClient topics = admin.topics();
+            return topics.topic(topicName).exists();
         }
     }
 }

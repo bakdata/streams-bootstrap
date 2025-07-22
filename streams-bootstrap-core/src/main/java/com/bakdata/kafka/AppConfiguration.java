@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.AdminClientX;
+import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -33,12 +33,12 @@ import lombok.Value;
 /**
  * Configuration for setting up an app
  * @param <T> type of topic config
- * @see StreamsApp#setup(AppConfiguration)
- * @see StreamsApp#setupCleanUp(AppConfiguration)
- * @see ProducerApp#setup(AppConfiguration)
- * @see ProducerApp#setupCleanUp(AppConfiguration)
- * @see ConsumerApp#setup(AppConfiguration)
- * @see ConsumerApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.streams.StreamsApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.streams.StreamsApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.producer.ProducerApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.producer.ProducerApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.consumer.ConsumerApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.consumer.ConsumerApp#setupCleanUp(AppConfiguration)
  */
 @Value
 @EqualsAndHashCode

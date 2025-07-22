@@ -26,13 +26,13 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '4.1.3'
+implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '5.0.1'
 ```
 
 With Kotlin DSL
 
 ```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "4.1.3")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "5.0.1")
 ```
 
 #### Maven
@@ -42,7 +42,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>4.1.3</version>
+  <version>5.0.1</version>
 </dependency>
 ```
 
@@ -57,12 +57,12 @@ Create a subclass of `KafkaStreamsApplication` and implement the abstract method
 and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`.
 
 ```java
-import com.bakdata.kafka.KStreamX;
-import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.StreamsBuilderX;
+import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
@@ -150,11 +150,11 @@ Create a subclass of `KafkaProducerApplication`.
 // TODO
 
 ```java
-import com.bakdata.kafka.KafkaProducerApplication;
-import com.bakdata.kafka.ProducerApp;
-import com.bakdata.kafka.ProducerBuilder;
-import com.bakdata.kafka.ProducerRunnable;
-import com.bakdata.kafka.SerializerConfig;
+import com.bakdata.kafka.producer.KafkaProducerApplication;
+import com.bakdata.kafka.producer.ProducerApp;
+import com.bakdata.kafka.producer.ProducerBuilder;
+import com.bakdata.kafka.producer.ProducerRunnable;
+import com.bakdata.kafka.producer.SerializerConfig;
 import java.util.Map;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
