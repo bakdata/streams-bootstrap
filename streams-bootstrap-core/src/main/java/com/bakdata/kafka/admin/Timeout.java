@@ -24,12 +24,32 @@
 
 package com.bakdata.kafka.admin;
 
-/**
- * Exception thrown by if admin operations fail.
- */
-public class KafkaAdminException extends RuntimeException {
+import java.time.Duration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.KafkaFuture;
 
-    KafkaAdminException(final String message, final Throwable cause) {
-        super(message, cause);
+@RequiredArgsConstructor
+class Timeout {
+    private final @NonNull Duration duration;
+
+    <T> T get(final KafkaFuture<T> future, final Supplier<String> messageSupplier) {
+        try {
+            return future.get(this.duration.toSeconds(), TimeUnit.SECONDS);
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof final RuntimeException cause) {
+                throw cause;
+            }
+            throw new KafkaAdminException(messageSupplier.get(), e);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new KafkaAdminException(messageSupplier.get(), e);
+        } catch (final TimeoutException e) {
+            throw new KafkaAdminException(messageSupplier.get(), e);
+        }
     }
 }
