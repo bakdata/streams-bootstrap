@@ -25,8 +25,8 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.ConsumerGroupClient;
-import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.admin.ConsumerGroupsClient;
+import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsConfigX;
 import java.util.Map;
@@ -84,9 +84,9 @@ public class ConsumerGroupVerifier {
      * @return current state of consumer group
      */
     public Optional<GroupState> getState() {
-        try (final AdminClientX admin = this.adminClientSupplier.get();
-                final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient()) {
-            return consumerGroupClient.describe(this.group)
+        try (final AdminClientX admin = this.adminClientSupplier.get()) {
+            final ConsumerGroupsClient groups = admin.consumerGroups();
+            return groups.group(this.group).describe()
                     .map(this::getState);
         }
     }
@@ -110,17 +110,17 @@ public class ConsumerGroupVerifier {
      * @return lag of consumer group. If no partitions are assigned, an empty {@link Optional} is returned
      */
     public Optional<Long> computeLag() {
-        try (final AdminClientX admin = this.adminClientSupplier.get();
-                final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient();
-                final TopicClient topicClient = admin.getTopicClient()) {
+        try (final AdminClientX admin = this.adminClientSupplier.get()) {
+            final ConsumerGroupsClient groups = admin.consumerGroups();
             final Map<TopicPartition, OffsetAndMetadata> consumerOffsets =
-                    consumerGroupClient.listOffsets(this.group);
+                    groups.group(this.group).listOffsets();
             log.debug("Consumer group '{}' has {} subscribed partitions", this.group, consumerOffsets.size());
             if (consumerOffsets.isEmpty()) {
                 return Optional.empty();
             }
+            final TopicsClient topics = admin.topics();
             final Map<TopicPartition, ListOffsetsResultInfo> partitionOffsets =
-                    topicClient.listOffsets(consumerOffsets.keySet());
+                    topics.listOffsets(consumerOffsets.keySet());
             final long lag = consumerOffsets.entrySet().stream()
                     .mapToLong(e -> {
                         final TopicPartition topicPartition = e.getKey();

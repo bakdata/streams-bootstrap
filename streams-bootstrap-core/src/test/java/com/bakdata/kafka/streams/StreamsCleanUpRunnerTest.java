@@ -41,8 +41,8 @@ import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.ConsumerGroupClient;
-import com.bakdata.kafka.admin.TopicClient;
+import com.bakdata.kafka.admin.ConsumerGroupsClient;
+import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.apps.ComplexTopologyApplication;
 import com.bakdata.kafka.streams.apps.Mirror;
 import com.bakdata.kafka.streams.apps.WordCount;
@@ -131,9 +131,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             awaitClosed(executableApp);
             clean(executableApp);
 
-            try (final AdminClientX admin = testClient.admin();
-                    final TopicClient topicClient = admin.getTopicClient()) {
-                this.softly.assertThat(topicClient.exists(app.getTopics().getOutputTopic()))
+            try (final AdminClientX admin = testClient.admin()) {
+                final TopicsClient topics = admin.topics();
+                this.softly.assertThat(topics.topic(app.getTopics().getOutputTopic()).exists())
                         .as("Output topic is deleted")
                         .isFalse();
             }
@@ -166,9 +166,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final AdminClientX adminClient = testClient.admin();
-                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
-                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
+            try (final AdminClientX adminClient = testClient.admin()) {
+                final ConsumerGroupsClient groups = adminClient.consumerGroups();
+                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
                         .as("Consumer group exists")
                         .isTrue();
             }
@@ -176,9 +176,9 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             awaitClosed(executableApp);
             clean(executableApp);
 
-            try (final AdminClientX adminClient = testClient.admin();
-                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
-                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
+            try (final AdminClientX adminClient = testClient.admin()) {
+                final ConsumerGroupsClient groups = adminClient.consumerGroups();
+                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
                         .as("Consumer group is deleted")
                         .isFalse();
             }
@@ -211,19 +211,19 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "WordCount contains all elements after first run");
 
-            try (final AdminClientX adminClient = testClient.admin();
-                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
-                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
+            try (final AdminClientX adminClient = testClient.admin()) {
+                final ConsumerGroupsClient groups = adminClient.consumerGroups();
+                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
                         .as("Consumer group exists")
                         .isTrue();
             }
 
             awaitClosed(executableApp);
 
-            try (final AdminClientX adminClient = testClient.admin();
-                    final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
-                consumerGroupClient.deleteConsumerGroup(app.getUniqueAppId());
-                this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
+            try (final AdminClientX adminClient = testClient.admin()) {
+                final ConsumerGroupsClient groups = adminClient.consumerGroups();
+                groups.group(app.getUniqueAppId()).delete();
+                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
                         .as("Consumer group is deleted")
                         .isFalse();
             }
@@ -256,25 +256,25 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final String backingTopic =
                     uniqueAppId + "-KSTREAM-REDUCE-STATE-STORE-0000000003-changelog";
 
-            try (final AdminClientX admin = testClient.admin();
-                    final TopicClient topicClient = admin.getTopicClient()) {
+            try (final AdminClientX admin = testClient.admin()) {
+                final TopicsClient topics = admin.topics();
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topics.topic(inputTopic).exists()).isTrue();
                 }
-                this.softly.assertThat(topicClient.exists(internalTopic)).isTrue();
-                this.softly.assertThat(topicClient.exists(backingTopic)).isTrue();
+                this.softly.assertThat(topics.topic(internalTopic).exists()).isTrue();
+                this.softly.assertThat(topics.topic(backingTopic).exists()).isTrue();
             }
 
             awaitClosed(executableApp);
             reset(executableApp);
 
-            try (final AdminClientX admin = testClient.admin();
-                    final TopicClient topicClient = admin.getTopicClient()) {
+            try (final AdminClientX admin = testClient.admin()) {
+                final TopicsClient topics = admin.topics();
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topics.topic(inputTopic).exists()).isTrue();
                 }
-                this.softly.assertThat(topicClient.exists(internalTopic)).isFalse();
-                this.softly.assertThat(topicClient.exists(backingTopic)).isFalse();
+                this.softly.assertThat(topics.topic(internalTopic).exists()).isFalse();
+                this.softly.assertThat(topics.topic(backingTopic).exists()).isFalse();
             }
         }
     }
@@ -300,23 +300,23 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
             final List<String> inputTopics = app.getTopics().getInputTopics();
             final String manualTopic = ComplexTopologyApplication.THROUGH_TOPIC;
 
-            try (final AdminClientX admin = testClient.admin();
-                    final TopicClient topicClient = admin.getTopicClient()) {
+            try (final AdminClientX admin = testClient.admin()) {
+                final TopicsClient topics = admin.topics();
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topics.topic(inputTopic).exists()).isTrue();
                 }
-                this.softly.assertThat(topicClient.exists(manualTopic)).isTrue();
+                this.softly.assertThat(topics.topic(manualTopic).exists()).isTrue();
             }
 
             awaitClosed(executableApp);
             reset(executableApp);
 
-            try (final AdminClientX admin = testClient.admin();
-                    final TopicClient topicClient = admin.getTopicClient()) {
+            try (final AdminClientX admin = testClient.admin()) {
+                final TopicsClient topics = admin.topics();
                 for (final String inputTopic : inputTopics) {
-                    this.softly.assertThat(topicClient.exists(inputTopic)).isTrue();
+                    this.softly.assertThat(topics.topic(inputTopic).exists()).isTrue();
                 }
-                this.softly.assertThat(topicClient.exists(manualTopic)).isFalse();
+                this.softly.assertThat(topics.topic(manualTopic).exists()).isFalse();
             }
         }
     }

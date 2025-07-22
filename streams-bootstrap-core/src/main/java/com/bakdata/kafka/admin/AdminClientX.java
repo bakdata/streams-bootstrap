@@ -43,7 +43,7 @@ public final class AdminClientX implements AutoCloseable {
 
     private static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private final @NonNull Admin adminClient;
-    private final @NonNull Duration timeout;
+    private final @NonNull Timeout timeout;
 
     /**
      * Create a new admin client with default timeout
@@ -69,20 +69,33 @@ public final class AdminClientX implements AutoCloseable {
         final Admin adminClient = AdminClient.create(properties);
         return builder()
                 .adminClient(adminClient)
-                .timeout(timeout)
+                .timeout(new Timeout(timeout))
                 .build();
     }
 
-    public Admin getAdminClient() {
+    /**
+     * Get the underlying {@link Admin} client.
+     *
+     * @return admin client
+     */
+    public Admin admin() {
         return new PooledAdmin(this.adminClient);
     }
 
-    public TopicClient getTopicClient() {
-        return new TopicClient(this.getAdminClient(), this.timeout);
+    /**
+     * Create a {@link TopicsClient} to perform topic-related administrative actions.
+     * @return topic client
+     */
+    public TopicsClient topics() {
+        return new TopicsClient(this.adminClient, this.timeout);
     }
 
-    public ConsumerGroupClient getConsumerGroupClient() {
-        return new ConsumerGroupClient(this.getAdminClient(), this.timeout);
+    /**
+     * Create a {@link ConsumerGroupsClient} to perform consumer group-related administrative actions
+     * @return consumer group client
+     */
+    public ConsumerGroupsClient consumerGroups() {
+        return new ConsumerGroupsClient(this.adminClient, this.timeout);
     }
 
     @Override
