@@ -43,7 +43,6 @@ jobs:
         shell: bash
         run: |
           MODULES=(
-          "streams-bootstrap-bom"
           "streams-bootstrap-cli"
           "streams-bootstrap-cli-test"
           "streams-bootstrap-core"
@@ -64,12 +63,11 @@ jobs:
 
               echo "Extracting $actual_jar to $target_dir"
               unzip -q "$actual_jar" -d "$target_dir"
-              echo "Contents of $target_dir:"
-              find "$target_dir" -type f
             else
               echo "No Javadoc JAR found for module: $module"
             fi
           done
+
       - name: Upload extracted Javadoc
         uses: actions/upload-artifact@v4
         with:
@@ -125,7 +123,7 @@ jobs:
             echo "tag=main" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check for docs changes (PRs only)
+      - name: Check for docs changes (PR)
         if: ${{ github.event_name == 'pull_request' }}
         uses: dorny/paths-filter@v3
         id: docs-changes
