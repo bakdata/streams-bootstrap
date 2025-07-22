@@ -63,6 +63,16 @@ public class ConsumerGroupVerifier {
     }
 
     /**
+     * Create a new verifier from an {@code ExecutableConsumerApp}
+     * @param app app to create verifier from
+     * @return verifier
+     */
+    public static ConsumerGroupVerifier verify(final ExecutableConsumerApp<?> app) {
+        final Map<String, Object> kafkaProperties = app.getKafkaProperties();
+        return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
+    }
+
+    /**
      * Check whether consumer group has state {@link GroupState#STABLE}
      * @return true if consumer group has state {@link GroupState#STABLE}
      */

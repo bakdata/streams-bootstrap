@@ -54,13 +54,12 @@ public final class StreamsResetterWrapper {
      * Streams Reset Tool</a>
      *
      * @param inputTopics list of input topics of the streams app
-     * @param intermediateTopics list of intermediate topics of the streams app
      * @param allTopics list of all topics that exists in the Kafka cluster
      * @param streamsAppConfig configuration properties of the streams app
      */
-    public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final Collection<String> allTopics, final ImprovedStreamsConfig streamsAppConfig) {
-        runResetter(inputTopics, intermediateTopics, allTopics, streamsAppConfig.getAppId(),
+    public static void runResetter(final Collection<String> inputTopics, final Collection<String> allTopics,
+            final StreamsConfigX streamsAppConfig) {
+        runResetter(inputTopics, allTopics, streamsAppConfig.getAppId(),
                 streamsAppConfig.getKafkaProperties(), streamsAppConfig.getBoostrapServers());
     }
 
@@ -69,15 +68,13 @@ public final class StreamsResetterWrapper {
      * Streams Reset Tool</a>
      *
      * @param inputTopics list of input topics of the streams app
-     * @param intermediateTopics list of intermediate topics of the streams app
      * @param allTopics list of all topics that exists in the Kafka cluster
      * @param appId application ID of the streams app
      * @param kafkaProperties Kafka properties of the streams app
      * @param bootstrapServers list of bootstrap servers of the streams app
      */
-    public static void runResetter(final Collection<String> inputTopics, final Collection<String> intermediateTopics,
-            final Collection<String> allTopics, final String appId, final Map<String, Object> kafkaProperties,
-            final List<String> bootstrapServers) {
+    public static void runResetter(final Collection<String> inputTopics, final Collection<String> allTopics,
+            final String appId, final Map<String, Object> kafkaProperties, final List<String> bootstrapServers) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final File tempFile = createTemporaryPropertiesFile(appId, kafkaProperties);
         final Collection<String> argList = new ArrayList<>(List.of(
@@ -88,10 +85,6 @@ public final class StreamsResetterWrapper {
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
         if (!existingInputTopics.isEmpty()) {
             argList.addAll(List.of("--input-topics", String.join(",", existingInputTopics)));
-        }
-        final Collection<String> existingIntermediateTopics = filterExistingTopics(intermediateTopics, allTopics);
-        if (!existingIntermediateTopics.isEmpty()) {
-            argList.addAll(List.of("--intermediate-topics", String.join(",", existingIntermediateTopics)));
         }
         final String[] args = argList.toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();

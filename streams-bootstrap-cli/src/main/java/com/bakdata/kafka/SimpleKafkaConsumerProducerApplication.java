@@ -41,6 +41,7 @@ public final class SimpleKafkaConsumerProducerApplication<T extends ConsumerProd
     // TODO update javadocs
     // TODO fix input pattern
     // TODO add helm charts
+    // TODO update/add readme
 
     @Override
     public T createApp() {

@@ -24,8 +24,8 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +83,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
 
     @Override
     public void clean() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final Task task = new Task(adminClient);
             task.clean();
         }
@@ -93,20 +93,20 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
      * Reset your Consumer app by resetting consumer group offsets
      */
     public void reset() {
-        try (final ImprovedAdminClient adminClient = this.createAdminClient()) {
+        try (final AdminClientX adminClient = this.createAdminClient()) {
             final ConsumerCleanUpRunner.Task task = new ConsumerCleanUpRunner.Task(adminClient);
             task.reset();
         }
     }
 
-    private ImprovedAdminClient createAdminClient() {
-        return ImprovedAdminClient.create(this.kafkaProperties);
+    private AdminClientX createAdminClient() {
+        return AdminClientX.create(this.kafkaProperties);
     }
 
     @RequiredArgsConstructor
     private class Task {
 
-        private final @NonNull ImprovedAdminClient adminClient;
+        private final @NonNull AdminClientX adminClient;
 
         private void reset() {
             final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
@@ -124,7 +124,6 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
             }
 
             StreamsResetterWrapper.runResetter(inputTopics,
-                    List.of(),
                     allTopics,
                     ConsumerCleanUpRunner.this.groupId,
                     ConsumerCleanUpRunner.this.kafkaProperties,
@@ -143,38 +142,5 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
             consumerGroupClient.deleteGroupIfExists(ConsumerCleanUpRunner.this.groupId);
         }
     }
-
-//    @Getter
-//    @RequiredArgsConstructor
-//    class EarliestOffsetConsumer implements ConsumerApp {
-//
-//        private final Map<TopicPartition, Long> earliestOffsets = new HashMap<>();
-//        private final List<TopicPartition> partitions;
-//
-//        @Override
-//        public DeserializerConfig defaultSerializationConfig() {
-//            return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
-//        }
-//
-//        @Override
-//        public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-//            return () -> {
-//                try (final Consumer<String, String> consumer = builder.createConsumer()) {
-//                    this.fetchEarliestOffsets(consumer);
-//                }
-//            };
-//        }
-//
-//        private void fetchEarliestOffsets(final Consumer<String, String> consumer) {
-//            consumer.assign(this.partitions);
-//            consumer.seekToBeginning(this.partitions);
-//            this.partitions.forEach(tp -> this.earliestOffsets.put(tp, consumer.position(tp)));
-//        }
-//
-//        @Override
-//        public String getUniqueAppId(final ConsumerTopicConfig topics) {
-//            return "app-id";
-//        }
-//    }
 
 }

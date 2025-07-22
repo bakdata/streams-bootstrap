@@ -56,8 +56,8 @@ import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.test_applications.ComplexTopologyApplication;
 import com.bakdata.kafka.test_applications.StringConsumer;
+import com.bakdata.kafka.util.AdminClientX;
 import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
 import com.bakdata.kafka.util.TopicClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -193,7 +193,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             awaitActive(executableApp);
             this.assertContent(stringConsumer.getConsumedRecords(), expectedValues);
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
@@ -204,7 +204,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             awaitClosed(executableApp);
             clean(executableApp);
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group is deleted")
@@ -241,7 +241,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             awaitActive(executableApp);
             this.assertContent(stringConsumer.getConsumedRecords(), expectedValues);
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))
                         .as("Consumer group exists")
@@ -251,7 +251,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             stringConsumer.shutdown();
             awaitClosed(executableApp);
 
-            try (final ImprovedAdminClient adminClient = testClient.admin();
+            try (final AdminClientX adminClient = testClient.admin();
                     final ConsumerGroupClient consumerGroupClient = adminClient.getConsumerGroupClient()) {
                 consumerGroupClient.deleteConsumerGroup(app.getUniqueAppId());
                 this.softly.assertThat(consumerGroupClient.exists(app.getUniqueAppId()))

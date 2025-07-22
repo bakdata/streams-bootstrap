@@ -82,7 +82,7 @@ class ConsumerRunnerTest extends KafkaTest {
         testClient.send()
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .to(inputTopic, List.of(producerRecord));
+                .to(inputTopic, (Iterable)List.of(producerRecord));
     }
 
 }
