@@ -124,8 +124,7 @@ public class SchemaRegistryAppUtils {
     @Slf4j
     @RequiredArgsConstructor
     private static class SchemaRegistryTopicHook implements TopicHook {
-        @NonNull
-        private final SchemaRegistryClient schemaRegistryClient;
+        private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
         @Override
         public void deleted(final String topic) {
