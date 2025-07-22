@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.bakdata.kafka"},{"l":"com.bakdata.kafka.streams"}];updateSearchResults();
