@@ -108,7 +108,7 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
             clean(executableApp);
 
             try (final AdminClientX admin = this.newTestClient().admin()) {
-                this.softly.assertThat(admin.getTopicClient().exists(app.getTopics().getOutputTopic()))
+                this.softly.assertThat(admin.topics().topic(app.getTopics().getOutputTopic()).exists())
                         .as("Output topic is deleted")
                         .isFalse();
             }

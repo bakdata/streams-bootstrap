@@ -22,45 +22,40 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.admin;
+package com.bakdata.kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaTest;
-import java.time.Duration;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-class ConsumerGroupClientTest extends KafkaTest {
-
-    private static final Duration CLIENT_TIMEOUT = Duration.ofSeconds(10L);
+@Slf4j
+@ExtendWith(SoftAssertionsExtension.class)
+class SchemaRegistryAppUtilsTest {
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
-    void shouldNotFindGroup() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.exists("does_not_exist")).isFalse();
-        }
+    void shouldCreateClient() {
+        final Map<String, Object> kafkaProperties = Map.of(
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
+        );
+        this.softly.assertThat(SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties)).isPresent();
     }
 
     @Test
-    void shouldNotDescribeGroup() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.describe("does_not_exist")).isNotPresent();
-        }
-    }
-
-    @Test
-    void shouldNotListOffsets() {
-        try (final ConsumerGroupClient client = this.createClient()) {
-            assertThat(client.listOffsets("does_not_exist")).isEmpty();
-        }
-    }
-
-    private ConsumerGroupClient createClient() {
-        final String brokerList = this.getBootstrapServers();
-        final Map<String, Object> config = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
-        return ConsumerGroupClient.create(config, CLIENT_TIMEOUT);
+    void shouldNotCreateClient() {
+        final Map<String, Object> kafkaProperties = Map.of(
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
+        );
+        this.softly.assertThat(SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties)).isNotPresent();
     }
 
 }
