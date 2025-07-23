@@ -13,6 +13,50 @@ allprojects {
         maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://central.sonatype.com/repository/maven-snapshots")
     }
+
+    tasks.register<Javadoc>("aggregateJavadoc") {
+        group = "documentation"
+        description = "Generates aggregated Javadoc from all modules"
+
+        val allJavaSources = files()
+        val allClasspaths = files()
+
+        val moduleNames = listOf(
+            ":streams-bootstrap-core",
+            ":streams-bootstrap-test",
+            ":streams-bootstrap-large-messages",
+            ":streams-bootstrap-cli",
+            ":streams-bootstrap-cli-test"
+        )
+
+        moduleNames.map { project(it) }.forEach { sub ->
+            sub.plugins.withId("java") {
+                val sourceSets = sub.extensions.getByType<SourceSetContainer>()
+                val main = sourceSets.getByName("main")
+                allJavaSources.from(main.allJava)
+                allClasspaths.from(main.compileClasspath)
+            }
+        }
+
+        source = allJavaSources.asFileTree
+        classpath = allClasspaths
+
+        setDestinationDir(layout.buildDirectory.dir("aggregateJavadoc").get().asFile)
+    }
+
+    tasks.register<Jar>("aggregateJavadocJar") {
+        dependsOn("aggregateJavadoc")
+        group = "documentation"
+        description = "Packages the aggregated Javadoc into a JAR"
+
+        archiveClassifier.set("javadoc")
+        archiveBaseName.set("aggregated")
+        archiveVersion.set("")
+
+        from(tasks.named<Javadoc>("aggregateJavadoc").map { it.destinationDir!! })
+
+        destinationDirectory.set(layout.buildDirectory.dir("libs"))
+    }
 }
 
 subprojects {

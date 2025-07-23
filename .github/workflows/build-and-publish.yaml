@@ -33,46 +33,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download build artifact
+      - name: Download aggregated Javadoc artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-artifact
-          path: build-artifact
+          name: aggregated-javadoc
+          path: aggregated-javadoc
 
-      - name: Extract Javadoc JARs per module
+      - name: Extract aggregated Javadoc JAR
         shell: bash
         run: |
-          MODULES=(
-          "streams-bootstrap-cli"
-          "streams-bootstrap-cli-test"
-          "streams-bootstrap-core"
-          "streams-bootstrap-large-messages"
-          "streams-bootstrap-test"
-           )
-          mkdir -p docs/docs/javadoc
+          mkdir -p docs/docs/javadoc/all
 
-          for module in "${MODULES[@]}"; do
-            jar_path="build-artifact/$module/build/libs/${module}-*-javadoc.jar"
+          jar_path=$(find aggregated-javadoc -type f -name "aggregated-javadoc.jar" | head -n 1)
 
-            echo "Looking for javadoc JAR in: $jar_path"
-
-            if compgen -G "$jar_path" > /dev/null; then
-              target_dir="docs/docs/javadoc/$module"
-              mkdir -p "$target_dir"
-              actual_jar=$(ls $jar_path | head -n 1)
-
-              echo "Extracting $actual_jar to $target_dir"
-              unzip -q "$actual_jar" -d "$target_dir"
-            else
-              echo "No Javadoc JAR found for module: $module"
-            fi
-          done
+          if [[ -f "$jar_path" ]]; then
+            echo "Found aggregated Javadoc JAR: $jar_path"
+            unzip -q "$jar_path" -d docs/docs/javadoc/all
+            echo "Extracted Javadoc to docs/docs/javadoc/all"
+            find docs/docs/javadoc/all
+          else
+            echo "No aggregated Javadoc JAR found!"
+            exit 1
+          fi
 
       - name: Upload extracted Javadoc
         uses: actions/upload-artifact@v4
         with:
           name: javadoc
-          path: docs/docs/javadoc
+          path: docs/docs/javadoc/all
 
   docs:
     name: Build Docs
