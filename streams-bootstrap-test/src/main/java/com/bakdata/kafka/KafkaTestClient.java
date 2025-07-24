@@ -27,9 +27,9 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyMap;
 
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.TopicClient;
 import com.bakdata.kafka.admin.TopicSettings;
 import com.bakdata.kafka.admin.TopicSettings.TopicSettingsBuilder;
+import com.bakdata.kafka.admin.TopicsClient;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -89,9 +89,9 @@ public class KafkaTestClient {
      * @param config topic configuration
      */
     public void createTopic(final String topicName, final TopicSettings settings, final Map<String, String> config) {
-        try (final AdminClientX admin = this.admin();
-                final TopicClient topicClient = admin.getTopicClient()) {
-            topicClient.createTopic(topicName, settings, config);
+        try (final AdminClientX admin = this.admin()) {
+            final TopicsClient topics = admin.topics();
+            topics.topic(topicName).create(settings, config);
         }
     }
 
@@ -124,9 +124,9 @@ public class KafkaTestClient {
      * @return whether a Kafka topic with the specified name exists or not
      */
     public boolean existsTopic(final String topicName) {
-        try (final AdminClientX admin = this.admin();
-                final TopicClient topicClient = admin.getTopicClient()) {
-            return topicClient.exists(topicName);
+        try (final AdminClientX admin = this.admin()) {
+            final TopicsClient topics = admin.topics();
+            return topics.topic(topicName).exists();
         }
     }
 }

@@ -103,4 +103,13 @@ class KafkaTestClientTest extends KafkaTest {
                     this.softly.assertThat(rekord.value()).isEqualTo("value");
                 });
     }
+
+    @Test
+    void shouldCreateTopic() {
+        final KafkaTestClient testClient = this.newTestClient();
+        final String topic = "topic";
+        this.softly.assertThat(testClient.existsTopic(topic)).isFalse();
+        testClient.createTopic(topic);
+        this.softly.assertThat(testClient.existsTopic(topic)).isTrue();
+    }
 }
