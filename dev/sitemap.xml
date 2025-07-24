@@ -2,50 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/</loc>
-         <lastmod>2025-07-22</lastmod>
+         <lastmod>2025-07-24</lastmod>
     </url>
     <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/</loc>
-         <lastmod>2025-07-22</lastmod>
+         <lastmod>2025-07-24</lastmod>
     </url>
     <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-cli/legal/jquery/</loc>
-         <lastmod>2025-07-22</lastmod>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jquery/</loc>
+         <lastmod>2025-07-24</lastmod>
     </url>
     <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-cli/legal/jqueryUI/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-cli-test/legal/jquery/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-cli-test/legal/jqueryUI/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-core/legal/jquery/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-core/legal/jqueryUI/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-large-messages/legal/jquery/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-large-messages/legal/jqueryUI/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-test/legal/jquery/</loc>
-         <lastmod>2025-07-22</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/streams-bootstrap-test/legal/jqueryUI/</loc>
-         <lastmod>2025-07-22</lastmod>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jqueryUI/</loc>
+         <lastmod>2025-07-24</lastmod>
     </url>
 </urlset>

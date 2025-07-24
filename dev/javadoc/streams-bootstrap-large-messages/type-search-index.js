@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.bakdata.kafka","l":"LargeMessageAppUtils"},{"p":"com.bakdata.kafka.producer","l":"LargeMessageProducerApp"},{"p":"com.bakdata.kafka.streams","l":"LargeMessageStreamsApp"}];updateSearchResults();
