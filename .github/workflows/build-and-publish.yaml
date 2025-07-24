@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir -p docs/docs/javadoc/all
 
-          jar_path=$(find aggregated-javadoc -type f -name "aggregated-javadoc.jar" | head -n 1)
+          jar_path=$(find aggregated-javadoc -type f -name "*.jar" | head -n 1)
 
           if [[ -f "$jar_path" ]]; then
             echo "Found aggregated Javadoc JAR: $jar_path"
