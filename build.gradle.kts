@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.sonar)
     alias(libs.plugins.sonatype)
     alias(libs.plugins.lombok)
-    id("io.freefair.aggregate-javadoc") version "8.14"
+    alias(libs.plugins.aggregate.javadoc)
 }
 
 allprojects {
@@ -19,8 +19,8 @@ allprojects {
         subprojects {
             plugins.withId("java") {
                 javadoc(this@subprojects)
+                javadocClasspath(libs.lombok)
             }
-            javadocClasspath("org.projectlombok:lombok:1.18.38")
         }
     }
 }

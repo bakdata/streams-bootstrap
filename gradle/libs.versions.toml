@@ -36,6 +36,7 @@ testcontainers-kafka = { group = "org.testcontainers", name = "kafka", version.r
 fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.4.1" }
 log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.25.1" }
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
+lombok = { group = "org.projectlombok", name = "lombok", version = "1.18.38" }
 
 [plugins]
 release = { id = "com.bakdata.release", version = "1.10.0" }
@@ -43,3 +44,4 @@ sonar = { id = "com.bakdata.sonar", version = "1.10.0" }
 sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
 lombok = { id = "io.freefair.lombok", version = "8.14" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
+aggregate-javadoc = { id = "io.freefair.aggregate-javadoc", version = "8.14" }

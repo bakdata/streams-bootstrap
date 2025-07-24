@@ -1,5 +1,5 @@
-# Javadoc
+# Java API Reference
 
-Link to generated Javadoc below:
+The complete Java API documentation for **Streams Bootstrap** is available below:
 
-- [Streams Bootstrap Javadoc](all/index.html){target=_blank}
+- [View Javadoc](all/index.html){target=_blank}
