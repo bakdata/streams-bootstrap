@@ -30,6 +30,7 @@ updates:
           - "com.bakdata.release"
           - "com.bakdata.sonar"
           - "com.bakdata.sonatype"
+          - "io.freefair*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

@@ -1,3 +1,5 @@
+import io.freefair.gradle.plugins.lombok.LombokExtension
+
 plugins {
     alias(libs.plugins.release)
     alias(libs.plugins.sonar)
@@ -20,8 +22,8 @@ allprojects {
             plugins.withId("java") {
                 javadoc(this@subprojects)
             }
+            javadocClasspath("org.projectlombok:lombok:${LombokExtension.LOMBOK_VERSION}")
         }
-        javadocClasspath("org.projectlombok:lombok:${LombokExtension.LOMBOK_VERSION}")
     }
 }
 
