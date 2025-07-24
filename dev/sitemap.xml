@@ -4,4 +4,12 @@
          <loc>https://bakdata.github.io/streams-bootstrap/dev/</loc>
          <lastmod>2025-07-24</lastmod>
     </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jquery/</loc>
+         <lastmod>2025-07-24</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jqueryUI/</loc>
+         <lastmod>2025-07-24</lastmod>
+    </url>
 </urlset>
