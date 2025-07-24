@@ -19,9 +19,9 @@ allprojects {
         subprojects {
             plugins.withId("java") {
                 javadoc(this@subprojects)
-                javadocClasspath(libs.lombok)
             }
         }
+        javadocClasspath("org.projectlombok:lombok:${LombokExtension.LOMBOK_VERSION}")
     }
 }
 
