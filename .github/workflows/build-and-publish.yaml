@@ -98,7 +98,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: javadoc
-          path: docs/docs/javadoc
+          path: docs/docs/javadoc/all
 
       - name: Determine tag
         id: get-tag
