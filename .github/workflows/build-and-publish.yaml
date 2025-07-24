@@ -11,7 +11,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@test/merged-javadoc
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.68.0
     with:
       java-version: 17
     secrets:
@@ -36,15 +36,15 @@ jobs:
       - name: Download aggregated Javadoc artifact
         uses: actions/download-artifact@v4
         with:
-          name: aggregated-javadoc
-          path: aggregated-javadoc
+          name: build-artifact
+          path: build-artifact
 
       - name: Extract aggregated Javadoc JAR
         shell: bash
         run: |
           mkdir -p docs/docs/javadoc/modules
 
-          jar_path=$(find aggregated-javadoc -type f -name "*.jar" | head -n 1)
+          jar_path=$(find build-artifact/build/libs -type f -name "streams-bootstrap-*-javadoc.jar" | head -n 1)
 
           if [[ -f "$jar_path" ]]; then
             echo "Found aggregated Javadoc JAR: $jar_path"
