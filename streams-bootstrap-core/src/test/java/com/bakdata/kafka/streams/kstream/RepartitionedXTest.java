@@ -35,8 +35,8 @@ import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.TopicClient;
 import com.bakdata.kafka.admin.TopicSettings;
+import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -416,10 +416,11 @@ class RepartitionedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final AdminClientX admin = testClient.admin();
-                        final TopicClient topicClient = admin.getTopicClient()) {
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    final Optional<TopicSettings> settings = topicClient.describe(appId + "-repartition-repartition");
+                    final Optional<TopicSettings> settings =
+                            topics.topic(appId + "-repartition-repartition").getSettings();
                     this.softly.assertThat(settings)
                             .map(TopicSettings::getPartitions)
                             .hasValue(2);
@@ -466,10 +467,11 @@ class RepartitionedXTest {
                             this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
                             this.softly.assertThat(outputRecord.value()).isEqualTo("bar");
                         });
-                try (final AdminClientX admin = testClient.admin();
-                        final TopicClient topicClient = admin.getTopicClient()) {
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
                     final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    final Optional<TopicSettings> settings = topicClient.describe(appId + "-repartition-repartition");
+                    final Optional<TopicSettings> settings =
+                            topics.topic(appId + "-repartition-repartition").getSettings();
                     this.softly.assertThat(settings)
                             .map(TopicSettings::getPartitions)
                             .hasValue(2);

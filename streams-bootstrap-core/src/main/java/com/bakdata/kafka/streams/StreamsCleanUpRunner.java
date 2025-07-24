@@ -26,8 +26,9 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
+import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.admin.ConsumerGroupClient;
+import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,6 +85,8 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final StreamsConfigX config = new StreamsConfigX(streamsConfig);
         final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
+        SchemaRegistryAppUtils.createTopicHook(config.getKafkaProperties())
+                .ifPresent(configuration::registerTopicHook);
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);
     }
 
@@ -198,7 +201,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {
-            final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            final Collection<String> allTopics = this.adminClient.topics().list();
             this.reset(allTopics);
         }
 
@@ -222,7 +225,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void cleanAndReset() {
-            final Collection<String> allTopics = this.adminClient.getTopicClient().listTopics();
+            final Collection<String> allTopics = this.adminClient.topics().list();
             this.reset(allTopics);
             this.clean(allTopics);
         }
@@ -245,20 +248,18 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void resetInternalTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .resetSchemaRegistry(topic);
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteTopic(final String topic) {
-            this.adminClient.getSchemaTopicClient()
-                    .deleteTopicAndResetSchemaRegistry(topic);
+            this.adminClient.topics()
+                    .topic(topic).deleteIfExists();
             StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
         }
 
         private void deleteConsumerGroup() {
-            final ConsumerGroupClient consumerGroupClient = this.adminClient.getConsumerGroupClient();
-            consumerGroupClient.deleteGroupIfExists(StreamsCleanUpRunner.this.config.getAppId());
+            final ConsumerGroupsClient groups = this.adminClient.consumerGroups();
+            groups.group(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
         }
     }
 

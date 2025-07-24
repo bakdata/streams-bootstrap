@@ -1,8 +1,28 @@
 # Change Log
 
-## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) (2025-07-09)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.0.1)
+## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.0)
 
+
+## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.1.0)
+
+**Merged pull requests:**
+
+- Update Kafka dependencies [\#357](https://github.com/bakdata/streams-bootstrap/pull/357) ([@philipp94831](https://github.com/philipp94831))
+- Refactor admin clients [\#347](https://github.com/bakdata/streams-bootstrap/pull/347) ([@philipp94831](https://github.com/philipp94831))
+- Use topic hook for schema registry reset [\#251](https://github.com/bakdata/streams-bootstrap/pull/251) ([@philipp94831](https://github.com/philipp94831))
+- Run dependabot monthly [\#352](https://github.com/bakdata/streams-bootstrap/pull/352) ([@philipp94831](https://github.com/philipp94831))
+- Reduce avro usage in tests [\#348](https://github.com/bakdata/streams-bootstrap/pull/348) ([@philipp94831](https://github.com/philipp94831))
+- Replace usages of `@code` with `@link` [\#346](https://github.com/bakdata/streams-bootstrap/pull/346) ([@philipp94831](https://github.com/philipp94831))
+- Handle non\-existent topics and consumer groups [\#345](https://github.com/bakdata/streams-bootstrap/pull/345) ([@philipp94831](https://github.com/philipp94831))
+- Update version in README [\#344](https://github.com/bakdata/streams-bootstrap/pull/344) ([@philipp94831](https://github.com/philipp94831))
+
+**Upgraded dependencies:**
+
+- Bump the plugins group with 2 updates [\#326](https://github.com/bakdata/streams-bootstrap/pull/326) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.junit.jupiter:junit\-jupiter from 5.13.2 to 5.13.3 in the test\-dependencies group across 1 directory [\#355](https://github.com/bakdata/streams-bootstrap/pull/355) ([@dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.logging.log4j:log4j\-slf4j2\-impl from 2.25.0 to 2.25.1 in the log\-dependencies group [\#350](https://github.com/bakdata/streams-bootstrap/pull/350) ([@dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) (2025-07-09)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.0...5.0.1)

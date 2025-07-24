@@ -24,10 +24,9 @@
 
 package com.bakdata.kafka.admin;
 
-import static com.bakdata.kafka.admin.SchemaTopicClient.createSchemaRegistryClient;
+import static com.bakdata.kafka.SchemaRegistryAppUtils.createSchemaRegistryClient;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -51,7 +50,7 @@ public final class AdminClientX implements AutoCloseable {
     private static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private final @NonNull Admin adminClient;
     private final SchemaRegistryClient schemaRegistryClient;
-    private final @NonNull Duration timeout;
+    private final @NonNull Timeout timeout;
 
     /**
      * Create a new admin client with default timeout
@@ -75,36 +74,46 @@ public final class AdminClientX implements AutoCloseable {
                     String.format("%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         }
         final Admin adminClient = AdminClient.create(properties);
-        final String schemaRegistryUrl =
-                (String) properties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        final SchemaRegistryClient schemaRegistryClient =
-                schemaRegistryUrl == null ? null : createSchemaRegistryClient(properties, schemaRegistryUrl);
+        final SchemaRegistryClient schemaRegistryClient = createSchemaRegistryClient(properties).orElse(null);
         return builder()
                 .adminClient(adminClient)
                 .schemaRegistryClient(schemaRegistryClient)
-                .timeout(timeout)
+                .timeout(new Timeout(timeout))
                 .build();
     }
 
-    public Admin getAdminClient() {
+    /**
+     * Get the underlying {@link Admin} client.
+     *
+     * @return admin client
+     */
+    public Admin admin() {
         return new PooledAdmin(this.adminClient);
     }
 
-    public Optional<SchemaRegistryClient> getSchemaRegistryClient() {
+    /**
+     * Create a {@link SchemaRegistryClient} if schema registry is configured.
+     * @return schema registry client
+     */
+    public Optional<SchemaRegistryClient> schemaRegistry() {
         return Optional.ofNullable(this.schemaRegistryClient)
                 .map(PooledSchemaRegistryClient::new);
     }
 
-    public SchemaTopicClient getSchemaTopicClient() {
-        return new SchemaTopicClient(this.getTopicClient(), this.getSchemaRegistryClient().orElse(null));
+    /**
+     * Create a {@link TopicsClient} to perform topic-related administrative actions.
+     * @return topic client
+     */
+    public TopicsClient topics() {
+        return new TopicsClient(this.adminClient, this.timeout);
     }
 
-    public TopicClient getTopicClient() {
-        return new TopicClient(this.getAdminClient(), this.timeout);
-    }
-
-    public ConsumerGroupClient getConsumerGroupClient() {
-        return new ConsumerGroupClient(this.getAdminClient(), this.timeout);
+    /**
+     * Create a {@link ConsumerGroupsClient} to perform consumer group-related administrative actions
+     * @return consumer group client
+     */
+    public ConsumerGroupsClient consumerGroups() {
+        return new ConsumerGroupsClient(this.adminClient, this.timeout);
     }
 
     @Override
