@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir -p docs/docs/javadoc
 
-          jar_path=$(find build-artifact/build/libs -type f -name "streams-bootstrap-*-javadoc.jar" | head -n 1)
+          jar_path=$(find build-artifact/build/libs -type f -name "*-javadoc.jar" | head -n 1)
 
           if [[ -f "$jar_path" ]]; then
             echo "Found aggregated Javadoc JAR: $jar_path"
