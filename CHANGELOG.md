@@ -1,8 +1,15 @@
 # Change Log
 
-## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.0)
+## [5.1.1](https://github.com/bakdata/streams-bootstrap/tree/5.1.1) (2025-07-25)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.1...5.1.1)
 
+
+## [5.1.1](https://github.com/bakdata/streams-bootstrap/tree/5.1.1) (2025-07-25)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.1)
+
+**Merged pull requests:**
+
+- Add Github Workflow for Github Pages Wiki [\#354](https://github.com/bakdata/streams-bootstrap/pull/354) ([@vostres](https://github.com/vostres))
 
 ## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.1.0)
