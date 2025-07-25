@@ -118,7 +118,7 @@ jobs:
           filters: |
             docs:
               - added|deleted|modified: 'docs/**'
-              
+
       - name: Publish docs
         if: ${{ github.event_name != 'pull_request' || steps.docs-changes.outputs.docs == 'true' }}
         uses: ./.github/actions/update-docs
