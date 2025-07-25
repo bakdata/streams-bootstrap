@@ -27,7 +27,6 @@ allprojects {
     }
 }
 
-
 subprojects {
     plugins.matching { it is JavaPlugin }.all {
         apply(plugin = "java-test-fixtures")
