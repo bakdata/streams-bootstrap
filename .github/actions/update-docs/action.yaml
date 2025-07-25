@@ -53,3 +53,4 @@ runs:
         sem_version=${{ inputs.tag }}
         major_minor_version=${sem_version%.*}
         poetry run mike deploy "$major_minor_version" latest --update-aliases --push --config-file ./docs/mkdocs.yml
+        poetry run mike set-default latest --rebase --config-file ./docs/mkdocs.yml
