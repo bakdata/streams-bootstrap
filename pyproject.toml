@@ -1,0 +1,10 @@
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = ">=1.5,<2.0"
+mkdocs-material = ">=9.5,<10.0"
+mike = ">=1.1,<2.0"

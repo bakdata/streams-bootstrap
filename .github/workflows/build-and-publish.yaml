@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.66.1
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.68.0
     with:
       java-version: 17
     secrets:
@@ -22,3 +22,65 @@ jobs:
       ossrh-username: ${{ secrets.SONATYPE_OSSRH_USERNAME }}
       ossrh-password: ${{ secrets.SONATYPE_OSSRH_PASSWORD }}
       github-token: ${{ secrets.GH_TOKEN }}
+
+  docs:
+    name: Build Docs
+    runs-on: ubuntu-24.04
+    needs: build-and-publish
+    if: ${{ needs.build-and-publish.result == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.8.2"
+
+      - name: Install docs dependencies
+        run: poetry install --no-root
+
+      - name: Build docs
+        run: poetry run mkdocs build -f docs/mkdocs.yml
+
+  publish-docs:
+    name: Publish Docs
+    runs-on: ubuntu-24.04
+    needs: docs
+    if: ${{ needs.docs.result == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine tag
+        id: get-tag
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "tag=dev" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${GITHUB_REF_NAME}" == "${{ github.event.repository.default_branch }}" ]]; then
+            echo "tag=main" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for docs changes (PR)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: dorny/paths-filter@v3
+        id: docs-changes
+        with:
+          filters: |
+            docs:
+              - added|deleted|modified: 'docs/**'
+
+      - name: Publish docs
+        if: ${{ github.event_name != 'pull_request' || steps.docs-changes.outputs.docs == 'true' }}
+        uses: ./.github/actions/update-docs
+        with:
+          username: ${{ secrets.GH_USERNAME }}
+          email: ${{ secrets.GH_EMAIL }}
+          token: ${{ secrets.GH_TOKEN }}
+          tag: ${{ steps.get-tag.outputs.tag }}
+          release: ${{ github.ref_type == 'tag' }}
