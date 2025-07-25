@@ -5,6 +5,6 @@ package-mode = false
 python = "^3.11"
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = ">=1.5,<2.0"
-mkdocs-material = ">=9.5,<10.0"
-mike = ">=1.1,<2.0"
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.6.15"
+mike = "^2.1.3"
