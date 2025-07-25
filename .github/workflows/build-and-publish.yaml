@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.66.1
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.68.0
     with:
       java-version: 17
     secrets:
@@ -46,33 +46,27 @@ jobs:
       - name: Build docs
         run: poetry run mkdocs build -f docs/mkdocs.yml
 
-  publish-docs-from-main:
-    name: Publish Docs (main)
+  publish-docs:
+    name: Publish Docs
     runs-on: ubuntu-24.04
     needs: docs
-    if: ${{ github.ref_name == github.event.repository.default_branch }}
+    if: ${{ needs.docs.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Publish docs from main branch
-        uses: ./.github/actions/update-docs
-        with:
-          username: ${{ secrets.GH_USERNAME }}
-          email: ${{ secrets.GH_EMAIL }}
-          token: ${{ secrets.GH_TOKEN }}
-          tag: main
+      - name: Determine tag
+        id: get-tag
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "tag=dev" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${GITHUB_REF_NAME}" == "${{ github.event.repository.default_branch }}" ]]; then
+            echo "tag=main" >> "$GITHUB_OUTPUT"
+          fi
 
-  publish-dev-docs-from-pr:
-    name: Publish Docs (dev)
-    runs-on: ubuntu-24.04
-    needs: docs
-    if: ${{ github.event_name == 'pull_request' }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Check if files in docs folder have changed
+      - name: Check for docs changes (PR)
+        if: ${{ github.event_name == 'pull_request' }}
         uses: dorny/paths-filter@v3
         id: docs-changes
         with:
@@ -80,11 +74,12 @@ jobs:
             docs:
               - added|deleted|modified: 'docs/**'
 
-      - name: Publish dev docs from PR
-        if: steps.docs-changes.outputs.docs == 'true'
+      - name: Publish docs
+        if: ${{ github.event_name != 'pull_request' || steps.docs-changes.outputs.docs == 'true' }}
         uses: ./.github/actions/update-docs
         with:
           username: ${{ secrets.GH_USERNAME }}
           email: ${{ secrets.GH_EMAIL }}
           token: ${{ secrets.GH_TOKEN }}
-          tag: dev
+          tag: ${{ steps.get-tag.outputs.tag }}
+          release: ${{ github.ref_type == 'tag' }}
