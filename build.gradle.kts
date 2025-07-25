@@ -1,8 +1,11 @@
+import io.freefair.gradle.plugins.lombok.LombokExtension
+
 plugins {
     alias(libs.plugins.release)
     alias(libs.plugins.sonar)
     alias(libs.plugins.sonatype)
     alias(libs.plugins.lombok)
+    alias(libs.plugins.aggregate.javadoc)
 }
 
 allprojects {
@@ -12,6 +15,15 @@ allprojects {
         mavenCentral()
         maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://central.sonatype.com/repository/maven-snapshots")
+    }
+
+    dependencies {
+        subprojects {
+            plugins.withId("java") {
+                javadoc(this@subprojects)
+            }
+            javadocClasspath("org.projectlombok:lombok:${LombokExtension.LOMBOK_VERSION}")
+        }
     }
 }
 

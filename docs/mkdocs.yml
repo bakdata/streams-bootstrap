@@ -14,5 +14,8 @@ extra:
     provider: mike
 plugins:
   - search
+markdown_extensions:
+  - attr_list
 nav:
   - Index: index.md
+  - Javadoc: javadoc/index.html
