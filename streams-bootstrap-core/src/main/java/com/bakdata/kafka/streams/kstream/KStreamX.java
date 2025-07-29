@@ -83,6 +83,10 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     @Override
     <KR> KStreamX<KR, V> selectKey(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
 
+    <KR> KStreamX<KR, V> selectKey(ValueMapper<? super V, ? extends KR> mapper);
+
+    <KR> KStreamX<KR, V> selectKey(ValueMapper<? super V, ? extends KR> mapper, Named named);
+
     @Override
     <KR, VR> KStreamX<KR, VR> map(
             KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper);

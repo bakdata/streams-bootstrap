@@ -103,6 +103,16 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
+    public <KR> KStreamX<KR, V> selectKey(final ValueMapper<? super V, ? extends KR> mapper) {
+        return this.selectKey((k, v) -> mapper.apply(v));
+    }
+
+    @Override
+    public <KR> KStreamX<KR, V> selectKey(final ValueMapper<? super V, ? extends KR> mapper, final Named named) {
+        return this.selectKey((k, v) -> mapper.apply(v), named);
+    }
+
+    @Override
     public <KR, VR> KStreamX<KR, VR> map(
             final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> mapper) {
         return this.context.wrap(this.wrapped.map(mapper));
