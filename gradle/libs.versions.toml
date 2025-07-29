@@ -43,3 +43,4 @@ sonar = { id = "com.bakdata.sonar", version = "1.10.0" }
 sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
 lombok = { id = "io.freefair.lombok", version = "8.14" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
+aggregate-javadoc = { id = "io.freefair.aggregate-javadoc", version = "8.14" }

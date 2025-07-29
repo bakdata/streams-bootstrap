@@ -1,0 +1,25 @@
+site_name: streams-bootstrap
+site_url: https://bakdata.github.io/streams-bootstrap/
+repo_name: streams-bootstrap
+repo_url: https://github.com/bakdata/streams-bootstrap
+remote_branch: gh-pages
+copyright: Copyright &copy; 2025 bakdata
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - versioning
+extra:
+  version:
+    provider: mike
+plugins:
+  - search
+  - mike:
+      alias_type: symlink
+markdown_extensions:
+  - attr_list
+nav:
+  - Index: index.md
+  - Javadoc: javadoc/index.html

@@ -1,8 +1,23 @@
 # Change Log
 
-## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.0)
+## [5.1.2](https://github.com/bakdata/streams-bootstrap/tree/5.1.2) (2025-07-29)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.2...5.1.2)
 
+
+## [5.1.2](https://github.com/bakdata/streams-bootstrap/tree/5.1.2) (2025-07-29)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.1...5.1.2)
+
+**Merged pull requests:**
+
+- Fix Wiki dependencies [\#363](https://github.com/bakdata/streams-bootstrap/pull/363) ([@vostres](https://github.com/vostres))
+- Host Javadoc on Github Pages [\#356](https://github.com/bakdata/streams-bootstrap/pull/356) ([@vostres](https://github.com/vostres))
+
+## [5.1.1](https://github.com/bakdata/streams-bootstrap/tree/5.1.1) (2025-07-25)
+[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.1)
+
+**Merged pull requests:**
+
+- Add Github Workflow for Github Pages Wiki [\#354](https://github.com/bakdata/streams-bootstrap/pull/354) ([@vostres](https://github.com/vostres))
 
 ## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
 [View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.1.0)
