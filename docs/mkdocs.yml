@@ -16,6 +16,8 @@ extra:
     provider: mike
 plugins:
   - search
+  - mike:
+      alias_type: symlink
 markdown_extensions:
   - attr_list
 nav:
