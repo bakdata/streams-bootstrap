@@ -112,7 +112,17 @@ jobs:
             echo "tag=main" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Check for docs changes (PR)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: dorny/paths-filter@v3
+        id: docs-changes
+        with:
+          filters: |
+            docs:
+              - added|deleted|modified: 'docs/**'
+
       - name: Publish docs
+        if: ${{ github.event_name != 'pull_request' || steps.docs-changes.outputs.docs == 'true' }}
         uses: ./.github/actions/update-docs
         with:
           username: ${{ secrets.GH_USERNAME }}
