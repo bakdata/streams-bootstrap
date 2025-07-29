@@ -899,6 +899,46 @@ class KStreamXTest {
     }
 
     @Test
+    void shouldSelectKeyFromValue() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.selectKey(v -> v).to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("bar")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldSelectKeyFromValueNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.selectKey(v -> v, Named.as("select")).to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input()
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("bar")
+                    .hasValue("bar")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
     void shouldMapCapturingErrors() {
         final KeyValueMapper<String, String, KeyValue<String, String>> mapper = mock();
         doThrow(new RuntimeException("Cannot process")).when(mapper).apply("foo", "bar");
