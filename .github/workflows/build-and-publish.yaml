@@ -92,6 +92,8 @@ jobs:
     if: ${{ needs.docs.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all tags; Required for doc versioning
 
       - name: Download extracted Javadoc
         uses: actions/download-artifact@v4
