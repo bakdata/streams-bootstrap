@@ -1,0 +1,5 @@
+com.bakdata.kafka
+com.bakdata.kafka.admin
+com.bakdata.kafka.producer
+com.bakdata.kafka.streams
+com.bakdata.kafka.streams.kstream
