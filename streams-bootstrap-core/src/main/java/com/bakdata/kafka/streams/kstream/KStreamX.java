@@ -83,8 +83,30 @@ public interface KStreamX<K, V> extends KStream<K, V> {
     @Override
     <KR> KStreamX<KR, V> selectKey(KeyValueMapper<? super K, ? super V, ? extends KR> mapper, Named named);
 
+    /**
+     * Set a new key (with possibly new type) for each input record. The provided {@link ValueMapper} is applied to each
+     * input record and computes a new key for it. Thus, an input record {@code <K,V>} can be transformed into an output
+     * record {@code <K':V>}. This is a stateless record-by-record operation.
+     *
+     * @param mapper a {@link ValueMapper} that computes a new key for each record
+     * @param <KR> the new key type of the result stream
+     * @return a {@code KStream} that contains records with new key (possibly of different type) and unmodified value
+     * @see #selectKey(KeyValueMapper)
+     */
     <KR> KStreamX<KR, V> selectKey(ValueMapper<? super V, ? extends KR> mapper);
 
+    /**
+     * Set a new key (with possibly new type) for each input record.
+     * The provided {@link ValueMapper} is applied to each input record and computes a new key for it.
+     * Thus, an input record {@code <K,V>} can be transformed into an output record {@code <K':V>}.
+     * This is a stateless record-by-record operation.
+     *
+     * @param mapper a {@link ValueMapper} that computes a new key for each record
+     * @param named  a {@link Named} config used to name the processor in the topology
+     * @param <KR>   the new key type of the result stream
+     * @return a {@code KStream} that contains records with new key (possibly of different type) and unmodified value
+     * @see #selectKey(KeyValueMapper, Named)
+     */
     <KR> KStreamX<KR, V> selectKey(ValueMapper<? super V, ? extends KR> mapper, Named named);
 
     @Override
