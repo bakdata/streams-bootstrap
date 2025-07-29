@@ -21,5 +21,13 @@ plugins:
 markdown_extensions:
   - attr_list
 nav:
-  - Index: index.md
+  - User guide:
+      - What is streams-bootstrap: index.md
+      - Changelog: user/changelog.md
+      - Getting Started:
+          - Setup: user/getting-started/setup.md
+          - Quick start: user/getting-started/quick-start.md
+          - Teardown: user/getting-started/teardown.md
+      - Examples:
+          - ATM Fraud detection pipeline: user/examples/atm-fraud-pipeline.md
   - Javadoc: javadoc/index.html
