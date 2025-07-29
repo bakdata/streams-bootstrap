@@ -27,6 +27,12 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.consumerproducer.ConfiguredConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerCleanUpRunner;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerExecutionOptions;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunner;
+import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,6 +90,12 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
             description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
                     + "StreamsApp#getUniqueAppId()")
     private String applicationId;
+
+
+    // TODO check all recent mr and make sure everything up to date!
+
+
+
 
     /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate

@@ -26,10 +26,10 @@ package com.bakdata.kafka.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.ConsumerApp;
-import com.bakdata.kafka.ConsumerBuilder;
-import com.bakdata.kafka.ConsumerRunnable;
-import com.bakdata.kafka.ConsumerTopicConfig;
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerBuilder;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.DeserializerConfig;
 import com.bakdata.kafka.KafkaConsumerApplication;
 import com.bakdata.kafka.KafkaTest;

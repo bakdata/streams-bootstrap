@@ -27,6 +27,13 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerCleanUpRunner;
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
+import com.bakdata.kafka.consumer.ConsumerRunner;
+import com.bakdata.kafka.consumer.ConsumerTopicConfig;
+import com.bakdata.kafka.consumer.ExecutableConsumerApp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

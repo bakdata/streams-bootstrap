@@ -27,6 +27,8 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.TopicsClient;
+import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
+import com.bakdata.kafka.consumer.ExecutableConsumerApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsConfigX;
 import java.util.Map;
@@ -37,11 +39,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.GroupState;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * Utility class to verify the state of a Kafka consumer group
@@ -72,6 +72,15 @@ public class ConsumerGroupVerifier {
     public static ConsumerGroupVerifier verify(final ExecutableConsumerApp<?> app) {
         final Map<String, Object> kafkaProperties = app.getKafkaProperties();
         return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
+    }
+
+    /**
+     * Create a new verifier from an {@code ExecutableConsumerApp}
+     * @param app app to create verifier from
+     * @return verifier
+     */
+    public static ConsumerGroupVerifier verify(final ConfiguredConsumerApp<?> app, final RuntimeConfiguration runtimeConfiguration) {
+        return new ConsumerGroupVerifier(app.getUniqueAppId(), () -> AdminClientX.create(runtimeConfiguration.createKafkaProperties()));
     }
 
     /**

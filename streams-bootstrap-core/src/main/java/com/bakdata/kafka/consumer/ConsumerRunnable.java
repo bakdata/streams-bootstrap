@@ -22,24 +22,21 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
-
-import com.bakdata.kafka.consumer.ConsumerApp;
-import java.util.function.Supplier;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+package com.bakdata.kafka.consumer;
 
 /**
- * {@code KafkaProducerApplication} without any additional configuration options.
- *
- * @param <T> type of {@link ProducerApp} created by this application
+ * Produce messages to Kafka
  */
-@RequiredArgsConstructor
-public final class SimpleKafkaConsumerApplication<T extends ConsumerApp> extends KafkaConsumerApplication<T> {
-    private final @NonNull Supplier<T> appFactory;
+@FunctionalInterface
+public interface ConsumerRunnable extends AutoCloseable {
+
+    /**
+     * Produce messages to Kafka
+     */
+    void run();
 
     @Override
-    public T createApp() {
-        return this.appFactory.get();
+    default void close() {
+        // do nothing by default
     }
 }

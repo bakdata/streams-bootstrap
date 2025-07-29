@@ -22,24 +22,31 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.consumerproducer;
 
-import com.bakdata.kafka.consumer.ConsumerApp;
-import java.util.function.Supplier;
+import com.bakdata.kafka.Runner;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * {@code KafkaProducerApplication} without any additional configuration options.
- *
- * @param <T> type of {@link ProducerApp} created by this application
+ * Runs a Kafka Consumer and Producer application
  */
 @RequiredArgsConstructor
-public final class SimpleKafkaConsumerApplication<T extends ConsumerApp> extends KafkaConsumerApplication<T> {
-    private final @NonNull Supplier<T> appFactory;
+@Slf4j
+public class ConsumerProducerRunner implements Runner {
+
+    private final @NonNull ConsumerProducerRunnable runnable;
 
     @Override
-    public T createApp() {
-        return this.appFactory.get();
+    public void close() {
+        log.info("Closing producer");
+        this.runnable.close();
+    }
+
+    @Override
+    public void run() {
+        log.info("Starting producer");
+        this.runnable.run();
     }
 }

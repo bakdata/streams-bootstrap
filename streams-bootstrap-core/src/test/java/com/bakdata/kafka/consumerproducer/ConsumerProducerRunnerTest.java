@@ -22,53 +22,54 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.integration;
+package com.bakdata.kafka.consumerproducer;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.bakdata.kafka.consumerproducer.ConsumerProducerCleanUpRunnerTest.createStringConsumerProducer;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
-import com.bakdata.kafka.KafkaConsumerProducerApplication;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.SimpleKafkaConsumerProducerApplication;
-import com.bakdata.kafka.TestApplicationRunner;
-import java.nio.file.Path;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-class RunConsumerProducerAppTest extends KafkaTest {
-    @TempDir
-    private Path stateDir;
+@ExtendWith(SoftAssertionsExtension.class)
+class ConsumerProducerRunnerTest extends KafkaTest {
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
     void shouldRunApp() {
-        final String input = "input";
-        final String output = "output";
-        try (final KafkaConsumerProducerApplication<?> app = new SimpleKafkaConsumerProducerApplication<>(
-                MirrorConsumerProducer::new)) {
-            app.setInputTopics(List.of(input));
-            app.setOutputTopic(output);
-            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
-                    .withStateDir(this.stateDir)
-                    .withNoStateStoreCaching()
-                    .withSessionTimeout(SESSION_TIMEOUT);
-            final KafkaTestClient testClient = runner.newTestClient();
-            testClient.createTopic(output);
-            runner.run(app);
+        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
+                final ConsumerProducerRunner runner = app.withRuntimeConfiguration(this.createConfig())
+                        .createRunner()) {
+            final KafkaTestClient testClient = this.newTestClient();
+            final String inputTopic = app.getTopics().getInputTopics().get(0);
+            final String outputTopic = app.getTopics().getOutputTopic();
+            testClient.createTopic(inputTopic);
+            testClient.createTopic(outputTopic);
+            runAsync(runner);
+
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
-            assertThat(testClient.read()
-                    .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                    .from(output, POLL_TIMEOUT))
+                    .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
+
+
+            this.softly.assertThat(testClient.read()
+                            .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .with(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                            .from(outputTopic, POLL_TIMEOUT))
                     .hasSize(1);
         }
     }
+
 }

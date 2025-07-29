@@ -26,6 +26,7 @@ package com.bakdata.kafka.producer;
 
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

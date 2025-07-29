@@ -24,25 +24,16 @@
 
 package com.bakdata.kafka.streams;
 
-import static com.bakdata.kafka.StreamsResetterWrapper.runResetter;
+import static com.bakdata.kafka.streams.StreamsResetterWrapper.runResetter;
 
-import com.bakdata.kafka.util.AdminClientX;
-import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.util.TopologyInformation;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.tools.StreamsResetter;
 
 
 /**

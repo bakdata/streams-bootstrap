@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import com.bakdata.kafka.consumer.ExecutableConsumerApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
