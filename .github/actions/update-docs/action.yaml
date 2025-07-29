@@ -44,7 +44,7 @@ runs:
       shell: bash
       if: ${{ inputs.release == 'false' }}
       run: |
-        poetry run mike deploy ${{ inputs.tag }} latest --push --config-file ./docs/mkdocs.yml
+        poetry run mike deploy ${{ inputs.tag }} latest --update-aliases --push --config-file ./docs/mkdocs.yml
         poetry run mike set-default latest --push --config-file ./docs/mkdocs.yml
 
     - name: Deploy ${{ inputs.tag }} version (latest) of the documentation with mike
