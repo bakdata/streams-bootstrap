@@ -22,7 +22,7 @@ markdown_extensions:
   - attr_list
 nav:
   - User guide:
-      - What is streams-bootstrap: user/index.md
+      - What is streams-bootstrap: index.md
       - Changelog: user/changelog.md
       - Getting Started:
           - Setup: user/getting-started/setup.md
