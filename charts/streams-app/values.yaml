@@ -26,7 +26,6 @@ resources:
 
 kafka:
   # bootstrapServers: "test:9092"
-  # schemaRegistryUrl: "url:1234"
   staticMembership: false
   config: {}
   #   max.poll.records: 500
