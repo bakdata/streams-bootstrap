@@ -24,13 +24,17 @@
 
 package com.bakdata.kafka.producer;
 
+import static java.util.Collections.emptyMap;
+
 import com.bakdata.kafka.KafkaApplication;
+import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 
@@ -51,6 +55,11 @@ import picocli.CommandLine.Command;
 public abstract class KafkaProducerApplication<T extends ProducerApp> extends
         KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ExecutableProducerApp<T>,
                 ConfiguredProducerApp<T>, ProducerTopicConfig, T, ProducerAppConfiguration> {
+    @CommandLine.Option(names = "--output-topic", description = "Output topic")
+    private String outputTopic;
+    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
+            description = "Additional labeled output topics")
+    private Map<String, String> labeledOutputTopics = emptyMap();
 
     /**
      * Delete all output topics associated with the Kafka Producer application.
@@ -69,8 +78,8 @@ public abstract class KafkaProducerApplication<T extends ProducerApp> extends
     @Override
     public final ProducerTopicConfig createTopicConfig() {
         return ProducerTopicConfig.builder()
-                .outputTopic(this.getOutputTopic())
-                .labeledOutputTopics(this.getLabeledOutputTopics())
+                .outputTopic(this.outputTopic)
+                .labeledOutputTopics(this.labeledOutputTopics)
                 .build();
     }
 

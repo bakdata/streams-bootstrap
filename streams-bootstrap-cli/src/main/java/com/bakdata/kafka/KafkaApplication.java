@@ -82,11 +82,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     // ConcurrentLinkedDeque required because calling #stop() causes asynchronous #run() calls to finish and thus
     // concurrently iterating and removing from #runners
     private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    private String outputTopic;
-    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
-            description = "Additional labeled output topics")
-    private Map<String, String> labeledOutputTopics = emptyMap();
     @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
             description = "Kafka bootstrap servers to connect to")
     private String bootstrapServers;

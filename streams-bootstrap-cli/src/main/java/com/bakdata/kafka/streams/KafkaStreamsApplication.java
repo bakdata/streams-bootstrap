@@ -84,6 +84,11 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
+    @CommandLine.Option(names = "--output-topic", description = "Output topic")
+    private String outputTopic;
+    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
+            description = "Additional labeled output topics")
+    private Map<String, String> labeledOutputTopics = emptyMap();
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
@@ -135,8 +140,8 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
                 .labeledInputTopics(this.labeledInputTopics)
                 .inputPattern(this.inputPattern)
                 .labeledInputPatterns(this.labeledInputPatterns)
-                .outputTopic(this.getOutputTopic())
-                .labeledOutputTopics(this.getLabeledOutputTopics())
+                .outputTopic(this.outputTopic)
+                .labeledOutputTopics(this.labeledOutputTopics)
                 .errorTopic(this.errorTopic)
                 .build();
     }

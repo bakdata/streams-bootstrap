@@ -28,12 +28,16 @@ nav:
           - Setup: user/getting-started/setup.md
           - Quick start: user/getting-started/quick-start.md
       - Concepts:
-          - General concepts: user/concepts/general.md
+          - Common concepts: user/concepts/common.md
           - Streams concepts: user/concepts/streams.md
           - Producer concepts: user/concepts/producer.md
+      - Testing: user/testing.md
+      - Extensions:
+          - user/extensions/large-messages.md
       - Deployment:
           - Local deployment: user/deployment/local.md
           - Kubernetes: user/deployment/kubernetes.md
       - Examples:
-          - ATM Fraud detection pipeline: user/examples/atm-fraud-pipeline.md
+          - Word count: user/examples/word-count.md
+          - Interactive queries: user/examples/interactive-queries.md
   - Javadoc: javadoc/index.html
