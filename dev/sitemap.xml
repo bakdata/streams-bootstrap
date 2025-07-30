@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jquery/</loc>
          <lastmod>2025-07-30</lastmod>
     </url>
     <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jqueryUI/</loc>
-         <lastmod>2025-07-30</lastmod>
-    </url>
-    <url>
-         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/</loc>
          <lastmod>2025-07-30</lastmod>
     </url>
     <url>
