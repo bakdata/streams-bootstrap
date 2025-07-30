@@ -27,7 +27,13 @@ nav:
       - Getting Started:
           - Setup: user/getting-started/setup.md
           - Quick start: user/getting-started/quick-start.md
-          - Teardown: user/getting-started/teardown.md
+      - Concepts:
+          - General concepts: user/concepts/general.md
+          - Streams concepts: user/concepts/streams.md
+          - Producer concepts: user/concepts/producer.md
+      - Deployment:
+          - Local deployment: user/deployment/local.md
+          - Kubernetes: user/deployment/kubernetes.md
       - Examples:
           - ATM Fraud detection pipeline: user/examples/atm-fraud-pipeline.md
   - Javadoc: javadoc/index.html
