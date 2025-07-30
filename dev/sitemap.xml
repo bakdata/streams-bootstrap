@@ -2,14 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/</loc>
-         <lastmod>2025-07-29</lastmod>
+         <lastmod>2025-07-30</lastmod>
     </url>
     <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jquery/</loc>
-         <lastmod>2025-07-29</lastmod>
+         <lastmod>2025-07-30</lastmod>
     </url>
     <url>
          <loc>https://bakdata.github.io/streams-bootstrap/dev/javadoc/legal/jqueryUI/</loc>
-         <lastmod>2025-07-29</lastmod>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/concepts/general/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/concepts/producer/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/concepts/streams/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/deployment/kubernetes/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/deployment/local/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/examples/atm-frauf-pipeline/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/getting-started/quick-start/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://bakdata.github.io/streams-bootstrap/dev/user/getting-started/setup/</loc>
+         <lastmod>2025-07-30</lastmod>
     </url>
 </urlset>
