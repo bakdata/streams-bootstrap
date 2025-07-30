@@ -28,3 +28,5 @@ Streams apps can also produce new messages to other topics based on the processe
 ## Command line interface
 
 ## Deployment
+
+## Kafka streams extensions

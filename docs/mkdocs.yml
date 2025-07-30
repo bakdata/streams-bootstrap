@@ -32,8 +32,9 @@ nav:
           - Streams concepts: user/concepts/streams.md
           - Producer concepts: user/concepts/producer.md
       - Testing: user/testing.md
+      - Monitoring: user/monitoring.md
       - Extensions:
-          - user/extensions/large-messages.md
+          - Large messages: user/extensions/large-messages.md
       - Deployment:
           - Local deployment: user/deployment/local.md
           - Kubernetes: user/deployment/kubernetes.md

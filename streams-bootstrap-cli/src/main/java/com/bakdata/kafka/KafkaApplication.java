@@ -50,8 +50,6 @@ import picocli.CommandLine.ParseResult;
  * This class provides the following configuration options:
  * <ul>
  *     <li>{@link #bootstrapServers}</li>
- *     <li>{@link #outputTopic}</li>
- *     <li>{@link #labeledOutputTopics}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>

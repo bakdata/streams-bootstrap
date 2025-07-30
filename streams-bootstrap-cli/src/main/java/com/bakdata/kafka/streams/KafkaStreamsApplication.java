@@ -51,6 +51,8 @@ import picocli.CommandLine.UseDefaultConverter;
  * <p>The base class for creating Kafka Streams applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
+ *     <li>{@link #outputTopic}</li>
+ *     <li>{@link #labeledOutputTopics}</li>
  *     <li>{@link #inputTopics}</li>
  *     <li>{@link #inputPattern}</li>
  *     <li>{@link #errorTopic}</li>
