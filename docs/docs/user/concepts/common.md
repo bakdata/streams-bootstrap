@@ -14,5 +14,3 @@
 ## Configuration
 
 ## Command line interface
-
-## Deployment

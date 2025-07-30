@@ -1,1 +1,5 @@
-# Coming soon
+# Deployment to Kubernetes
+
+- Autoscaling
+- Monitoring
+- Persistence
