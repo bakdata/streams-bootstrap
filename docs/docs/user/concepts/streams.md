@@ -30,3 +30,7 @@ Streams apps can also produce new messages to other topics based on the processe
 ## Deployment
 
 ## Kafka streams extensions
+
+- Simple topic access
+- Error handling
+- Serde auto configuration
