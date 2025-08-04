@@ -714,6 +714,17 @@ VOut&gt;<br><a href="KErrorStreamX.html" title="interface in com.bakdata.kafka.s
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#selectKey(org.apache.kafka.streams.kstream.KeyValueMapper,org.apache.kafka.streams.kstream.Named)" class="member-name-link">selectKey</a><wbr>(org.apache.kafka.streams.kstream.KeyValueMapper&lt;? super <a href="KStreamX.html" title="type parameter in KStreamX">K</a>,<wbr>? super <a href="KStreamX.html" title="type parameter in KStreamX">V</a>,<wbr>? extends KR&gt;&nbsp;mapper,
  org.apache.kafka.streams.kstream.Named&nbsp;named)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;KR&gt;&nbsp;<a href="KStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">KStreamX</a>&lt;KR,<wbr><a href="KStreamX.html" title="type parameter in KStreamX">V</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#selectKey(org.apache.kafka.streams.kstream.ValueMapper)" class="member-name-link">selectKey</a><wbr>(org.apache.kafka.streams.kstream.ValueMapper&lt;? super <a href="KStreamX.html" title="type parameter in KStreamX">V</a>,<wbr>? extends KR&gt;&nbsp;mapper)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Set a new key (with possibly new type) for each input record.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;KR&gt;&nbsp;<a href="KStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">KStreamX</a>&lt;KR,<wbr><a href="KStreamX.html" title="type parameter in KStreamX">V</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#selectKey(org.apache.kafka.streams.kstream.ValueMapper,org.apache.kafka.streams.kstream.Named)" class="member-name-link">selectKey</a><wbr>(org.apache.kafka.streams.kstream.ValueMapper&lt;? super <a href="KStreamX.html" title="type parameter in KStreamX">V</a>,<wbr>? extends KR&gt;&nbsp;mapper,
+ org.apache.kafka.streams.kstream.Named&nbsp;named)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Set a new key (with possibly new type) for each input record.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BranchedKStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">BranchedKStreamX</a>&lt;<a href="KStreamX.html" title="type parameter in KStreamX">K</a>,<wbr><a href="KStreamX.html" title="type parameter in KStreamX">V</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#split()" class="member-name-link">split</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
@@ -872,6 +883,55 @@ VOut&gt;<br><a href="KErrorStreamX.html" title="interface in com.bakdata.kafka.s
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>selectKey</code>&nbsp;in interface&nbsp;<code>org.apache.kafka.streams.kstream.KStream&lt;<a href="KStreamX.html" title="type parameter in KStreamX">K</a>,<wbr><a href="KStreamX.html" title="type parameter in KStreamX">V</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="selectKey(org.apache.kafka.streams.kstream.ValueMapper)">
+<h3>selectKey</h3>
+<div class="member-signature"><span class="type-parameters">&lt;KR&gt;</span>&nbsp;<span class="return-type"><a href="KStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">KStreamX</a>&lt;KR,<wbr><a href="KStreamX.html" title="type parameter in KStreamX">V</a>&gt;</span>&nbsp;<span class="element-name">selectKey</span><wbr><span class="parameters">(org.apache.kafka.streams.kstream.ValueMapper&lt;? super <a href="KStreamX.html" title="type parameter in KStreamX">V</a>,<wbr>? extends KR&gt;&nbsp;mapper)</span></div>
+<div class="block">Set a new key (with possibly new type) for each input record. The provided <code>ValueMapper</code> is applied to each
+ input record and computes a new key for it. Thus, an input record <code>&lt;K,V&gt;</code> can be transformed into an output
+ record <code>&lt;K':V&gt;</code>. This is a stateless record-by-record operation.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>KR</code> - the new key type of the result stream</dd>
+<dt>Parameters:</dt>
+<dd><code>mapper</code> - a <code>ValueMapper</code> that computes a new key for each record</dd>
+<dt>Returns:</dt>
+<dd>a <code>KStream</code> that contains records with new key (possibly of different type) and unmodified value</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="#selectKey(org.apache.kafka.streams.kstream.KeyValueMapper)"><code>selectKey(KeyValueMapper)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="selectKey(org.apache.kafka.streams.kstream.ValueMapper,org.apache.kafka.streams.kstream.Named)">
+<h3>selectKey</h3>
+<div class="member-signature"><span class="type-parameters">&lt;KR&gt;</span>&nbsp;<span class="return-type"><a href="KStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">KStreamX</a>&lt;KR,<wbr><a href="KStreamX.html" title="type parameter in KStreamX">V</a>&gt;</span>&nbsp;<span class="element-name">selectKey</span><wbr><span class="parameters">(org.apache.kafka.streams.kstream.ValueMapper&lt;? super <a href="KStreamX.html" title="type parameter in KStreamX">V</a>,<wbr>? extends KR&gt;&nbsp;mapper,
+ org.apache.kafka.streams.kstream.Named&nbsp;named)</span></div>
+<div class="block">Set a new key (with possibly new type) for each input record.
+ The provided <code>ValueMapper</code> is applied to each input record and computes a new key for it.
+ Thus, an input record <code>&lt;K,V&gt;</code> can be transformed into an output record <code>&lt;K':V&gt;</code>.
+ This is a stateless record-by-record operation.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>KR</code> - the new key type of the result stream</dd>
+<dt>Parameters:</dt>
+<dd><code>mapper</code> - a <code>ValueMapper</code> that computes a new key for each record</dd>
+<dd><code>named</code> - a <code>Named</code> config used to name the processor in the topology</dd>
+<dt>Returns:</dt>
+<dd>a <code>KStream</code> that contains records with new key (possibly of different type) and unmodified value</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="#selectKey(org.apache.kafka.streams.kstream.KeyValueMapper,org.apache.kafka.streams.kstream.Named)"><code>selectKey(KeyValueMapper, Named)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>
