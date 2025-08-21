@@ -41,8 +41,8 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
-  <artifactId>streams-bootstrap-cli</artifactId>
-  <version>5.0.1</version>
+    <artifactId>streams-bootstrap-cli</artifactId>
+    <version>5.0.1</version>
 </dependency>
 ```
 
