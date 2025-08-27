@@ -29,10 +29,12 @@ import static java.util.Collections.emptyMap;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredApp;
 import com.bakdata.kafka.EnvironmentKafkaConfigParser;
-import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
+import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.producer.ConfiguredProducerApp;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +53,7 @@ import org.apache.kafka.streams.StreamsConfig;
 public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implements
         ConfiguredApp<ExecutableConsumerProducerApp<T>> {
     private final @NonNull T app;
-    private final @NonNull StreamsTopicConfig topics;
+    private final @NonNull StreamsAppConfiguration configuration;
 
     /**
      * <p>This method creates the configuration to run a {@link StreamsApp}.</p>
@@ -104,12 +106,19 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implem
     }
 
     /**
-     * Get unique application identifier of {@code StreamsApp}
+     * Get unique application identifier of {@link StreamsApp}
      * @return unique application identifier
-     * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
+     * provided application identifier in {@link StreamsAppConfiguration}
      */
     public String getUniqueAppId() {
-        return Objects.requireNonNull(this.app.getUniqueAppId(this.topics));
+        final String uniqueAppId =
+                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
+        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
+            throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
+        }
+        return uniqueAppId;
     }
 
     /**
@@ -124,9 +133,18 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implem
                 .consumerProperties(consumerProperties)
                 .producerProperties(producerProperties)
                 .app(this.app)
-                .topics(this.topics)
+                .topics(this.getTopics())
                 .groupId(this.getUniqueAppId())
                 .build();
+    }
+
+    /**
+     * Get topic configuration
+     *
+     * @return topic configuration
+     */
+    public StreamsTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
     @Override

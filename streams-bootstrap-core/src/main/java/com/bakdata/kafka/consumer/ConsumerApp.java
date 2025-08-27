@@ -41,8 +41,8 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
     ConsumerRunnable buildRunnable(ConsumerBuilder builder);
 
     /**
-     * @return {@code ProducerCleanUpConfiguration}
-     * @see ProducerCleanUpRunner
+     * @return {@code ConsumerCleanUpConfiguration}
+     * @see ConsumerCleanUpRunner
      */
     @Override
     default ConsumerCleanUpConfiguration setupCleanUp(
@@ -52,10 +52,16 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
 
     /**
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
-     * state encapsulation. Could be set to: className-outputTopic
+     * state encapsulation. Could be set to: className-outputTopic.
+     * <p>
+     * User may provide a unique application identifier via {@link ConsumerAppConfiguration#getUniqueAppId()}. If that
+     * is the case, the returned application ID should match the provided one.
      *
-     * @param topics provides runtime topic configuration
+     * @param configuration provides runtime configuration
      * @return unique application identifier
      */
-    String getUniqueAppId(ConsumerTopicConfig topics);
+    default String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+        return configuration.getUniqueAppId()
+                .orElseThrow(() -> new IllegalArgumentException("Please provide an application ID"));
+    }
 }

@@ -1,0 +1,8 @@
+apiVersion: v1
+name: consumerproducer-app-cleanup-job
+description: A helm chart for deploying a clean up job for a Kafka ConsumerProducer application.
+version: 0.1.0
+maintainers:
+  - name: bakdata
+    email: opensource@bakdata.com
+    url: bakdata.com

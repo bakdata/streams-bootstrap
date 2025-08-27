@@ -25,6 +25,7 @@
 package com.bakdata.kafka;
 
 import com.bakdata.kafka.consumer.ExecutableConsumerApp;
+import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import java.time.Duration;
@@ -102,6 +103,28 @@ public abstract class KafkaTest {
     }
 
     protected static void awaitClosed(final ExecutableConsumerApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is closed")
+                .until(verifier::isClosed);
+    }
+
+    protected static void awaitProcessing(final ExecutableConsumerProducerApp<?> app) {
+        awaitActive(app);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group has finished processing")
+                .until(verifier::hasFinishedProcessing);
+    }
+
+    protected static void awaitActive(final ExecutableConsumerProducerApp<?> app) {
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
+        await()
+                .alias("Consumer group is active")
+                .until(verifier::isActive);
+    }
+
+    protected static void awaitClosed(final ExecutableConsumerProducerApp<?> app) {
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         await()
                 .alias("Consumer group is closed")

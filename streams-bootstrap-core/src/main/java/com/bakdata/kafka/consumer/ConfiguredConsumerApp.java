@@ -28,6 +28,8 @@ import com.bakdata.kafka.ConfiguredApp;
 import com.bakdata.kafka.EnvironmentKafkaConfigParser;
 import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +48,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 @Getter
 public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredApp<ExecutableConsumerApp<T>> {
     private final @NonNull T app;
-    private final @NonNull ConsumerTopicConfig topics;
+    private final @NonNull ConsumerAppConfiguration configuration;
 
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
@@ -95,13 +97,19 @@ public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredA
     }
 
     /**
-     * Get unique application identifier of {@code StreamsApp}
-     *
+     * Get unique application identifier of {@link StreamsApp}
      * @return unique application identifier
-     * @see StreamsApp#getUniqueAppId(StreamsTopicConfig)
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
+     * provided application identifier in {@link StreamsAppConfiguration}
      */
     public String getUniqueAppId() {
-        return Objects.requireNonNull(this.app.getUniqueAppId(this.topics));
+        final String uniqueAppId =
+                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
+        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
+            throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
+        }
+        return uniqueAppId;
     }
 
     /**
@@ -111,8 +119,18 @@ public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredA
      */
     @Override
     public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        final ConsumerTopicConfig topics = this.getTopics();
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
-        return new ExecutableConsumerApp<>(this.topics, kafkaProperties, this.getUniqueAppId(), this.app);
+        return new ExecutableConsumerApp<>(topics, kafkaProperties, this.getUniqueAppId(), this.app);
+    }
+
+    /**
+     * Get topic configuration
+     *
+     * @return topic configuration
+     */
+    public ConsumerTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
     @Override

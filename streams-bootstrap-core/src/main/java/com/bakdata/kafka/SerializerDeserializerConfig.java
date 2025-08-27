@@ -40,6 +40,10 @@ import org.apache.kafka.common.serialization.Serializer;
 @With
 public class SerializerDeserializerConfig implements SerializationConfig {
 
+    // TODO why can't we use Serde?
+
+
+
     private final @NonNull Class<? extends Serializer> keySerializer;
     private final @NonNull Class<? extends Serializer> valueSerializer;
     private final @NonNull Class<? extends Deserializer> keyDeserializer;

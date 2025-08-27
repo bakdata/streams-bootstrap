@@ -1,0 +1,84 @@
+{{ if .Values.autoscaling.enabled }}
+  {{- if not (and .Values.kafka.applicationId .Values.autoscaling.lagThreshold) }}
+  {{- fail "When autoscaling is enabled, you must set both .Values.kafka.applicationId and .Values.autoscaling.lagThreshold" }}
+  {{- end }}
+  {{- $root := . -}}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "consumerproducer-app.fullname" . }}-so
+  {{- include "consumerproducer-app.annotations" . }}
+  labels:
+    {{- include "consumerproducer-app.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key | quote }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  scaleTargetRef:
+    {{- if .Capabilities.APIVersions.Has "apps/v1" }}
+    apiVersion: apps/v1
+    {{- else }}
+    apiVersion: apps/v1beta1
+    {{- end }}
+    {{- if .Values.statefulSet }}
+    kind: StatefulSet
+    {{- else }}
+    kind: Deployment
+    {{- end }}
+    name: {{ include "consumerproducer-app.fullname" . }}
+  pollingInterval: {{ .Values.autoscaling.pollingInterval }}
+  cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
+  minReplicaCount: {{ .Values.autoscaling.minReplicas }}
+  maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
+  {{- if hasKey .Values.autoscaling "idleReplicas" }}
+  # Only available from KEDA 2.4 onwards
+  idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
+  {{- end }}
+  triggers:
+    {{- if not (or .Values.kafka.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.kafka.labeledInputTopics .Values.autoscaling.additionalTriggers) }}
+    {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.labeledInputTopics or .Values.autoscaling.additionalTriggers" }}
+    {{- end}}
+    # todo: concat .Values.kafka.inputTopics and .Values.autoscaling.topics to
+    # minimize number of loops when we don't need to support helm 2 anymore
+    {{- range .Values.kafka.inputTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
+        consumerGroup: {{ $root.Values.kafka.applicationId }}
+        topic: {{ . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range .Values.autoscaling.internalTopics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
+        consumerGroup: {{ $root.Values.kafka.applicationId }}
+        topic: {{ printf "%s-%s" $root.Values.kafka.applicationId . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range .Values.autoscaling.topics }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
+        consumerGroup: {{ $root.Values.kafka.applicationId }}
+        topic: {{ . | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- range $key, $value := .Values.kafka.labeledInputTopics }}
+    {{- range $topic := $value }}
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
+        consumerGroup: {{ $root.Values.kafka.applicationId }}
+        topic: {{ $topic | quote }}
+        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+    {{- end }}
+    {{- end }}
+  {{- if .Values.autoscaling.additionalTriggers }}
+  {{- .Values.autoscaling.additionalTriggers | toYaml | nindent 4 }}
+  {{- end }}
+{{ end }}

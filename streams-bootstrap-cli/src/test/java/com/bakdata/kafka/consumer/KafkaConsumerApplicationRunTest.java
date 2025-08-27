@@ -22,23 +22,14 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.integration;
+package com.bakdata.kafka.consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.consumer.ConsumerApp;
-import com.bakdata.kafka.consumer.ConsumerBuilder;
-import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.DeserializerConfig;
-import com.bakdata.kafka.KafkaConsumerApplication;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.SimpleKafkaConsumerApplication;
-import com.bakdata.kafka.TestRecord;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,37 +41,45 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 
-class RunConsumerAppTest extends KafkaTest {
+class KafkaConsumerApplicationRunTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {
         final String input = "input";
-        final List<ConsumerRecord<String, TestRecord>> consumedRecords = new ArrayList<>();
+        final List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
         try (final KafkaConsumerApplication<?> app = new SimpleKafkaConsumerApplication<>(() -> new ConsumerApp() {
             @Override
             public DeserializerConfig defaultSerializationConfig() {
-                return new DeserializerConfig(StringDeserializer.class, SpecificAvroDeserializer.class);
+                return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
             }
 
             @Override
             public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-                return () -> {
-                    try (final Consumer<String, TestRecord> consumer = builder.createConsumer()) {
-                        this.initConsumer(consumer);
+                return new ConsumerRunnable() {
+                    private volatile Consumer<String, String> consumer = null;
+                    private volatile boolean running = true;
+
+                    @Override
+                    public void close() {
+                        this.running = false;
+                        this.consumer.wakeup();
+                    }
+
+                    @Override
+                    public void run() {
+                        this.consumer = builder.createConsumer();
+                        this.consumer.subscribe(builder.getTopics().getInputTopics());
+                        while (this.running) {
+                            final ConsumerRecords<String, String> consumerRecords =
+                                    this.consumer.poll(Duration.ofMillis(100L));
+                            consumerRecords.forEach(consumedRecords::add);
+                        }
                     }
                 };
             }
 
-            private void initConsumer(final Consumer<String, TestRecord> consumer) {
-                consumer.subscribe(List.of(input));
-                while (!Thread.currentThread().isInterrupted()) {
-                    final ConsumerRecords<String, TestRecord> consumerRecords = consumer.poll(Duration.ofMillis(100L));
-                    consumerRecords.forEach(consumedRecords::add);
-                }
-            }
-
             @Override
-            public String getUniqueAppId(final ConsumerTopicConfig topics) {
+            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
                 return "app-id";
             }
         })) {
@@ -92,19 +91,16 @@ class RunConsumerAppTest extends KafkaTest {
             new Thread(app).start();
             awaitActive(app.createExecutableApp());
 
-            final TestRecord testRecord = TestRecord.newBuilder().setContent("bar").build();
-            final SimpleProducerRecord<String, TestRecord> simpleProducerRecord =
-                    new SimpleProducerRecord<>("foo", testRecord);
             final KafkaTestClient testClient = this.newTestClient();
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class)
-                    .to(input, List.of(simpleProducerRecord));
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
 
             assertThat(consumedRecords).hasSize(1)
                     .anySatisfy(consumerRecord -> {
                         assertThat(consumerRecord.key()).isEqualTo("foo");
-                        assertThat(consumerRecord.value().getContent()).isEqualTo("bar");
+                        assertThat(consumerRecord.value()).isEqualTo("bar");
                     });
         }
     }

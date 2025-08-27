@@ -22,16 +22,15 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.integration;
+package com.bakdata.kafka.consumerproducer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.KafkaConsumerProducerApplication;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.SimpleKafkaConsumerProducerApplication;
 import com.bakdata.kafka.TestApplicationRunner;
+import com.bakdata.kafka.consumerproducer.apps.Mirror;
 import java.nio.file.Path;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -41,7 +40,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-class RunConsumerProducerAppTest extends KafkaTest {
+class KafkaConsumerProducerApplicationRunTest extends KafkaTest {
     @TempDir
     private Path stateDir;
 
@@ -50,7 +49,7 @@ class RunConsumerProducerAppTest extends KafkaTest {
         final String input = "input";
         final String output = "output";
         try (final KafkaConsumerProducerApplication<?> app = new SimpleKafkaConsumerProducerApplication<>(
-                MirrorConsumerProducer::new)) {
+                Mirror::new)) {
             app.setInputTopics(List.of(input));
             app.setOutputTopic(output);
             final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())

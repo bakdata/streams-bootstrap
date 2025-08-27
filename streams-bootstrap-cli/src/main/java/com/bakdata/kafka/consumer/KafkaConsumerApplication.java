@@ -22,18 +22,13 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.consumer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
-import com.bakdata.kafka.consumer.ConsumerApp;
-import com.bakdata.kafka.consumer.ConsumerCleanUpRunner;
-import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
-import com.bakdata.kafka.consumer.ConsumerRunner;
-import com.bakdata.kafka.consumer.ConsumerTopicConfig;
-import com.bakdata.kafka.consumer.ExecutableConsumerApp;
+import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.StringListConverter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,7 +59,7 @@ import picocli.CommandLine.UseDefaultConverter;
 @Command(description = "Run a Kafka Consumer application")
 public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
         KafkaApplication<ConsumerRunner, ConsumerCleanUpRunner, ConsumerExecutionOptions, ExecutableConsumerApp<T>,
-                ConfiguredConsumerApp<T>, ConsumerTopicConfig, T> {
+                ConfiguredConsumerApp<T>, ConsumerTopicConfig, T, ConsumerAppConfiguration> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -77,14 +72,19 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
-    @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
-            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
-    private boolean volatileGroupInstanceId;
     @CommandLine.Option(names = "--application-id",
             description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
                     + "StreamsApp#getUniqueAppId()")
     private String applicationId;
-    // TODO what about output topics?
+
+    /**
+     * Reset the Kafka Consumer application. Additionally, delete the consumer group.
+     */
+    @Command(description = "Reset the Kafka Consumer application. Additionally, delete the consumer group.")
+    @Override
+    public void clean() {
+        super.clean();
+    }
 
     @Override
     public final Optional<ConsumerExecutionOptions> createExecutionOptions() {
@@ -94,15 +94,21 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Override
     public final ConsumerTopicConfig createTopicConfig() {
         return ConsumerTopicConfig.builder()
-                .inputTopics(this.inputTopics)
-                .labeledInputTopics(this.labeledInputTopics)
-                .inputPattern(this.inputPattern)
-                .labeledInputPatterns(this.labeledInputPatterns)
+                .inputTopics(this.getInputTopics())
+                .labeledInputTopics(this.getLabeledInputTopics())
+                .inputPattern(this.getInputPattern())
+                .labeledInputPatterns(this.getLabeledInputPatterns())
                 .build();
     }
 
     @Override
-    public final ConfiguredConsumerApp<T> createConfiguredApp(final T app, final ConsumerTopicConfig topics) {
-        return new ConfiguredConsumerApp<>(app, topics);
+    public final ConfiguredConsumerApp<T> createConfiguredApp(final T app,
+            final ConsumerAppConfiguration configuration) {
+        return new ConfiguredConsumerApp<>(app, configuration);
+    }
+
+    @Override
+    public ConsumerAppConfiguration createConfiguration(final ConsumerTopicConfig topics) {
+        return new ConsumerAppConfiguration(topics);
     }
 }

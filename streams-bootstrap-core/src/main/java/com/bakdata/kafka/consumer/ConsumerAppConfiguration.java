@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,42 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.consumer.ConsumerApp;
-import java.util.function.Supplier;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import java.util.Optional;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * {@code KafkaProducerApplication} without any additional configuration options.
- *
- * @param <T> type of {@link ProducerApp} created by this application
+ * Configuration of a {@link ConsumerApp}
  */
 @RequiredArgsConstructor
-public final class SimpleKafkaConsumerApplication<T extends ConsumerApp> extends KafkaConsumerApplication<T> {
-    private final @NonNull Supplier<T> appFactory;
+public class ConsumerAppConfiguration {
 
-    @Override
-    public T createApp() {
-        return this.appFactory.get();
+    @Getter
+    private final @NonNull ConsumerTopicConfig topics;
+    private final String uniqueAppId;
+
+    /**
+     * Create a new {@code ConsumerAppConfiguration} with no provided {@link #uniqueAppId}
+     *
+     * @param topics topics to use for app
+     */
+    public ConsumerAppConfiguration(final ConsumerTopicConfig topics) {
+        this(topics, null);
+    }
+
+    /**
+     * Get the provided unique application ID. If user did not provide a unique application ID, this will return empty.
+     *
+     * @return provided unique application ID
+     * @see ConsumerApp#getUniqueAppId(ConsumerAppConfiguration)
+     */
+    public Optional<String> getUniqueAppId() {
+        return Optional.ofNullable(this.uniqueAppId);
     }
 }

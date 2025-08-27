@@ -1,0 +1,27 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "consumer-app.fullname" . }}
+  {{- include "consumer-app.annotations" . }}
+  labels:
+    {{- include "consumer-app.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.service.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+spec:
+  selector:
+    {{- include "consumer-app.selectorLabels" . | nindent 4 }}
+  ports:
+  {{- range .Values.ports }}
+    {{- if .servicePort }}
+    - targetPort: {{ .containerPort }}
+      port: {{ .servicePort }}
+      name: {{ .name }}
+      {{- if .protocol }}
+      protocol: {{ .protocol }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  type: {{ .Values.service.type }}
+{{- end }}

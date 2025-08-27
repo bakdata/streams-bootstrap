@@ -22,27 +22,20 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * {@code KafkaStreamsApplication} without any additional configuration options.
+ * {@code KafkaProducerApplication} without any additional configuration options.
  *
- * @param <T> type of {@link StreamsApp} created by this application
+ * @param <T> type of {@link ConsumerApp} created by this application
  */
 @RequiredArgsConstructor
-public final class SimpleKafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends KafkaConsumerProducerApplication<T> {
+public final class SimpleKafkaConsumerApplication<T extends ConsumerApp> extends KafkaConsumerApplication<T> {
     private final @NonNull Supplier<T> appFactory;
-
-
-    // TODO update javadocs
-    // TODO fix input pattern
-    // TODO add helm charts
-    // TODO update/add readme
 
     @Override
     public T createApp() {

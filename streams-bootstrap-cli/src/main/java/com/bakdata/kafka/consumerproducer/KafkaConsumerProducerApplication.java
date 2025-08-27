@@ -22,17 +22,15 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.consumerproducer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumerproducer.ConfiguredConsumerProducerApp;
-import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
-import com.bakdata.kafka.consumerproducer.ConsumerProducerCleanUpRunner;
-import com.bakdata.kafka.consumerproducer.ConsumerProducerExecutionOptions;
-import com.bakdata.kafka.consumerproducer.ConsumerProducerRunner;
-import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
+import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.StringListConverter;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,7 +68,8 @@ import picocli.CommandLine.UseDefaultConverter;
 @Command(description = "Run a Kafka Streams application.")
 public abstract class KafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends
         KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions,
-                ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, StreamsTopicConfig, T> {
+                ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, StreamsTopicConfig, T,
+                StreamsAppConfiguration> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -83,37 +82,27 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
-    @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
-            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
-    private boolean volatileGroupInstanceId;
     @CommandLine.Option(names = "--application-id",
             description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
                     + "StreamsApp#getUniqueAppId()")
     private String applicationId;
 
-
-    // TODO check all recent mr and make sure everything up to date!
-
-
-
-
     /**
-     * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
-     * topics associated with the Kafka Streams application.
+     * Reset the Kafka ConsumerProducer application. Additionally, delete the consumer group and all output topics
+     * associated with the Kafka ConsumerProducer application.
      */
-    @Command(description = "Reset the Kafka Streams application. Additionally, delete the consumer group and all "
-                           + "output and intermediate topics associated with the Kafka Streams application.")
+    @Command(description = "Reset the Kafka ConsumerProducer application. Additionally, delete the consumer group and "
+            + "all output topics associated with the Kafka ConsumerProducer application.")
     @Override
     public void clean() {
         super.clean();
     }
 
     /**
-     * Clear all state stores, consumer group offsets, and internal topics associated with the Kafka Streams
-     * application.
+     * Clear all state stores and consumer group offsets associated with the Kafka ConsumerProducer application.
      */
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
-                           + "Kafka Streams application.")
+            + "Kafka Streams application.")
     public void reset() {
         this.prepareClean();
         try (final CleanableApp<ConsumerProducerCleanUpRunner> app = this.createCleanableApp()) {
@@ -142,13 +131,13 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public final ConfiguredConsumerProducerApp<T> createConfiguredApp(final T app,
-            final StreamsTopicConfig topics) {
-        final ConfiguredConsumerProducerApp<T> configuredApp = new ConfiguredConsumerProducerApp<>(app, topics);
-        if (this.applicationId != null && !configuredApp.getUniqueAppId().equals(this.applicationId)) {
-            throw new IllegalArgumentException(
-                    "Application ID provided via --application-id does not match StreamsApp#getUniqueAppId()");
-        }
-        return configuredApp;
+            final StreamsAppConfiguration configuration) {
+        return new ConfiguredConsumerProducerApp<>(app, configuration);
+    }
+
+    @Override
+    public StreamsAppConfiguration createConfiguration(final StreamsTopicConfig topics) {
+        return new StreamsAppConfiguration(topics, this.applicationId);
     }
 
     /**
