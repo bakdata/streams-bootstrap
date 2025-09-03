@@ -29,7 +29,9 @@ import static java.util.Collections.emptyMap;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientFactory;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NonNull;
@@ -78,10 +80,21 @@ public final class TestSchemaRegistry {
      * Configure the schema registry for the provided {@link RuntimeConfiguration}
      *
      * @param configuration {@link RuntimeConfiguration}
-     * @return {@link RuntimeConfiguration} with configured schema registry
-     * @see RuntimeConfiguration#withSchemaRegistryUrl(String)
+     * @return {@link RuntimeConfiguration} with configured
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}
      */
     public RuntimeConfiguration configure(final RuntimeConfiguration configuration) {
-        return configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
+        return configuration.with(this.getKafkaProperties());
+    }
+
+    /**
+     * Create properties to use schema registry in Kafka apps
+     *
+     * @return properties to use schema registry in Kafka apps
+     */
+    public Map<String, String> getKafkaProperties() {
+        return Map.of(
+                AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, this.schemaRegistryUrl
+        );
     }
 }
