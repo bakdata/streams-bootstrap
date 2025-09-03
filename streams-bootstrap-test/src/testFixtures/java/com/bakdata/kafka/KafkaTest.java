@@ -47,7 +47,7 @@ public abstract class KafkaTest {
     private final KafkaContainer kafkaCluster = newCluster();
 
     public static KafkaContainer newCluster() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka") //FIXME native image is flaky
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
                 .withTag(AppInfoParser.getVersion()));
     }
 
