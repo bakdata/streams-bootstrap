@@ -32,6 +32,7 @@ import lombok.Getter;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionFactory;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
@@ -48,7 +49,8 @@ public abstract class KafkaTest {
 
     public static KafkaContainer newCluster() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native")
-                .withTag(AppInfoParser.getVersion()));
+                .withTag(AppInfoParser.getVersion()))
+                .waitingFor(Wait.defaultWaitStrategy().withStartupTimeout(Duration.ofMinutes(2L)));
     }
 
     public static void awaitProcessing(final ExecutableStreamsApp<?> app) {
