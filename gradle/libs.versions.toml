@@ -15,7 +15,7 @@ kafka-schema-serializer = { group = "io.confluent", name = "kafka-schema-seriali
 kafka-schema-registry-client = { group = "io.confluent", name = "kafka-schema-registry-client" }
 kafka-streams-avro-serde = { group = "io.confluent", name = "kafka-streams-avro-serde" }
 kafka-protobuf-provider = { group = "io.confluent", name = "kafka-protobuf-provider" }
-largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "3.0.0" }
+largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "3.1.0" }
 largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
 errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "2.0.0" }
 errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
@@ -38,9 +38,9 @@ log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl",
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
 
 [plugins]
-release = { id = "com.bakdata.release", version = "1.10.0" }
-sonar = { id = "com.bakdata.sonar", version = "1.10.0" }
-sonatype = { id = "com.bakdata.sonatype", version = "1.10.0" }
+release = { id = "com.bakdata.release", version = "1.11.0" }
+sonar = { id = "com.bakdata.sonar", version = "1.11.0" }
+sonatype = { id = "com.bakdata.sonatype", version = "1.11.0" }
 lombok = { id = "io.freefair.lombok", version = "8.14" }
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version = "1.9.1" }
 aggregate-javadoc = { id = "io.freefair.aggregate-javadoc", version = "8.14" }
