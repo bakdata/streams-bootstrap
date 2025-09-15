@@ -624,6 +624,16 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
     }
 
     @Override
+    public KTableX<K, V> withLineage(final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
+        return this.transformValues(LineageTransformer::new, materialized);
+    }
+
+    @Override
+    public KTableX<K, V> withLineage(final MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized, final Named named) {
+        return this.transformValues(LineageTransformer::new, materialized, named);
+    }
+
+    @Override
     public String queryableStoreName() {
         return this.wrapped.queryableStoreName();
     }
