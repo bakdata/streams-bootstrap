@@ -429,4 +429,8 @@ public interface KTableX<K, V> extends KTable<K, V> {
     <VR, KO, VO> KTableX<K, VR> leftJoin(KTable<KO, VO> other, BiFunction<K, V, KO> foreignKeyExtractor,
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
             MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
+
+    KTableX<K, V> withLineage();
+
+    KTableX<K, V> withLineage(Named named);
 }

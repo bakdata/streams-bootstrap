@@ -33,8 +33,11 @@ import com.bakdata.kafka.Preconfigured;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Function;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
@@ -1838,6 +1841,88 @@ class KTableXTest {
         final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
         final KTableX<Object, Object> table = builder.stream("input").toTable(Materialized.as("store"));
         this.softly.assertThat(table.queryableStoreName()).isEqualTo("store");
+    }
+
+    @Test
+    void shouldAddLineage() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                input.withLineage().toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(
+                                                    Integer.parseInt(new String(header.value(),
+                                                            StandardCharsets.UTF_8)))
+                                            .isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(
+                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
+                                            .isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
+    @Test
+    void shouldAddLineageNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                input.withLineage(Named.as("lineage")).toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(
+                                                    Integer.parseInt(new String(header.value(),
+                                                            StandardCharsets.UTF_8)))
+                                            .isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(
+                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
+                                            .isEqualTo(0L);
+                                });
+                    });
+        }
     }
 
 }

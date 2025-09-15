@@ -1011,4 +1011,8 @@ public interface KStreamX<K, V> extends KStream<K, V> {
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
+
+    KStreamX<K, V> withLineage();
+
+    KStreamX<K, V> withLineage(Named named);
 }

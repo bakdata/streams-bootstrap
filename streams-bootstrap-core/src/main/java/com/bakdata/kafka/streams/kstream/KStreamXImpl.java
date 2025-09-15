@@ -936,6 +936,16 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
                 ErrorCapturingValueProcessor.captureErrors(processorSupplier, errorFilter), named, stateStoreNames);
     }
 
+    @Override
+    public KStreamX<K, V> withLineage() {
+        return this.processValues(LineageProcessor::new);
+    }
+
+    @Override
+    public KStreamX<K, V> withLineage(final Named named) {
+        return this.processValues(LineageProcessor::new, named);
+    }
+
     private <KR, VR> KeyValueKErrorStreamX<K, V, KR, VR> mapCapturingErrorsInternal(
             final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper) {
         final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper);
