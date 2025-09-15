@@ -90,6 +90,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: docs
     if: ${{ needs.docs.result == 'success' }}
+    permissions:
+      contents: write # Explicitly grant write access to allow pushing in this job for dependabot
     steps:
       - uses: actions/checkout@v4
         with:
@@ -124,8 +126,6 @@ jobs:
       - name: Publish docs
         if: ${{ github.event_name != 'pull_request' || steps.docs-changes.outputs.docs == 'true' }}
         uses: ./.github/actions/update-docs
-        permissions:
-          contents: write # Explicitly grant write access to allow pushing in this job for dependabot
         with:
           username: ${{ secrets.GH_USERNAME }}
           email: ${{ secrets.GH_EMAIL }}
