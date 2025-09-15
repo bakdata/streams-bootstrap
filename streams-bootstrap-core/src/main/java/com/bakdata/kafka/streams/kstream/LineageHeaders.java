@@ -32,6 +32,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.apache.kafka.common.header.Headers;
 
+/**
+ * Configure headers for data lineage of Kafka messages
+ */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class LineageHeaders {
     private static final String LINEAGE_PREFIX = "lineage.";
