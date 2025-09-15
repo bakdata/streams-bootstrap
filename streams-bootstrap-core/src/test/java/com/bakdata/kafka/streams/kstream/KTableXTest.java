@@ -40,10 +40,12 @@ import java.util.function.Function;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Named;
 import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Suppressed;
 import org.apache.kafka.streams.kstream.Suppressed.BufferConfig;
 import org.apache.kafka.streams.kstream.TableJoined;
@@ -1927,18 +1929,25 @@ class KTableXTest {
 
     @Test
     void shouldAddLineageUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
-                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> input =
+                        builder.table("input", Consumed.with(Serdes.String(), Serdes.String()));
                 input.withLineage(MaterializedX.with(Serdes.String(), Serdes.String()))
                         .toStream()
-                        .to("output");
+                        .to("output", Produced.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input().add("foo", "bar");
-            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .toList();
             this.softly.assertThat(records)
                     .hasSize(1)
                     .anySatisfy(rekord -> {
@@ -1970,18 +1979,25 @@ class KTableXTest {
 
     @Test
     void shouldAddLineageNamedUsingMaterialized() {
-        final StringApp app = new StringApp() {
+        final DoubleApp app = new DoubleApp() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
-                final KTableX<String, String> input = builder.table("input");
+                final KTableX<String, String> input =
+                        builder.table("input", Consumed.with(Serdes.String(), Serdes.String()));
                 input.withLineage(MaterializedX.with(Serdes.String(), Serdes.String()), Named.as("lineage"))
                         .toStream()
-                        .to("output");
+                        .to("output", Produced.with(Serdes.String(), Serdes.String()));
             }
         };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input().add("foo", "bar");
-            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+        try (final TestTopology<Double, Double> topology = app.startApp()) {
+            topology.input()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput()
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(Serdes.String())
+                    .toList();
             this.softly.assertThat(records)
                     .hasSize(1)
                     .anySatisfy(rekord -> {
