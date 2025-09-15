@@ -49,11 +49,11 @@ class LineageProcessor<K, V> implements FixedKeyProcessor<K, V, V> {
     }
 
     @Override
-    public void process(final FixedKeyRecord<K, V> record) {
+    public void process(final FixedKeyRecord<K, V> rekord) {
         final Optional<RecordMetadata> metadata = this.context.recordMetadata();
-        final Headers headers = record.headers();
+        final Headers headers = rekord.headers();
         final Headers newHeaders = metadata.map(m -> addHeaders(headers, m))
                 .orElse(headers);
-        this.context.forward(record.withHeaders(newHeaders));
+        this.context.forward(rekord.withHeaders(newHeaders));
     }
 }

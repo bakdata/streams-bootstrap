@@ -25,31 +25,32 @@
 package com.bakdata.kafka.streams.kstream;
 
 import java.nio.charset.StandardCharsets;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.apache.kafka.common.header.Headers;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class LineageHeaders {
     private static final String LINEAGE_PREFIX = "lineage.";
     public static final String TOPIC_HEADER = LINEAGE_PREFIX + "topic";
     public static final String PARTITION_HEADER = LINEAGE_PREFIX + "partition";
     public static final String OFFSET_HEADER = LINEAGE_PREFIX + "offset";
 
-    @Getter
+    @Getter(AccessLevel.PACKAGE)
     @Accessors(fluent = true)
     private final @NonNull Headers headers;
 
-    public LineageHeaders addTopicHeader(final String topic) {
+    LineageHeaders addTopicHeader(final String topic) {
         if (topic == null) {
             return this;
         }
         return new LineageHeaders(this.headers.add(TOPIC_HEADER, topic.getBytes(StandardCharsets.UTF_8)));
     }
 
-    public LineageHeaders addPartitionHeader(final int partition) {
+    LineageHeaders addPartitionHeader(final int partition) {
         if (partition < 0) {
             return this;
         }
@@ -58,7 +59,7 @@ public class LineageHeaders {
                 this.headers.add(PARTITION_HEADER, Integer.toString(partition).getBytes(StandardCharsets.UTF_8)));
     }
 
-    public LineageHeaders addOffsetHeader(final long offset) {
+    LineageHeaders addOffsetHeader(final long offset) {
         if (offset < 0) {
             return this;
         }

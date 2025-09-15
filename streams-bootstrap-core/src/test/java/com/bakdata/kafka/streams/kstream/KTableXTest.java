@@ -1925,4 +1925,90 @@ class KTableXTest {
         }
     }
 
+    @Test
+    void shouldAddLineageUsingMaterialized() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                input.withLineage(MaterializedX.with(Serdes.String(), Serdes.String()))
+                        .toStream()
+                        .to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(
+                                                    Integer.parseInt(new String(header.value(),
+                                                            StandardCharsets.UTF_8)))
+                                            .isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(
+                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
+                                            .isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
+    @Test
+    void shouldAddLineageNamedUsingMaterialized() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                input.withLineage(MaterializedX.with(Serdes.String(), Serdes.String()), Named.as("lineage"))
+                        .toStream()
+                        .to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(
+                                                    Integer.parseInt(new String(header.value(),
+                                                            StandardCharsets.UTF_8)))
+                                            .isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(
+                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
+                                            .isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
 }

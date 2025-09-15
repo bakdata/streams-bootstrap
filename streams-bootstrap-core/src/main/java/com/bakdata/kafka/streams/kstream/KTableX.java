@@ -433,4 +433,8 @@ public interface KTableX<K, V> extends KTable<K, V> {
     KTableX<K, V> withLineage();
 
     KTableX<K, V> withLineage(Named named);
+
+    KTableX<K, V> withLineage(MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
+
+    KTableX<K, V> withLineage(MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized, Named named);
 }
