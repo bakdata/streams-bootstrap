@@ -35,8 +35,17 @@ import org.apache.kafka.common.header.Headers;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class LineageHeaders {
     private static final String LINEAGE_PREFIX = "lineage.";
+    /**
+     * Header indicating the topic the record was read from.
+     */
     public static final String TOPIC_HEADER = LINEAGE_PREFIX + "topic";
+    /**
+     * Header indicating the partition the record was read from.
+     */
     public static final String PARTITION_HEADER = LINEAGE_PREFIX + "partition";
+    /**
+     * Header indicating the offset the record was read from.
+     */
     public static final String OFFSET_HEADER = LINEAGE_PREFIX + "offset";
 
     @Getter(AccessLevel.PACKAGE)

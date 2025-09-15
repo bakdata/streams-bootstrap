@@ -430,11 +430,54 @@ public interface KTableX<K, V> extends KTable<K, V> {
             ValueJoiner<V, VO, VR> joiner, TableJoined<K, KO> tableJoined,
             MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Add lineage information to each record in the stream. This will add the following headers
+     * <li>
+     *     <ul>{@link LineageHeaders#TOPIC_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#PARTITION_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#OFFSET_HEADER}</ul>
+     * </li>
+     *
+     * @return stream with added headers
+     */
     KTableX<K, V> withLineage();
 
+    /**
+     * Add lineage information to each record in the stream. This will add the following headers
+     * <li>
+     *     <ul>{@link LineageHeaders#TOPIC_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#PARTITION_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#OFFSET_HEADER}</ul>
+     * </li>
+     * @param named a {@link Named} config used to name the processor in the topology
+     * @return stream with added headers
+     */
     KTableX<K, V> withLineage(Named named);
 
+    /**
+     * Add lineage information to each record in the stream. This will add the following headers
+     * <li>
+     *     <ul>{@link LineageHeaders#TOPIC_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#PARTITION_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#OFFSET_HEADER}</ul>
+     * </li>
+     * @param materialized an instance of {@link Materialized} used to describe how the state store of the resulting
+     * table should be materialized. Cannot be {@code null}
+     * @return stream with added headers
+     */
     KTableX<K, V> withLineage(MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized);
 
+    /**
+     * Add lineage information to each record in the stream. This will add the following headers
+     * <li>
+     *     <ul>{@link LineageHeaders#TOPIC_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#PARTITION_HEADER}</ul>
+     *     <ul>{@link LineageHeaders#OFFSET_HEADER}</ul>
+     * </li>
+     * @param materialized an instance of {@link Materialized} used to describe how the state store of the resulting
+     * table should be materialized. Cannot be {@code null}
+     * @param named a {@link Named} config used to name the processor in the topology
+     * @return stream with added headers
+     */
     KTableX<K, V> withLineage(MaterializedX<K, V, KeyValueStore<Bytes, byte[]>> materialized, Named named);
 }
