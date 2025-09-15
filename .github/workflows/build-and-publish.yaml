@@ -90,6 +90,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: docs
     if: ${{ needs.docs.result == 'success' }}
+    permissions:
+      contents: write # Explicitly grant write access to allow pushing in this job for dependabot
     steps:
       - uses: actions/checkout@v4
         with:
