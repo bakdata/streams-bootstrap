@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -51,23 +50,23 @@ public class SchemaRegistryAppUtils {
     private static final int CACHE_CAPACITY = 100;
 
     /**
-     * Creates a new {@link SchemaRegistryClient} using the specified configuration if
-     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is configured.
+     * Creates a new {@link SchemaRegistryClient} using the specified configuration.
      *
-     * @param kafkaProperties properties for creating {@link SchemaRegistryClient}
-     * @return {@link SchemaRegistryClient} if {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG} is
-     * configured
+     * @param kafkaProperties properties for creating {@link SchemaRegistryClient}. Must include
+     * {@link AbstractKafkaSchemaSerDeConfig#SCHEMA_REGISTRY_URL_CONFIG}.
+     * @return {@link SchemaRegistryClient}
      * @see #createSchemaRegistryClient(Map, String)
      */
-    public static Optional<SchemaRegistryClient> createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
+    public static SchemaRegistryClient createSchemaRegistryClient(final Map<String, Object> kafkaProperties) {
         final String schemaRegistryUrl =
                 (String) kafkaProperties.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
         if (schemaRegistryUrl == null) {
-            return Optional.empty();
+            throw new IllegalArgumentException(String.format("%s must be specified in properties",
+                    AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
         }
         final Map<String, Object> properties = new HashMap<>(kafkaProperties);
         properties.remove(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-        return Optional.of(createSchemaRegistryClient(properties, schemaRegistryUrl));
+        return createSchemaRegistryClient(properties, schemaRegistryUrl);
     }
 
     /**
@@ -90,10 +89,10 @@ public class SchemaRegistryAppUtils {
      * @return hook that cleans up schemas associated with a topic
      * @see HasTopicHooks#registerTopicHook(TopicHook)
      */
-    public static Optional<TopicHook> createTopicHook(final Map<String, Object> kafkaProperties) {
-        final Optional<SchemaRegistryClient> schemaRegistryClient =
+    public static TopicHook createTopicHook(final Map<String, Object> kafkaProperties) {
+        final SchemaRegistryClient schemaRegistryClient =
                 createSchemaRegistryClient(kafkaProperties);
-        return schemaRegistryClient.map(SchemaRegistryTopicHook::new);
+        return new SchemaRegistryTopicHook(schemaRegistryClient);
     }
 
     /**
@@ -104,8 +103,22 @@ public class SchemaRegistryAppUtils {
      * @return hook that cleans up schemas associated with a topic
      * @see #createTopicHook(Map)
      */
-    public static Optional<TopicHook> createTopicHook(final AppConfiguration<?> configuration) {
+    public static TopicHook createTopicHook(final AppConfiguration<?> configuration) {
         return createTopicHook(configuration.getKafkaProperties());
+    }
+
+    /**
+     * Register a hook that cleans up schemas associated with a topic
+     *
+     * @param cleanUpConfiguration Configuration to register hook on
+     * @param configuration Configuration to create hook from
+     * @param <T> type of configuration
+     * @return Configuration with registered topic hook
+     * @see #createTopicHook(AppConfiguration)
+     */
+    public static <T> T registerTopicHook(
+            final HasTopicHooks<T> cleanUpConfiguration, final AppConfiguration<?> configuration) {
+        return cleanUpConfiguration.registerTopicHook(createTopicHook(configuration));
     }
 
     @Slf4j

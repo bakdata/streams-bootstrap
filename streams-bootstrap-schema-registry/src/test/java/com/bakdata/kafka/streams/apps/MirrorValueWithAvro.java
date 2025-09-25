@@ -25,8 +25,8 @@
 package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.streams.SchemaRegistryStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.KStreamX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
@@ -35,10 +35,10 @@ import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 @NoArgsConstructor
-public class MirrorKeyWithAvro implements StreamsApp {
+public class MirrorValueWithAvro implements SchemaRegistryStreamsApp {
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<TestRecord, String> input = builder.streamInput();
+        final KStreamX<String, TestRecord> input = builder.streamInput();
         input.toOutputTopic();
     }
 
@@ -49,6 +49,6 @@ public class MirrorKeyWithAvro implements StreamsApp {
 
     @Override
     public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(SpecificAvroSerde.class, StringSerde.class);
+        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
     }
 }

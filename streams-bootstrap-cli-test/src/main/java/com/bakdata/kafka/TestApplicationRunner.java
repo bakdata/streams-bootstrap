@@ -235,11 +235,16 @@ public final class TestApplicationRunner {
      */
     public void configure(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {
         app.setBootstrapServers(this.bootstrapServers);
-        final Map<String, String> mergedConfig = merge(app.getKafkaConfig(), this.kafkaConfig);
+        final Map<String, String> localConfig = this.getLocalConfig();
+        final Map<String, String> mergedConfig = merge(app.getKafkaConfig(), localConfig);
         app.setKafkaConfig(mergedConfig);
-        if (this.schemaRegistry != null) {
-            app.setSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
+    }
+
+    private Map<String, String> getLocalConfig() {
+        if (this.schemaRegistry == null) {
+            return this.kafkaConfig;
         }
+        return merge(this.kafkaConfig, this.schemaRegistry.getKafkaProperties());
     }
 
     private void prepareExecution(final KafkaApplication<?, ?, ?, ?, ?, ?, ?, ?> app) {
@@ -248,10 +253,8 @@ public final class TestApplicationRunner {
     }
 
     private RuntimeConfiguration createRuntimeConfiguration() {
-        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
-                .with(this.kafkaConfig);
-        return this.schemaRegistry == null ? configuration
-                : configuration.withSchemaRegistryUrl(this.schemaRegistry.getSchemaRegistryUrl());
+        return RuntimeConfiguration.create(this.bootstrapServers)
+                .with(this.getLocalConfig());
     }
 
     private String[] setupArgs(final String[] args, final Iterable<String> command) {

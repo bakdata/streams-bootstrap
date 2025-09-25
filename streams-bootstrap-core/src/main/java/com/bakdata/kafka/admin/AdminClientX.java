@@ -24,14 +24,8 @@
 
 package com.bakdata.kafka.admin;
 
-import static com.bakdata.kafka.SchemaRegistryAppUtils.createSchemaRegistryClient;
-
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
@@ -49,7 +43,6 @@ public final class AdminClientX implements AutoCloseable {
 
     private static final Duration ADMIN_TIMEOUT = Duration.ofSeconds(10L);
     private final @NonNull Admin adminClient;
-    private final SchemaRegistryClient schemaRegistryClient;
     private final @NonNull Timeout timeout;
 
     /**
@@ -74,10 +67,8 @@ public final class AdminClientX implements AutoCloseable {
                     String.format("%s must be specified in properties", AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         }
         final Admin adminClient = AdminClient.create(properties);
-        final SchemaRegistryClient schemaRegistryClient = createSchemaRegistryClient(properties).orElse(null);
         return builder()
                 .adminClient(adminClient)
-                .schemaRegistryClient(schemaRegistryClient)
                 .timeout(new Timeout(timeout))
                 .build();
     }
@@ -89,15 +80,6 @@ public final class AdminClientX implements AutoCloseable {
      */
     public Admin admin() {
         return new PooledAdmin(this.adminClient);
-    }
-
-    /**
-     * Create a {@link SchemaRegistryClient} if schema registry is configured.
-     * @return schema registry client
-     */
-    public Optional<SchemaRegistryClient> schemaRegistry() {
-        return Optional.ofNullable(this.schemaRegistryClient)
-                .map(PooledSchemaRegistryClient::new);
     }
 
     /**
@@ -119,13 +101,6 @@ public final class AdminClientX implements AutoCloseable {
     @Override
     public void close() {
         this.adminClient.close();
-        if (this.schemaRegistryClient != null) {
-            try {
-                this.schemaRegistryClient.close();
-            } catch (final IOException e) {
-                throw new UncheckedIOException("Error closing schema registry client", e);
-            }
-        }
     }
 
     @RequiredArgsConstructor
@@ -137,17 +112,6 @@ public final class AdminClientX implements AutoCloseable {
         public void close(final Duration timeout) {
             // do nothing
         }
-
-        @Override
-        public void close() {
-            // do nothing
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class PooledSchemaRegistryClient implements SchemaRegistryClient {
-        @Delegate(excludes = AutoCloseable.class)
-        private final @NonNull SchemaRegistryClient schemaRegistryClient;
 
         @Override
         public void close() {

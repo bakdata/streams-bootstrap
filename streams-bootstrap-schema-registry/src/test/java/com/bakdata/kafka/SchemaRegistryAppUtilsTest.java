@@ -47,7 +47,7 @@ class SchemaRegistryAppUtilsTest {
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
                 AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "localhost:8081"
         );
-        this.softly.assertThat(SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties)).isPresent();
+        this.softly.assertThat(SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties)).isNotNull();
     }
 
     @Test
@@ -55,7 +55,9 @@ class SchemaRegistryAppUtilsTest {
         final Map<String, Object> kafkaProperties = Map.of(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
         );
-        this.softly.assertThat(SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties)).isNotPresent();
+        this.softly.assertThatThrownBy(() -> SchemaRegistryAppUtils.createSchemaRegistryClient(kafkaProperties))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("schema.registry.url must be specified in properties");
     }
 
 }

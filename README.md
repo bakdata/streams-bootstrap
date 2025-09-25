@@ -109,8 +109,6 @@ The following configuration options are available:
 
 - `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
 
-- `--schema-registry-url`: The URL of the Schema Registry
-
 - `--kafka-config`: Kafka Streams configuration (`<String=String>[,<String=String>...]`)
 
 - `--input-topics`: List of input topics (comma-separated)
@@ -194,8 +192,6 @@ public class MyProducerApplication extends KafkaProducerApplication<ProducerApp>
 The following configuration options are available:
 
 - `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
-
-- `--schema-registry-url`: The URL of the Schema Registry
 
 - `--kafka-config`: Kafka producer configuration (`<String=String>[,<String=String>...]`)
 

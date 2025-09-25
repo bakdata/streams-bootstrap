@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka;
 
-import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
@@ -40,13 +39,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
 /**
- * Runtime configuration to connect to Kafka infrastructure, e.g., bootstrap servers and schema registry.
+ * Runtime configuration to connect to Kafka infrastructure, e.g., bootstrap servers.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuntimeConfiguration {
     private static final Set<String> PROVIDED_PROPERTIES = Set.of(
-            CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
-            AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
+            CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
     );
     private final @NonNull Map<String, Object> properties;
 
@@ -69,16 +67,6 @@ public final class RuntimeConfiguration {
     public RuntimeConfiguration with(final Map<String, ?> newProperties) {
         newProperties.keySet().forEach(this::validate);
         return this.withInternal(newProperties);
-    }
-
-    /**
-     * Configure a schema registry for (de-)serialization.
-     *
-     * @param schemaRegistryUrl schema registry url
-     * @return a copy of this runtime configuration with configured schema registry
-     */
-    public RuntimeConfiguration withSchemaRegistryUrl(final String schemaRegistryUrl) {
-        return this.withInternal(Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl));
     }
 
     /**

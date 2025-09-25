@@ -36,12 +36,7 @@ import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.producer.apps.AvroKeyProducer;
-import com.bakdata.kafka.producer.apps.AvroValueProducer;
 import com.bakdata.kafka.producer.apps.StringProducer;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import java.io.IOException;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -72,20 +67,6 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
         return new ConfiguredProducerApp<>(new StringProducer(), new ProducerAppConfiguration(topics));
     }
 
-    private static ConfiguredProducerApp<ProducerApp> createAvroKeyApplication() {
-        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
-                .outputTopic("output")
-                .build();
-        return new ConfiguredProducerApp<>(new AvroKeyProducer(), new ProducerAppConfiguration(topics));
-    }
-
-    private static ConfiguredProducerApp<ProducerApp> createAvroValueApplication() {
-        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
-                .outputTopic("output")
-                .build();
-        return new ConfiguredProducerApp<>(new AvroValueProducer(), new ProducerAppConfiguration(topics));
-    }
-
     private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
         app.createCleanUpRunner().clean();
     }
@@ -112,40 +93,6 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
                         .as("Output topic is deleted")
                         .isFalse();
             }
-        }
-    }
-
-    @Test
-    void shouldDeleteValueSchema() throws IOException, RestClientException {
-        try (final ConfiguredProducerApp<ProducerApp> app = createAvroValueApplication();
-                final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfigWithSchemaRegistry());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            run(executableApp);
-
-            final String outputTopic = app.getTopics().getOutputTopic();
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(outputTopic + "-value");
-            clean(executableApp);
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(outputTopic + "-value");
-        }
-    }
-
-    @Test
-    void shouldDeleteKeySchema() throws IOException, RestClientException {
-        try (final ConfiguredProducerApp<ProducerApp> app = createAvroKeyApplication();
-                final ExecutableProducerApp<ProducerApp> executableApp = app
-                        .withRuntimeConfiguration(this.createConfigWithSchemaRegistry());
-                final SchemaRegistryClient client = this.getSchemaRegistryClient()) {
-            run(executableApp);
-
-            final String outputTopic = app.getTopics().getOutputTopic();
-            this.softly.assertThat(client.getAllSubjects())
-                    .contains(outputTopic + "-key");
-            clean(executableApp);
-            this.softly.assertThat(client.getAllSubjects())
-                    .doesNotContain(outputTopic + "-key");
         }
     }
 
