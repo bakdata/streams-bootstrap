@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.68.0
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.70.0
     with:
       java-version: 17
     secrets:
@@ -90,6 +90,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: docs
     if: ${{ needs.docs.result == 'success' }}
+    permissions:
+      contents: write # Explicitly grant write access to allow pushing in this job for dependabot
     steps:
       - uses: actions/checkout@v4
         with:
