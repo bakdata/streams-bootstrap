@@ -28,12 +28,11 @@ import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
 import java.util.Map;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
 /**
@@ -41,14 +40,7 @@ import org.apache.kafka.common.serialization.Serializer;
  *
  * @see ProducerApp#buildRunnable(ConsumerBuilder)
  */
-@RequiredArgsConstructor
-@Value
-public class ConsumerBuilder {
-
-    @NonNull
-    ConsumerTopicConfig topics;
-    @NonNull
-    Map<String, Object> kafkaProperties;
+public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties) {
 
     /**
      * Create a new {@code Producer} using {@link #kafkaProperties}
@@ -78,8 +70,7 @@ public class ConsumerBuilder {
     }
 
     /**
-     * Create {@code Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
-     * {@link Serializer} using {@link #kafkaProperties}.
+     * Create {@code Configurator} to configure {@link Serde} and {@link Serializer} using {@link #kafkaProperties}.
      *
      * @return {@code Configurator}
      */

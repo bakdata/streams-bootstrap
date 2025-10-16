@@ -47,6 +47,7 @@ public class ConsumerCleanUpConfiguration implements HasCleanHook<ConsumerCleanU
 
     /**
      * Register a hook that is executed after {@link ConsumerCleanUpRunner#reset()} has finished
+     *
      * @param hook factory to create hook from
      * @return self for chaining
      */

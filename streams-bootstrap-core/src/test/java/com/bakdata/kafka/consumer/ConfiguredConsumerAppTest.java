@@ -46,8 +46,8 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredConsumerAppTest {
 
-    private static ConsumerTopicConfig emptyTopicConfig() {
-        return ConsumerTopicConfig.builder().build();
+    private static ConsumerAppConfiguration emptyAppConfig() {
+        return new ConsumerAppConfiguration(ConsumerTopicConfig.builder().build());
     }
 
     @Test
@@ -56,7 +56,7 @@ class ConfiguredConsumerAppTest {
                 new ConfiguredConsumerApp<>(new TestConsumer(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), emptyTopicConfig());
+                )), emptyAppConfig());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         "foo", "baz",
@@ -75,7 +75,7 @@ class ConfiguredConsumerAppTest {
                 new ConfiguredConsumerApp<>(new TestConsumer(Map.of(
                         "foo", "bar",
                         "hello", "world"
-                )), emptyTopicConfig());
+                )), emptyAppConfig());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
@@ -85,7 +85,7 @@ class ConfiguredConsumerAppTest {
     @Test
     void shouldSetDefaultSerializer() {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
-                new ConfiguredConsumerApp<>(new TestConsumer(), emptyTopicConfig());
+                new ConfiguredConsumerApp<>(new TestConsumer(), emptyAppConfig());
         assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                 .containsEntry(VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
@@ -94,7 +94,7 @@ class ConfiguredConsumerAppTest {
     @Test
     void shouldThrowIfKeySerializerHasBeenConfiguredDifferently() {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
-                new ConfiguredConsumerApp<>(new TestConsumer(), emptyTopicConfig());
+                new ConfiguredConsumerApp<>(new TestConsumer(), emptyAppConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         KEY_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class
@@ -107,7 +107,7 @@ class ConfiguredConsumerAppTest {
     @Test
     void shouldThrowIfValueSerializerHasBeenConfiguredDifferently() {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
-                new ConfiguredConsumerApp<>(new TestConsumer(), emptyTopicConfig());
+                new ConfiguredConsumerApp<>(new TestConsumer(), emptyAppConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class
@@ -122,7 +122,7 @@ class ConfiguredConsumerAppTest {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
                 new ConfiguredConsumerApp<>(new TestConsumer(Map.of(
                         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
-                )), emptyTopicConfig());
+                )), emptyAppConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -134,7 +134,7 @@ class ConfiguredConsumerAppTest {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
                 new ConfiguredConsumerApp<>(new TestConsumer(Map.of(
                         AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "my-schema-registry"
-                )), emptyTopicConfig());
+                )), emptyAppConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .withSchemaRegistryUrl("fake");
         assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
@@ -157,7 +157,7 @@ class ConfiguredConsumerAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final ConsumerTopicConfig topics) {
+        public String getUniqueAppId(final ConsumerAppConfiguration config) {
             return "app-id";
         }
 

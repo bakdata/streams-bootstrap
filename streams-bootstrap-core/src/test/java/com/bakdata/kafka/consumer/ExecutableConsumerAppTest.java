@@ -57,7 +57,7 @@ class ExecutableConsumerAppTest {
                 .inputTopics(List.of("input"))
                 .build();
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
-                new ConfiguredConsumerApp<>(new TestConsumer(), topics);
+                new ConfiguredConsumerApp<>(new TestConsumer(), new ConsumerAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableConsumerApp<ConsumerApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -72,7 +72,7 @@ class ExecutableConsumerAppTest {
                 .inputTopics(List.of("input"))
                 .build();
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
-                new ConfiguredConsumerApp<>(new TestConsumer(), topics);
+                new ConfiguredConsumerApp<>(new TestConsumer(), new ConsumerAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableConsumerApp<ConsumerApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -87,7 +87,7 @@ class ExecutableConsumerAppTest {
                 .inputTopics(List.of("input"))
                 .build();
         final ConfiguredConsumerApp<ConsumerApp> configuredApp =
-                new ConfiguredConsumerApp<>(new TestConsumer(), topics);
+                new ConfiguredConsumerApp<>(new TestConsumer(), new ConsumerAppConfiguration(topics));
         final RuntimeConfiguration configuration = RuntimeConfiguration.create("localhost:9092");
         final ExecutableConsumerApp<ConsumerApp> executableApp =
                 configuredApp.withRuntimeConfiguration(configuration);
@@ -110,7 +110,7 @@ class ExecutableConsumerAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final ConsumerTopicConfig topics) {
+        public String getUniqueAppId(final ConsumerAppConfiguration config) {
             return "app-id";
         }
 

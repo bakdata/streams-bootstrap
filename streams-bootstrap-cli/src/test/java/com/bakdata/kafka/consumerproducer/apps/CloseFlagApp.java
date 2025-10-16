@@ -29,13 +29,7 @@ import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
-import com.bakdata.kafka.streams.KafkaStreamsApplication;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +38,6 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -68,19 +61,19 @@ public class CloseFlagApp extends KafkaConsumerProducerApplication<ConsumerProdu
             @Override
             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
                 return () -> {
-                    try (final Consumer<String, String> consumer = builder.getConsumerBuilder().createConsumer();
-                            final Producer<String, String> producer = builder.getProducerBuilder().createProducer()) {
+                    try (final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
+                            final Producer<String, String> producer = builder.producerBuilder().createProducer()) {
                         this.initConsumerProducer(consumer, producer, builder);
                     }
                 };
             }
 
             private void initConsumerProducer(final Consumer<String, String> consumer, final Producer<String, String> producer, final ConsumerProducerBuilder builder) {
-                consumer.subscribe(builder.getTopics().getInputTopics());
+                consumer.subscribe(builder.topics().getInputTopics());
                 while (!CloseFlagApp.this.appClosed) {
                     final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
                     consumerRecords.forEach(record -> producer.send(
-                            new ProducerRecord<>(builder.getTopics().getOutputTopic(), record.key(), record.value())));
+                            new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(), record.value())));
                 }
             }
 

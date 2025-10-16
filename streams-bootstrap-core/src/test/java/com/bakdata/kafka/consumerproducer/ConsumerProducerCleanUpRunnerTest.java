@@ -34,6 +34,7 @@ import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.consumerproducer.apps.StringConsumerProducer;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsCleanUpRunner;
 import com.bakdata.kafka.streams.StreamsRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
@@ -91,7 +92,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                 .inputTopics(List.of("input"))
                 .outputTopic("output")
                 .build();
-        return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer(), topics);
+        return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer(), new StreamsAppConfiguration(topics));
     }
 
 //    private static ConfiguredStreamsApp<StreamsApp> createWordCountPatternApplication() {

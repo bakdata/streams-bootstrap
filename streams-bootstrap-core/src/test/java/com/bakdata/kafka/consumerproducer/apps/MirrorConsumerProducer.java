@@ -28,7 +28,7 @@ import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
 import com.bakdata.kafka.SerializerDeserializerConfig;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.NoArgsConstructor;
@@ -48,24 +48,24 @@ public class MirrorConsumerProducer implements ConsumerProducerApp {
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
         return () -> {
-            try (final Consumer<String, String> consumer = builder.getConsumerBuilder().createConsumer();
-                    final Producer<String, String> producer = builder.getProducerBuilder().createProducer()) {
+            try (final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
+                    final Producer<String, String> producer = builder.producerBuilder().createProducer()) {
                 this.initConsumerProducer(consumer, producer, builder);
             }
         };
     }
 
     @Override
-    public String getUniqueAppId(final StreamsTopicConfig topics) {
+    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
         return "app-id";
     }
 
     private void initConsumerProducer(final Consumer<String, String> consumer, final Producer<String, String> producer, final ConsumerProducerBuilder builder) {
-        consumer.subscribe(builder.getTopics().getInputTopics());
+        consumer.subscribe(builder.topics().getInputTopics());
         while (this.running.get()) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
             consumerRecords.forEach(record -> producer.send(
-                    new ProducerRecord<>(builder.getTopics().getOutputTopic(), record.key(), record.value())));
+                    new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(), record.value())));
         }
     }
 

@@ -25,9 +25,9 @@
 package com.bakdata.kafka.consumer.apps;
 
 import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.DeserializerConfig;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class StringConsumer implements ConsumerApp {
     }
 
     private void initConsumer(final Consumer<String, String> consumer, final ConsumerBuilder builder) {
-        consumer.subscribe(builder.getTopics().getInputTopics());
+        consumer.subscribe(builder.topics().getInputTopics());
         while (this.running.get()) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
             consumerRecords.forEach(this.consumedRecords::add);
@@ -71,7 +71,7 @@ public class StringConsumer implements ConsumerApp {
     }
 
     @Override
-    public String getUniqueAppId(final ConsumerTopicConfig topics) {
+    public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
         return "app-id";
     }
 

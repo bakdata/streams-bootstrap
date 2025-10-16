@@ -28,24 +28,15 @@ import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.producer.ProducerBuilder;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
 /**
  * Provides all runtime configurations when running a {@link ConsumerProducerApp}
  *
  * @see ConsumerProducerApp#buildRunnable(ConsumerProducerBuilder)
  */
-@RequiredArgsConstructor
-@Value
-public class ConsumerProducerBuilder {
+public record ConsumerProducerBuilder(@NonNull StreamsTopicConfig topics, @NonNull ConsumerBuilder consumerBuilder,
+                                      @NonNull ProducerBuilder producerBuilder) {
 
-    @NonNull
-    StreamsTopicConfig topics;
-    @NonNull
-    ConsumerBuilder consumerBuilder;
-    @NonNull
-    ProducerBuilder producerBuilder;
     // TODO
 //    @NonNull
 //    Map<String, Object> producerProperties;

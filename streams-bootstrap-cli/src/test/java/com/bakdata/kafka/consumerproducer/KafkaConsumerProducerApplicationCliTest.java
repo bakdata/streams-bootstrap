@@ -40,16 +40,11 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.streams.kstream.Consumed;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.kafka.KafkaContainer;
 
@@ -270,7 +265,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     @Override
                     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
                         return () -> {
-                            try (final Producer<String, String> producer = builder.getProducerBuilder().createProducer()) {
+                            try (final Producer<String, String> producer = builder.producerBuilder().createProducer()) {
                                 final ProducerRecord<String, String> record = new ProducerRecord<>(output, "foo", "bar");
                                 producer.send(record);
                             }

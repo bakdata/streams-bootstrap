@@ -38,23 +38,19 @@ import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import java.util.Objects;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * A {@link ConsumerProducerApp} with a corresponding {@link AppConfiguration}
+ *
  * @param <T> type of {@link ConsumerProducerApp}
  */
-@RequiredArgsConstructor
-@Getter
-public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implements
+public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonNull T app,
+                                                                           @NonNull StreamsAppConfiguration configuration)
+        implements
         ConfiguredApp<ExecutableConsumerProducerApp<T>> {
-    private final @NonNull T app;
-    private final @NonNull StreamsAppConfiguration configuration;
-
     /**
      * <p>This method creates the configuration to run a {@link StreamsApp}.</p>
      * Configuration is created in the following order
@@ -94,23 +90,26 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implem
      */
     public Map<String, Object> getKafkaConsumerProperties(final RuntimeConfiguration runtimeConfiguration) {
         final KafkaPropertiesFactory
-                propertiesFactory = this.createPropertiesFactory(runtimeConfiguration, ConfiguredConsumerApp.createBaseConfig());
+                propertiesFactory =
+                this.createPropertiesFactory(runtimeConfiguration, ConfiguredConsumerApp.createBaseConfig());
         return propertiesFactory.createKafkaProperties(Map.of(
                 ConsumerConfig.GROUP_ID_CONFIG, this.getUniqueAppId()
         ));
     }
 
     public Map<String, Object> getKafkaProducerProperties(final RuntimeConfiguration runtimeConfiguration) {
-        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration, ConfiguredProducerApp.createBaseConfig());
+        final KafkaPropertiesFactory propertiesFactory =
+                this.createPropertiesFactory(runtimeConfiguration, ConfiguredProducerApp.createBaseConfig());
         return propertiesFactory.createKafkaProperties(emptyMap());
     }
 
     /**
      * Get unique application identifier of {@link StreamsApp}
+     *
      * @return unique application identifier
-     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
      * provided application identifier in {@link StreamsAppConfiguration}
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
@@ -123,6 +122,7 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implem
 
     /**
      * Create an {@code ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
+     *
      * @return {@code ExecutableStreamsApp}
      */
     @Override
@@ -152,7 +152,8 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp> implem
         this.app.close();
     }
 
-    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfiguration, final Map<String, Object> baseConfig) {
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfiguration,
+            final Map<String, Object> baseConfig) {
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)

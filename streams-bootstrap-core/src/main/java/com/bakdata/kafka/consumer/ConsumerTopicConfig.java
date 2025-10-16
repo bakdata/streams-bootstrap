@@ -61,6 +61,15 @@ public class ConsumerTopicConfig {
     @NonNull
     Map<String, Pattern> labeledInputPatterns = emptyMap();
 
+    public static ConsumerTopicConfig fromStreamsTopicConfig(final StreamsTopicConfig streamsTopicConfig) {
+        return builder()
+                .inputTopics(streamsTopicConfig.getInputTopics())
+                .labeledInputTopics(streamsTopicConfig.getLabeledInputTopics())
+                .inputPattern(streamsTopicConfig.getInputPattern())
+                .labeledInputPatterns(streamsTopicConfig.getLabeledInputPatterns())
+                .build();
+    }
+
     /**
      * Get input topics for a specified label
      *
@@ -87,14 +96,5 @@ public class ConsumerTopicConfig {
             throw new IllegalArgumentException(String.format("No input pattern for label '%s' available", label));
         }
         return pattern;
-    }
-
-    public static ConsumerTopicConfig fromStreamsTopicConfig(final StreamsTopicConfig streamsTopicConfig) {
-        return builder()
-                .inputTopics(streamsTopicConfig.getInputTopics())
-                .labeledInputTopics(streamsTopicConfig.getLabeledInputTopics())
-                .inputPattern(streamsTopicConfig.getInputPattern())
-                .labeledInputPatterns(streamsTopicConfig.getLabeledInputPatterns())
-                .build();
     }
 }

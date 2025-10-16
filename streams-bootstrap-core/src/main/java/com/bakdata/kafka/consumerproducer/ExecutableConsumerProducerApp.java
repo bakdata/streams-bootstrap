@@ -40,6 +40,7 @@ import lombok.NonNull;
 
 /**
  * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig} and Kafka configuration
+ *
  * @param <T> type of {@link ProducerApp}
  */
 @Builder(access = AccessLevel.PACKAGE)
@@ -55,17 +56,20 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
 
     /**
      * Create {@code ProducerCleanUpRunner} in order to clean application
+     *
      * @return {@code ProducerCleanUpRunner}
      */
     @Override
     public ConsumerProducerCleanUpRunner createCleanUpRunner() {
         final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
         final StreamsCleanUpConfiguration streamsCleanUpConfiguration = this.app.setupCleanUp(configuration);
-        return ConsumerProducerCleanUpRunner.create(this.topics, this.consumerProperties, this.groupId, streamsCleanUpConfiguration);
+        return ConsumerProducerCleanUpRunner.create(this.topics, this.consumerProperties, this.groupId,
+                streamsCleanUpConfiguration);
     }
 
     /**
      * Create {@code ProducerRunner} in order to run application
+     *
      * @return {@code ProducerRunner}
      */
     @Override
@@ -76,9 +80,11 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     @Override
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
         final ConsumerBuilder
-                consumerBuilder = new ConsumerBuilder(ConsumerTopicConfig.fromStreamsTopicConfig(this.topics), this.consumerProperties);
+                consumerBuilder =
+                new ConsumerBuilder(ConsumerTopicConfig.fromStreamsTopicConfig(this.topics), this.consumerProperties);
         final ProducerBuilder
-                producerBuilder = new ProducerBuilder(ProducerTopicConfig.fromStreamsTopicConfig(this.topics), this.producerProperties);
+                producerBuilder =
+                new ProducerBuilder(ProducerTopicConfig.fromStreamsTopicConfig(this.topics), this.producerProperties);
         final ConsumerProducerBuilder
                 consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
         final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();

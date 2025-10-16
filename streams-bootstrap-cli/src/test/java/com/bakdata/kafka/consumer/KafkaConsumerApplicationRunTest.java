@@ -68,7 +68,7 @@ class KafkaConsumerApplicationRunTest extends KafkaTest {
                     @Override
                     public void run() {
                         this.consumer = builder.createConsumer();
-                        this.consumer.subscribe(builder.getTopics().getInputTopics());
+                        this.consumer.subscribe(builder.topics().getInputTopics());
                         while (this.running) {
                             final ConsumerRecords<String, String> consumerRecords =
                                     this.consumer.poll(Duration.ofMillis(100L));

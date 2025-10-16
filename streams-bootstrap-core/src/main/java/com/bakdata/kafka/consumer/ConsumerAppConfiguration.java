@@ -24,9 +24,6 @@
 
 package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;

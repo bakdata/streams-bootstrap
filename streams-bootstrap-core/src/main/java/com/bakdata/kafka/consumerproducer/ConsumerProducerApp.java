@@ -38,6 +38,7 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
 
     /**
      * Create a runnable that produces Kafka messages
+     *
      * @param builder provides all runtime application configurations
      * @return {@code ProducerRunnable}
      */
@@ -47,8 +48,8 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
      * state encapsulation. Could be set to: className-outputTopic.
      * <p>
-     * User may provide a unique application identifier via {@link StreamsAppConfiguration#getUniqueAppId()}. If that
-     * is the case, the returned application ID should match the provided one.
+     * User may provide a unique application identifier via {@link StreamsAppConfiguration#getUniqueAppId()}. If that is
+     * the case, the returned application ID should match the provided one.
      *
      * @param configuration provides runtime configuration
      * @return unique application identifier

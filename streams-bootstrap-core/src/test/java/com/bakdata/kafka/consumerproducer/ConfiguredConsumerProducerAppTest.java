@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SerializerDeserializerConfig;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
@@ -48,8 +49,8 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredConsumerProducerAppTest {
 
-    private static StreamsTopicConfig emptyTopicConfig() {
-        return StreamsTopicConfig.builder().build();
+    private static StreamsAppConfiguration emptyTopicConfig() {
+        return new StreamsAppConfiguration(StreamsTopicConfig.builder().build());
     }
 
     @Test
@@ -178,7 +179,7 @@ class ConfiguredConsumerProducerAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final StreamsTopicConfig topics) {
+        public String getUniqueAppId(final StreamsAppConfiguration topics) {
             return "app-id";
         }
 

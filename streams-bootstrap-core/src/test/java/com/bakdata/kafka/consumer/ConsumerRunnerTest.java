@@ -33,8 +33,6 @@ import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
-import io.confluent.common.utils.TestUtils;
-import java.time.Duration;
 import java.util.List;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -44,7 +42,6 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ConsumerRunnerTest extends KafkaTest {
@@ -65,7 +62,7 @@ class ConsumerRunnerTest extends KafkaTest {
             final SimpleProducerRecord<String, String> simpleProducerRecord = new SimpleProducerRecord<>("foo", "bar");
             this.writeInputTopic(app.getTopics().getInputTopics().get(0), simpleProducerRecord);
 
-            final StringConsumer stringConsumer = (StringConsumer) app.getApp();
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
             awaitProcessing(consumerGroupVerifier);
 
             final List<KeyValue<String, String>> consumedRecords = stringConsumer.getConsumedRecords()

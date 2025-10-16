@@ -25,24 +25,16 @@
 package com.bakdata.kafka.consumerproducer.apps;
 
 import com.bakdata.kafka.SerializerDeserializerConfig;
-import com.bakdata.kafka.consumer.ConsumerRunnable;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -65,14 +57,14 @@ public class Mirror implements ConsumerProducerApp {
             @Override
             public void run() {
                 try {
-                    this.consumer = builder.getConsumerBuilder().createConsumer();
-                    this.consumer.subscribe(builder.getTopics().getInputTopics());
-                    this.producer = builder.getProducerBuilder().createProducer();
+                    this.consumer = builder.consumerBuilder().createConsumer();
+                    this.consumer.subscribe(builder.topics().getInputTopics());
+                    this.producer = builder.producerBuilder().createProducer();
                     while (this.running) {
                         final ConsumerRecords<String, String> consumerRecords =
                                 this.consumer.poll(Duration.ofMillis(100L));
                         consumerRecords.forEach(record -> this.producer.send(
-                                new ProducerRecord<>(builder.getTopics().getOutputTopic(), record.key(),
+                                new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(),
                                         record.value())));
                     }
                 } finally {

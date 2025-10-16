@@ -25,7 +25,6 @@
 package com.bakdata.kafka.consumer;
 
 
-import static com.bakdata.kafka.TestHelper.clean;
 import static org.mockito.Mockito.verify;
 
 import com.bakdata.kafka.CleanUpException;
@@ -74,7 +73,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build();
-        return new ConfiguredConsumerApp<>(new StringConsumer(), topics);
+        return new ConfiguredConsumerApp<>(new StringConsumer(), new ConsumerAppConfiguration(topics));
     }
 
     // TODO
@@ -158,7 +157,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumer stringConsumer = (StringConsumer) app.getApp();
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
             awaitActive(executableApp);
@@ -206,7 +205,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumer stringConsumer = (StringConsumer) app.getApp();
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
             awaitActive(executableApp);
@@ -249,7 +248,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("blub", "blub")
                     ));
 
-            final StringConsumer stringConsumer = (StringConsumer) app.getApp();
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
             awaitProcessing(executableApp);

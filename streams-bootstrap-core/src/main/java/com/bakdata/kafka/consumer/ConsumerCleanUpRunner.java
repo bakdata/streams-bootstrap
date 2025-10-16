@@ -26,8 +26,8 @@ package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
-import com.bakdata.kafka.streams.StreamsResetterWrapper;
 import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.streams.StreamsResetterWrapper;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

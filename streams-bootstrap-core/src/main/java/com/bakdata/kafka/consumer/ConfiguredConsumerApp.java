@@ -33,9 +33,7 @@ import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
@@ -44,12 +42,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
  *
  * @param <T> type of {@link ConsumerApp}
  */
-@RequiredArgsConstructor
-@Getter
-public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredApp<ExecutableConsumerApp<T>> {
-    private final @NonNull T app;
-    private final @NonNull ConsumerAppConfiguration configuration;
-
+public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
+                                                           @NonNull ConsumerAppConfiguration configuration)
+        implements ConfiguredApp<ExecutableConsumerApp<T>> {
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
@@ -98,10 +93,11 @@ public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredA
 
     /**
      * Get unique application identifier of {@link StreamsApp}
+     *
      * @return unique application identifier
-     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
      * provided application identifier in {@link StreamsAppConfiguration}
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
