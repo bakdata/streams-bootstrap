@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import static java.util.Collections.emptyMap;
 
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.StringListConverter;
+import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.List;
@@ -46,7 +47,7 @@ import picocli.CommandLine.UseDefaultConverter;
 
 
 /**
- * <p>The base class for creating Kafka Streams applications.</p>
+ * <p>The base class for creating Kafka ConsumerProducer applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
  *     <li>{@link #inputTopics}</li>
@@ -54,9 +55,12 @@ import picocli.CommandLine.UseDefaultConverter;
  *     <li>{@link #errorTopic}</li>
  *     <li>{@link #labeledInputTopics}</li>
  *     <li>{@link #labeledInputPatterns}</li>
+ *     <li>{@link #outputTopic}</li>
+ *     <li>{@link #labeledOutputTopics}</li>
+ *     <li>{@link #applicationId}</li>
  * </ul>
- * To implement your Kafka Streams application inherit from this class and add your custom options. Run it by calling
- * {@link #startApplication(KafkaApplication, String[])} with an instance of your class from your main.
+ * To implement your Kafka ConsumerProducer application inherit from this class and add your custom options.  Run it by
+ * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
  *
  * @param <T> type of {@link StreamsApp} created by this application
  */
@@ -65,11 +69,12 @@ import picocli.CommandLine.UseDefaultConverter;
 @Setter
 @RequiredArgsConstructor
 @Slf4j
-@Command(description = "Run a Kafka Streams application.")
+@Command(description = "Run a Kafka ConsumerProducer application.")
 public abstract class KafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends
         KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions,
                 ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, StreamsTopicConfig, T,
                 StreamsAppConfiguration> {
+    // TODO rename StreamsTopicConfig and StreamsAppConfiguration?
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -79,12 +84,18 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",
             converter = {UseDefaultConverter.class, StringListConverter.class})
     private Map<String, List<String>> labeledInputTopics = emptyMap();
+    // TODO is pattern working?
     @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
+    @CommandLine.Option(names = "--output-topic", description = "Output topic")
+    private String outputTopic;
+    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
+            description = "Additional labeled output topics")
+    private Map<String, String> labeledOutputTopics = emptyMap();
     @CommandLine.Option(names = "--application-id",
-            description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
-                    + "StreamsApp#getUniqueAppId()")
+            description = "Unique application ID to use for Kafka ConsumerProducer. Can also be provided by implementing "
+                    + "ConsumerProducerApp#getUniqueAppId()")
     private String applicationId;
 
     /**

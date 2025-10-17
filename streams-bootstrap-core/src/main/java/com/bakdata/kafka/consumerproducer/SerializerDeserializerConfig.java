@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka;
+package com.bakdata.kafka.consumerproducer;
 
+import com.bakdata.kafka.SerializationConfig;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 
 /**
- * Defines how to serialize the data in a Kafka producer
+ * Defines how to (de)serialize the data in a Kafka consumer or producer
  */
 @RequiredArgsConstructor
 @With

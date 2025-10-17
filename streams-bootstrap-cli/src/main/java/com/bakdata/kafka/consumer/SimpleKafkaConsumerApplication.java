@@ -29,7 +29,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * {@code KafkaProducerApplication} without any additional configuration options.
+ * {@code KafkaConsumerApplication} without any additional configuration options.
  *
  * @param <T> type of {@link ConsumerApp} created by this application
  */

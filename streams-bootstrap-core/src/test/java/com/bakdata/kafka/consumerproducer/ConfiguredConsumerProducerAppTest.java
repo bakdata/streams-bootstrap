@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bakdata.kafka.RuntimeConfiguration;
-import com.bakdata.kafka.SerializerDeserializerConfig;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;

@@ -76,7 +76,7 @@ public class ConsumerGroupVerifier {
     }
 
     /**
-     * Create a new verifier from an {@code ExecutableConsumerApp}
+     * Create a new verifier from an {@code ExecutableConsumerProducerApp}
      * @param app app to create verifier from
      * @return verifier
      */
@@ -86,7 +86,7 @@ public class ConsumerGroupVerifier {
     }
 
     /**
-     * Create a new verifier from an {@code ExecutableConsumerApp}
+     * Create a new verifier from a {@code ConfiguredConsumerApp} with {@code RuntimeConfiguration}
      * @param app app to create verifier from
      * @return verifier
      */

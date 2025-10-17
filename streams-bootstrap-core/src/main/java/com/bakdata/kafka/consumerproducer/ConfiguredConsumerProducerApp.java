@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,62 +26,55 @@ package com.bakdata.kafka.consumerproducer;
 
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ConfiguredApp;
 import com.bakdata.kafka.EnvironmentKafkaConfigParser;
 import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.producer.ConfiguredProducerApp;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
+// TODO maybe create specific consumerproducerappconfiguration?
+// TODO we want to have specific one and maybe even get rid of pattern - if not supported?
 /**
- * A {@link ConsumerProducerApp} with a corresponding {@link AppConfiguration}
+ * A {@link ConsumerProducerApp} with a corresponding {@link StreamsAppConfiguration}
  *
  * @param <T> type of {@link ConsumerProducerApp}
  */
 public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonNull T app,
                                                                            @NonNull StreamsAppConfiguration configuration)
-        implements
-        ConfiguredApp<ExecutableConsumerProducerApp<T>> {
+        implements ConfiguredApp<ExecutableConsumerProducerApp<T>> {
+
     /**
-     * <p>This method creates the configuration to run a {@link StreamsApp}.</p>
+     * <p>This method creates the Consumer configuration to run a {@link ConsumerProducerApp}.</p>
      * Configuration is created in the following order
      * <ul>
      *     <li>
-     *         Exactly-once, in-order, and compression are configured:
+     *         Offset management:
      * <pre>
-     * processing.guarantee=exactly_once_v2
-     * producer.max.in.flight.requests.per.connection=1
-     * producer.acks=all
-     * producer.compression.type=gzip
+     * auto.offset.reset=earliest
      * </pre>
      *     </li>
      *     <li>
-     *         Configs provided by {@link StreamsApp#createKafkaProperties()}
+     *         CommonClientConfigs provided by {@link ConsumerProducerApp#createKafkaProperties()}
      *     </li>
      *     <li>
      *         Configs provided via environment variables (see
      *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
      *     </li>
      *     <li>
-     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
+     *         CommonClientConfigs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
-     *         {@link StreamsConfig#DEFAULT_KEY_SERDE_CLASS_CONFIG} and
-     *         {@link StreamsConfig#DEFAULT_VALUE_SERDE_CLASS_CONFIG} is configured using
-     *         {@link StreamsApp#defaultSerializationConfig()}
-     *     </li>
-     *     <li>
-     *         {@link StreamsConfig#APPLICATION_ID_CONFIG} is configured using
-     *         {@link StreamsApp#getUniqueAppId(StreamsTopicConfig)}
+     *         {@link ConsumerConfig#KEY_DESERIALIZER_CLASS_CONFIG} and
+     *         {@link ConsumerConfig#VALUE_DESERIALIZER_CLASS_CONFIG} is configured using
+     *         {@link ConsumerProducerApp#defaultSerializationConfig()}
      *     </li>
      * </ul>
      *
@@ -97,6 +90,38 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonN
         ));
     }
 
+    /**
+     * <p>This method creates the configuration to run a {@link ConsumerProducerApp}.</p>
+     * Configuration is created in the following order
+     * <ul>
+     *     <li>
+     * <pre>
+     * max.in.flight.requests.per.connection=1
+     * acks=all
+     * compression.type=gzip
+     * </pre>
+     *     </li>
+     *     <li>
+     *         CommonClientConfigs provided by {@link ConsumerProducerApp#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided via environment variables (see
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
+     *     </li>
+     *     <li>
+     *         CommonClientConfigs provided by {@link RuntimeConfiguration#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
+     *         {@link ProducerConfig#VALUE_SERIALIZER_CLASS_CONFIG} is configured using
+     *         {@link ConsumerProducerApp#defaultSerializationConfig()}
+     *     </li>
+     * </ul>
+     *
+     * @param runtimeConfiguration configuration to run app with
+     * @return Kafka configuration
+     */
+    // TODO also test like consumerproperties
     public Map<String, Object> getKafkaProducerProperties(final RuntimeConfiguration runtimeConfiguration) {
         final KafkaPropertiesFactory propertiesFactory =
                 this.createPropertiesFactory(runtimeConfiguration, ConfiguredProducerApp.createBaseConfig());
@@ -104,26 +129,26 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonN
     }
 
     /**
-     * Get unique application identifier of {@link StreamsApp}
+     * Get unique application identifier of {@link ConsumerProducerApp}
      *
      * @return unique application identifier
-     * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
+     * @throws IllegalArgumentException if unique application identifier of {@link ConsumerProducerApp} is different from
      * provided application identifier in {@link StreamsAppConfiguration}
-     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     * @see ConsumerProducerApp#getUniqueAppId(StreamsAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
                 Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
         if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
-            throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
+            throw new IllegalArgumentException("Provided application ID does not match ConsumerProducerApp#getUniqueAppId()");
         }
         return uniqueAppId;
     }
 
     /**
-     * Create an {@code ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
+     * Create an {@code ExecutableConsumerProducerApp} using the provided {@link RuntimeConfiguration}
      *
-     * @return {@code ExecutableStreamsApp}
+     * @return {@code ExecutableConsumerProducerApp}
      */
     @Override
     public ExecutableConsumerProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {

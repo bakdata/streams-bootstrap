@@ -42,11 +42,11 @@ import org.apache.kafka.tools.StreamsResetter;
  * Resets the processing state of your Kafka Streams app
  */
 @Slf4j
-public final class StreamsResetterWrapper {
+public final class StreamsResetterClient {
 
     private static final int EXIT_CODE_SUCCESS = 0;
 
-    private StreamsResetterWrapper() {
+    private StreamsResetterClient() {
         throw new UnsupportedOperationException("Utility class");
     }
 

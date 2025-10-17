@@ -27,7 +27,7 @@ package com.bakdata.kafka.consumerproducer.apps;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
-import com.bakdata.kafka.SerializerDeserializerConfig;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;

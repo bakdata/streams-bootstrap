@@ -33,9 +33,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig} and Kafka configuration
+ * A {@link ConsumerApp} with a corresponding {@link ConsumerTopicConfig} and Kafka configuration
  *
- * @param <T> type of {@link ProducerApp}
+ * @param <T> type of {@link ConsumerApp}
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
@@ -47,9 +47,9 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
     private final @NonNull T app;
 
     /**
-     * Create {@code ProducerCleanUpRunner} in order to clean application
+     * Create {@code ConsumerCleanUpRunner} in order to clean application
      *
-     * @return {@code ProducerCleanUpRunner}
+     * @return {@code ConsumerCleanUpRunner}
      */
     @Override
     public ConsumerCleanUpRunner createCleanUpRunner() {
@@ -59,9 +59,9 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
     }
 
     /**
-     * Create {@code ProducerRunner} in order to run application
+     * Create {@code ConsumerRunner} in order to run application
      *
-     * @return {@code ProducerRunner}
+     * @return {@code ConsumerRunner}
      */
     @Override
     public ConsumerRunner createRunner() {

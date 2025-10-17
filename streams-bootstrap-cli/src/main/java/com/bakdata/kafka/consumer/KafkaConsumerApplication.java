@@ -45,9 +45,17 @@ import picocli.CommandLine.UseDefaultConverter;
 
 /**
  * <p>The base class for creating Kafka Consumer applications.</p>
- * This class provides all configuration options provided by {@link KafkaApplication}. To implement your Kafka Consumer
- * application inherit from this class and add your custom options. Run it by calling
- * {@link #startApplication(KafkaApplication, String[])} with an instance of your class from your main.
+ * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
+ * <ul>
+ *     <li>{@link #inputTopics}</li>
+ *     <li>{@link #inputPattern}</li>
+ *     <li>{@link #errorTopic}</li>
+ *     <li>{@link #labeledInputTopics}</li>
+ *     <li>{@link #labeledInputPatterns}</li>
+ *     <li>{@link #applicationId}</li>
+ * </ul>
+ * To implement your Kafka Consumer application inherit from this class and add your custom options.  Run it by
+ * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
  *
  * @param <T> type of {@link ConsumerApp} created by this application
  */
@@ -73,8 +81,8 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
     @CommandLine.Option(names = "--application-id",
-            description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
-                    + "StreamsApp#getUniqueAppId()")
+            description = "Unique application ID to use for Kafka Consumer. Can also be provided by implementing "
+                    + "ConsumerApp#getUniqueAppId()")
     private String applicationId;
 
     /**

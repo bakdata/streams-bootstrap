@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,13 @@
 package com.bakdata.kafka.consumerproducer;
 
 /**
- * Produce messages to Kafka
+ * Produce or consume messages to or from Kafka
  */
 @FunctionalInterface
 public interface ConsumerProducerRunnable extends AutoCloseable {
 
     /**
-     * Produce messages to Kafka
+     * Produce or consume messages to or from Kafka
      */
     void run();
 

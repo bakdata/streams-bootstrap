@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,21 +26,21 @@ package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.App;
 import com.bakdata.kafka.AppConfiguration;
-import com.bakdata.kafka.SerializerDeserializerConfig;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
+import com.bakdata.kafka.streams.StreamsCleanUpRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 
 /**
- * Application that defines how to produce messages to Kafka and necessary configurations
+ * Application that defines how to produce or consume messages to and from Kafka and necessary configurations
  */
 public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsCleanUpConfiguration> {
 
     /**
-     * Create a runnable that produces Kafka messages
+     * Create a runnable that consumes and produces Kafka messages
      *
      * @param builder provides all runtime application configurations
-     * @return {@code ProducerRunnable}
+     * @return {@code ConsumerProducerRunnable}
      */
     ConsumerProducerRunnable buildRunnable(ConsumerProducerBuilder builder);
 
@@ -69,6 +69,7 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
         return new StreamsCleanUpConfiguration();
     }
 
+    // TODO why can't we use SerDe like Streams?
     @Override
     SerializerDeserializerConfig defaultSerializationConfig();
 }

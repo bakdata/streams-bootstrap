@@ -29,14 +29,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * {@code KafkaStreamsApplication} without any additional configuration options.
+ * {@code KafkaConsumerProducerApplication} without any additional configuration options.
  *
- * @param <T> type of {@link StreamsApp} created by this application
+ * @param <T> type of {@link ConsumerProducerApp} created by this application
  */
 @RequiredArgsConstructor
 public final class SimpleKafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends KafkaConsumerProducerApplication<T> {
     private final @NonNull Supplier<T> appFactory;
-
 
     // TODO update javadocs
     // TODO fix input pattern

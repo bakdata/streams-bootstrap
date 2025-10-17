@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ public class ConsumerCleanUpConfiguration implements HasCleanHook<ConsumerCleanU
     private final @NonNull Collection<Runnable> resetHooks = new ArrayList<>();
 
     /**
-     * Register an action that is executed after {@link ProducerCleanUpRunner#clean()} has finished
+     * Register an action that is executed after {@link ConsumerCleanUpRunner#clean()} has finished
      */
     @Override
     public ConsumerCleanUpConfiguration registerCleanHook(final Runnable hook) {

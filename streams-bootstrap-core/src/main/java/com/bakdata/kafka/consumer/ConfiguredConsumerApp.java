@@ -28,17 +28,14 @@ import com.bakdata.kafka.ConfiguredApp;
 import com.bakdata.kafka.EnvironmentKafkaConfigParser;
 import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
- * A {@link ConsumerApp} with a corresponding {@link ConsumerTopicConfig}
+ * A {@link ConsumerApp} with a corresponding {@link ConsumerAppConfiguration}
  *
  * @param <T> type of {@link ConsumerApp}
  */
@@ -54,18 +51,17 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     }
 
     /**
-     * <p>This method creates the configuration to run a {@link ProducerApp}.</p>
+     * <p>This method creates the configuration to run a {@link ConsumerApp}.</p>
      * Configuration is created in the following order
      * <ul>
      *     <li>
+     *         Offset management:
      * <pre>
-     * max.in.flight.requests.per.connection=1
-     * acks=all
-     * compression.type=gzip
+     * auto.offset.reset=earliest
      * </pre>
      *     </li>
      *     <li>
-     *         Configs provided by {@link ProducerApp#createKafkaProperties()}
+     *         Configs provided by {@link ConsumerApp#createKafkaProperties()}
      *     </li>
      *     <li>
      *         Configs provided via environment variables (see
@@ -75,9 +71,9 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
      *     </li>
      *     <li>
-     *         {@link ProducerConfig#KEY_SERIALIZER_CLASS_CONFIG} and
-     *         {@link ProducerConfig#VALUE_SERIALIZER_CLASS_CONFIG} is configured using
-     *         {@link ProducerApp#defaultSerializationConfig()}
+     *         {@link ConsumerConfig#KEY_DESERIALIZER_CLASS_CONFIG} and
+     *         {@link ConsumerConfig#VALUE_DESERIALIZER_CLASS_CONFIG} is configured using
+     *         {@link ConsumerApp#defaultSerializationConfig()}
      *     </li>
      * </ul>
      *
@@ -92,26 +88,26 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     }
 
     /**
-     * Get unique application identifier of {@link StreamsApp}
+     * Get unique application identifier of {@link ConsumerApp}
      *
      * @return unique application identifier
-     * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
-     * provided application identifier in {@link StreamsAppConfiguration}
-     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
+     * @throws IllegalArgumentException if unique application identifier of {@link ConsumerApp} is different from
+     * provided application identifier in {@link ConsumerAppConfiguration}
+     * @see ConsumerApp#getUniqueAppId(ConsumerAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
                 Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
         if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
-            throw new IllegalArgumentException("Provided application ID does not match StreamsApp#getUniqueAppId()");
+            throw new IllegalArgumentException("Provided application ID does not match ConsumerApp#getUniqueAppId()");
         }
         return uniqueAppId;
     }
 
     /**
-     * Create an {@code ExecutableProducerApp} using the provided {@link RuntimeConfiguration}
+     * Create an {@code ExecutableConsumerApp} using the provided {@link RuntimeConfiguration}
      *
-     * @return {@code ExecutableProducerApp}
+     * @return {@code ExecutableConsumerApp}
      */
     @Override
     public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {

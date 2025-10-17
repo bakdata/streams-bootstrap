@@ -24,7 +24,7 @@
 
 package com.bakdata.kafka.streams;
 
-import static com.bakdata.kafka.streams.StreamsResetterWrapper.runResetter;
+import static com.bakdata.kafka.streams.StreamsResetterClient.runResetter;
 
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
@@ -89,8 +89,8 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     }
 
     /**
-     * Clean up your Streams app by resetting the app and deleting the output topics
-     * and consumer group.
+     * Clean up your Streams app by resetting the app and deleting the output topics and consumer group.
+     *
      * @see #reset()
      */
     @Override

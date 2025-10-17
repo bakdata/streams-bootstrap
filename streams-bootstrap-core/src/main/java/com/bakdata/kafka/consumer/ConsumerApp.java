@@ -26,17 +26,18 @@ package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.App;
 import com.bakdata.kafka.AppConfiguration;
+import com.bakdata.kafka.DeserializerConfig;
 
 /**
- * Application that defines how to produce messages to Kafka and necessary configurations
+ * Application that defines how to consume messages from Kafka and necessary configurations
  */
 public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpConfiguration> {
 
     /**
-     * Create a runnable that produces Kafka messages
+     * Create a runnable that consumes Kafka messages
      *
      * @param builder provides all runtime application configurations
-     * @return {@code ProducerRunnable}
+     * @return {@code ConsumerRunnable}
      */
     ConsumerRunnable buildRunnable(ConsumerBuilder builder);
 
@@ -52,7 +53,7 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
 
     /**
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
-     * state encapsulation. Could be set to: className-outputTopic.
+     * state encapsulation. Could be set to: className-inputTopic.
      * <p>
      * User may provide a unique application identifier via {@link ConsumerAppConfiguration#getUniqueAppId()}. If that
      * is the case, the returned application ID should match the provided one.
@@ -64,4 +65,7 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
         return configuration.getUniqueAppId()
                 .orElseThrow(() -> new IllegalArgumentException("Please provide an application ID"));
     }
+
+    @Override
+    DeserializerConfig defaultSerializationConfig();
 }

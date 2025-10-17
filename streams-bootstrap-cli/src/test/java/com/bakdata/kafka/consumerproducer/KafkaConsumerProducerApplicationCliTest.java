@@ -33,7 +33,6 @@ import static org.awaitility.Awaitility.await;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.SerializerDeserializerConfig;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;

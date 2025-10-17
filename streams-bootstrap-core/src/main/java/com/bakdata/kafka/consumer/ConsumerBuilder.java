@@ -30,43 +30,42 @@ import java.util.Map;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
 /**
- * Provides all runtime configurations when running a {@link ProducerApp}
+ * Provides all runtime configurations when running a {@link ConsumerApp}
  *
- * @see ProducerApp#buildRunnable(ConsumerBuilder)
+ * @see ConsumerApp#buildRunnable(ConsumerBuilder)
  */
 public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties) {
 
     /**
-     * Create a new {@code Producer} using {@link #kafkaProperties}
+     * Create a new {@code Consumer} using {@link #kafkaProperties}
      *
      * @param <K> type of keys
      * @param <V> type of values
-     * @return {@code Producer}
-     * @see KafkaProducer#KafkaProducer(Map)
+     * @return {@code Consumer}
+     * @see KafkaConsumer#KafkaConsumer(Map)
      */
     public <K, V> Consumer<K, V> createConsumer() {
         return new KafkaConsumer<>(this.kafkaProperties);
     }
 
     /**
-     * Create a new {@code Producer} using {@link #kafkaProperties} and provided {@code Serializers}
+     * Create a new {@code Consumer} using {@link #kafkaProperties} and provided {@code Serializers}
      *
-     * @param keySerializer {@code Serializer} to use for keys
-     * @param valueSerializer {@code Serializer} to use for values
+     * @param keyDeserializer {@code Serializer} to use for keys
+     * @param valueDeserializer {@code Serializer} to use for values
      * @param <K> type of keys
      * @param <V> type of values
-     * @return {@code Producer}
-     * @see KafkaProducer#KafkaProducer(Map, Serializer, Serializer)
+     * @return {@code Consumer}
+     * @see KafkaConsumer#KafkaConsumer(Map, Deserializer, Deserializer)
      */
-    public <K, V> Consumer<K, V> createConsumer(final Deserializer<K> keyDesrializer,
+    public <K, V> Consumer<K, V> createConsumer(final Deserializer<K> keyDeserializer,
             final Deserializer<V> valueDeserializer) {
-        return new KafkaConsumer<>(this.kafkaProperties, keyDesrializer, valueDeserializer);
+        return new KafkaConsumer<>(this.kafkaProperties, keyDeserializer, valueDeserializer);
     }
 
     /**

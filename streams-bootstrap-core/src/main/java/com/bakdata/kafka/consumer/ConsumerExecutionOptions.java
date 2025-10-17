@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.bakdata.kafka.consumer;
 import lombok.Builder;
 
 /**
- * Options to run a Kafka Producer app using {@link ProducerRunner}
+ * Options to run a Kafka Consumer app using {@link ConsumerRunner}
  */
 @Builder
 public final class ConsumerExecutionOptions {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig} and Kafka configuration
+ * A {@link ConsumerProducerApp} with a corresponding {@link StreamsTopicConfig} and Kafka configuration
  *
- * @param <T> type of {@link ProducerApp}
+ * @param <T> type of {@link ConsumerProducerApp}
  */
 @Builder(access = AccessLevel.PACKAGE)
 @Getter
@@ -55,9 +55,9 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     private final @NonNull String groupId;
 
     /**
-     * Create {@code ProducerCleanUpRunner} in order to clean application
+     * Create {@code ConsumerProducerCleanUpRunner} in order to clean application
      *
-     * @return {@code ProducerCleanUpRunner}
+     * @return {@code ConsumerProducerCleanUpRunner}
      */
     @Override
     public ConsumerProducerCleanUpRunner createCleanUpRunner() {
@@ -68,9 +68,9 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     }
 
     /**
-     * Create {@code ProducerRunner} in order to run application
+     * Create {@code ConsumerProducerRunner} in order to run application
      *
-     * @return {@code ProducerRunner}
+     * @return {@code ConsumerProducerRunner}
      */
     @Override
     public ConsumerProducerRunner createRunner() {

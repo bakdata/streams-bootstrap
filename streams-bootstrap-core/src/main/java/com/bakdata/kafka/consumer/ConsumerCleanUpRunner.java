@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,20 +27,18 @@ package com.bakdata.kafka.consumer;
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.streams.StreamsResetterWrapper;
+import com.bakdata.kafka.streams.StreamsResetterClient;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
- * Delete all output topics specified by a {@link ConsumerTopicConfig}
+ * Clean up all topics specified by a {@link ConsumerTopicConfig}
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -119,13 +117,15 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
                 bootstrapServers = this.adminClient.admin().describeCluster().nodes().get()
                         .stream()
                         .map(node -> node.host() + ":" + node.port())
-                        .collect(Collectors.toList());
-            } catch (final InterruptedException | ExecutionException e) {
-                // TODO
+                        .toList();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new CleanUpException("Error getting bootstrap servers", e);
+            } catch (final ExecutionException e) {
                 throw new CleanUpException("Error getting bootstrap servers", e);
             }
 
-            StreamsResetterWrapper.runResetter(inputTopics,
+            StreamsResetterClient.runResetter(inputTopics,
                     allTopics,
                     ConsumerCleanUpRunner.this.groupId,
                     ConsumerCleanUpRunner.this.kafkaProperties,
