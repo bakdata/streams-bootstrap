@@ -30,5 +30,5 @@ import lombok.Builder;
  * Options to run a Kafka ConsumerProducer app
  */
 @Builder
-public class ConsumerProducerExecutionOptions {
+public final class ConsumerProducerExecutionOptions {
 }

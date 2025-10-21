@@ -27,7 +27,7 @@ package com.bakdata.kafka.consumer;
 import lombok.Builder;
 
 /**
- * Options to run a Kafka Consumer app using {@link ConsumerRunner}
+ * Options to run a Kafka Consumer app
  */
 @Builder
 public final class ConsumerExecutionOptions {
