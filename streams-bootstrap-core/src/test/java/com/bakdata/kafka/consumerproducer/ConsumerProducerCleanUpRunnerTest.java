@@ -149,7 +149,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                 final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
-            // TODO who/where are output topics generated in producer/streams app
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
             testClient.createTopic(app.getTopics().getOutputTopic());
             testClient.send()
