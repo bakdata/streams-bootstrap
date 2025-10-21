@@ -25,7 +25,6 @@
 package com.bakdata.kafka.consumerproducer;
 
 
-import com.bakdata.kafka.ConsumerGroupVerifier;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
@@ -38,7 +37,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
@@ -65,7 +63,8 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
     }
 
     private static KafkaConsumerProducerApplication<?> createMirrorApplication() {
-        final KafkaConsumerProducerApplication<?> application = new SimpleKafkaConsumerProducerApplication<>(Mirror::new);
+        final KafkaConsumerProducerApplication<?> application =
+                new SimpleKafkaConsumerProducerApplication<>(Mirror::new);
         application.setOutputTopic("output");
         application.setInputTopics(List.of("input"));
         return application;

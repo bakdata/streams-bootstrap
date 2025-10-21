@@ -33,7 +33,6 @@ import static org.awaitility.Awaitility.await;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import java.time.Duration;
 import java.util.List;
@@ -220,25 +219,26 @@ class KafkaConsumerProducerApplicationCliTest {
     void shouldExitWithErrorInBuildRunnable() {
         final String input = "input";
         try (final KafkaContainer kafkaCluster = newCluster();
-                final KafkaConsumerProducerApplication<?> app = new SimpleKafkaConsumerProducerApplication<>(() -> new ConsumerProducerApp() {
-                    @Override
-                    public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                        return () -> {
-                            throw new RuntimeException("Error building runnable");
-                        };
-                    }
+                final KafkaConsumerProducerApplication<?> app = new SimpleKafkaConsumerProducerApplication<>(
+                        () -> new ConsumerProducerApp() {
+                            @Override
+                            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+                                return () -> {
+                                    throw new RuntimeException("Error building runnable");
+                                };
+                            }
 
-                    @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
-                        return "app";
-                    }
+                            @Override
+                            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                                return "app";
+                            }
 
-                    @Override
-                    public SerializerDeserializerConfig defaultSerializationConfig() {
-                        return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
-                                StringDeserializer.class, StringDeserializer.class);
-                    }
-                })) {
+                            @Override
+                            public SerializerDeserializerConfig defaultSerializationConfig() {
+                                return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                                        StringDeserializer.class, StringDeserializer.class);
+                            }
+                        })) {
             kafkaCluster.start();
 
             final CompletableFuture<Void> future = runApp(app,
@@ -260,28 +260,31 @@ class KafkaConsumerProducerApplicationCliTest {
         final String input = "input";
         final String output = "output";
         try (final KafkaContainer kafkaCluster = newCluster();
-                final KafkaConsumerProducerApplication<?> app = new SimpleKafkaConsumerProducerApplication<>(() -> new ConsumerProducerApp() {
-                    @Override
-                    public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                        return () -> {
-                            try (final Producer<String, String> producer = builder.producerBuilder().createProducer()) {
-                                final ProducerRecord<String, String> record = new ProducerRecord<>(output, "foo", "bar");
-                                producer.send(record);
+                final KafkaConsumerProducerApplication<?> app = new SimpleKafkaConsumerProducerApplication<>(
+                        () -> new ConsumerProducerApp() {
+                            @Override
+                            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+                                return () -> {
+                                    try (final Producer<String, String> producer = builder.producerBuilder()
+                                            .createProducer()) {
+                                        final ProducerRecord<String, String> producerRecord =
+                                                new ProducerRecord<>(output, "foo", "bar");
+                                        producer.send(producerRecord);
+                                    }
+                                };
                             }
-                        };
-                    }
 
-                    @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
-                        return "app";
-                    }
+                            @Override
+                            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                                return "app";
+                            }
 
-                    @Override
-                    public SerializerDeserializerConfig defaultSerializationConfig() {
-                        return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
-                                StringDeserializer.class, StringDeserializer.class);
-                    }
-                })) {
+                            @Override
+                            public SerializerDeserializerConfig defaultSerializationConfig() {
+                                return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                                        StringDeserializer.class, StringDeserializer.class);
+                            }
+                        })) {
             kafkaCluster.start();
             final KafkaTestClient testClient =
                     new KafkaTestClient(RuntimeConfiguration.create(kafkaCluster.getBootstrapServers()));

@@ -24,13 +24,12 @@
 
 package com.bakdata.kafka.consumerproducer.apps;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
-import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,12 +68,14 @@ public class CloseFlagApp extends KafkaConsumerProducerApplication<ConsumerProdu
                 };
             }
 
-            private void initConsumerProducer(final Consumer<String, String> consumer, final Producer<String, String> producer, final ConsumerProducerBuilder builder) {
+            private void initConsumerProducer(final Consumer<String, String> consumer,
+                    final Producer<String, String> producer, final ConsumerProducerBuilder builder) {
                 consumer.subscribe(builder.topics().getInputTopics());
                 while (!CloseFlagApp.this.appClosed) {
                     final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
-                    consumerRecords.forEach(record -> producer.send(
-                            new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(), record.value())));
+                    consumerRecords.forEach(consumerRecord -> producer.send(
+                            new ProducerRecord<>(builder.topics().getOutputTopic(), consumerRecord.key(),
+                                    consumerRecord.value())));
                 }
             }
 
@@ -85,7 +86,8 @@ public class CloseFlagApp extends KafkaConsumerProducerApplication<ConsumerProdu
 
             @Override
             public SerializerDeserializerConfig defaultSerializationConfig() {
-                return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class, StringDeserializer.class, StringDeserializer.class);
+                return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                        StringDeserializer.class, StringDeserializer.class);
             }
 
             @Override

@@ -147,12 +147,4 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
         return new ConsumerProducerAppConfiguration(topics, this.applicationId);
     }
 
-    /**
-     * Called before cleaning the application, i.e., invoking {@link #clean()} or {@link #reset()}
-     */
-    @Override
-    public void prepareClean() {
-        super.prepareClean();
-    }
-
 }

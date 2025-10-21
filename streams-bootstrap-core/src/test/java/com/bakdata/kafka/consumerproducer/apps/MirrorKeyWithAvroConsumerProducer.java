@@ -75,8 +75,8 @@ public class MirrorKeyWithAvroConsumerProducer implements ConsumerProducerApp {
         consumer.subscribe(builder.topics().getInputTopics());
         while (this.running.get()) {
             final ConsumerRecords<TestRecord, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
-            consumerRecords.forEach(record -> producer.send(
-                    new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(), record.value())));
+            consumerRecords.forEach(consumerRecord -> producer.send(
+                    new ProducerRecord<>(builder.topics().getOutputTopic(), consumerRecord.key(), consumerRecord.value())));
         }
     }
 

@@ -24,12 +24,11 @@
 
 package com.bakdata.kafka.consumerproducer.apps;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
-import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import java.time.Duration;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -64,9 +63,9 @@ public class Mirror implements ConsumerProducerApp {
                     while (this.running) {
                         final ConsumerRecords<String, String> consumerRecords =
                                 this.consumer.poll(Duration.ofMillis(100L));
-                        consumerRecords.forEach(record -> this.producer.send(
-                                new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(),
-                                        record.value())));
+                        consumerRecords.forEach(consumerRecord -> this.producer.send(
+                                new ProducerRecord<>(builder.topics().getOutputTopic(), consumerRecord.key(),
+                                        consumerRecord.value())));
                     }
                 } finally {
                     if (this.consumer != null) {
@@ -87,7 +86,8 @@ public class Mirror implements ConsumerProducerApp {
 
     @Override
     public SerializerDeserializerConfig defaultSerializationConfig() {
-        return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class, StringDeserializer.class, StringDeserializer.class);
+        return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                StringDeserializer.class, StringDeserializer.class);
     }
 
 }
