@@ -264,7 +264,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             final StringConsumerProducer stringConsumerProducer = (StringConsumerProducer) app.app();
             run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
-                    "WordCount contains all elements after first run");
+                    "Contains all elements after first run");
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupsClient groups = adminClient.consumerGroups();

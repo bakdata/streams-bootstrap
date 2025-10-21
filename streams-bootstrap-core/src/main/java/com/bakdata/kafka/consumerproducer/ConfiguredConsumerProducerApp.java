@@ -37,9 +37,6 @@ import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-// TODO maybe create specific consumerproducerappconfiguration?
-// TODO we want to have specific one and maybe even get rid of pattern - if not supported?
-
 /**
  * A {@link ConsumerProducerApp} with a corresponding {@link ConsumerProducerAppConfiguration}
  *

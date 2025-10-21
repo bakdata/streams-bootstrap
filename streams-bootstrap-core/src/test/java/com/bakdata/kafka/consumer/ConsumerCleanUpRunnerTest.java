@@ -91,7 +91,6 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         app.createCleanUpRunner().clean();
     }
 
-    // TODO use or modify TestHelper?
     private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
         final Runner consumerRunner = executableApp.createRunner();
         new Thread(consumerRunner).start();
@@ -103,9 +102,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         return app.withRuntimeConfiguration(runtimeConfiguration);
     }
 
-    // TODO add description like streamscleanuprunnertest.assertContent?
     private void assertContent(final Collection<ConsumerRecord<String, String>> consumedRecords,
-            final Iterable<? extends KeyValue<String, String>> expectedValues) {
+            final Iterable<? extends KeyValue<String, String>> expectedValues, final String description) {
         Awaitility.await()
                 .atMost(Duration.ofSeconds(1))
                 .untilAsserted(() -> {
@@ -114,6 +112,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             .map(TestHelper::toKeyValue)
                             .toList();
                     this.softly.assertThat(consumedKeyValues)
+                            .as(description)
                             .containsExactlyInAnyOrderElementsOf(expectedValues);
                 });
     }
@@ -152,7 +151,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             run(executableApp);
             awaitActive(executableApp);
-            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues);
+            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
+                    "Output contains all elements after first run");
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
@@ -202,7 +202,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             run(executableApp);
             awaitActive(executableApp);
-            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues);
+            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
+                    "Contains all elements after first run");
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupsClient groups = adminClient.consumerGroups();
@@ -251,7 +252,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
 
-            // Wait until all stream applications are completely stopped before triggering cleanup
+            // Wait until all applications are completely stopped before triggering cleanup
             stringConsumer.shutdown();
             awaitClosed(executableApp);
             reset(executableApp);
@@ -316,7 +317,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
 
-            // Wait until all stream applications are completely stopped before triggering cleanup
+            // Wait until all applications are completely stopped before triggering cleanup
             stringConsumer.shutdown();
             awaitClosed(executableApp);
             reset(executableApp);
