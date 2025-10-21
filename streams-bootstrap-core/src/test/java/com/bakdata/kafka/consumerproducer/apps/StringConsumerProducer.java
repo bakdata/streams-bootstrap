@@ -25,10 +25,10 @@
 package com.bakdata.kafka.consumerproducer.apps;
 
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
@@ -63,7 +63,7 @@ public class StringConsumerProducer implements ConsumerProducerApp {
     }
 
     @Override
-    public String getUniqueAppId(final StreamsAppConfiguration topics) {
+    public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
         return "app-id";
     }
 

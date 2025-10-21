@@ -33,12 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bakdata.kafka.RuntimeConfiguration;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.LongDeserializer;
@@ -50,8 +47,8 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 class ConfiguredConsumerProducerAppTest {
 
-    private static StreamsAppConfiguration emptyTopicConfig() {
-        return new StreamsAppConfiguration(StreamsTopicConfig.builder().build());
+    private static ConsumerProducerAppConfiguration emptyTopicConfig() {
+        return new ConsumerProducerAppConfiguration(ConsumerProducerTopicConfig.builder().build());
     }
 
     @Test
@@ -171,29 +168,29 @@ class ConfiguredConsumerProducerAppTest {
 
     private record TestApplication(@NonNull Map<String, Object> kafkaProperties) implements ConsumerProducerApp {
 
-            private TestApplication() {
-                this(emptyMap());
-            }
-
-            @Override
-            public Map<String, Object> createKafkaProperties() {
-                return this.kafkaProperties;
-            }
-
-            @Override
-            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public String getUniqueAppId(final StreamsAppConfiguration topics) {
-                return "app-id";
-            }
-
-            @Override
-            public SerializerDeserializerConfig defaultSerializationConfig() {
-                return new SerializerDeserializerConfig(StringSerializer.class, LongSerializer.class,
-                        StringDeserializer.class, LongDeserializer.class);
-            }
+        private TestApplication() {
+            this(emptyMap());
         }
+
+        @Override
+        public Map<String, Object> createKafkaProperties() {
+            return this.kafkaProperties;
+        }
+
+        @Override
+        public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
+            return "app-id";
+        }
+
+        @Override
+        public SerializerDeserializerConfig defaultSerializationConfig() {
+            return new SerializerDeserializerConfig(StringSerializer.class, LongSerializer.class,
+                    StringDeserializer.class, LongDeserializer.class);
+        }
+    }
 }

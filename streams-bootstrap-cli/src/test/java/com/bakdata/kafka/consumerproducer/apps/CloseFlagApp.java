@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.consumerproducer.apps;
 
+import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
@@ -78,7 +79,7 @@ public class CloseFlagApp extends KafkaConsumerProducerApplication<ConsumerProdu
             }
 
             @Override
-            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                 return CloseFlagApp.this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
             }
 

@@ -30,8 +30,6 @@ import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.producer.ConfiguredProducerApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
@@ -43,12 +41,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 // TODO we want to have specific one and maybe even get rid of pattern - if not supported?
 
 /**
- * A {@link ConsumerProducerApp} with a corresponding {@link StreamsAppConfiguration}
+ * A {@link ConsumerProducerApp} with a corresponding {@link ConsumerProducerAppConfiguration}
  *
  * @param <T> type of {@link ConsumerProducerApp}
  */
 public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonNull T app,
-                                                                           @NonNull StreamsAppConfiguration configuration)
+                                                                           @NonNull ConsumerProducerAppConfiguration configuration)
         implements ConfiguredApp<ExecutableConsumerProducerApp<T>> {
 
     /**
@@ -103,8 +101,8 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonN
      *
      * @return unique application identifier
      * @throws IllegalArgumentException if unique application identifier of {@link ConsumerProducerApp} is different
-     * from provided application identifier in {@link StreamsAppConfiguration}
-     * @see ConsumerProducerApp#getUniqueAppId(StreamsAppConfiguration)
+     * from provided application identifier in {@link ConsumerProducerAppConfiguration}
+     * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
@@ -138,7 +136,7 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonN
      *
      * @return topic configuration
      */
-    public StreamsTopicConfig getTopics() {
+    public ConsumerProducerTopicConfig getTopics() {
         return this.configuration.getTopics();
     }
 

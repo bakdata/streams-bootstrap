@@ -48,7 +48,7 @@ import lombok.NonNull;
 public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
         implements
         ExecutableApp<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions> {
-    private final @NonNull StreamsTopicConfig topics;
+    private final @NonNull ConsumerProducerTopicConfig topics;
     private final @NonNull Map<String, Object> producerProperties;
     private final @NonNull Map<String, Object> consumerProperties;
     private final @NonNull T app;
@@ -61,7 +61,7 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
      */
     @Override
     public ConsumerProducerCleanUpRunner createCleanUpRunner() {
-        final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
+        final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
         final StreamsCleanUpConfiguration streamsCleanUpConfiguration = this.app.setupCleanUp(configuration);
         return ConsumerProducerCleanUpRunner.create(this.topics, this.consumerProperties, this.groupId,
                 streamsCleanUpConfiguration);
@@ -81,13 +81,15 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
         final ConsumerBuilder
                 consumerBuilder =
-                new ConsumerBuilder(ConsumerTopicConfig.fromStreamsTopicConfig(this.topics), this.consumerProperties);
+                new ConsumerBuilder(ConsumerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
+                        this.consumerProperties);
         final ProducerBuilder
                 producerBuilder =
-                new ProducerBuilder(ProducerTopicConfig.fromStreamsTopicConfig(this.topics), this.producerProperties);
+                new ProducerBuilder(ProducerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
+                        this.producerProperties);
         final ConsumerProducerBuilder
                 consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
-        final AppConfiguration<StreamsTopicConfig> configuration = this.createConfiguration();
+        final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
         return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder));
     }
@@ -97,7 +99,7 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
         this.app.close();
     }
 
-    private AppConfiguration<StreamsTopicConfig> createConfiguration() {
+    private AppConfiguration<ConsumerProducerTopicConfig> createConfiguration() {
         return new AppConfiguration<>(this.topics, this.consumerProperties);
     }
 

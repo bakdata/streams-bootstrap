@@ -48,9 +48,7 @@ import com.bakdata.kafka.consumerproducer.apps.MirrorKeyWithAvroConsumerProducer
 import com.bakdata.kafka.consumerproducer.apps.MirrorValueWithAvroConsumerProducer;
 import com.bakdata.kafka.consumerproducer.apps.StringConsumerProducer;
 import com.bakdata.kafka.consumerproducer.apps.StringPatternConsumerProducer;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -81,6 +79,11 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
     @Mock
     private TopicHook topicHook;
 
+    private static final ConsumerProducerTopicConfig TOPIC_CONFIG = ConsumerProducerTopicConfig.builder()
+            .inputTopics(List.of("input"))
+            .outputTopic("output")
+            .build();
+
     private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
         final Runner consumerRunner = executableApp.createRunner();
         new Thread(consumerRunner).start();
@@ -100,51 +103,38 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
     }
 
     static ConfiguredConsumerProducerApp<ConsumerProducerApp> createStringConsumerProducer() {
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build();
-        return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer(), new StreamsAppConfiguration(topics));
+        return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer(),
+                new ConsumerProducerAppConfiguration(TOPIC_CONFIG));
     }
 
     static ConfiguredConsumerProducerApp<ConsumerProducerApp> createMirrorKeyConsumerProducer() {
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build();
         return new ConfiguredConsumerProducerApp<>(new MirrorKeyWithAvroConsumerProducer(),
-                new StreamsAppConfiguration(topics));
+                new ConsumerProducerAppConfiguration(TOPIC_CONFIG));
     }
 
     static ConfiguredConsumerProducerApp<ConsumerProducerApp> createMirrorValueConsumerProducer() {
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build();
         return new ConfiguredConsumerProducerApp<>(new MirrorValueWithAvroConsumerProducer(),
-                new StreamsAppConfiguration(topics));
+                new ConsumerProducerAppConfiguration(TOPIC_CONFIG));
     }
 
     static ConfiguredConsumerProducerApp<ConsumerProducerApp> createStringPatternConsumerProducer() {
-        final StreamsTopicConfig topics = StreamsTopicConfig.builder()
+        final ConsumerProducerTopicConfig topics = ConsumerProducerTopicConfig.builder()
                 .inputPattern(Pattern.compile(".*_topic"))
                 .outputTopic("output")
                 .build();
         return new ConfiguredConsumerProducerApp<>(new StringPatternConsumerProducer(),
-                new StreamsAppConfiguration(topics));
+                new ConsumerProducerAppConfiguration(topics));
     }
 
     private ConfiguredConsumerProducerApp<ConsumerProducerApp> createCleanUpHookApplication() {
         return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer() {
             @Override
-            public StreamsCleanUpConfiguration setupCleanUp(final AppConfiguration<StreamsTopicConfig> configuration) {
+            public StreamsCleanUpConfiguration setupCleanUp(
+                    final AppConfiguration<ConsumerProducerTopicConfig> configuration) {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(ConsumerProducerCleanUpRunnerTest.this.topicHook);
             }
-        }, new StreamsAppConfiguration(StreamsTopicConfig.builder()
-                .inputTopics(List.of("input"))
-                .outputTopic("output")
-                .build()));
+        }, new ConsumerProducerAppConfiguration(TOPIC_CONFIG));
     }
 
     static ExecutableConsumerProducerApp<ConsumerProducerApp> createExecutableApp(

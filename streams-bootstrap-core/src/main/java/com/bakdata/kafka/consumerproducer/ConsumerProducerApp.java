@@ -26,15 +26,13 @@ package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.App;
 import com.bakdata.kafka.AppConfiguration;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.streams.StreamsCleanUpRunner;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 
 /**
  * Application that defines how to produce or consume messages to and from Kafka and necessary configurations
  */
-public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsCleanUpConfiguration> {
+public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, StreamsCleanUpConfiguration> {
 
     /**
      * Create a runnable that consumes and produces Kafka messages
@@ -48,13 +46,13 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
      * state encapsulation. Could be set to: className-outputTopic.
      * <p>
-     * User may provide a unique application identifier via {@link StreamsAppConfiguration#getUniqueAppId()}. If that is
-     * the case, the returned application ID should match the provided one.
+     * User may provide a unique application identifier via {@link ConsumerProducerAppConfiguration#getUniqueAppId()}.
+     * If that is the case, the returned application ID should match the provided one.
      *
      * @param configuration provides runtime configuration
      * @return unique application identifier
      */
-    default String getUniqueAppId(final StreamsAppConfiguration configuration) {
+    default String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
         return configuration.getUniqueAppId()
                 .orElseThrow(() -> new IllegalArgumentException("Please provide an application ID"));
     }
@@ -65,7 +63,7 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
      */
     @Override
     default StreamsCleanUpConfiguration setupCleanUp(
-            final AppConfiguration<StreamsTopicConfig> configuration) {
+            final AppConfiguration<ConsumerProducerTopicConfig> configuration) {
         return new StreamsCleanUpConfiguration();
     }
 

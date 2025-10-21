@@ -26,7 +26,6 @@ package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.producer.ProducerBuilder;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import lombok.NonNull;
 
 /**
@@ -34,7 +33,8 @@ import lombok.NonNull;
  *
  * @see ConsumerProducerApp#buildRunnable(ConsumerProducerBuilder)
  */
-public record ConsumerProducerBuilder(@NonNull StreamsTopicConfig topics, @NonNull ConsumerBuilder consumerBuilder,
+public record ConsumerProducerBuilder(@NonNull ConsumerProducerTopicConfig topics,
+                                      @NonNull ConsumerBuilder consumerBuilder,
                                       @NonNull ProducerBuilder producerBuilder) {
 
     // TODO

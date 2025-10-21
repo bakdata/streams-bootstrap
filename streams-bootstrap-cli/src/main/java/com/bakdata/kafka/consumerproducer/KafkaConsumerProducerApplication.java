@@ -29,9 +29,6 @@ import static java.util.Collections.emptyMap;
 
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.StringListConverter;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +59,7 @@ import picocli.CommandLine.UseDefaultConverter;
  * To implement your Kafka ConsumerProducer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
  *
- * @param <T> type of {@link StreamsApp} created by this application
+ * @param <T> type of {@link ConsumerProducerApp} created by this application
  */
 @ToString(callSuper = true)
 @Getter
@@ -72,9 +69,8 @@ import picocli.CommandLine.UseDefaultConverter;
 @Command(description = "Run a Kafka ConsumerProducer application.")
 public abstract class KafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends
         KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions,
-                ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, StreamsTopicConfig, T,
-                StreamsAppConfiguration> {
-    // TODO rename StreamsTopicConfig and StreamsAppConfiguration?
+                ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, ConsumerProducerTopicConfig, T,
+                ConsumerProducerAppConfiguration> {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
@@ -128,8 +124,8 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     }
 
     @Override
-    public final StreamsTopicConfig createTopicConfig() {
-        return StreamsTopicConfig.builder()
+    public final ConsumerProducerTopicConfig createTopicConfig() {
+        return ConsumerProducerTopicConfig.builder()
                 .inputTopics(this.inputTopics)
                 .labeledInputTopics(this.labeledInputTopics)
                 .inputPattern(this.inputPattern)
@@ -142,13 +138,13 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public final ConfiguredConsumerProducerApp<T> createConfiguredApp(final T app,
-            final StreamsAppConfiguration configuration) {
+            final ConsumerProducerAppConfiguration configuration) {
         return new ConfiguredConsumerProducerApp<>(app, configuration);
     }
 
     @Override
-    public StreamsAppConfiguration createConfiguration(final StreamsTopicConfig topics) {
-        return new StreamsAppConfiguration(topics, this.applicationId);
+    public ConsumerProducerAppConfiguration createConfiguration(final ConsumerProducerTopicConfig topics) {
+        return new ConsumerProducerAppConfiguration(topics, this.applicationId);
     }
 
     /**

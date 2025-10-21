@@ -26,10 +26,10 @@ package com.bakdata.kafka.consumerproducer.apps;
 
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.time.Duration;
@@ -66,7 +66,7 @@ public class MirrorValueWithAvroConsumerProducer implements ConsumerProducerApp 
     }
 
     @Override
-    public String getUniqueAppId(final StreamsAppConfiguration topics) {
+    public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
         return "app-id";
     }
 

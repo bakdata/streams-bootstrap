@@ -22,25 +22,43 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.producer;
+package com.bakdata.kafka.consumerproducer;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 
 /**
- * Provides topic configuration for a {@link ProducerApp}
+ * Provides topic configuration for a {@link ConsumerProducerApp}
  */
 @Builder
 @Value
 @EqualsAndHashCode
-public class ProducerTopicConfig {
+public class ConsumerProducerTopicConfig {
 
+    @Builder.Default
+    @NonNull
+    List<String> inputTopics = emptyList();
+    /**
+     * Input topics that are identified by a label
+     */
+    @Builder.Default
+    @NonNull
+    Map<String, List<String>> labeledInputTopics = emptyMap();
+    Pattern inputPattern;
+    /**
+     * Input patterns that are identified by a label
+     */
+    @Builder.Default
+    @NonNull
+    Map<String, Pattern> labeledInputPatterns = emptyMap();
     String outputTopic;
     /**
      * Output topics that are identified by a label
@@ -48,6 +66,35 @@ public class ProducerTopicConfig {
     @Builder.Default
     @NonNull
     Map<String, String> labeledOutputTopics = emptyMap();
+    String errorTopic;
+
+    /**
+     * Get input topics for a specified label
+     *
+     * @param label label of input topics
+     * @return topic names
+     */
+    public List<String> getInputTopics(final String label) {
+        final List<String> topics = this.labeledInputTopics.get(label);
+        if (topics == null) {
+            throw new IllegalArgumentException(String.format("No input topics for label '%s' available", label));
+        }
+        return topics;
+    }
+
+    /**
+     * Get input pattern for a specified label
+     *
+     * @param label label of input pattern
+     * @return topic pattern
+     */
+    public Pattern getInputPattern(final String label) {
+        final Pattern pattern = this.labeledInputPatterns.get(label);
+        if (pattern == null) {
+            throw new IllegalArgumentException(String.format("No input pattern for label '%s' available", label));
+        }
+        return pattern;
+    }
 
     /**
      * Get output topic for a specified label
@@ -61,12 +108,5 @@ public class ProducerTopicConfig {
             throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
         }
         return topic;
-    }
-
-    public static ProducerTopicConfig fromConsumerProducerTopicConfig(final ConsumerProducerTopicConfig config) {
-        return builder()
-                .outputTopic(config.getOutputTopic())
-                .labeledOutputTopics(config.getLabeledOutputTopics())
-                .build();
     }
 }

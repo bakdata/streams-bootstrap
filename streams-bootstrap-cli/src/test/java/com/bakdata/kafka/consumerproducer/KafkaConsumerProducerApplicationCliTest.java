@@ -66,7 +66,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -98,7 +98,7 @@ class KafkaConsumerProducerApplicationCliTest {
             }
 
             @Override
-            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                 throw new UnsupportedOperationException();
             }
 
@@ -126,7 +126,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -162,7 +162,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -196,7 +196,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         return "my-id";
                     }
 
@@ -229,7 +229,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         return "app";
                     }
 
@@ -272,7 +272,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         return "app";
                     }
 
@@ -318,7 +318,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -348,7 +348,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
+                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 

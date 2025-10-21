@@ -32,7 +32,6 @@ import com.bakdata.kafka.producer.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.producer.ProducerCleanUpRunner;
 import com.bakdata.kafka.producer.ProducerTopicConfig;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -41,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * Delete all output topics specified by a {@link StreamsTopicConfig}
+ * Delete all output topics specified by a {@link ConsumerProducerTopicConfig}
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -56,7 +55,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @return {@code ConsumerProducerCleanUpRunner}
      */
-    public static ConsumerProducerCleanUpRunner create(@NonNull final StreamsTopicConfig topics,
+    public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId) {
         return create(topics, kafkaProperties, groupId, new StreamsCleanUpConfiguration());
@@ -71,12 +70,12 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
      * @param configuration configuration for hooks that are called when running {@link #clean()}
      * @return {@code ConsumerCleanUpRunner}
      */
-    public static ConsumerProducerCleanUpRunner create(@NonNull final StreamsTopicConfig topics,
+    public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId,
             @NonNull final StreamsCleanUpConfiguration configuration) {
-        final ConsumerTopicConfig consumerTopicConfig = ConsumerTopicConfig.fromStreamsTopicConfig(topics);
-        final ProducerTopicConfig producerTopicConfig = ProducerTopicConfig.fromStreamsTopicConfig(topics);
+        final ConsumerTopicConfig consumerTopicConfig = ConsumerTopicConfig.fromConsumerProducerTopicConfig(topics);
+        final ProducerTopicConfig producerTopicConfig = ProducerTopicConfig.fromConsumerProducerTopicConfig(topics);
         final ConsumerCleanUpConfiguration consumerConfig = configuration.toConsumerCleanUpConfiguration();
         final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
         final ConsumerCleanUpRunner consumerCleanUpRunner =
