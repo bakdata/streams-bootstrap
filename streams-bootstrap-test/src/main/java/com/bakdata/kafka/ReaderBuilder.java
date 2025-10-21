@@ -70,8 +70,6 @@ public final class ReaderBuilder<K, V> {
     private static <K, V> List<ConsumerRecord<K, V>> readAll(final Consumer<K, V> consumer, final String topic,
             final Duration timeout) {
         final List<PartitionInfo> partitionInfos = consumer.listTopics().get(topic);
-        // TODO
-        if(partitionInfos == null) return List.of();
         final List<TopicPartition> topicPartitions = partitionInfos.stream()
                 .map(ReaderBuilder::toTopicPartition)
                 .toList();

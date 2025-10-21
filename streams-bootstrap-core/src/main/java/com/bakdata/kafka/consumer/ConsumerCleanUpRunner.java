@@ -31,7 +31,10 @@ import com.bakdata.kafka.streams.StreamsResetterClient;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -109,9 +112,8 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {
+            final List<String> inputTopics = this.getAllInputTopics();
             final Collection<String> allTopics = this.adminClient.topics().list();
-            // TODO all input topics
-            final List<String> inputTopics = ConsumerCleanUpRunner.this.topics.getInputTopics();
             final List<String> bootstrapServers;
             try {
                 bootstrapServers = this.adminClient.admin().describeCluster().nodes().get()
@@ -132,6 +134,27 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
                     bootstrapServers);
 
             ConsumerCleanUpRunner.this.cleanHooks.runResetHooks();
+        }
+
+        private List<String> getAllInputTopics() {
+            final Collection<String> allTopics = this.adminClient.topics().list();
+            final Collection<String> inputTopics = ConsumerCleanUpRunner.this.topics.getInputTopics();
+            final Collection<String> labeledInputTopics =
+                    ConsumerCleanUpRunner.this.topics.getLabeledInputTopics().values().stream().flatMap(List::stream)
+                            .toList();
+            final Pattern inputPattern = ConsumerCleanUpRunner.this.topics.getInputPattern();
+            final Collection<Pattern> labeledInputPatterns =
+                    ConsumerCleanUpRunner.this.topics.getLabeledInputPatterns().values();
+            final Collection<Pattern> allInputPatterns = Stream.concat(
+                    Optional.ofNullable(inputPattern).stream(), labeledInputPatterns.stream()).toList();
+
+            final Collection<String> patternMatchedTopics = allTopics.stream()
+                    .filter(topic -> allInputPatterns.stream()
+                            .anyMatch(pattern -> pattern.matcher(topic).matches()))
+                    .toList();
+            return Stream.of(inputTopics, labeledInputTopics, patternMatchedTopics)
+                    .flatMap(Collection::stream)
+                    .toList();
         }
 
         private void clean() {

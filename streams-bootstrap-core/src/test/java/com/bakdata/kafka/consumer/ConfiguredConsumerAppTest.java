@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bakdata.kafka.DeserializerConfig;
 import com.bakdata.kafka.RuntimeConfiguration;
-import com.bakdata.kafka.SerializationConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
 import lombok.NonNull;
@@ -142,33 +141,30 @@ class ConfiguredConsumerAppTest {
                 .hasMessage("'schema.registry.url' should not be configured already");
     }
 
-    @RequiredArgsConstructor
-    private static class TestConsumer implements ConsumerApp {
+    private record TestConsumer(@NonNull Map<String, Object> kafkaProperties) implements ConsumerApp {
 
-        private final @NonNull Map<String, Object> kafkaProperties;
+            private TestConsumer() {
+                this(emptyMap());
+            }
 
-        private TestConsumer() {
-            this(emptyMap());
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final ConsumerAppConfiguration config) {
+                return "app-id";
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return this.kafkaProperties;
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                return new DeserializerConfig(StringDeserializer.class, LongDeserializer.class);
+            }
         }
-
-        @Override
-        public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUniqueAppId(final ConsumerAppConfiguration config) {
-            return "app-id";
-        }
-
-        @Override
-        public Map<String, Object> createKafkaProperties() {
-            return this.kafkaProperties;
-        }
-
-        @Override
-        public SerializationConfig defaultSerializationConfig() {
-            return new DeserializerConfig(StringDeserializer.class, LongDeserializer.class);
-        }
-    }
 }

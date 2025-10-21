@@ -24,11 +24,14 @@
 
 package com.bakdata.kafka.consumerproducer.apps;
 
+import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
@@ -42,21 +45,21 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 @Getter
 @RequiredArgsConstructor
-public class StringConsumerProducer implements ConsumerProducerApp {
+public class MirrorValueWithAvroConsumerProducer implements ConsumerProducerApp {
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     @Override
     public SerializerDeserializerConfig defaultSerializationConfig() {
-        return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
-                StringDeserializer.class, StringDeserializer.class);
+        return new SerializerDeserializerConfig(StringSerializer.class, SpecificAvroSerializer.class,
+                StringDeserializer.class, SpecificAvroDeserializer.class);
     }
 
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
         return () -> {
-            try (final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
-                    final Producer<String, String> producer = builder.producerBuilder().createProducer()) {
+            try (final Consumer<String, TestRecord> consumer = builder.consumerBuilder().createConsumer();
+                    final Producer<String, TestRecord> producer = builder.producerBuilder().createProducer()) {
                 this.initConsumer(consumer, producer, builder);
             }
         };
@@ -67,11 +70,11 @@ public class StringConsumerProducer implements ConsumerProducerApp {
         return "app-id";
     }
 
-    private void initConsumer(final Consumer<String, String> consumer, final Producer<String, String> producer,
+    private void initConsumer(final Consumer<String, TestRecord> consumer, final Producer<String, TestRecord> producer,
             final ConsumerProducerBuilder builder) {
         consumer.subscribe(builder.topics().getInputTopics());
         while (this.running.get()) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
+            final ConsumerRecords<String, TestRecord> consumerRecords = consumer.poll(Duration.ofMillis(100L));
             consumerRecords.forEach(record -> producer.send(
                     new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(), record.value())));
         }

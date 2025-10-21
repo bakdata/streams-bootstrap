@@ -43,7 +43,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
 @RequiredArgsConstructor
-public class StringConsumer implements ConsumerApp {
+public class StringPatternConsumer implements ConsumerApp {
 
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
     private final AtomicBoolean running = new AtomicBoolean(true);
@@ -63,7 +63,7 @@ public class StringConsumer implements ConsumerApp {
     }
 
     private void initConsumer(final Consumer<String, String> consumer, final ConsumerBuilder builder) {
-        consumer.subscribe(builder.topics().getInputTopics());
+        consumer.subscribe(builder.topics().getInputPattern());
         while (this.running.get()) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
             consumerRecords.forEach(this.consumedRecords::add);

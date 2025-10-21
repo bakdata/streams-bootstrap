@@ -34,13 +34,9 @@ import lombok.RequiredArgsConstructor;
  * @param <T> type of {@link ConsumerProducerApp} created by this application
  */
 @RequiredArgsConstructor
-public final class SimpleKafkaConsumerProducerApplication<T extends ConsumerProducerApp> extends KafkaConsumerProducerApplication<T> {
+public final class SimpleKafkaConsumerProducerApplication<T extends ConsumerProducerApp>
+        extends KafkaConsumerProducerApplication<T> {
     private final @NonNull Supplier<T> appFactory;
-
-    // TODO update javadocs
-    // TODO fix input pattern
-    // TODO add helm charts
-    // TODO update/add readme
 
     @Override
     public T createApp() {

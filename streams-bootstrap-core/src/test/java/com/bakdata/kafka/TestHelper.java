@@ -26,6 +26,8 @@ package com.bakdata.kafka;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunner;
+import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;

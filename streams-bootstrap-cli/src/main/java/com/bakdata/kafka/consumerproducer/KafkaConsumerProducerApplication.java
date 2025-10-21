@@ -84,7 +84,6 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",
             converter = {UseDefaultConverter.class, StringListConverter.class})
     private Map<String, List<String>> labeledInputTopics = emptyMap();
-    // TODO is pattern working?
     @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
             description = "Additional labeled input patterns")
     private Map<String, Pattern> labeledInputPatterns = emptyMap();
@@ -94,8 +93,9 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
             description = "Additional labeled output topics")
     private Map<String, String> labeledOutputTopics = emptyMap();
     @CommandLine.Option(names = "--application-id",
-            description = "Unique application ID to use for Kafka ConsumerProducer. Can also be provided by implementing "
-                    + "ConsumerProducerApp#getUniqueAppId()")
+            description =
+                    "Unique application ID to use for Kafka ConsumerProducer. Can also be provided by implementing "
+                            + "ConsumerProducerApp#getUniqueAppId()")
     private String applicationId;
 
     /**

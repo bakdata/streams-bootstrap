@@ -69,7 +69,6 @@ public interface ConsumerProducerApp extends App<StreamsTopicConfig, StreamsClea
         return new StreamsCleanUpConfiguration();
     }
 
-    // TODO why can't we use SerDe like Streams?
     @Override
     SerializerDeserializerConfig defaultSerializationConfig();
 }

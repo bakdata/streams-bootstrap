@@ -27,8 +27,10 @@ package com.bakdata.kafka.consumerproducer;
 import static com.bakdata.kafka.consumerproducer.ConsumerProducerCleanUpRunnerTest.createStringConsumerProducer;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
+import com.bakdata.kafka.ConsumerGroupVerifier;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
+import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -48,21 +50,23 @@ class ConsumerProducerRunnerTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {
+        final RuntimeConfiguration configuration = this.createConfig();
         try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ConsumerProducerRunner runner = app.withRuntimeConfiguration(this.createConfig())
+                final ConsumerProducerRunner runner = app.withRuntimeConfiguration(configuration)
                         .createRunner()) {
+            final ConsumerGroupVerifier consumerGroupVerifier = ConsumerGroupVerifier.verify(app, configuration);
             final KafkaTestClient testClient = this.newTestClient();
             final String inputTopic = app.getTopics().getInputTopics().get(0);
             final String outputTopic = app.getTopics().getOutputTopic();
             testClient.createTopic(inputTopic);
             testClient.createTopic(outputTopic);
             runAsync(runner);
+            awaitProcessing(consumerGroupVerifier);
 
             testClient.send()
                     .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(inputTopic, List.of(new SimpleProducerRecord<>("foo", "bar")));
-
 
             this.softly.assertThat(testClient.read()
                             .with(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)

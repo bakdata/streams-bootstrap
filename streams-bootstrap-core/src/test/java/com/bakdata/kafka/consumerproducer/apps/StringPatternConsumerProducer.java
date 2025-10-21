@@ -22,57 +22,59 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer.apps;
+package com.bakdata.kafka.consumerproducer.apps;
 
-import com.bakdata.kafka.DeserializerConfig;
-import com.bakdata.kafka.consumer.ConsumerApp;
-import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
-import com.bakdata.kafka.consumer.ConsumerBuilder;
-import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
+import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 @Getter
 @RequiredArgsConstructor
-public class StringConsumer implements ConsumerApp {
+public class StringPatternConsumerProducer implements ConsumerProducerApp {
 
-    private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     @Override
-    public DeserializerConfig defaultSerializationConfig() {
-        return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
+    public SerializerDeserializerConfig defaultSerializationConfig() {
+        return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                StringDeserializer.class, StringDeserializer.class);
     }
 
     @Override
-    public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+    public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
         return () -> {
-            try (final Consumer<String, String> consumer = builder.createConsumer()) {
-                this.initConsumer(consumer, builder);
+            try (final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
+                    final Producer<String, String> producer = builder.producerBuilder().createProducer()) {
+                this.initConsumer(consumer, producer, builder);
             }
         };
     }
 
-    private void initConsumer(final Consumer<String, String> consumer, final ConsumerBuilder builder) {
-        consumer.subscribe(builder.topics().getInputTopics());
-        while (this.running.get()) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
-            consumerRecords.forEach(this.consumedRecords::add);
-        }
+    @Override
+    public String getUniqueAppId(final StreamsAppConfiguration topics) {
+        return "app-id";
     }
 
-    @Override
-    public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
-        return "app-id";
+    private void initConsumer(final Consumer<String, String> consumer, final Producer<String, String> producer,
+            final ConsumerProducerBuilder builder) {
+        consumer.subscribe(builder.topics().getInputPattern());
+        while (this.running.get()) {
+            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
+            consumerRecords.forEach(record -> producer.send(
+                    new ProducerRecord<>(builder.topics().getOutputTopic(), record.key(), record.value())));
+        }
     }
 
     public void shutdown() {

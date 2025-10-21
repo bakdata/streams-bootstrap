@@ -24,9 +24,6 @@
 
 package com.bakdata.kafka.consumer;
 
-
-import static org.mockito.Mockito.verify;
-
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.ExecutableApp;
@@ -41,10 +38,11 @@ import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
+import com.bakdata.kafka.consumer.apps.StringPatternConsumer;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -76,20 +74,12 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         return new ConfiguredConsumerApp<>(new StringConsumer(), new ConsumerAppConfiguration(topics));
     }
 
-    // TODO
-//    private static ConfiguredConsumerApp<ConsumerApp> createAvroKeyApplication() {
-//        final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
-//                .inputTopics(List.of("input"))
-//                .build();
-//        return new ConfiguredConsumerApp<>(new AvroKeyConsumer(), topics);
-//    }
-//
-//    private static ConfiguredConsumerApp<ConsumerApp> createAvroValueApplication() {
-//        final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
-//                .inputTopics(List.of("input"))
-//                .build();
-//        return new ConfiguredConsumerApp<>(new AvroValueConsumer(), topics);
-//    }
+    static ConfiguredConsumerApp<ConsumerApp> createStringPatternApplication() {
+        final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
+                .inputPattern(Pattern.compile(".*_topic"))
+                .build();
+        return new ConfiguredConsumerApp<>(new StringPatternConsumer(), new ConsumerAppConfiguration(topics));
+    }
 
     private static void reset(final ExecutableApp<?, ConsumerCleanUpRunner, ?> app) {
         try (final ConsumerCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
@@ -113,6 +103,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         return app.withRuntimeConfiguration(runtimeConfiguration);
     }
 
+    // TODO add description like streamscleanuprunnertest.assertContent?
     private void assertContent(final Collection<ConsumerRecord<String, String>> consumedRecords,
             final Iterable<? extends KeyValue<String, String>> expectedValues) {
         Awaitility.await()
@@ -121,7 +112,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                     final List<KeyValue<String, String>> consumedKeyValues = consumedRecords
                             .stream()
                             .map(TestHelper::toKeyValue)
-                            .collect(Collectors.toList());
+                            .toList();
                     this.softly.assertThat(consumedKeyValues)
                             .containsExactlyInAnyOrderElementsOf(expectedValues);
                 });
@@ -164,10 +155,11 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             this.assertContent(stringConsumer.getConsumedRecords(), expectedValues);
 
             try (final AdminClientX adminClient = testClient.admin()) {
-                final ConsumerGroupClient consumerGroupClient = adminClient.consumerGroups().group(app.getUniqueAppId());
+                final ConsumerGroupClient consumerGroupClient =
+                        adminClient.consumerGroups().group(app.getUniqueAppId());
                 this.softly.assertThat(consumerGroupClient.exists())
-                    .as("Consumer group exists")
-                    .isTrue();
+                        .as("Consumer group exists")
+                        .isTrue();
             }
 
             stringConsumer.shutdown();
@@ -175,7 +167,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             clean(executableApp);
 
             try (final AdminClientX adminClient = testClient.admin()) {
-                final ConsumerGroupClient consumerGroupClient = adminClient.consumerGroups().group(app.getUniqueAppId());
+                final ConsumerGroupClient consumerGroupClient =
+                        adminClient.consumerGroups().group(app.getUniqueAppId());
                 this.softly.assertThat(consumerGroupClient.exists())
                         .as("Consumer group is deleted")
                         .isFalse();
@@ -296,40 +289,43 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         }
     }
 
-//    TODO
-//    @Test
-//    void shouldReprocessAlreadySeenRecordsWithPattern() {
-//        try (final ConfiguredConsumerApp<ConsumerApp> app = createWordCountPatternApplication();
-//                final ExecutableConsumerApp<ConsumerApp> executableApp = this.createExecutableApp(app,
-//                        this.createConfig())) {
-//            final KafkaTestClient testClient = this.newTestClient();
-//            testClient.createTopic(app.getTopics().getOutputTopic());
-//            testClient.send()
-//                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-//                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-//                    .to("input_topic", List.of(
-//                            new SimpleProducerRecord<>(null, "a"),
-//                            new SimpleProducerRecord<>(null, "b")
-//                    ));
-//            testClient.send()
-//                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-//                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-//                    .to("another_topic", List.of(
-//                            new SimpleProducerRecord<>(null, "c")
-//                    ));
-//
-//            run(executableApp);
-//            this.assertSize(app.getTopics().getOutputTopic(), 3);
-//            run(executableApp);
-//            this.assertSize(app.getTopics().getOutputTopic(), 3);
-//
-//            // Wait until all Consumer application are completely stopped before triggering cleanup
-//            awaitClosed(executableApp);
-//            reset(executableApp);
-//
-//            run(executableApp);
-//            this.assertSize(app.getTopics().getOutputTopic(), 6);
-//        }
-//    }
+    @Test
+    void shouldReprocessAlreadySeenRecordsWithPattern() {
+        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringPatternApplication();
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
+                        this.createConfig())) {
+            final String topic = "input_topic";
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(topic);
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to(topic, List.of(
+                            new SimpleProducerRecord<>("blub", "blub"),
+                            new SimpleProducerRecord<>("bla", "bla"),
+                            new SimpleProducerRecord<>("blub", "blub")
+                    ));
+
+            final StringPatternConsumer stringConsumer = (StringPatternConsumer) app.app();
+
+            run(executableApp);
+            awaitProcessing(executableApp);
+            this.assertSize(stringConsumer.getConsumedRecords(), 3);
+
+            run(executableApp);
+            awaitProcessing(executableApp);
+            this.assertSize(stringConsumer.getConsumedRecords(), 3);
+
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            stringConsumer.shutdown();
+            awaitClosed(executableApp);
+            reset(executableApp);
+
+            stringConsumer.start();
+            run(executableApp);
+            awaitProcessing(executableApp);
+            this.assertSize(stringConsumer.getConsumedRecords(), 6);
+        }
+    }
 
 }

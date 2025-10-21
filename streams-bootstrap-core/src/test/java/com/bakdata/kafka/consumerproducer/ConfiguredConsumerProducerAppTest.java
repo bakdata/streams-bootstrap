@@ -27,6 +27,8 @@ package com.bakdata.kafka.consumerproducer;
 import static java.util.Collections.emptyMap;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -37,7 +39,7 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -59,7 +61,15 @@ class ConfiguredConsumerProducerAppTest {
                         "foo", "bar",
                         "hello", "world"
                 )), emptyTopicConfig());
-        assertThat(configuredApp.getKafkaConsumerProperties(RuntimeConfiguration.create("fake")
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")
+                .with(Map.of(
+                        "foo", "baz",
+                        "kafka", "streams"
+                ))))
+                .containsEntry("foo", "baz")
+                .containsEntry("kafka", "streams")
+                .containsEntry("hello", "world");
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")
                 .with(Map.of(
                         "foo", "baz",
                         "kafka", "streams"
@@ -78,7 +88,7 @@ class ConfiguredConsumerProducerAppTest {
                         "foo", "bar",
                         "hello", "world"
                 )), emptyTopicConfig());
-        assertThat(configuredApp.getKafkaConsumerProperties(RuntimeConfiguration.create("fake")))
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry("foo", "baz")
                 .containsEntry("kafka", "streams")
                 .containsEntry("hello", "world");
@@ -88,9 +98,11 @@ class ConfiguredConsumerProducerAppTest {
     void shouldSetDefaultSerde() {
         final ConfiguredConsumerProducerApp<ConsumerProducerApp> configuredApp =
                 new ConfiguredConsumerProducerApp<>(new TestApplication(), emptyTopicConfig());
-        assertThat(configuredApp.getKafkaConsumerProperties(RuntimeConfiguration.create("fake")))
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
                 .containsEntry(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .containsEntry(VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
+                .containsEntry(VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
+                .containsEntry(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .containsEntry(VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
     }
 
     @Test
@@ -101,7 +113,7 @@ class ConfiguredConsumerProducerAppTest {
                 .with(Map.of(
                         KEY_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class
                 ));
-        assertThatThrownBy(() -> configuredApp.getKafkaConsumerProperties(runtimeConfiguration))
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'key.deserializer' should not be configured already");
     }
@@ -114,7 +126,7 @@ class ConfiguredConsumerProducerAppTest {
                 .with(Map.of(
                         VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class
                 ));
-        assertThatThrownBy(() -> configuredApp.getKafkaConsumerProperties(runtimeConfiguration))
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'value.deserializer' should not be configured already");
     }
@@ -125,9 +137,9 @@ class ConfiguredConsumerProducerAppTest {
                 new ConfiguredConsumerProducerApp<>(new TestApplication(), emptyTopicConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .with(Map.of(
-                        ConsumerConfig.GROUP_ID_CONFIG, "my-app"
+                        CommonClientConfigs.GROUP_ID_CONFIG, "my-app"
                 ));
-        assertThatThrownBy(() -> configuredApp.getKafkaConsumerProperties(runtimeConfiguration))
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'group.id' should not be configured already");
     }
@@ -136,10 +148,10 @@ class ConfiguredConsumerProducerAppTest {
     void shouldThrowIfBootstrapServersHasBeenConfiguredDifferently() {
         final ConfiguredConsumerProducerApp<ConsumerProducerApp> configuredApp =
                 new ConfiguredConsumerProducerApp<>(new TestApplication(Map.of(
-                        ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
+                        CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "my-kafka"
                 )), emptyTopicConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake");
-        assertThatThrownBy(() -> configuredApp.getKafkaConsumerProperties(runtimeConfiguration))
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'bootstrap.servers' should not be configured already");
     }
@@ -152,39 +164,36 @@ class ConfiguredConsumerProducerAppTest {
                 )), emptyTopicConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
                 .withSchemaRegistryUrl("fake");
-        assertThatThrownBy(() -> configuredApp.getKafkaConsumerProperties(runtimeConfiguration))
+        assertThatThrownBy(() -> configuredApp.getKafkaProperties(runtimeConfiguration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("'schema.registry.url' should not be configured already");
     }
 
-    // TODO right now overriding createKafkaProperties applies the properties to both consumer and producer
-    @RequiredArgsConstructor
-    private static class TestApplication implements ConsumerProducerApp {
+    private record TestApplication(@NonNull Map<String, Object> kafkaProperties) implements ConsumerProducerApp {
 
-        private final @NonNull Map<String, Object> kafkaProperties;
+            private TestApplication() {
+                this(emptyMap());
+            }
 
-        private TestApplication() {
-            this(emptyMap());
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return this.kafkaProperties;
+            }
+
+            @Override
+            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final StreamsAppConfiguration topics) {
+                return "app-id";
+            }
+
+            @Override
+            public SerializerDeserializerConfig defaultSerializationConfig() {
+                return new SerializerDeserializerConfig(StringSerializer.class, LongSerializer.class,
+                        StringDeserializer.class, LongDeserializer.class);
+            }
         }
-
-        @Override
-        public Map<String, Object> createKafkaProperties() {
-            return this.kafkaProperties;
-        }
-
-        @Override
-        public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUniqueAppId(final StreamsAppConfiguration topics) {
-            return "app-id";
-        }
-
-        @Override
-        public SerializerDeserializerConfig defaultSerializationConfig() {
-            return new SerializerDeserializerConfig(StringSerializer.class, LongSerializer.class, StringDeserializer.class, LongDeserializer.class);
-        }
-    }
 }
