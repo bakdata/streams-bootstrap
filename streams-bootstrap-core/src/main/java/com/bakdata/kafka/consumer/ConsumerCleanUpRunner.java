@@ -118,7 +118,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
             try {
                 bootstrapServers = this.adminClient.admin().describeCluster().nodes().get()
                         .stream()
-                        .map(node -> node.host() + ":" + node.port())
+                        .map(node -> "%s:%s".formatted(node.host(), node.port()))
                         .toList();
             } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
