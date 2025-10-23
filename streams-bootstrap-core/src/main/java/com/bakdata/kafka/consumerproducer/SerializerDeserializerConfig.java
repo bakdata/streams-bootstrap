@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
 
 /**
  * Defines how to (de)serialize the data in a Kafka consumer or producer
@@ -54,5 +56,13 @@ public class SerializerDeserializerConfig implements SerializationConfig {
                         Map.Entry::getValue,
                         (v1, v2) -> v2
                 ));
+    }
+
+    public SerializerDeserializerConfig(final @NonNull Class<? extends Serializer> keySerializer,
+            final @NonNull Class<? extends Serializer> valueSerializer,
+            final @NonNull Class<? extends Deserializer> keyDeserializer,
+            final @NonNull Class<? extends Deserializer> valueDeserializer) {
+        this.serializerConfig = new SerializerConfig(keySerializer, valueSerializer);
+        this.deserializerConfig = new DeserializerConfig(keyDeserializer, valueDeserializer);
     }
 }
