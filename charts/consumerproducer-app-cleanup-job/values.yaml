@@ -34,7 +34,7 @@ kafka:
   labeledInputPatterns: {}
   #   label: .*-input
   # outputTopic: output
-  labeledOutputTopics: { }
+  labeledOutputTopics: {}
   #   label: output
   # errorTopic: error
   deleteOutput: false
