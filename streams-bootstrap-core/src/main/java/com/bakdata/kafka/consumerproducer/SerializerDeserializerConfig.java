@@ -24,15 +24,15 @@
 
 package com.bakdata.kafka.consumerproducer;
 
+import com.bakdata.kafka.DeserializerConfig;
 import com.bakdata.kafka.SerializationConfig;
+import com.bakdata.kafka.producer.SerializerConfig;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.Deserializer;
-import org.apache.kafka.common.serialization.Serializer;
 
 /**
  * Defines how to (de)serialize the data in a Kafka consumer or producer
@@ -40,22 +40,19 @@ import org.apache.kafka.common.serialization.Serializer;
 @RequiredArgsConstructor
 @With
 public class SerializerDeserializerConfig implements SerializationConfig {
-    // TODO private final SerializationConfig serializationConfig;
 
-
-
-    private final @NonNull Class<? extends Serializer> keySerializer;
-    private final @NonNull Class<? extends Serializer> valueSerializer;
-    private final @NonNull Class<? extends Deserializer> keyDeserializer;
-    private final @NonNull Class<? extends Deserializer> valueDeserializer;
+    private final @NonNull SerializerConfig serializerConfig;
+    private final @NonNull DeserializerConfig deserializerConfig;
 
     @Override
     public Map<String, Object> createProperties() {
-        return Map.of(
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, this.keySerializer,
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, this.valueSerializer,
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.keyDeserializer,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, this.valueDeserializer
-        );
+        return Stream.concat(Stream.of(this.serializerConfig.createProperties()),
+                        Stream.of(this.deserializerConfig.createProperties()))
+                .flatMap(map -> map.entrySet().stream())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (v1, v2) -> v2
+                ));
     }
 }
