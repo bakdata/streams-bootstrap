@@ -47,13 +47,13 @@ import picocli.CommandLine.Mixin;
  * <p>The base class for creating Kafka Streams applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
- *     <li>{@link InputOptions#getInputTopics()}</li>
- *     <li>{@link InputOptions#getInputPattern()}</li>
- *     <li>{@link InputOptions#getLabeledInputTopics()}</li>
- *     <li>{@link InputOptions#getLabeledInputPatterns()}</li>
- *     <li>{@link OutputOptions#getOutputTopic()}</li>
- *     <li>{@link OutputOptions#getLabeledOutputTopics()}</li>
- *     <li>{@link ErrorOptions#getErrorTopic()}</li>
+ *     <li>{@link #getInputTopics()}</li>
+ *     <li>{@link #getInputPattern()}</li>
+ *     <li>{@link #getLabeledInputTopics()}</li>
+ *     <li>{@link #getLabeledInputPatterns()}</li>
+ *     <li>{@link #getOutputTopic()}</li>
+ *     <li>{@link #getLabeledOutputTopics()}</li>
+ *     <li>{@link #getErrorTopic()}</li>
  *     <li>{@link #volatileGroupInstanceId}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options.  Run it by

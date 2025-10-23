@@ -41,8 +41,8 @@ import picocli.CommandLine.Mixin;
  * <p>The base class for creating Kafka Producer applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
- *     <li>{@link OutputOptions#getOutputTopic()}</li>
- *     <li>{@link OutputOptions#getLabeledOutputTopics()}</li>
+ *     <li>{@link #getOutputTopic()}</li>
+ *     <li>{@link #getLabeledOutputTopics()}</li>
  * </ul>
  * To implement your Kafka Producer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
