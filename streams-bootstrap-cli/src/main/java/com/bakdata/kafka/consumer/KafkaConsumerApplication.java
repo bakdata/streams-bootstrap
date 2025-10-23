@@ -24,34 +24,30 @@
 
 package com.bakdata.kafka.consumer;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.kafka.KafkaApplication;
-import com.bakdata.kafka.StringListConverter;
-import java.util.List;
-import java.util.Map;
+import com.bakdata.kafka.mixin.ErrorOptions;
+import com.bakdata.kafka.mixin.InputOptions;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.UseDefaultConverter;
+import picocli.CommandLine.Mixin;
 
 
 /**
  * <p>The base class for creating Kafka Consumer applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
- *     <li>{@link #inputTopics}</li>
- *     <li>{@link #inputPattern}</li>
- *     <li>{@link #errorTopic}</li>
- *     <li>{@link #labeledInputTopics}</li>
- *     <li>{@link #labeledInputPatterns}</li>
+ *     <li>{@link #getInputTopics()}</li>
+ *     <li>{@link #getInputPattern()}</li>
+ *     <li>{@link #getErrorTopic()}</li>
+ *     <li>{@link #getLabeledInputTopics()}</li>
+ *     <li>{@link #getLabeledInputPatterns()}</li>
  *     <li>{@link #applicationId}</li>
  * </ul>
  * To implement your Kafka Consumer application inherit from this class and add your custom options.  Run it by
@@ -70,20 +66,12 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
                 ConfiguredConsumerApp<T>, ConsumerTopicConfig, T, ConsumerAppConfiguration> {
     // TODO charts consumerproducer and streams combine? - difference
     // TODO helm charts - somehow combine?
-
-    @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
-    private List<String> inputTopics = emptyList();
-    @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
-    private Pattern inputPattern;
-    // TODO necessary?
-    @CommandLine.Option(names = "--error-topic", description = "Error topic")
-    private String errorTopic;
-    @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",
-            converter = {UseDefaultConverter.class, StringListConverter.class})
-    private Map<String, List<String>> labeledInputTopics = emptyMap();
-    @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
-            description = "Additional labeled input patterns")
-    private Map<String, Pattern> labeledInputPatterns = emptyMap();
+    @Mixin
+    @Delegate
+    private InputOptions inputOptions = new InputOptions();
+    @Mixin
+    @Delegate
+    private ErrorOptions errorOptions = new ErrorOptions();
     @CommandLine.Option(names = "--application-id",
             description = "Unique application ID to use for Kafka Consumer. Can also be provided by implementing "
                     + "ConsumerApp#getUniqueAppId()")

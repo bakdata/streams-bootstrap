@@ -24,36 +24,33 @@
 
 package com.bakdata.kafka.consumerproducer;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.kafka.KafkaApplication;
-import com.bakdata.kafka.StringListConverter;
-import java.util.List;
-import java.util.Map;
+import com.bakdata.kafka.mixin.ErrorOptions;
+import com.bakdata.kafka.mixin.InputOptions;
+import com.bakdata.kafka.mixin.OutputOptions;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.UseDefaultConverter;
+import picocli.CommandLine.Mixin;
 
 
 /**
  * <p>The base class for creating Kafka ConsumerProducer applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
- *     <li>{@link #inputTopics}</li>
- *     <li>{@link #inputPattern}</li>
- *     <li>{@link #errorTopic}</li>
- *     <li>{@link #labeledInputTopics}</li>
- *     <li>{@link #labeledInputPatterns}</li>
- *     <li>{@link #outputTopic}</li>
- *     <li>{@link #labeledOutputTopics}</li>
+ *     <li>{@link #getInputTopics()}</li>
+ *     <li>{@link #getInputPattern()}</li>
+ *     <li>{@link #getErrorTopic()}</li>
+ *     <li>{@link #getLabeledInputTopics()}</li>
+ *     <li>{@link #getLabeledInputPatterns()}</li>
+ *     <li>{@link #getOutputTopic()}</li>
+ *     <li>{@link #getLabeledOutputTopics()}</li>
  *     <li>{@link #applicationId}</li>
  * </ul>
  * To implement your Kafka ConsumerProducer application inherit from this class and add your custom options.  Run it by
@@ -71,24 +68,15 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
         KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions,
                 ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, ConsumerProducerTopicConfig, T,
                 ConsumerProducerAppConfiguration> {
-    // TODO mixin inputtopicconfig - separate error, separate input, separate output, what about applicationid? maybe consumeroptions?
-    @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
-    private List<String> inputTopics = emptyList();
-    @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
-    private Pattern inputPattern;
-    @CommandLine.Option(names = "--error-topic", description = "Error topic")
-    private String errorTopic;
-    @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",
-            converter = {UseDefaultConverter.class, StringListConverter.class})
-    private Map<String, List<String>> labeledInputTopics = emptyMap();
-    @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
-            description = "Additional labeled input patterns")
-    private Map<String, Pattern> labeledInputPatterns = emptyMap();
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    private String outputTopic;
-    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
-            description = "Additional labeled output topics")
-    private Map<String, String> labeledOutputTopics = emptyMap();
+    @Mixin
+    @Delegate
+    private InputOptions inputOptions = new InputOptions();
+    @Mixin
+    @Delegate
+    private OutputOptions outputOptions = new OutputOptions();
+    @Mixin
+    @Delegate
+    private ErrorOptions errorOptions = new ErrorOptions();
     @CommandLine.Option(names = "--application-id",
             description =
                     "Unique application ID to use for Kafka ConsumerProducer. Can also be provided by implementing "
@@ -127,13 +115,13 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     @Override
     public final ConsumerProducerTopicConfig createTopicConfig() {
         return ConsumerProducerTopicConfig.builder()
-                .inputTopics(this.inputTopics)
-                .labeledInputTopics(this.labeledInputTopics)
-                .inputPattern(this.inputPattern)
-                .labeledInputPatterns(this.labeledInputPatterns)
+                .inputTopics(this.getInputTopics())
+                .labeledInputTopics(this.getLabeledInputTopics())
+                .inputPattern(this.getInputPattern())
+                .labeledInputPatterns(this.getLabeledInputPatterns())
                 .outputTopic(this.getOutputTopic())
                 .labeledOutputTopics(this.getLabeledOutputTopics())
-                .errorTopic(this.errorTopic)
+                .errorTopic(this.getErrorTopic())
                 .build();
     }
 
