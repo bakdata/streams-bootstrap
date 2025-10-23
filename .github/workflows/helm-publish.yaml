@@ -36,7 +36,7 @@ jobs:
     needs: get-gradle-version
     with:
       charts-path: "./charts"
-      subdirs: "['producer-app','producer-app-cleanup-job','streams-app','streams-app-cleanup-job']"
+      subdirs: "['producer-app','producer-app-cleanup-job','streams-app','streams-app-cleanup-job','consumer-app','consumer-app-cleanup-job','consumerproducer-app','consumerproducer-app-cleanup-job']"
       gh-pages-branch: gh-pages
       version: ${{ needs.get-gradle-version.outputs.version }}
     secrets:
