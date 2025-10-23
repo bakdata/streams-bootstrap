@@ -127,6 +127,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
                 throw new CleanUpException("Error getting bootstrap servers", e);
             }
 
+            // TODO don't use streamsresetter, use consumergroupclient?
             StreamsResetterClient.runResetter(inputTopics,
                     allTopics,
                     ConsumerCleanUpRunner.this.groupId,

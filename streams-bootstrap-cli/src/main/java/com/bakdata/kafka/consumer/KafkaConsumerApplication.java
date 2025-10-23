@@ -68,10 +68,14 @@ import picocli.CommandLine.UseDefaultConverter;
 public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
         KafkaApplication<ConsumerRunner, ConsumerCleanUpRunner, ConsumerExecutionOptions, ExecutableConsumerApp<T>,
                 ConfiguredConsumerApp<T>, ConsumerTopicConfig, T, ConsumerAppConfiguration> {
+    // TODO charts consumerproducer and streams combine? - difference
+    // TODO helm charts - somehow combine?
+
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
     private Pattern inputPattern;
+    // TODO necessary?
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     private String errorTopic;
     @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",

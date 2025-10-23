@@ -60,6 +60,8 @@ public class Mirror implements ConsumerProducerApp {
                     this.consumer = builder.consumerBuilder().createConsumer();
                     this.consumer.subscribe(builder.topics().getInputTopics());
                     this.producer = builder.producerBuilder().createProducer();
+                    // TODO handle runtime in streams-bootstrap
+                    // TODO bring this loop into streams-bootstrap and allow consumer access to subscribe and so on - countdownlatch to close poll loop
                     while (this.running) {
                         final ConsumerRecords<String, String> consumerRecords =
                                 this.consumer.poll(Duration.ofMillis(100L));
