@@ -37,6 +37,9 @@ import lombok.Setter;
 import picocli.CommandLine;
 import picocli.CommandLine.UseDefaultConverter;
 
+/**
+ * Shared CLI options to configure Kafka applications that consume input data.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

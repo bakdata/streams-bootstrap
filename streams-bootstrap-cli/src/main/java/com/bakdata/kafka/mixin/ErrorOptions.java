@@ -29,6 +29,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import picocli.CommandLine;
 
+/**
+ * Shared CLI options to configure Kafka applications with an error topic.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

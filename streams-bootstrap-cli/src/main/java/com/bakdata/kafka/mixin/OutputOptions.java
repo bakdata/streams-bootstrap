@@ -32,6 +32,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import picocli.CommandLine;
 
+/**
+ * Shared CLI options to configure Kafka applications that produce output data.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
