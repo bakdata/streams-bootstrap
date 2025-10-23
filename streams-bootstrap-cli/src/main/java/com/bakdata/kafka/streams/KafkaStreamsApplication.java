@@ -24,19 +24,16 @@
 
 package com.bakdata.kafka.streams;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.kafka.KafkaApplication;
-import com.bakdata.kafka.StringListConverter;
-import java.util.List;
-import java.util.Map;
+import com.bakdata.kafka.mixin.ErrorOptions;
+import com.bakdata.kafka.mixin.InputOptions;
+import com.bakdata.kafka.mixin.OutputOptions;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
@@ -44,18 +41,19 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.UseDefaultConverter;
-
+import picocli.CommandLine.Mixin;
 
 /**
  * <p>The base class for creating Kafka Streams applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
- *     <li>{@link #inputTopics}</li>
- *     <li>{@link #inputPattern}</li>
- *     <li>{@link #errorTopic}</li>
- *     <li>{@link #labeledInputTopics}</li>
- *     <li>{@link #labeledInputPatterns}</li>
+ *     <li>{@link InputOptions#getInputTopics()}</li>
+ *     <li>{@link InputOptions#getInputPattern()}</li>
+ *     <li>{@link InputOptions#getLabeledInputTopics()}</li>
+ *     <li>{@link InputOptions#getLabeledInputPatterns()}</li>
+ *     <li>{@link OutputOptions#getOutputTopic()}</li>
+ *     <li>{@link OutputOptions#getLabeledOutputTopics()}</li>
+ *     <li>{@link ErrorOptions#getErrorTopic()}</li>
  *     <li>{@link #volatileGroupInstanceId}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options.  Run it by
@@ -72,24 +70,21 @@ import picocli.CommandLine.UseDefaultConverter;
 public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
         KafkaApplication<StreamsRunner, StreamsCleanUpRunner, StreamsExecutionOptions,
                 ExecutableStreamsApp<T>, ConfiguredStreamsApp<T>, StreamsTopicConfig, T, StreamsAppConfiguration> {
-    @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
-    private List<String> inputTopics = emptyList();
-    @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
-    private Pattern inputPattern;
-    @CommandLine.Option(names = "--error-topic", description = "Error topic")
-    private String errorTopic;
-    @CommandLine.Option(names = "--labeled-input-topics", split = ",", description = "Additional labeled input topics",
-            converter = {UseDefaultConverter.class, StringListConverter.class})
-    private Map<String, List<String>> labeledInputTopics = emptyMap();
-    @CommandLine.Option(names = "--labeled-input-patterns", split = ",",
-            description = "Additional labeled input patterns")
-    private Map<String, Pattern> labeledInputPatterns = emptyMap();
+    @Mixin
+    @Delegate
+    private InputOptions inputOptions = new InputOptions();
+    @Mixin
+    @Delegate
+    private OutputOptions outputOptions = new OutputOptions();
+    @Mixin
+    @Delegate
+    private ErrorOptions errorOptions = new ErrorOptions();
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
     @CommandLine.Option(names = "--application-id",
             description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
-                          + "StreamsApp#getUniqueAppId()")
+                    + "StreamsApp#getUniqueAppId()")
     private String applicationId;
 
     /**
@@ -97,7 +92,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
      * topics associated with the Kafka Streams application.
      */
     @Command(description = "Reset the Kafka Streams application. Additionally, delete the consumer group and all "
-                           + "output and intermediate topics associated with the Kafka Streams application.")
+            + "output and intermediate topics associated with the Kafka Streams application.")
     @Override
     public void clean() {
         super.clean();
@@ -108,7 +103,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
      * application.
      */
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
-                           + "Kafka Streams application.")
+            + "Kafka Streams application.")
     public void reset() {
         this.prepareClean();
         try (final CleanableApp<StreamsCleanUpRunner> app = this.createCleanableApp()) {
@@ -131,13 +126,13 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     @Override
     public final StreamsTopicConfig createTopicConfig() {
         return StreamsTopicConfig.builder()
-                .inputTopics(this.inputTopics)
-                .labeledInputTopics(this.labeledInputTopics)
-                .inputPattern(this.inputPattern)
-                .labeledInputPatterns(this.labeledInputPatterns)
+                .inputTopics(this.getInputTopics())
+                .labeledInputTopics(this.getLabeledInputTopics())
+                .inputPattern(this.getInputPattern())
+                .labeledInputPatterns(this.getLabeledInputPatterns())
                 .outputTopic(this.getOutputTopic())
                 .labeledOutputTopics(this.getLabeledOutputTopics())
-                .errorTopic(this.errorTopic)
+                .errorTopic(this.getErrorTopic())
                 .build();
     }
 
