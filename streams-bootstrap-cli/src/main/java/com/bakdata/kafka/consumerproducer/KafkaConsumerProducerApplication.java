@@ -71,7 +71,7 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
         KafkaApplication<ConsumerProducerRunner, ConsumerProducerCleanUpRunner, ConsumerProducerExecutionOptions,
                 ExecutableConsumerProducerApp<T>, ConfiguredConsumerProducerApp<T>, ConsumerProducerTopicConfig, T,
                 ConsumerProducerAppConfiguration> {
-    // TODO mixin inputtopicconfig
+    // TODO mixin inputtopicconfig - separate error, separate input, separate output, what about applicationid? maybe consumeroptions?
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();
     @CommandLine.Option(names = "--input-pattern", description = "Input pattern")
