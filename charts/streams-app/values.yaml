@@ -49,7 +49,10 @@ kafka:
   # applicationId: foo
 
 commandLine: {}
-#  MY_CLI_PARAM: "foo-bar"
+#  --my-cli-param: "foo-bar"
+commandLineList: []
+#  - --my-cli-param
+#  - foo-bar
 
 env: {}
 #  MY_ENV_VARIABLE: foo-bar
