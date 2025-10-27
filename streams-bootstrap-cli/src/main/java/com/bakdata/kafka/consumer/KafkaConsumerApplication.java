@@ -72,6 +72,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Mixin
     @Delegate
     private ErrorOptions errorOptions = new ErrorOptions();
+    // TODO also move applicationId?
     @CommandLine.Option(names = "--application-id",
             description = "Unique application ID to use for Kafka Consumer. Can also be provided by implementing "
                     + "ConsumerApp#getUniqueAppId()")
