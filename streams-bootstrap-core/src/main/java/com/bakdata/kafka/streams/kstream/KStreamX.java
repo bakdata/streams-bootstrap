@@ -1011,28 +1011,4 @@ public interface KStreamX<K, V> extends KStream<K, V> {
             FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
-
-    /**
-     * Add lineage information to each record in the stream. This will add the following headers
-     * <ul>
-     *     <li>{@link LineageHeaders#TOPIC_HEADER}</li>
-     *     <li>{@link LineageHeaders#PARTITION_HEADER}</li>
-     *     <li>{@link LineageHeaders#OFFSET_HEADER}</li>
-     * </ul>
-     *
-     * @return stream with added headers
-     */
-    KStreamX<K, V> withLineage();
-
-    /**
-     * Add lineage information to each record in the stream. This will add the following headers
-     * <ul>
-     *     <li>{@link LineageHeaders#TOPIC_HEADER}</li>
-     *     <li>{@link LineageHeaders#PARTITION_HEADER}</li>
-     *     <li>{@link LineageHeaders#OFFSET_HEADER}</li>
-     * </ul>
-     * @param named a {@link Named} config used to name the processor in the topology
-     * @return stream with added headers
-     */
-    KStreamX<K, V> withLineage(Named named);
 }

@@ -39,11 +39,9 @@ import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.errors.StreamsException;
@@ -3636,88 +3634,6 @@ class KStreamXTest {
                     .hasKey("foo")
                     .hasValue("quxbaz")
                     .expectNoMoreRecord();
-        }
-    }
-
-    @Test
-    void shouldAddLineage() {
-        final StringApp app = new StringApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KStreamX<String, String> input = builder.stream("input");
-                input.withLineage().to("output");
-            }
-        };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input().add("foo", "bar");
-            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
-            this.softly.assertThat(records)
-                    .hasSize(1)
-                    .anySatisfy(rekord -> {
-                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
-                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
-                        this.softly.assertThat(rekord.headers().toArray())
-                                .hasSize(3)
-                                .anySatisfy(header -> {
-                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
-                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
-                                            .isEqualTo("input");
-                                })
-                                .anySatisfy(header -> {
-                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
-                                    this.softly.assertThat(
-                                                    Integer.parseInt(new String(header.value(),
-                                                            StandardCharsets.UTF_8)))
-                                            .isEqualTo(0);
-                                })
-                                .anySatisfy(header -> {
-                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
-                                    this.softly.assertThat(
-                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
-                                            .isEqualTo(0L);
-                                });
-                    });
-        }
-    }
-
-    @Test
-    void shouldAddLineageNamed() {
-        final StringApp app = new StringApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KStreamX<String, String> input = builder.stream("input");
-                input.withLineage(Named.as("lineage")).to("output");
-            }
-        };
-        try (final TestTopology<String, String> topology = app.startApp()) {
-            topology.input().add("foo", "bar");
-            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
-            this.softly.assertThat(records)
-                    .hasSize(1)
-                    .anySatisfy(rekord -> {
-                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
-                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
-                        this.softly.assertThat(rekord.headers().toArray())
-                                .hasSize(3)
-                                .anySatisfy(header -> {
-                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
-                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
-                                            .isEqualTo("input");
-                                })
-                                .anySatisfy(header -> {
-                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
-                                    this.softly.assertThat(
-                                                    Integer.parseInt(new String(header.value(),
-                                                     StandardCharsets.UTF_8)))
-                                            .isEqualTo(0);
-                                })
-                                .anySatisfy(header -> {
-                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
-                                    this.softly.assertThat(
-                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
-                                            .isEqualTo(0L);
-                                });
-                    });
         }
     }
 

@@ -30,8 +30,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.Value;
+import org.apache.kafka.common.config.AbstractConfig;
+import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.common.config.ConfigDef.Importance;
+import org.apache.kafka.common.config.ConfigDef.Type;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.state.HostInfo;
 
@@ -39,36 +45,59 @@ import org.apache.kafka.streams.state.HostInfo;
  * Class for simplified access to configs provided by {@link StreamsConfig}
  */
 @Value
-public class StreamsConfigX {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class StreamsConfigX extends AbstractConfig {
 
+    public static final String LINEAGE_ENABLED_CONFIG = "streams.bootstrap.lineage.enabled";
+    private static final String LINEAGE_ENABLED_DOC = "";
+    private static final ConfigDef CONFIG_DEF = StreamsConfig.configDef()
+            .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC);
     @NonNull
     StreamsConfig streamsConfig;
 
+    public StreamsConfigX(final StreamsConfig streamsConfig) {
+        super(CONFIG_DEF, streamsConfig.originals());
+        this.streamsConfig = streamsConfig;
+    }
+
+    private static HostInfo createHostInfo(final String applicationServerConfig) {
+        final String[] hostAndPort = applicationServerConfig.split(":");
+        return new HostInfo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
+    }
+
     /**
      * Get the application id of the underlying {@link StreamsConfig}
+     *
      * @return application id
      * @see StreamsConfig#APPLICATION_ID_CONFIG
      */
     public String getAppId() {
-        return this.streamsConfig.getString(StreamsConfig.APPLICATION_ID_CONFIG);
+        return this.getString(StreamsConfig.APPLICATION_ID_CONFIG);
     }
 
     /**
      * Get the bootstrap servers of the underlying {@link StreamsConfig}
+     *
      * @return list of bootstrap servers
      * @see StreamsConfig#BOOTSTRAP_SERVERS_CONFIG
      */
     public List<String> getBoostrapServers() {
-        return this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
+        return this.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
+    }
+
+    public boolean isLineageEnabled() {
+        return this.getBoolean(LINEAGE_ENABLED_CONFIG);
     }
 
     /**
      * Get all configs of the underlying {@link StreamsConfig}
+     *
      * @return Kafka configs
      * @see StreamsConfig#originals()
      */
     public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.streamsConfig.originals());
+        return Collections.unmodifiableMap(this.originals());
     }
 
     /**
@@ -78,13 +107,8 @@ public class StreamsConfigX {
      * {@link StreamsConfig#APPLICATION_SERVER_CONFIG} is set; otherwise, an empty {@link Optional}.
      */
     public Optional<HostInfo> getApplicationServer() {
-        final String applicationServerConfig = this.streamsConfig.getString(APPLICATION_SERVER_CONFIG);
+        final String applicationServerConfig = this.getString(APPLICATION_SERVER_CONFIG);
         return applicationServerConfig.isEmpty() ? Optional.empty()
                 : Optional.of(createHostInfo(applicationServerConfig));
-    }
-
-    private static HostInfo createHostInfo(final String applicationServerConfig) {
-        final String[] hostAndPort = applicationServerConfig.split(":");
-        return new HostInfo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
     }
 }
