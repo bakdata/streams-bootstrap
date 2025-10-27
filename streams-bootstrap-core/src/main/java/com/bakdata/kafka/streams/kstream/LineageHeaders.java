@@ -37,7 +37,7 @@ import org.apache.kafka.common.header.Headers;
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class LineageHeaders {
-    private static final String LINEAGE_PREFIX = "lineage.";
+    private static final String LINEAGE_PREFIX = "streams.bootstrap.lineage.";
     /**
      * Header indicating the topic the record was read from.
      */
