@@ -91,6 +91,11 @@ public class StreamsConfigX extends AbstractConfig {
         return this.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
     }
 
+    /**
+     * Check if adding lineage headers is enabled. This is controlled by {@link #LINEAGE_ENABLED_CONFIG}
+     *
+     * @return true if lineage headers are added to streams and tables
+     */
     public boolean isLineageEnabled() {
         return this.getBoolean(LINEAGE_ENABLED_CONFIG);
     }
