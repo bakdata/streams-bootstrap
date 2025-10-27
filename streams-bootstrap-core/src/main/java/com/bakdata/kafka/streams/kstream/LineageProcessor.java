@@ -25,6 +25,7 @@
 package com.bakdata.kafka.streams.kstream;
 
 import java.util.Optional;
+import lombok.NoArgsConstructor;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessor;
@@ -32,6 +33,7 @@ import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
 import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 import org.apache.kafka.streams.processor.api.RecordMetadata;
 
+@NoArgsConstructor
 class LineageProcessor<K, V> implements FixedKeyProcessor<K, V, V> {
     private FixedKeyProcessorContext<K, V> context;
 

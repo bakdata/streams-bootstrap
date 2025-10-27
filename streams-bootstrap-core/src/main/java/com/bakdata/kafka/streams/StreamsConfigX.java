@@ -56,6 +56,11 @@ public class StreamsConfigX extends AbstractConfig {
     @NonNull
     StreamsConfig streamsConfig;
 
+    /**
+     * Create a new {@code StreamsConfigX} from a {@link StreamsConfig}
+     *
+     * @param streamsConfig streams config
+     */
     public StreamsConfigX(final StreamsConfig streamsConfig) {
         super(CONFIG_DEF, streamsConfig.originals());
         this.streamsConfig = streamsConfig;

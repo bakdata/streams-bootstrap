@@ -24,9 +24,11 @@
 
 package com.bakdata.kafka.streams.kstream;
 
+import lombok.NoArgsConstructor;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
+@NoArgsConstructor
 class LineageTransformer<K, V> implements ValueTransformerWithKey<K, V, V> {
 
     private ProcessorContext context;
