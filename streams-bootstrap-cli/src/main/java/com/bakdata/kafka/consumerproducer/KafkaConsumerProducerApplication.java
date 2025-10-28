@@ -25,6 +25,7 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
 import com.bakdata.kafka.mixin.OutputOptions;
@@ -51,7 +52,8 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getLabeledInputPatterns()}</li>
  *     <li>{@link #getOutputTopic()}</li>
  *     <li>{@link #getLabeledOutputTopics()}</li>
- *     <li>{@link #applicationId}</li>
+ *     <li>{@link #isVolatileGroupInstanceId()}</li>
+ *     <li>{@link #getApplicationId()} ()}</li>
  * </ul>
  * To implement your Kafka ConsumerProducer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -77,11 +79,9 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     @Mixin
     @Delegate
     private ErrorOptions errorOptions = new ErrorOptions();
-    @CommandLine.Option(names = "--application-id",
-            description =
-                    "Unique application ID to use for Kafka ConsumerProducer. Can also be provided by implementing "
-                            + "ConsumerProducerApp#getUniqueAppId()")
-    private String applicationId;
+    @Mixin
+    @Delegate
+    private ConsumerOptions consumerOptions = new ConsumerOptions();
 
     /**
      * Reset the Kafka ConsumerProducer application. Additionally, delete the consumer group and all output topics
@@ -133,7 +133,7 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public ConsumerProducerAppConfiguration createConfiguration(final ConsumerProducerTopicConfig topics) {
-        return new ConsumerProducerAppConfiguration(topics, this.applicationId);
+        return new ConsumerProducerAppConfiguration(topics, this.getApplicationId());
     }
 
 }

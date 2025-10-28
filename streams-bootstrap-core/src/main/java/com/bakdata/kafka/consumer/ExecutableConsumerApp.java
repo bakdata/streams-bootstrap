@@ -70,6 +70,7 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
 
     @Override
     public ConsumerRunner createRunner(final ConsumerExecutionOptions options) {
+        // TODO
         final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics, this.kafkaProperties);
         final AppConfiguration<ConsumerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);

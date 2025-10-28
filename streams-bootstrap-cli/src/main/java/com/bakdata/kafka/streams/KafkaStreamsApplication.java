@@ -25,6 +25,7 @@
 package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
 import com.bakdata.kafka.mixin.OutputOptions;
@@ -54,8 +55,8 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getOutputTopic()}</li>
  *     <li>{@link #getLabeledOutputTopics()}</li>
  *     <li>{@link #getErrorTopic()}</li>
- *     <li>{@link #volatileGroupInstanceId}</li>
- *     <li>{@link #applicationId}</li>
+ *     <li>{@link #isVolatileGroupInstanceId()}</li>
+ *     <li>{@link #getApplicationId()}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -80,13 +81,9 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     @Mixin
     @Delegate
     private ErrorOptions errorOptions = new ErrorOptions();
-    @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
-            description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
-    private boolean volatileGroupInstanceId;
-    @CommandLine.Option(names = "--application-id",
-            description = "Unique application ID to use for Kafka Streams. Can also be provided by implementing "
-                    + "StreamsApp#getUniqueAppId()")
-    private String applicationId;
+    @Mixin
+    @Delegate
+    private ConsumerOptions consumerOptions = new ConsumerOptions();
 
     /**
      * Reset the Kafka Streams application. Additionally, delete the consumer group and all output and intermediate
@@ -116,7 +113,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     @Override
     public final Optional<StreamsExecutionOptions> createExecutionOptions() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
                 .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
                 .stateListener(this::createStateListener)
                 .onStart(this::onStreamsStart)
@@ -144,7 +141,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
 
     @Override
     public StreamsAppConfiguration createConfiguration(final StreamsTopicConfig topics) {
-        return new StreamsAppConfiguration(topics, this.applicationId);
+        return new StreamsAppConfiguration(topics, this.getApplicationId());
     }
 
     /**

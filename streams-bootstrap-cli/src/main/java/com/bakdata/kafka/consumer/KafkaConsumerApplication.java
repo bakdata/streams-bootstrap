@@ -25,6 +25,7 @@
 package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
 import java.util.Optional;
@@ -48,7 +49,9 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getErrorTopic()}</li>
  *     <li>{@link #getLabeledInputTopics()}</li>
  *     <li>{@link #getLabeledInputPatterns()}</li>
- *     <li>{@link #applicationId}</li>
+ *     // TODO fully support volatileGroupInstanceId in consumer, consumerproducer
+ *     <li>{@link #isVolatileGroupInstanceId()} ()}</li>
+ *     <li>{@link #getApplicationId()}</li>
  * </ul>
  * To implement your Kafka Consumer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -72,11 +75,9 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Mixin
     @Delegate
     private ErrorOptions errorOptions = new ErrorOptions();
-    // TODO also move applicationId?
-    @CommandLine.Option(names = "--application-id",
-            description = "Unique application ID to use for Kafka Consumer. Can also be provided by implementing "
-                    + "ConsumerApp#getUniqueAppId()")
-    private String applicationId;
+    @Mixin
+    @Delegate
+    private ConsumerOptions consumerOptions = new ConsumerOptions();
 
     /**
      * Reset the Kafka Consumer application. Additionally, delete the consumer group.
