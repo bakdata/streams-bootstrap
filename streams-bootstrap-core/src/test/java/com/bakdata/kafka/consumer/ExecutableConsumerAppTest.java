@@ -116,7 +116,7 @@ class ExecutableConsumerAppTest {
 
         @Override
         public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-            return builder.createDefaultConsumerRunnable(records -> true);
+            return builder.createDefaultConsumerRunnable(consumerRecords -> {});
         }
 
         @Override

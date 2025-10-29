@@ -65,6 +65,7 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
         this.consumerConfig = consumerConfig;
         if(!this.running.compareAndSet(false, true)) {
             log.warn("Consumer already running");
+            return;
         }
         this.withAllTopicsSubscribed();
         this.pollLoop();
@@ -92,9 +93,8 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
                 final ConsumerRecords<K, V> consumerRecords = this.consumer.poll(POLL_TIMEOUT);
                 if(!consumerRecords.isEmpty()) {
                     log.debug("Polled {} records", consumerRecords.count());
-                    if(this.recordProcessor.processRecords(consumerRecords)) {
-                        this.consumer.commitSync();
-                    }
+                    this.recordProcessor.processRecords(consumerRecords);
+                    this.consumer.commitSync();
                 }
             }
         } catch (final WakeupException exception) {

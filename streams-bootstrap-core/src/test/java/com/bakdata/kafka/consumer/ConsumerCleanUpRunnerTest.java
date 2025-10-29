@@ -24,14 +24,15 @@
 
 package com.bakdata.kafka.consumer;
 
+import static com.bakdata.kafka.TestHelper.clean;
+import static com.bakdata.kafka.TestHelper.createExecutableApp;
+import static com.bakdata.kafka.TestHelper.resetConsumer;
+import static com.bakdata.kafka.TestHelper.run;
+import static com.bakdata.kafka.TestHelper.runWithoutAwait;
+
 import com.bakdata.kafka.CleanUpException;
-import com.bakdata.kafka.CleanUpRunner;
-import com.bakdata.kafka.ExecutableApp;
-import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.Runner;
-import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.admin.AdminClientX;
@@ -52,20 +53,12 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 @ExtendWith(SoftAssertionsExtension.class)
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class ConsumerCleanUpRunnerTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
-    @Mock
-    private TopicHook topicHook;
 
     static ConfiguredConsumerApp<ConsumerApp> createStringApplication() {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
@@ -81,26 +74,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         return new ConfiguredConsumerApp<>(new StringPatternConsumer(), new ConsumerAppConfiguration(topics));
     }
 
-    private static void reset(final ExecutableApp<?, ConsumerCleanUpRunner, ?> app) {
-        try (final ConsumerCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
-            cleanUpRunner.reset();
-        }
-    }
-
-    private static void clean(final ExecutableApp<?, ? extends CleanUpRunner, ?> app) {
-        app.createCleanUpRunner().clean();
-    }
-
-    private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
-        final Runner consumerRunner = executableApp.createRunner();
-        new Thread(consumerRunner).start();
-        return consumerRunner;
-    }
-
-    static ExecutableConsumerApp<ConsumerApp> createExecutableApp(final ConfiguredConsumerApp<ConsumerApp> app,
-            final RuntimeConfiguration runtimeConfiguration) {
-        return app.withRuntimeConfiguration(runtimeConfiguration);
-    }
+    // TODO move all these helper methods to shared class?
 
     private void assertContent(final Collection<ConsumerRecord<String, String>> consumedRecords,
             final Iterable<? extends KeyValue<String, String>> expectedValues, final String description) {
@@ -150,7 +124,6 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
-            awaitActive(executableApp);
             this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
                     "Output contains all elements after first run");
 
@@ -201,7 +174,6 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
-            awaitActive(executableApp);
             this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
                     "Contains all elements after first run");
 
@@ -245,21 +217,21 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
-            awaitProcessing(executableApp);
+//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
             stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             run(executableApp);
-            awaitProcessing(executableApp);
+//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
             stringConsumer.shutdown();
             awaitClosed(executableApp);
 
-            reset(executableApp);
+            resetConsumer(executableApp);
 
             run(executableApp);
-            awaitProcessing(executableApp);
+//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
         }
     }
@@ -280,11 +252,11 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
-            run(executableApp);
+            runWithoutAwait(executableApp);
             // Wait until consumer application has consumed all data
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
-            this.softly.assertThatThrownBy(() -> reset(executableApp))
+            this.softly.assertThatThrownBy(() -> resetConsumer(executableApp))
                     .isInstanceOf(CleanUpException.class)
                     .hasMessageContaining("Error running streams resetter. Exit code 1");
         }
@@ -310,21 +282,21 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringPatternConsumer stringConsumer = (StringPatternConsumer) app.app();
 
             run(executableApp);
-            awaitProcessing(executableApp);
+//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
             stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             run(executableApp);
-            awaitProcessing(executableApp);
+//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
             stringConsumer.shutdown();
             awaitClosed(executableApp);
 
-            reset(executableApp);
+            resetConsumer(executableApp);
 
             run(executableApp);
-            awaitProcessing(executableApp);
+//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
         }
     }

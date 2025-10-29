@@ -41,8 +41,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
 @RequiredArgsConstructor
-public class StringPatternConsumer implements ConsumerApp {
+public class CustomProcessorConsumer implements ConsumerApp {
 
+    private final RecordProcessor<String, String> recordProcessor;
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
     private DefaultConsumerRunnable<String, String> consumerRunnable = null;
 
@@ -53,8 +54,7 @@ public class StringPatternConsumer implements ConsumerApp {
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-        final RecordProcessor<String, String> recordProcessor = records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor);
+        this.consumerRunnable = builder.createDefaultConsumerRunnable(this.recordProcessor);
         return this.consumerRunnable;
     }
 

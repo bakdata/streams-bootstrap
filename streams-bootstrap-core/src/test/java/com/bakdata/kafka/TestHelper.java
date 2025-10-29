@@ -26,6 +26,11 @@ package com.bakdata.kafka;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 
+import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerCleanUpRunner;
+import com.bakdata.kafka.consumer.ConsumerRunner;
+import com.bakdata.kafka.consumer.ExecutableConsumerApp;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -54,11 +59,30 @@ public class TestHelper {
                 .withSessionTimeout(KafkaTest.SESSION_TIMEOUT));
     }
 
+    public static ExecutableConsumerApp<ConsumerApp> createExecutableApp(final ConfiguredConsumerApp<ConsumerApp> app,
+            final RuntimeConfiguration runtimeConfiguration) {
+        return app.withRuntimeConfiguration(runtimeConfiguration);
+    }
+
     public static void run(final ExecutableStreamsApp<?> app) {
         try (final StreamsRunner runner = app.createRunner()) {
             runAsync(runner);
             // Wait until stream application has consumed all data
             KafkaTest.awaitProcessing(app);
+        }
+    }
+
+    public static void run(final ExecutableConsumerApp<?> app) {
+        try (final ConsumerRunner runner = app.createRunner()) {
+            runAsync(runner);
+            // Wait until stream application has consumed all data
+            KafkaTest.awaitProcessing(app);
+        }
+    }
+
+    public static void runWithoutAwait(final ExecutableConsumerApp<?> app) {
+        try (final ConsumerRunner runner = app.createRunner()) {
+            runAsync(runner);
         }
     }
 
@@ -68,6 +92,12 @@ public class TestHelper {
 
     public static void reset(final ExecutableApp<?, StreamsCleanUpRunner, ?> app) {
         try (final StreamsCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
+            cleanUpRunner.reset();
+        }
+    }
+
+    public static void resetConsumer(final ExecutableApp<?, ConsumerCleanUpRunner, ?> app) {
+        try (final ConsumerCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
             cleanUpRunner.reset();
         }
     }

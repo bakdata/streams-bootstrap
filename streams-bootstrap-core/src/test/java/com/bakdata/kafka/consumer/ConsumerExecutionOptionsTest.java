@@ -24,42 +24,39 @@
 
 package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.Runner;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.junit.jupiter.api.Test;
 
-/**
- * Runs a Kafka Consumer application
- */
-@RequiredArgsConstructor
-@Slf4j
-public class ConsumerRunner implements Runner {
+class ConsumerExecutionOptionsTest {
 
-    private final @NonNull ConsumerRunnable runnable;
-    private final @NonNull ConsumerConfig config;
-    private final @NonNull ConsumerExecutionOptions executionOptions;
-
-    @Override
-    public void close() {
-        log.info("Closing consumer");
-        this.runnable.close();
-    }
-
-    @Override
-    public void run() {
-        log.info("Starting consumer");
-        this.runConsumer();
-    }
-
-    private void runConsumer() {
-        log.info("Starting Kafka Consumer and calling start hook");
-        final RunningConsumer runningStreams = RunningConsumer.builder()
-                .consumerRunnable(this.runnable)
-                .config(this.config)
+    @Test
+    void shouldLeaveGroup() {
+        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
                 .build();
-        this.executionOptions.onStart(runningStreams);
-        this.runnable.run(this.config);
+        assertThat(options.shouldLeaveGroup(emptyMap())).isTrue();
+    }
+
+    @Test
+    void shouldNotLeaveGroup() {
+        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(false)
+                .build();
+        assertThat(options.shouldLeaveGroup(Map.of(
+                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
+        ))).isFalse();
+    }
+
+    @Test
+    void shouldLeaveGroupWithVolatileGroupId() {
+        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(true)
+                .build();
+        assertThat(options.shouldLeaveGroup(Map.of(
+                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
+        ))).isTrue();
     }
 }

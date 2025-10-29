@@ -54,10 +54,7 @@ public class StringConsumer implements ConsumerApp {
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-        final RecordProcessor<String, String> recordProcessor = records -> {
-            records.forEach(this.consumedRecords::add);
-            return true;
-        };
+        final RecordProcessor<String, String> recordProcessor = records -> records.forEach(this.consumedRecords::add);
         this.consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor);
         return this.consumerRunnable;
     }
