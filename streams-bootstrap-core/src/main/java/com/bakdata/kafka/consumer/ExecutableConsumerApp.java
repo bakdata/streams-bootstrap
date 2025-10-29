@@ -75,7 +75,7 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
         final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics, this.kafkaProperties, options);
         final AppConfiguration<ConsumerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder), this.getConfig());
+        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder), this.getConfig(), options);
     }
 
     @Override
