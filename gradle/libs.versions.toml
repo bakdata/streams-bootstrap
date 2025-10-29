@@ -17,7 +17,7 @@ kafka-streams-avro-serde = { group = "io.confluent", name = "kafka-streams-avro-
 kafka-protobuf-provider = { group = "io.confluent", name = "kafka-protobuf-provider" }
 largeMessage-bom = { group = "com.bakdata.kafka", name = "large-message-bom", version = "3.1.0" }
 largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
-errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "2.1.0" }
+errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "2.0.1-SNAPSHOT" }
 errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
 picocli = { group = "info.picocli", name = "picocli", version = "4.7.7" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.17" }

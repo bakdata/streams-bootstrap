@@ -42,6 +42,8 @@ import org.apache.kafka.common.errors.WakeupException;
 @Slf4j
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
+    // TODO extensively test this runnable
+
     @Getter
     private final Consumer<K, V> consumer;
     private final ConsumerTopicConfig topics;
