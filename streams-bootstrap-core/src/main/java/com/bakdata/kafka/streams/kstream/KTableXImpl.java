@@ -267,19 +267,21 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <KR, VR> KGroupedTableX<KR, VR> groupBy(
-            final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector) {
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> selector) {
         return this.context.wrap(this.wrapped.groupBy(selector));
     }
 
     @Override
     public <KR, VR> KGroupedTableX<KR, VR> groupBy(
-            final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector, final Grouped<KR, VR> grouped) {
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> selector,
+            final Grouped<KR, VR> grouped) {
         return this.context.wrap(this.wrapped.groupBy(selector, grouped));
     }
 
     @Override
     public <KR, VR> KGroupedTableX<KR, VR> groupBy(
-            final KeyValueMapper<? super K, ? super V, KeyValue<KR, VR>> selector, final GroupedX<KR, VR> grouped) {
+            final KeyValueMapper<? super K, ? super V, ? extends KeyValue<? extends KR, ? extends VR>> selector,
+            final GroupedX<KR, VR> grouped) {
         return this.groupBy(selector, grouped.configure(this.context.getConfigurator()));
     }
 
@@ -417,40 +419,41 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner) {
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+            final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner,
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, tableJoined, materialized));
@@ -458,8 +461,8 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, tableJoined,
                 materialized.configure(this.context.getConfigurator()));
@@ -467,32 +470,33 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner) {
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+            final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner,
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner,
                 materialized.configure(this.context.getConfigurator()));
@@ -500,8 +504,8 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(
@@ -510,52 +514,59 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final Function<V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+            final Function<? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner, tableJoined,
                 materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other, final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner) {
+    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner));
     }
 
     @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other, final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
+    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other, final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+            final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other, final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner,
+    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, materialized.configure(this.context.getConfigurator()));
     }
 
     @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other, final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.join(otherTable, foreignKeyExtractor, joiner, tableJoined, materialized));
     }
 
     @Override
-    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other, final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+    public <VR, KO, VO> KTableX<K, VR> join(final KTable<KO, VO> other,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.join(other, foreignKeyExtractor, joiner, tableJoined,
                 materialized.configure(this.context.getConfigurator()));
@@ -563,32 +574,33 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner) {
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined) {
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, tableJoined));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
+            final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(this.wrapped.leftJoin(otherTable, foreignKeyExtractor, joiner, materialized));
     }
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner,
                 materialized.configure(this.context.getConfigurator()));
@@ -596,8 +608,8 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final Materialized<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTable<KO, VO> otherTable = StreamsContext.maybeUnwrap(other);
         return this.context.wrap(
@@ -606,8 +618,8 @@ class KTableXImpl<K, V> implements KTableX<K, V> {
 
     @Override
     public <VR, KO, VO> KTableX<K, VR> leftJoin(final KTable<KO, VO> other,
-            final BiFunction<K, V, KO> foreignKeyExtractor,
-            final ValueJoiner<V, VO, VR> joiner, final TableJoined<K, KO> tableJoined,
+            final BiFunction<? super K, ? super V, ? extends KO> foreignKeyExtractor,
+            final ValueJoiner<? super V, ? super VO, ? extends VR> joiner, final TableJoined<K, KO> tableJoined,
             final MaterializedX<K, VR, KeyValueStore<Bytes, byte[]>> materialized) {
         return this.leftJoin(other, foreignKeyExtractor, joiner, tableJoined,
                 materialized.configure(this.context.getConfigurator()));
