@@ -39,7 +39,7 @@ import org.apache.kafka.common.serialization.Serializer;
  *
  * @see ConsumerApp#buildRunnable(ConsumerBuilder)
  */
-public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties) {
+public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties, @NonNull ConsumerExecutionOptions executionOptions) {
 
     /**
      * Create a new {@code Consumer} using {@link #kafkaProperties}
@@ -84,5 +84,9 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
      */
     public AppConfiguration<ConsumerTopicConfig> createConfiguration() {
         return new AppConfiguration<>(this.topics, this.kafkaProperties);
+    }
+
+    public <K, V> DefaultConsumerRunnable<K, V> createDefaultConsumerRunnable(final RecordProcessor<K, V> recordProcessor) {
+        return new DefaultConsumerRunnable<>(this.createConsumer(), this.topics, this.executionOptions, recordProcessor);
     }
 }

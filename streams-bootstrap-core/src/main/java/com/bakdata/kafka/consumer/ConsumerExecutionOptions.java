@@ -56,7 +56,6 @@ public final class ConsumerExecutionOptions {
         return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
-    // TODO use in ConsumerRunner
     CloseOptions createCloseOptions(final ConsumerConfig config) {
         final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
         final GroupMembershipOperation operation =

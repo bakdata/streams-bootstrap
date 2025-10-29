@@ -46,6 +46,7 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
         return kafkaConfig;
     }
@@ -58,6 +59,7 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      *         Offset management:
      * <pre>
      * auto.offset.reset=earliest
+     * enable.auto.commit=false
      * </pre>
      *     </li>
      *     <li>

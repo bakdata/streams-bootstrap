@@ -55,27 +55,34 @@ class KafkaConsumerApplicationRunTest extends KafkaTest {
 
             @Override
             public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-                return new ConsumerRunnable() {
-                    private volatile Consumer<String, String> consumer = null;
-                    private volatile boolean running = true;
-
-                    @Override
-                    public void close() {
-                        this.running = false;
-                        this.consumer.wakeup();
-                    }
-
-                    @Override
-                    public void run() {
-                        this.consumer = builder.createConsumer();
-                        this.consumer.subscribe(builder.topics().getInputTopics());
-                        while (this.running) {
-                            final ConsumerRecords<String, String> consumerRecords =
-                                    this.consumer.poll(Duration.ofMillis(100L));
-                            consumerRecords.forEach(consumedRecords::add);
-                        }
-                    }
+                final RecordProcessor<String, String> recordProcessor = records -> {
+                    records.forEach(consumedRecords::add);
+                    return true;
                 };
+                try(final DefaultConsumerRunnable<String, String> consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor)) {
+                    return consumerRunnable;
+                }
+//                return new ConsumerRunnable() {
+//                    private volatile Consumer<String, String> consumer = null;
+//                    private volatile boolean running = true;
+//
+//                    @Override
+//                    public void close() {
+//                        this.running = false;
+//                        this.consumer.wakeup();
+//                    }
+//
+//                    @Override
+//                    public void run() {
+//                        this.consumer = builder.createConsumer();
+//                        this.consumer.subscribe(builder.topics().getInputTopics());
+//                        while (this.running) {
+//                            final ConsumerRecords<String, String> consumerRecords =
+//                                    this.consumer.poll(Duration.ofMillis(100L));
+//                            consumerRecords.forEach(consumedRecords::add);
+//                        }
+//                    }
+//                };
             }
 
             @Override

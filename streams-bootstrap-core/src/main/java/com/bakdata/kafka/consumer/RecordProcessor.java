@@ -24,31 +24,9 @@
 
 package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.Runner;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 
-/**
- * Runs a Kafka Consumer application
- */
-@RequiredArgsConstructor
-@Slf4j
-public class ConsumerRunner implements Runner {
-
-    private final @NonNull ConsumerRunnable runnable;
-    private final @NonNull ConsumerConfig consumerConfig;
-
-    @Override
-    public void close() {
-        log.info("Closing consumer");
-        this.runnable.close(this.consumerConfig);
-    }
-
-    @Override
-    public void run() {
-        log.info("Starting consumer");
-        this.runnable.run(this.consumerConfig);
-    }
+@FunctionalInterface
+public interface RecordProcessor<K, V> {
+    boolean processRecords(ConsumerRecords<K, V> consumerRecords);
 }

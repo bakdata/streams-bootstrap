@@ -24,16 +24,22 @@
 
 package com.bakdata.kafka.consumer;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+
 /**
  * Consume messages from Kafka
  */
-@FunctionalInterface
 public interface ConsumerRunnable extends AutoCloseable {
 
     /**
      * Consume messages from Kafka
      */
-    void run();
+    void run(ConsumerConfig consumerConfig);
+
+    /**
+     * Consume messages from Kafka
+     */
+    void close(ConsumerConfig consumerConfig);
 
     @Override
     default void close() {
