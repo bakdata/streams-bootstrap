@@ -29,16 +29,14 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import java.time.Duration;
+import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
+import com.bakdata.kafka.consumer.RecordProcessor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
@@ -46,7 +44,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 public class StringPatternConsumer implements ConsumerApp {
 
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-    private final AtomicBoolean running = new AtomicBoolean(true);
+    private DefaultConsumerRunnable<String, String> consumerRunnable = null;
 
     @Override
     public DeserializerConfig defaultSerializationConfig() {
@@ -55,19 +53,12 @@ public class StringPatternConsumer implements ConsumerApp {
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-        return () -> {
-            try (final Consumer<String, String> consumer = builder.createConsumer()) {
-                this.initConsumer(consumer, builder);
-            }
+        final RecordProcessor<String, String> recordProcessor = records -> {
+            records.forEach(this.consumedRecords::add);
+            return true;
         };
-    }
-
-    private void initConsumer(final Consumer<String, String> consumer, final ConsumerBuilder builder) {
-        consumer.subscribe(builder.topics().getInputPattern());
-        while (this.running.get()) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100L));
-            consumerRecords.forEach(this.consumedRecords::add);
-        }
+        this.consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor);
+        return this.consumerRunnable;
     }
 
     @Override
@@ -76,10 +67,6 @@ public class StringPatternConsumer implements ConsumerApp {
     }
 
     public void shutdown() {
-        this.running.set(false);
-    }
-
-    public void start() {
-        this.running.set(true);
+        this.consumerRunnable.close();
     }
 }

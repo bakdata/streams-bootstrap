@@ -38,17 +38,29 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 public class ConsumerRunner implements Runner {
 
     private final @NonNull ConsumerRunnable runnable;
-    private final @NonNull ConsumerConfig consumerConfig;
+    private final @NonNull ConsumerConfig config;
+    private final @NonNull ConsumerExecutionOptions executionOptions;
 
     @Override
     public void close() {
         log.info("Closing consumer");
-        this.runnable.close(this.consumerConfig);
+        this.runnable.close();
     }
 
     @Override
     public void run() {
         log.info("Starting consumer");
-        this.runnable.run(this.consumerConfig);
+        this.runConsumer();
+    }
+
+    private void runConsumer() {
+        log.info("Starting Kafka Streams");
+        this.runnable.run(this.config);
+        log.debug("Calling start hook");
+        final RunningConsumer runningStreams = RunningConsumer.builder()
+                .consumerRunnable(this.runnable)
+                .config(this.config)
+                .build();
+        this.executionOptions.onStart(runningStreams);
     }
 }

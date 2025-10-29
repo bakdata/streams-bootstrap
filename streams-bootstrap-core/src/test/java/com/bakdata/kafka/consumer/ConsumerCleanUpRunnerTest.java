@@ -247,17 +247,17 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             run(executableApp);
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
+            stringConsumer.shutdown();
+            awaitClosed(executableApp);
 
             run(executableApp);
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
-
-            // Wait until all applications are completely stopped before triggering cleanup
             stringConsumer.shutdown();
             awaitClosed(executableApp);
+
             reset(executableApp);
 
-            stringConsumer.start();
             run(executableApp);
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
@@ -312,17 +312,17 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             run(executableApp);
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
+            stringConsumer.shutdown();
+            awaitClosed(executableApp);
 
             run(executableApp);
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
-
-            // Wait until all applications are completely stopped before triggering cleanup
             stringConsumer.shutdown();
             awaitClosed(executableApp);
+
             reset(executableApp);
 
-            stringConsumer.start();
             run(executableApp);
             awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);

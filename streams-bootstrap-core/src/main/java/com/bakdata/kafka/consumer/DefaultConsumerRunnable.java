@@ -43,12 +43,14 @@ import org.apache.kafka.common.errors.WakeupException;
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
     // TODO extensively test this runnable
+    // TODO add Javadocs
 
     @Getter
     private final Consumer<K, V> consumer;
     private final ConsumerTopicConfig topics;
     private final ConsumerExecutionOptions executionOptions;
     private final RecordProcessor<K, V> recordProcessor;
+    private ConsumerConfig consumerConfig = null;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private final AtomicBoolean running = new AtomicBoolean(false);
     // TODO start/shutdown hooks?
@@ -60,6 +62,7 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
     @Override
     public void run(final ConsumerConfig consumerConfig) {
+        this.consumerConfig = consumerConfig;
         if(!this.running.compareAndSet(false, true)) {
             log.warn("Consumer already running");
         }
@@ -95,28 +98,29 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
                 }
             }
         } catch (final WakeupException exception) {
-            log.info("Consumer poll loop waking up for shutdown", exception);
+            log.info("Consumer poll loop waking up for shutdown");
         } catch (final RuntimeException exception) {
             log.error("RuntimeException while running consumer loop", exception);
         } finally {
             log.info("Closing consumer");
+            final CloseOptions closeOptions = this.executionOptions.createCloseOptions(this.consumerConfig);
+            this.consumer.close(closeOptions);
             this.shutdownLatch.countDown();
             log.info("Poll loop finished");
         }
     }
 
-    public void shutdown(final ConsumerConfig consumerConfig) {
-        if(!this.running.compareAndSet(true, false)) {
+    @Override
+    public void close() {
+        if (!this.running.compareAndSet(true, false)) {
             log.info("Consumer is not running or already stopping");
             return;
         }
         log.info("Gracefully shutting down the consumer");
         this.consumer.wakeup();
-        final CloseOptions closeOptions = this.executionOptions.createCloseOptions(consumerConfig);
-        this.consumer.close(closeOptions);
 
         try {
-            if(!this.shutdownLatch.await(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            if (!this.shutdownLatch.await(SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)) {
                 log.warn("Shutdown timed out. Poll loop did not exit cleanly");
             }
         } catch (final InterruptedException e) {
@@ -124,10 +128,5 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
             Thread.currentThread().interrupt();
         }
         log.info("Consumer was shut down gracefully");
-    }
-
-    @Override
-    public void close(final ConsumerConfig consumerConfig) {
-        this.shutdown(consumerConfig);
     }
 }

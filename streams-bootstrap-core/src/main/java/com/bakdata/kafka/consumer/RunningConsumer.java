@@ -24,20 +24,17 @@
 
 package com.bakdata.kafka.consumer;
 
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
-/**
- * Consume messages from Kafka
- */
-public interface ConsumerRunnable extends AutoCloseable {
+@Builder
+@Value
+public class RunningConsumer {
 
-    /**
-     * Consume messages from Kafka
-     */
-    void run(ConsumerConfig consumerConfig);
-
-    @Override
-    default void close() {
-        // do nothing by default
-    }
+    @NonNull
+    ConsumerConfig config;
+    @NonNull
+    ConsumerRunnable consumerRunnable;
 }
