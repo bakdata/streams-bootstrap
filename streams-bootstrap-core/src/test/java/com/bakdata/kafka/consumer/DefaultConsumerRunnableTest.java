@@ -24,21 +24,18 @@
 
 package com.bakdata.kafka.consumer;
 
-import static com.bakdata.kafka.TestHelper.createExecutableApp;
+import static com.bakdata.kafka.consumer.TestHelper.assertContent;
+import static com.bakdata.kafka.consumer.TestHelper.createExecutableApp;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import com.bakdata.kafka.consumer.apps.CustomProcessorConsumer;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
-import java.time.Duration;
-import java.util.Collection;
 import java.util.List;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -48,7 +45,6 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class DefaultConsumerRunnableTest extends KafkaTest {
@@ -70,28 +66,6 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                 .build();
         return new ConfiguredConsumerApp<>(new CustomProcessorConsumer(recordProcessor),
                 new ConsumerAppConfiguration(topics));
-    }
-
-//    private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
-//        final Runner consumerRunner = executableApp.createRunner();
-//        new Thread(consumerRunner).start();
-//        return consumerRunner;
-//    }
-
-    // TODO remove and reuse from cleanuprunnertest
-    private void assertContent(final Collection<ConsumerRecord<String, String>> consumedRecords,
-            final Iterable<? extends KeyValue<String, String>> expectedValues, final String description) {
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(1))
-                .untilAsserted(() -> {
-                    final List<KeyValue<String, String>> consumedKeyValues = consumedRecords
-                            .stream()
-                            .map(TestHelper::toKeyValue)
-                            .toList();
-                    this.softly.assertThat(consumedKeyValues)
-                            .as(description)
-                            .containsExactlyInAnyOrderElementsOf(expectedValues);
-                });
     }
 
     @Test
@@ -119,7 +93,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
             runAsync(runner);
             awaitActive(executableApp);
-            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
+            assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
                     "Contains all elements after first run");
         }
     }

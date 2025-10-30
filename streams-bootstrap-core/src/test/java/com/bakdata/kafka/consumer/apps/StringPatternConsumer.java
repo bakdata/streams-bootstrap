@@ -36,6 +36,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -53,8 +54,10 @@ public class StringPatternConsumer implements ConsumerApp {
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+        final Consumer<String, String> consumer = builder.createConsumer();
+        builder.subscribeToAllTopics(consumer);
         final RecordProcessor<String, String> recordProcessor = records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor);
+        this.consumerRunnable = builder.createDefaultConsumerRunnable(consumer, recordProcessor);
         return this.consumerRunnable;
     }
 

@@ -27,8 +27,6 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
-import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -199,16 +197,6 @@ public final class TestApplicationRunner {
      * @param app application to reset
      */
     public void reset(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        this.prepareExecution(app);
-        app.reset();
-    }
-
-    /**
-     * Reset the application. Bootstrap servers, Schema Registry and Kafka config are automatically configured.
-     *
-     * @param app application to reset
-     */
-    public void reset(final KafkaConsumerProducerApplication<? extends ConsumerProducerApp> app) {
         this.prepareExecution(app);
         app.reset();
     }

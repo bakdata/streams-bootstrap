@@ -86,7 +86,7 @@ public abstract class KafkaTest {
                 .until(verifier::isClosed);
     }
 
-    protected static void awaitProcessing(final ExecutableConsumerApp<?> app) {
+    public static void awaitProcessing(final ExecutableConsumerApp<?> app) {
         awaitActive(app);
         final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(app);
         await()

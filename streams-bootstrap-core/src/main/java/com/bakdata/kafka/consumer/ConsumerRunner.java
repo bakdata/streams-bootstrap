@@ -60,6 +60,7 @@ public class ConsumerRunner implements Runner {
                 .config(this.config)
                 .build();
         this.executionOptions.onStart(runningStreams);
+        // Run Kafka consumer until it shuts down
         this.runnable.run(this.config);
     }
 }

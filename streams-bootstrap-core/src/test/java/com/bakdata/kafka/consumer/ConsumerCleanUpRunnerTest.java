@@ -25,16 +25,16 @@
 package com.bakdata.kafka.consumer;
 
 import static com.bakdata.kafka.TestHelper.clean;
-import static com.bakdata.kafka.TestHelper.createExecutableApp;
-import static com.bakdata.kafka.TestHelper.resetConsumer;
-import static com.bakdata.kafka.TestHelper.run;
+import static com.bakdata.kafka.consumer.TestHelper.assertContent;
+import static com.bakdata.kafka.consumer.TestHelper.createExecutableApp;
+import static com.bakdata.kafka.consumer.TestHelper.reset;
+import static com.bakdata.kafka.consumer.TestHelper.run;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
-import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
@@ -74,23 +74,6 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
         return new ConfiguredConsumerApp<>(new StringPatternConsumer(), new ConsumerAppConfiguration(topics));
     }
 
-    // TODO move all these helper methods to shared class?
-
-    private void assertContent(final Collection<ConsumerRecord<String, String>> consumedRecords,
-            final Iterable<? extends KeyValue<String, String>> expectedValues, final String description) {
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(1))
-                .untilAsserted(() -> {
-                    final List<KeyValue<String, String>> consumedKeyValues = consumedRecords
-                            .stream()
-                            .map(TestHelper::toKeyValue)
-                            .toList();
-                    this.softly.assertThat(consumedKeyValues)
-                            .as(description)
-                            .containsExactlyInAnyOrderElementsOf(expectedValues);
-                });
-    }
-
     private void assertSize(final Collection<ConsumerRecord<String, String>> records, final int expectedMessageCount) {
         Awaitility.await()
                 .atMost(Duration.ofSeconds(1))
@@ -124,7 +107,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
-            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
+            assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
                     "Output contains all elements after first run");
 
             try (final AdminClientX adminClient = testClient.admin()) {
@@ -173,7 +156,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
-            this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
+            assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
                     "Contains all elements after first run");
 
             try (final AdminClientX adminClient = testClient.admin()) {
@@ -222,7 +205,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
             awaitClosed(executableApp);
 
-            resetConsumer(executableApp);
+            reset(executableApp);
 
             run(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
@@ -249,7 +232,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             // Wait until consumer application has consumed all data
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
-            this.softly.assertThatThrownBy(() -> resetConsumer(executableApp))
+            this.softly.assertThatThrownBy(() -> reset(executableApp))
                     .isInstanceOf(CleanUpException.class)
                     .hasMessageContaining("Error running streams resetter. Exit code 1");
         }
@@ -282,7 +265,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
             awaitClosed(executableApp);
 
-            resetConsumer(executableApp);
+            reset(executableApp);
 
             run(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);

@@ -32,7 +32,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.streams.StreamsConfig;
 
 /**
  * A {@link ConsumerApp} with a corresponding {@link ConsumerTopicConfig} and Kafka configuration

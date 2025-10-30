@@ -26,77 +26,40 @@ package com.bakdata.kafka.consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bakdata.kafka.DeserializerConfig;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.TestApplicationRunner;
+import com.bakdata.kafka.consumer.apps.StringConsumer;
+import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 class KafkaConsumerApplicationRunTest extends KafkaTest {
+    @TempDir
+    private Path stateDir;
 
     @Test
     void shouldRunApp() {
         final String input = "input";
-        final List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-        try (final KafkaConsumerApplication<?> app = new SimpleKafkaConsumerApplication<>(() -> new ConsumerApp() {
-            @Override
-            public DeserializerConfig defaultSerializationConfig() {
-                return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
-            }
-
-            @Override
-            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-                final RecordProcessor<String, String> recordProcessor = records -> {
-                    records.forEach(consumedRecords::add);
-                    return true;
-                };
-                try(final DefaultConsumerRunnable<String, String> consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor)) {
-                    return consumerRunnable;
-                }
-//                return new ConsumerRunnable() {
-//                    private volatile Consumer<String, String> consumer = null;
-//                    private volatile boolean running = true;
-//
-//                    @Override
-//                    public void close() {
-//                        this.running = false;
-//                        this.consumer.wakeup();
-//                    }
-//
-//                    @Override
-//                    public void run() {
-//                        this.consumer = builder.createConsumer();
-//                        this.consumer.subscribe(builder.topics().getInputTopics());
-//                        while (this.running) {
-//                            final ConsumerRecords<String, String> consumerRecords =
-//                                    this.consumer.poll(Duration.ofMillis(100L));
-//                            consumerRecords.forEach(consumedRecords::add);
-//                        }
-//                    }
-//                };
-            }
-
-            @Override
-            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
-                return "app-id";
-            }
-        })) {
+        try (final StringConsumer stringConsumer = new StringConsumer();
+                final KafkaConsumerApplication<?> app = new SimpleKafkaConsumerApplication<>(() -> stringConsumer)) {
             app.setBootstrapServers(this.getBootstrapServers());
             final String schemaRegistryUrl = this.getSchemaRegistryUrl();
             app.setSchemaRegistryUrl(schemaRegistryUrl);
             app.setInputTopics(List.of(input));
 
-            new Thread(app).start();
-            awaitActive(app.createExecutableApp());
+            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
+                    .withStateDir(this.stateDir)
+                    .withNoStateStoreCaching()
+                    .withSessionTimeout(SESSION_TIMEOUT);
+
+            runner.run(app);
 
             final KafkaTestClient testClient = this.newTestClient();
             testClient.send()
@@ -104,11 +67,13 @@ class KafkaConsumerApplicationRunTest extends KafkaTest {
                     .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                     .to(input, List.of(new SimpleProducerRecord<>("foo", "bar")));
 
-            assertThat(consumedRecords).hasSize(1)
-                    .anySatisfy(consumerRecord -> {
-                        assertThat(consumerRecord.key()).isEqualTo("foo");
-                        assertThat(consumerRecord.value()).isEqualTo("bar");
-                    });
+            Awaitility.await()
+                    .atMost(Duration.ofSeconds(1))
+                    .untilAsserted(() -> assertThat(stringConsumer.getConsumedRecords()).hasSize(1)
+                            .anySatisfy(consumerRecord -> {
+                                assertThat(consumerRecord.key()).isEqualTo("foo");
+                                assertThat(consumerRecord.value()).isEqualTo("bar");
+                            }));
         }
     }
 }

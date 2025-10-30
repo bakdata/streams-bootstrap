@@ -116,7 +116,9 @@ class ExecutableConsumerAppTest {
 
         @Override
         public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-            return builder.createDefaultConsumerRunnable(consumerRecords -> {});
+            final org.apache.kafka.clients.consumer.Consumer<String, String> consumer = builder.createConsumer();
+            builder.subscribeToAllTopics(consumer);
+            return builder.createDefaultConsumerRunnable(consumer, consumerRecords -> {});
         }
 
         @Override

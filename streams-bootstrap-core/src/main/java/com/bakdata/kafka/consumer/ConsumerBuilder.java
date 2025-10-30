@@ -39,7 +39,8 @@ import org.apache.kafka.common.serialization.Serializer;
  *
  * @see ConsumerApp#buildRunnable(ConsumerBuilder)
  */
-public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties, @NonNull ConsumerExecutionOptions executionOptions) {
+public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties,
+                              @NonNull ConsumerExecutionOptions executionOptions) {
 
     /**
      * Create a new {@code Consumer} using {@link #kafkaProperties}
@@ -86,7 +87,23 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
         return new AppConfiguration<>(this.topics, this.kafkaProperties);
     }
 
-    public <K, V> DefaultConsumerRunnable<K, V> createDefaultConsumerRunnable(final RecordProcessor<K, V> recordProcessor) {
-        return new DefaultConsumerRunnable<>(this.createConsumer(), this.topics, this.executionOptions, recordProcessor);
+    public <K, V> void subscribeToAllTopics(final Consumer<K, V> consumer) {
+        if (!this.topics.getInputTopics().isEmpty()) {
+            consumer.subscribe(this.topics.getInputTopics());
+        }
+        if (!this.topics.getLabeledInputTopics().isEmpty()) {
+            this.topics.getLabeledInputTopics().values().forEach(consumer::subscribe);
+        }
+        if (this.topics.getInputPattern() != null) {
+            consumer.subscribe(this.topics.getInputPattern());
+        }
+        if (!this.topics.getLabeledInputPatterns().isEmpty()) {
+            this.topics.getLabeledInputPatterns().values().forEach(consumer::subscribe);
+        }
+    }
+
+    public <K, V> DefaultConsumerRunnable<K, V> createDefaultConsumerRunnable(final Consumer<K, V> consumer,
+            final RecordProcessor<K, V> recordProcessor) {
+        return new DefaultConsumerRunnable<>(consumer, this.executionOptions, recordProcessor);
     }
 }

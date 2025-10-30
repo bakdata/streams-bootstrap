@@ -35,6 +35,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -52,7 +53,9 @@ public class CustomProcessorConsumer implements ConsumerApp {
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-        return builder.createDefaultConsumerRunnable(this.recordProcessor);
+        final Consumer<String, String> consumer = builder.createConsumer();
+        builder.subscribeToAllTopics(consumer);
+        return builder.createDefaultConsumerRunnable(consumer, this.recordProcessor);
     }
 
     @Override

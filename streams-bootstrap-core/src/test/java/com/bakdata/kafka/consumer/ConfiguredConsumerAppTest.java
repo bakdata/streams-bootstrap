@@ -142,28 +142,28 @@ class ConfiguredConsumerAppTest {
 
     private record TestConsumer(@NonNull Map<String, Object> kafkaProperties) implements ConsumerApp {
 
-            private TestConsumer() {
-                this(emptyMap());
-            }
-
-            @Override
-            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public String getUniqueAppId(final ConsumerAppConfiguration config) {
-                return "app-id";
-            }
-
-            @Override
-            public Map<String, Object> createKafkaProperties() {
-                return this.kafkaProperties;
-            }
-
-            @Override
-            public DeserializerConfig defaultSerializationConfig() {
-                return new DeserializerConfig(StringDeserializer.class, LongDeserializer.class);
-            }
+        private TestConsumer() {
+            this(emptyMap());
         }
+
+        @Override
+        public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getUniqueAppId(final ConsumerAppConfiguration config) {
+            return "app-id";
+        }
+
+        @Override
+        public Map<String, Object> createKafkaProperties() {
+            return this.kafkaProperties;
+        }
+
+        @Override
+        public DeserializerConfig defaultSerializationConfig() {
+            return new DeserializerConfig(StringDeserializer.class, LongDeserializer.class);
+        }
+    }
 }

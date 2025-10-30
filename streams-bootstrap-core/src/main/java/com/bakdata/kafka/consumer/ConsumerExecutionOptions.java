@@ -27,6 +27,7 @@ package com.bakdata.kafka.consumer;
 import java.time.Duration;
 import java.util.Map;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
@@ -60,6 +61,13 @@ public final class ConsumerExecutionOptions {
     @Builder.Default
     private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
+    /**
+     * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
+     */
+    @Builder.Default
+    @Getter
+    private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
+
     private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
         return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
@@ -71,7 +79,6 @@ public final class ConsumerExecutionOptions {
         return CloseOptions.groupMembershipOperation(operation).withTimeout(this.closeTimeout);
     }
 
-    // TODO consumerexecutionoptionstest and other tests
     boolean shouldLeaveGroup(final Map<String, Object> originals) {
         final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
         return staticMembershipDisabled || this.volatileGroupInstanceId;
