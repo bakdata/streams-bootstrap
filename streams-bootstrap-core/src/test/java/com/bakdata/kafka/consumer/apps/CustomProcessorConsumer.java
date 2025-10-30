@@ -29,7 +29,6 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
 import com.bakdata.kafka.consumer.RecordProcessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,6 @@ public class CustomProcessorConsumer implements ConsumerApp {
 
     private final RecordProcessor<String, String> recordProcessor;
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-    private DefaultConsumerRunnable<String, String> consumerRunnable = null;
 
     @Override
     public DeserializerConfig defaultSerializationConfig() {
@@ -54,16 +52,11 @@ public class CustomProcessorConsumer implements ConsumerApp {
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(this.recordProcessor);
-        return this.consumerRunnable;
+        return builder.createDefaultConsumerRunnable(this.recordProcessor);
     }
 
     @Override
     public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
         return "app-id";
-    }
-
-    public void shutdown() {
-        this.consumerRunnable.close();
     }
 }

@@ -28,7 +28,7 @@ import static com.bakdata.kafka.TestHelper.clean;
 import static com.bakdata.kafka.TestHelper.createExecutableApp;
 import static com.bakdata.kafka.TestHelper.resetConsumer;
 import static com.bakdata.kafka.TestHelper.run;
-import static com.bakdata.kafka.TestHelper.runWithoutAwait;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.KafkaTest;
@@ -135,7 +135,6 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                         .isTrue();
             }
 
-            stringConsumer.shutdown();
             awaitClosed(executableApp);
             clean(executableApp);
 
@@ -184,7 +183,6 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                         .isTrue();
             }
 
-            stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             try (final AdminClientX adminClient = testClient.admin()) {
@@ -217,21 +215,16 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
             run(executableApp);
-//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
-            stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             run(executableApp);
-//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
-            stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             resetConsumer(executableApp);
 
             run(executableApp);
-//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
         }
     }
@@ -248,11 +241,11 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
     @Test
     void shouldThrowExceptionOnResetterError() {
         try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
-                        this.createConfig())) {
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
-            runWithoutAwait(executableApp);
+            runAsync(runner);
             // Wait until consumer application has consumed all data
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
@@ -282,21 +275,16 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             final StringPatternConsumer stringConsumer = (StringPatternConsumer) app.app();
 
             run(executableApp);
-//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
-            stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             run(executableApp);
-//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
-            stringConsumer.shutdown();
             awaitClosed(executableApp);
 
             resetConsumer(executableApp);
 
             run(executableApp);
-//            awaitProcessing(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
         }
     }

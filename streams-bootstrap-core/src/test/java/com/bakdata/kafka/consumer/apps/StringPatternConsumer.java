@@ -62,8 +62,4 @@ public class StringPatternConsumer implements ConsumerApp {
     public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
         return "app-id";
     }
-
-    public void shutdown() {
-        this.consumerRunnable.close();
-    }
 }

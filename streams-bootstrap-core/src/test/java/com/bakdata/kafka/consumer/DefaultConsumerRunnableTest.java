@@ -25,18 +25,16 @@
 package com.bakdata.kafka.consumer;
 
 import static com.bakdata.kafka.TestHelper.createExecutableApp;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
-import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import com.bakdata.kafka.consumer.apps.CustomProcessorConsumer;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
-import java.lang.Thread.State;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -74,11 +72,11 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                 new ConsumerAppConfiguration(topics));
     }
 
-    private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
-        final Runner consumerRunner = executableApp.createRunner();
-        new Thread(consumerRunner).start();
-        return consumerRunner;
-    }
+//    private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
+//        final Runner consumerRunner = executableApp.createRunner();
+//        new Thread(consumerRunner).start();
+//        return consumerRunner;
+//    }
 
     // TODO remove and reuse from cleanuprunnertest
     private void assertContent(final Collection<ConsumerRecord<String, String>> consumedRecords,
@@ -99,8 +97,8 @@ class DefaultConsumerRunnableTest extends KafkaTest {
     @Test
     void shouldRunProcessAndShutdownGracefully() {
         try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
-                        this.createConfig())) {
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
             testClient.send()
@@ -119,26 +117,22 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
-            run(executableApp);
+            runAsync(runner);
             awaitActive(executableApp);
             this.assertContent(stringConsumer.getConsumedRecords(), expectedValues,
                     "Contains all elements after first run");
-
-            // TODO why .close() not working?
-            stringConsumer.shutdown();
-            awaitClosed(executableApp);
         }
     }
 
     @Test
     void shouldCommitOffsets() {
         try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
-                        this.createConfig())) {
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
 
-            run(executableApp);
+            runAsync(runner);
             awaitActive(executableApp);
 
             try (final AdminClientX adminClient = testClient.admin()) {
@@ -169,12 +163,12 @@ class DefaultConsumerRunnableTest extends KafkaTest {
     void shouldNotCommitAndTerminateWhenProcessorThrowsException() {
         try (final ConfiguredConsumerApp<ConsumerApp> app = createCustomProcessorConsumer(
                 processor -> {throw new RuntimeException("Error while processing records");});
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
-                        this.createConfig())) {
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
 
-            run(executableApp);
+            runAsync(runner);
             awaitActive(executableApp);
 
             try (final AdminClientX adminClient = testClient.admin()) {

@@ -29,7 +29,6 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
 import com.bakdata.kafka.consumer.RecordProcessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +43,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 public class StringConsumer implements ConsumerApp {
 
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-    // TODO where is runnable kept in streams?
-    private DefaultConsumerRunnable<String, String> consumerRunnable = null;
 
     @Override
     public DeserializerConfig defaultSerializationConfig() {
@@ -55,16 +52,11 @@ public class StringConsumer implements ConsumerApp {
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
         final RecordProcessor<String, String> recordProcessor = records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(recordProcessor);
-        return this.consumerRunnable;
+        return builder.createDefaultConsumerRunnable(recordProcessor);
     }
 
     @Override
     public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
         return "app-id";
-    }
-
-    public void shutdown() {
-        this.consumerRunnable.close();
     }
 }

@@ -75,14 +75,8 @@ public class TestHelper {
     public static void run(final ExecutableConsumerApp<?> app) {
         try (final ConsumerRunner runner = app.createRunner()) {
             runAsync(runner);
-            // Wait until stream application has consumed all data
+            // Wait until consumer application has consumed all data
             KafkaTest.awaitProcessing(app);
-        }
-    }
-
-    public static void runWithoutAwait(final ExecutableConsumerApp<?> app) {
-        try (final ConsumerRunner runner = app.createRunner()) {
-            runAsync(runner);
         }
     }
 

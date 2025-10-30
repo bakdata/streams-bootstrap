@@ -26,7 +26,6 @@ package com.bakdata.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
-// TODO i don't like to have to return boolean to signify to commit offsets
 @FunctionalInterface
 public interface RecordProcessor<K, V> {
     void processRecords(ConsumerRecords<K, V> consumerRecords);
