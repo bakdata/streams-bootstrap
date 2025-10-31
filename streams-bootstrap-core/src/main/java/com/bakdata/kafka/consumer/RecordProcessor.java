@@ -26,7 +26,21 @@ package com.bakdata.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
+/**
+ * Processor for handling batches of {@link ConsumerRecords} from a Kafka consumer.
+ *
+ * @param <K> type of keys
+ * @param <V> type of values
+ */
 @FunctionalInterface
 public interface RecordProcessor<K, V> {
+    /**
+     * Process a batch of consumer records. This method is called for each non-empty batch of records polled from Kafka.
+     * Implementations should handle all records in the batch and may throw a {@link RuntimeException} to signal
+     * processing failure, which will prevent offset commits.
+     *
+     * @param consumerRecords batch of records to process
+     * @throws RuntimeException if record processing fails and offsets should not be committed
+     */
     void processRecords(ConsumerRecords<K, V> consumerRecords);
 }
