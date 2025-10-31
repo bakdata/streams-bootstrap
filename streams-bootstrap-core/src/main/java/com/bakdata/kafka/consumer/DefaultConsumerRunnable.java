@@ -36,10 +36,17 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
 
+/**
+ * Default implementation of {@link ConsumerRunnable} that manages the Kafka consumer poll loop and record processing
+ * lifecycle. This class handles the consumer poll loop, automatic offset commits, and graceful shutdown. It delegates
+ * record processing to the provided {@link RecordProcessor} implementation.
+ *
+ * @param <K> type of keys
+ * @param <V> type of values
+ */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
-    // TODO add Javadocs
 
     @Getter
     private final Consumer<K, V> consumer;
@@ -49,6 +56,9 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private final AtomicBoolean running = new AtomicBoolean(false);
 
+    /**
+     * Run the application.
+     */
     @Override
     public void run(final ConsumerConfig consumerConfig) {
         this.consumerConfig = consumerConfig;
@@ -83,6 +93,11 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
         }
     }
 
+    /**
+     * Gracefully shut down the consumer. This method triggers a wakeup of the consumer poll, waits for the poll loop to
+     * complete, and ensures all resources are properly cleaned up. This method is thread-safe and can be called from
+     * any thread. If the consumer is not running or is already stopping, this method returns immediately.
+     */
     @Override
     public void close() {
         if (!this.running.compareAndSet(true, false)) {
