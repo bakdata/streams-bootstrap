@@ -47,8 +47,6 @@ import org.testcontainers.kafka.KafkaContainer;
 
 class KafkaConsumerApplicationCliTest {
 
-    // TODO add polltimeout everywhere
-
     private static CompletableFuture<Void> runApp(final KafkaConsumerApplication<?> app, final String... args) {
         return runAsync(() -> app.startApplication(args));
     }

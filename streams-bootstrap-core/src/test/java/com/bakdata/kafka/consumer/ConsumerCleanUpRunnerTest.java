@@ -234,7 +234,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
                     .isInstanceOf(CleanUpException.class)
-                    .hasMessageContaining("Error running streams resetter. Exit code 1");
+                    .hasMessageContaining("Error resetting application, consumer group is not empty");
         }
     }
 
