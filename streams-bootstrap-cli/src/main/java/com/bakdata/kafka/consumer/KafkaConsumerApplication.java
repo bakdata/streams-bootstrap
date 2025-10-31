@@ -26,7 +26,6 @@ package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.mixin.ConsumerOptions;
-import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
 import java.time.Duration;
 import java.util.Optional;
@@ -48,7 +47,6 @@ import picocli.CommandLine.Option;
  * <ul>
  *     <li>{@link #getInputTopics()}</li>
  *     <li>{@link #getInputPattern()}</li>
- *     <li>{@link #getErrorTopic()}</li>
  *     <li>{@link #getLabeledInputTopics()}</li>
  *     <li>{@link #getLabeledInputPatterns()}</li>
  *     <li>{@link #isVolatileGroupInstanceId()} ()}</li>
@@ -75,9 +73,6 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     private InputOptions inputOptions = new InputOptions();
     @Mixin
     @Delegate
-    private ErrorOptions errorOptions = new ErrorOptions();
-    @Mixin
-    @Delegate
     private ConsumerOptions consumerOptions = new ConsumerOptions();
     @Option(names = {"--poll-timeout"},
             description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.",
@@ -91,6 +86,18 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Override
     public void clean() {
         super.clean();
+    }
+
+    /**
+     * Clear consumer group offsets of the Kafka Consumer application.
+     */
+    @Command(description = "Clear consumer group offsets of the Kafka Consumer application")
+    public void reset() {
+        this.prepareClean();
+        try (final CleanableApp<ConsumerCleanUpRunner> app = this.createCleanableApp()) {
+            final ConsumerCleanUpRunner runner = app.getCleanUpRunner();
+            runner.reset();
+        }
     }
 
     @Override
