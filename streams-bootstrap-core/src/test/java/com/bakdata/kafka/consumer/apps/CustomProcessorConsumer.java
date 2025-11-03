@@ -29,7 +29,6 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.RecordProcessor;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -37,13 +36,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
 @RequiredArgsConstructor
 public class CustomProcessorConsumer implements ConsumerApp {
 
-    private final RecordProcessor<String, String> recordProcessor;
+    private final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor;
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
 
     @Override

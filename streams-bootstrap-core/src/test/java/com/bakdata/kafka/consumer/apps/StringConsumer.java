@@ -29,7 +29,6 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.RecordProcessor;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -37,6 +36,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
@@ -54,7 +54,8 @@ public class StringConsumer implements ConsumerApp {
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
         final Consumer<String, String> consumer = builder.createConsumer();
         builder.subscribeToAllTopics(consumer);
-        final RecordProcessor<String, String> recordProcessor = records -> records.forEach(this.consumedRecords::add);
+        final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor =
+                records -> records.forEach(this.consumedRecords::add);
         return builder.createDefaultConsumerRunnable(consumer, recordProcessor);
     }
 

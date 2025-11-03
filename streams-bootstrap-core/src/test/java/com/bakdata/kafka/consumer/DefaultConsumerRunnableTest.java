@@ -36,6 +36,8 @@ import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import com.bakdata.kafka.consumer.apps.CustomProcessorConsumer;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
 import java.util.List;
+import java.util.function.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -60,7 +62,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
     }
 
     static ConfiguredConsumerApp<ConsumerApp> createCustomProcessorConsumer(
-            final RecordProcessor<String, String> recordProcessor) {
+            final Consumer<ConsumerRecords<String, String>> recordProcessor) {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build();
