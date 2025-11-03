@@ -65,7 +65,7 @@ class KafkaConsumerApplicationCleanTest extends KafkaTest {
 
     private void runApp(final KafkaConsumerApplication<?> app) {
         this.createTestRunner().run(app);
-        // Wait until stream application has consumed all data
+        // Wait until consumer application has consumed all data
         awaitProcessing(app.createExecutableApp());
     }
 

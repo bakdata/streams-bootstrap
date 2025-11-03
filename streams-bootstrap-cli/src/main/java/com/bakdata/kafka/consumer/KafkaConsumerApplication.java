@@ -75,7 +75,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Option(names = {"--poll-timeout"},
             description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.",
             defaultValue = "PT0.1S")
-    private Duration pollTimeout;
+    private Duration pollTimeout = Duration.ofMillis(100);
 
     /**
      * Reset the Kafka Consumer application. Additionally, delete the consumer group.
