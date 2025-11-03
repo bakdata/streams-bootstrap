@@ -33,6 +33,8 @@ public interface ConsumerRunnable extends AutoCloseable {
 
     /**
      * Consume messages from Kafka
+     *
+     * @param consumerConfig configuration for the consumer
      */
     void run(ConsumerConfig consumerConfig);
 

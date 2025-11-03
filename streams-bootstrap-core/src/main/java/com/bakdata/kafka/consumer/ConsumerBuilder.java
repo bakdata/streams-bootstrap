@@ -29,6 +29,7 @@ import com.bakdata.kafka.Configurator;
 import java.util.Map;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
@@ -87,6 +88,16 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
         return new AppConfiguration<>(this.topics, this.kafkaProperties);
     }
 
+    /**
+     * Subscribes the given {@link Consumer} to all input topics and patterns
+     * configured in {@link #topics}.
+     * This includes all topics from {@code getInputTopics()}, {@code getLabeledInputTopics()},
+     * {@code getInputPattern()}, and {@code getLabeledInputPatterns()}.
+     *
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param consumer {@link Consumer} instance to subscribe
+     */
     public <K, V> void subscribeToAllTopics(final Consumer<K, V> consumer) {
         if (!this.topics.getInputTopics().isEmpty()) {
             consumer.subscribe(this.topics.getInputTopics());
@@ -102,8 +113,18 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
         }
     }
 
+    /**
+     * Creates a {@link DefaultConsumerRunnable} using the provided consumer, processor,
+     * and {@link ConsumerExecutionOptions}.
+     *
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @param consumer {@link Consumer} to be used by the runnable
+     * @param recordProcessor {@link java.util.function.Consumer} to process {@link ConsumerRecords}
+     * @return A new {@link DefaultConsumerRunnable} instance
+     */
     public <K, V> DefaultConsumerRunnable<K, V> createDefaultConsumerRunnable(final Consumer<K, V> consumer,
-            final RecordProcessor<K, V> recordProcessor) {
+            final java.util.function.Consumer<ConsumerRecords<K, V>> recordProcessor) {
         return new DefaultConsumerRunnable<>(consumer, this.executionOptions, recordProcessor);
     }
 }

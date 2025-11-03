@@ -59,6 +59,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
+     * @param groupId consumer group id to clean up
      * @return {@code ConsumerCleanUpRunner}
      */
     public static ConsumerCleanUpRunner create(@NonNull final ConsumerTopicConfig topics,
@@ -72,6 +73,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
+     * @param groupId consumer group id to clean up
      * @param configuration configuration for hooks that are called when running {@link #clean()}
      * @return {@code ConsumerCleanUpRunner}
      */

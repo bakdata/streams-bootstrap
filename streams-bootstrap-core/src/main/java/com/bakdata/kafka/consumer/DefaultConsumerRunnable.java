@@ -39,7 +39,7 @@ import org.apache.kafka.common.errors.WakeupException;
 /**
  * Default implementation of {@link ConsumerRunnable} that manages the Kafka consumer poll loop and record processing
  * lifecycle. This class handles the consumer poll loop, automatic offset commits, and graceful shutdown. It delegates
- * record processing to the provided {@link RecordProcessor} implementation.
+ * record processing to the provided {@link java.util.function.Consumer}.
  *
  * @param <K> type of keys
  * @param <V> type of values
@@ -51,8 +51,11 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
     @Getter
     private final Consumer<K, V> consumer;
     private final ConsumerExecutionOptions executionOptions;
-    private final RecordProcessor<K, V> recordProcessor;
-    private ConsumerConfig consumerConfig = null;
+    /**
+     * The processor that implements the logic for handling each batch of
+     * {@link ConsumerRecords} polled from Kafka.
+     */
+    private final java.util.function.Consumer<ConsumerRecords<K, V>> recordProcessor;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -61,32 +64,31 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
      */
     @Override
     public void run(final ConsumerConfig consumerConfig) {
-        this.consumerConfig = consumerConfig;
         if (!this.running.compareAndSet(false, true)) {
             log.warn("Consumer already running");
             return;
         }
-        this.pollLoop();
+        this.pollLoop(consumerConfig);
     }
 
-    private void pollLoop() {
+    private void pollLoop(final ConsumerConfig consumerConfig) {
         try {
             while (this.running.get()) {
                 final ConsumerRecords<K, V> consumerRecords =
                         this.consumer.poll(this.executionOptions.getPollTimeout());
                 if (!consumerRecords.isEmpty()) {
                     log.debug("Polled {} records", consumerRecords.count());
-                    this.recordProcessor.processRecords(consumerRecords);
+                    this.recordProcessor.accept(consumerRecords);
                     this.consumer.commitSync();
                 }
             }
         } catch (final WakeupException exception) {
-            log.info("Consumer poll loop waking up for shutdown");
+            log.info("Consumer poll loop waking up for shutdown", exception);
         } catch (final RuntimeException exception) {
             log.error("RuntimeException while running consumer loop", exception);
         } finally {
             log.info("Closing consumer");
-            final CloseOptions closeOptions = this.executionOptions.createCloseOptions(this.consumerConfig);
+            final CloseOptions closeOptions = this.executionOptions.createCloseOptions(consumerConfig);
             this.consumer.close(closeOptions);
             this.shutdownLatch.countDown();
             log.info("Poll loop finished");
