@@ -2,6 +2,10 @@ apiVersion: v2
 name: streams-app
 description: A helm chart for deploying a kafka streams application based on the bakdata KafkaStreamsApplication template.
 version: 0.2.0
+maintainers:
+  - name: bakdata
+    email: opensource@bakdata.com
+    url: bakdata.com
 dependencies:
   - name: common-app
     version: "0.1.0"
