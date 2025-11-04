@@ -1,5 +1,5 @@
 {{ if .Values.files }}
-apiVersion: v1
+apiVersion: v2
 kind: ConfigMap
 metadata:
   name: {{ include "streams-app.fullname" . }}

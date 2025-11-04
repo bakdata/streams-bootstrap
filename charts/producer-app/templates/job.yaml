@@ -12,10 +12,10 @@ apiVersion: batch/v1
 kind: Job
   {{- end }}
 metadata:
-  name: {{ include "producer-app.fullname" . }}
-  {{- include "producer-app.annotations" . }}
+  name: {{ include "common-app.fullname" . }}
+  {{- include "common-app.annotations" . }}
   labels:
-    {{- include "producer-app.labels" . | nindent 4 }}
+    {{- include "common-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
@@ -29,9 +29,9 @@ spec:
   concurrencyPolicy: Replace
   jobTemplate:
     metadata:
-      {{- include "producer-app.annotations" . | indent 4 }}
+      {{- include "common-app.annotations" . | indent 4 }}
       labels:
-        {{- include "producer-app.selectorLabels" . | nindent 8 }}
+        {{- include "common-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.labels }}
         {{ $key | quote }}: {{ $value | quote }}

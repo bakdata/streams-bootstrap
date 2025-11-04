@@ -1,14 +1,10 @@
-apiVersion: v2
-
-deployment: true
-
 nameOverride: ""
 fullnameOverride: ""
 
 replicaCount: 1
 
-image: streamsApp
-imageTag: latest
+image: ""
+imageTag: ""
 imagePullPolicy: Always
 
 imagePullSecrets: []
