@@ -32,7 +32,7 @@ jobs:
 
   helm-publish:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.70.0
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@feature/helm-library-chart-dependency-build
     needs: get-gradle-version
     with:
       charts-path: "./charts"
