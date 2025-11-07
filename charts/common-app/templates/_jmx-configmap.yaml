@@ -11,7 +11,7 @@ metadata:
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 data:
-  jmx-kafka-common-app-prometheus.yml: |+
+  jmx-kafka-{{ include "common-app.name" . }}-prometheus.yml: |+
     jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:{{ .Values.jmx.port }}/jmxrmi
     lowercaseOutputName: true
     lowercaseOutputLabelNames: true
