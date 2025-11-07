@@ -14,17 +14,17 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ include "consumer-app.fullname" . }}
-  {{- include "consumer-app.deployment-annotations" . }}
+  name: {{ include "common-app.fullname" . }}
+  {{- include "common-app.deployment-annotations" . }}
   labels:
-    {{- include "consumer-app.labels" . | nindent 4 }}
+    {{- include "common-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
-  serviceName: {{ include "consumer-app.fullname" . }}
+  serviceName: {{ include "common-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
@@ -32,7 +32,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "consumer-app.selectorLabels" . | nindent 6 }}
+      {{- include "common-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- if or .Values.podAnnotations .Values.files }}
@@ -45,7 +45,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        {{- include "consumer-app.selectorLabels" . | nindent 8 }}
+        {{- include "common-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
@@ -140,7 +140,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "consumer-app.fullname" . }}
+                  name: {{ include "common-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.secretRefs }}
@@ -236,12 +236,12 @@ spec:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ include "consumer-app.fullname" . }}-jmx
+            name: {{ include "common-app.fullname" . }}-jmx
         {{- end }}
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ include "consumer-app.fullname" . }}
+            name: {{ include "common-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
