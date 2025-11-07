@@ -27,6 +27,7 @@ package com.bakdata.kafka.consumer;
 import static com.bakdata.kafka.consumer.TestHelper.assertContent;
 import static com.bakdata.kafka.consumer.TestHelper.createExecutableApp;
 import static java.util.concurrent.CompletableFuture.runAsync;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
@@ -167,6 +168,25 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                         .as("Offset for topic")
                         .isEmpty();
             }
+        }
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAlreadyRunning() {
+        try (final ConfiguredConsumerApp<ConsumerApp> app = createCustomProcessorConsumer(
+                processor -> {
+                    throw new RuntimeException("Error while processing records");
+                });
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(app.getTopics().getInputTopics().get(0));
+
+            runAsync(runner);
+            awaitActive(executableApp);
+
+            assertThatThrownBy(runner::run).isInstanceOf(ConsumerApplicationException.class)
+                    .hasMessage("Consumer already running");
         }
     }
 }

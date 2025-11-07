@@ -140,6 +140,68 @@ class ConfiguredConsumerAppTest {
                 .hasMessage("'schema.registry.url' should not be configured already");
     }
 
+    @Test
+    void shouldThrowIfAppIdIsInconsistent() {
+        final ConfiguredConsumerApp<ConsumerApp> configuredApp = new ConfiguredConsumerApp<>(new ConsumerApp() {
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+                return "foo";
+            }
+        }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "not_foo"));
+        assertThatThrownBy(configuredApp::getUniqueAppId)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Provided application ID does not match ConsumerApp#getUniqueAppId()");
+    }
+
+    @Test
+    void shouldThrowIfAppIdIsNull() {
+        final ConfiguredConsumerApp<ConsumerApp> configuredApp = new ConfiguredConsumerApp<>(new ConsumerApp() {
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+                return null;
+            }
+        }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "foo"));
+        assertThatThrownBy(configuredApp::getUniqueAppId)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Application ID cannot be null");
+    }
+
+    @Test
+    void shouldReturnConfiguredAppId() {
+        final ConfiguredConsumerApp<ConsumerApp> configuredApp = new ConfiguredConsumerApp<>(new ConsumerApp() {
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                throw new UnsupportedOperationException();
+            }
+        }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "foo"));
+        assertThat(configuredApp.getUniqueAppId()).isEqualTo("foo");
+    }
+
     private record TestConsumer(@NonNull Map<String, Object> kafkaProperties) implements ConsumerApp {
 
         private TestConsumer() {

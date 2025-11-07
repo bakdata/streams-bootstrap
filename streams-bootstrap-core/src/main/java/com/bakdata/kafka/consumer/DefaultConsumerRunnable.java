@@ -65,8 +65,7 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
     @Override
     public void run(final ConsumerConfig consumerConfig) {
         if (!this.running.compareAndSet(false, true)) {
-            log.warn("Consumer already running");
-            return;
+            throw new ConsumerApplicationException("Consumer already running");
         }
         this.pollLoop(consumerConfig);
     }

@@ -27,7 +27,6 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.TopicsClient;
-import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.consumer.ExecutableConsumerApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsConfigX;
@@ -74,17 +73,17 @@ public class ConsumerGroupVerifier {
         return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
     }
 
-    /**
-     * Create a new verifier from a {@code ConfiguredConsumerApp} with {@code RuntimeConfiguration}
-     * @param app app to create verifier from
-     * @param runtimeConfiguration Kafka properties to use for verifier
-     * @return verifier
-     */
-    public static ConsumerGroupVerifier verify(final ConfiguredConsumerApp<?> app,
-            final RuntimeConfiguration runtimeConfiguration) {
-        return new ConsumerGroupVerifier(app.getUniqueAppId(),
-                () -> AdminClientX.create(runtimeConfiguration.createKafkaProperties()));
-    }
+//    /**
+//     * Create a new verifier from a {@code ConfiguredConsumerApp} with {@code RuntimeConfiguration}
+//     * @param app app to create verifier from
+//     * @param runtimeConfiguration Kafka properties to use for verifier
+//     * @return verifier
+//     */
+//    public static ConsumerGroupVerifier verify(final ConfiguredConsumerApp<?> app,
+//            final RuntimeConfiguration runtimeConfiguration) {
+//        return new ConsumerGroupVerifier(app.getUniqueAppId(),
+//                () -> AdminClientX.create(runtimeConfiguration.createKafkaProperties()));
+//    }
 
     /**
      * Check whether consumer group has state {@link GroupState#STABLE}
