@@ -11,7 +11,7 @@ metadata:
   {{- end }}
 {{- end }}
   labels:
-    {{- include "producer-app.selectorLabels" . | nindent 4 }}
+    {{- include "common-app.selectorLabels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
@@ -68,7 +68,7 @@ spec:
       - name: "{{ $key }}"
         valueFrom:
           secretKeyRef:
-            name: {{ include "producer-app.fullname" . }}
+            name: {{ include "common-app.fullname" . }}
             key: "{{ $key }}"
         {{- end }}
         {{- range $key, $value := .Values.secretRefs }}
@@ -128,7 +128,7 @@ spec:
     {{- if .Values.files }}
     - name: config
       configMap:
-        name: {{ include "producer-app.fullname" . }}
+        name: {{ include "common-app.fullname" . }}
     {{- end }}
     {{- range .Values.secretFilesRefs }}
     - name: {{ .volume }}
