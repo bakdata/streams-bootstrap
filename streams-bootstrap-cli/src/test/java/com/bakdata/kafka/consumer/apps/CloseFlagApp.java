@@ -29,41 +29,48 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
-import java.util.ArrayList;
-import java.util.List;
+import com.bakdata.kafka.consumer.KafkaConsumerApplication;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+@NoArgsConstructor
 @Getter
-@RequiredArgsConstructor
-public class StringPatternConsumer implements ConsumerApp {
+@Setter
+public class CloseFlagApp extends KafkaConsumerApplication<ConsumerApp> {
 
-    private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-    private DefaultConsumerRunnable<String, String> consumerRunnable = null;
+    private boolean closed = false;
+    private boolean appClosed = false;
 
     @Override
-    public DeserializerConfig defaultSerializationConfig() {
-        return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
+    public void close() {
+        super.close();
+        this.closed = true;
     }
 
     @Override
-    public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-        final Consumer<String, String> consumer = builder.createConsumer();
-        builder.subscribeToAllTopics(consumer);
-        final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor =
-                records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(consumer, recordProcessor);
-        return this.consumerRunnable;
-    }
+    public ConsumerApp createApp() {
+        return new ConsumerApp() {
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                return builder.createDefaultConsumerRunnable(builder.createConsumer(), records -> {});
+            }
 
-    @Override
-    public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
-        return "app-id";
+            @Override
+            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+                return "app-id";
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
+            }
+
+            @Override
+            public void close() {
+                CloseFlagApp.this.appClosed = true;
+            }
+        };
     }
 }

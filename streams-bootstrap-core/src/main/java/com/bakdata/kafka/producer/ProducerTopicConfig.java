@@ -26,7 +26,6 @@ package com.bakdata.kafka.producer;
 
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig;
 import java.util.Map;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -61,12 +60,5 @@ public class ProducerTopicConfig {
             throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
         }
         return topic;
-    }
-
-    public static ProducerTopicConfig fromConsumerProducerTopicConfig(final ConsumerProducerTopicConfig config) {
-        return builder()
-                .outputTopic(config.getOutputTopic())
-                .labeledOutputTopics(config.getLabeledOutputTopics())
-                .build();
     }
 }

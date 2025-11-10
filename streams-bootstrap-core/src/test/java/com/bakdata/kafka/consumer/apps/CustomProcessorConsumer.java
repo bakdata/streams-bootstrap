@@ -29,7 +29,6 @@ import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -42,10 +41,10 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
 @RequiredArgsConstructor
-public class StringPatternConsumer implements ConsumerApp {
+public class CustomProcessorConsumer implements ConsumerApp {
 
+    private final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor;
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-    private DefaultConsumerRunnable<String, String> consumerRunnable = null;
 
     @Override
     public DeserializerConfig defaultSerializationConfig() {
@@ -56,10 +55,7 @@ public class StringPatternConsumer implements ConsumerApp {
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
         final Consumer<String, String> consumer = builder.createConsumer();
         builder.subscribeToAllTopics(consumer);
-        final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor =
-                records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(consumer, recordProcessor);
-        return this.consumerRunnable;
+        return builder.createDefaultConsumerRunnable(consumer, this.recordProcessor);
     }
 
     @Override

@@ -27,8 +27,8 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
-import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.KafkaConsumerApplication;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -172,6 +172,19 @@ public final class TestApplicationRunner {
     }
 
     /**
+     * Reset the application with the given arguments. {@code --bootstrap-servers}, {@code --schema-registry-url}, and
+     * {@code --kafka-config} are automatically configured.
+     *
+     * @param app application to reset
+     * @param args CLI arguments to pass to the application
+     * @return application exit code
+     */
+    public int reset(final KafkaConsumerApplication<? extends ConsumerApp> app, final String... args) {
+        final String[] newArgs = this.setupArgs(args, List.of("reset"));
+        return app.startApplicationWithoutExit(newArgs);
+    }
+
+    /**
      * Run the application asynchronously. Bootstrap servers, Schema Registry and Kafka config are automatically
      * configured.
      *
@@ -199,16 +212,6 @@ public final class TestApplicationRunner {
      * @param app application to reset
      */
     public void reset(final KafkaStreamsApplication<? extends StreamsApp> app) {
-        this.prepareExecution(app);
-        app.reset();
-    }
-
-    /**
-     * Reset the application. Bootstrap servers, Schema Registry and Kafka config are automatically configured.
-     *
-     * @param app application to reset
-     */
-    public void reset(final KafkaConsumerProducerApplication<? extends ConsumerProducerApp> app) {
         this.prepareExecution(app);
         app.reset();
     }

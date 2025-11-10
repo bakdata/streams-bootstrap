@@ -26,8 +26,8 @@ package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.mixin.ConsumerOptions;
-import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
+import java.time.Duration;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +35,10 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Option;
 
 
 /**
@@ -46,10 +47,8 @@ import picocli.CommandLine.Mixin;
  * <ul>
  *     <li>{@link #getInputTopics()}</li>
  *     <li>{@link #getInputPattern()}</li>
- *     <li>{@link #getErrorTopic()}</li>
  *     <li>{@link #getLabeledInputTopics()}</li>
  *     <li>{@link #getLabeledInputPatterns()}</li>
- *     // TODO fully support volatileGroupInstanceId in consumer, consumerproducer
  *     <li>{@link #isVolatileGroupInstanceId()} ()}</li>
  *     <li>{@link #getApplicationId()}</li>
  * </ul>
@@ -67,17 +66,16 @@ import picocli.CommandLine.Mixin;
 public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
         KafkaApplication<ConsumerRunner, ConsumerCleanUpRunner, ConsumerExecutionOptions, ExecutableConsumerApp<T>,
                 ConfiguredConsumerApp<T>, ConsumerTopicConfig, T, ConsumerAppConfiguration> {
-    // TODO charts consumerproducer and streams combine? - difference
-    // TODO helm charts - somehow combine?
     @Mixin
     @Delegate
     private InputOptions inputOptions = new InputOptions();
     @Mixin
     @Delegate
-    private ErrorOptions errorOptions = new ErrorOptions();
-    @Mixin
-    @Delegate
     private ConsumerOptions consumerOptions = new ConsumerOptions();
+    @Option(names = {"--poll-timeout"},
+            description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.",
+            defaultValue = "PT0.1S")
+    private Duration pollTimeout = Duration.ofMillis(100);
 
     /**
      * Reset the Kafka Consumer application. Additionally, delete the consumer group.
@@ -88,9 +86,26 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
         super.clean();
     }
 
+    /**
+     * Clear consumer group offsets of the Kafka Consumer application.
+     */
+    @Command(description = "Clear consumer group offsets of the Kafka Consumer application")
+    public void reset() {
+        this.prepareClean();
+        try (final CleanableApp<ConsumerCleanUpRunner> app = this.createCleanableApp()) {
+            final ConsumerCleanUpRunner runner = app.getCleanUpRunner();
+            runner.reset();
+        }
+    }
+
     @Override
     public final Optional<ConsumerExecutionOptions> createExecutionOptions() {
-        return Optional.empty();
+        final ConsumerExecutionOptions executionOptions = ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                .onStart(this::onStreamsStart)
+                .pollTimeout(this.getPollTimeout())
+                .build();
+        return Optional.of(executionOptions);
     }
 
     @Override
@@ -112,5 +127,14 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Override
     public ConsumerAppConfiguration createConfiguration(final ConsumerTopicConfig topics) {
         return new ConsumerAppConfiguration(topics);
+    }
+
+    /**
+     * Called after starting Kafka Consumer
+     *
+     * @param runningConsumer running {@link ConsumerRunnable} instance along with its {@link ConsumerConfig}
+     */
+    protected void onStreamsStart(final RunningConsumer runningConsumer) {
+        // do nothing by default
     }
 }

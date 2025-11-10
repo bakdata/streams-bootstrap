@@ -25,11 +25,11 @@
 package com.bakdata.kafka.consumer;
 
 import static com.bakdata.kafka.consumer.ConsumerCleanUpRunnerTest.createStringApplication;
+import static com.bakdata.kafka.consumer.TestHelper.createExecutableApp;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
-import com.bakdata.kafka.ConsumerGroupVerifier;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
@@ -50,20 +50,19 @@ class ConsumerRunnerTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {
-        final RuntimeConfiguration runtimeConfiguration = this.createConfig();
         try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ConsumerRunner runner = app.withRuntimeConfiguration(runtimeConfiguration)
-                        .createRunner()) {
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
 
-            final ConsumerGroupVerifier consumerGroupVerifier = ConsumerGroupVerifier.verify(app, runtimeConfiguration);
-            new Thread(runner).start();
-            awaitActive(consumerGroupVerifier);
+            runAsync(runner);
+            awaitActive(executableApp);
 
             final SimpleProducerRecord<String, String> simpleProducerRecord = new SimpleProducerRecord<>("foo", "bar");
             this.writeInputTopic(app.getTopics().getInputTopics().get(0), simpleProducerRecord);
 
             final StringConsumer stringConsumer = (StringConsumer) app.app();
-            awaitProcessing(consumerGroupVerifier);
+
+            awaitProcessing(executableApp);
 
             final List<KeyValue<String, String>> consumedRecords = stringConsumer.getConsumedRecords()
                     .stream()

@@ -27,10 +27,7 @@ package com.bakdata.kafka;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.TopicsClient;
-import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.consumer.ExecutableConsumerApp;
-import com.bakdata.kafka.consumerproducer.ConfiguredConsumerProducerApp;
-import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsConfigX;
 import java.util.Map;
@@ -74,34 +71,6 @@ public class ConsumerGroupVerifier {
     public static ConsumerGroupVerifier verify(final ExecutableConsumerApp<?> app) {
         final Map<String, Object> kafkaProperties = app.getKafkaProperties();
         return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
-    }
-
-    /**
-     * Create a new verifier from an {@code ExecutableConsumerProducerApp}
-     * @param app app to create verifier from
-     * @return verifier
-     */
-    public static ConsumerGroupVerifier verify(final ExecutableConsumerProducerApp<?> app) {
-        final Map<String, Object> kafkaProperties = app.getConsumerProperties();
-        return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
-    }
-
-    /**
-     * Create a new verifier from a {@code ConfiguredConsumerApp} with {@code RuntimeConfiguration}
-     * @param app app to create verifier from
-     * @return verifier
-     */
-    public static ConsumerGroupVerifier verify(final ConfiguredConsumerApp<?> app, final RuntimeConfiguration runtimeConfiguration) {
-        return new ConsumerGroupVerifier(app.getUniqueAppId(), () -> AdminClientX.create(runtimeConfiguration.createKafkaProperties()));
-    }
-
-    /**
-     * Create a new verifier from a {@code ConfiguredConsumerApp} with {@code RuntimeConfiguration}
-     * @param app app to create verifier from
-     * @return verifier
-     */
-    public static ConsumerGroupVerifier verify(final ConfiguredConsumerProducerApp<?> app, final RuntimeConfiguration runtimeConfiguration) {
-        return new ConsumerGroupVerifier(app.getUniqueAppId(), () -> AdminClientX.create(runtimeConfiguration.createKafkaProperties()));
     }
 
     /**

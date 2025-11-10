@@ -24,22 +24,39 @@
 
 package com.bakdata.kafka.consumer;
 
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.junit.jupiter.api.Test;
 
-/**
- * Consume messages from Kafka
- */
-public interface ConsumerRunnable extends AutoCloseable {
+class ConsumerExecutionOptionsTest {
 
-    /**
-     * Consume messages from Kafka
-     *
-     * @param consumerConfig configuration for the consumer
-     */
-    void run(ConsumerConfig consumerConfig);
+    @Test
+    void shouldLeaveGroup() {
+        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+                .build();
+        assertThat(options.shouldLeaveGroup(emptyMap())).isTrue();
+    }
 
-    @Override
-    default void close() {
-        // do nothing by default
+    @Test
+    void shouldNotLeaveGroup() {
+        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(false)
+                .build();
+        assertThat(options.shouldLeaveGroup(Map.of(
+                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
+        ))).isFalse();
+    }
+
+    @Test
+    void shouldLeaveGroupWithVolatileGroupId() {
+        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(true)
+                .build();
+        assertThat(options.shouldLeaveGroup(Map.of(
+                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
+        ))).isTrue();
     }
 }

@@ -22,31 +22,28 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumerproducer;
+package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.Runner;
+import com.bakdata.kafka.streams.StreamsExecutionOptions.StreamsExecutionOptionsBuilder;
+import java.util.function.Consumer;
+import lombok.Builder;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Value;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 /**
- * Runs a Kafka Consumer and Producer application
+ * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
+ * {@link ConsumerRunnable}
+ *
+ * @see StreamsExecutionOptionsBuilder#onStart(Consumer)
  */
-@RequiredArgsConstructor
-@Slf4j
-public class ConsumerProducerRunner implements Runner {
+@Builder
+@Value
+public class RunningConsumer {
 
-    private final @NonNull ConsumerProducerRunnable runnable;
-
-    @Override
-    public void close() {
-        log.info("Closing consumer and producer");
-        this.runnable.close();
-    }
-
-    @Override
-    public void run() {
-        log.info("Starting consumer and producer");
-        this.runnable.run();
-    }
+    @NonNull
+    ConsumerConfig config;
+    @NonNull
+    ConsumerRunnable consumerRunnable;
 }

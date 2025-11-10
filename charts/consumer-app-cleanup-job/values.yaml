@@ -33,7 +33,6 @@ kafka:
   # inputPattern: .*-input
   labeledInputPatterns: {}
   #   label: .*-input
-  # errorTopic: error
   deleteOutput: false
 
 commandLine: {}

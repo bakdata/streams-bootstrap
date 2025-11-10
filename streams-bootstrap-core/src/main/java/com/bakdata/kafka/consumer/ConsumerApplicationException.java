@@ -22,21 +22,13 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumerproducer;
+package com.bakdata.kafka.consumer;
 
 /**
- * Produce or consume messages to or from Kafka
+ * Exception thrown if running conumser application was unsuccessful
  */
-@FunctionalInterface
-public interface ConsumerProducerRunnable extends AutoCloseable {
-
-    /**
-     * Produce or consume messages to or from Kafka
-     */
-    void run();
-
-    @Override
-    default void close() {
-        // do nothing by default
+public class ConsumerApplicationException extends RuntimeException {
+    public ConsumerApplicationException(final String message) {
+        super(message);
     }
 }

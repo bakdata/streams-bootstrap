@@ -87,6 +87,12 @@ public class StreamsCleanUpConfiguration
         this.topicHooks.forEach(hook -> hook.deleted(topic));
     }
 
+    /**
+     * Converts this configuration to a {@link ConsumerCleanUpConfiguration}, transferring
+     * registered clean and reset hooks.
+     *
+     * @return {@link ConsumerCleanUpConfiguration} instance
+     */
     public ConsumerCleanUpConfiguration toConsumerCleanUpConfiguration() {
         final ConsumerCleanUpConfiguration configuration = new ConsumerCleanUpConfiguration();
         this.cleanHooks.forEach(configuration::registerCleanHook);
@@ -94,6 +100,12 @@ public class StreamsCleanUpConfiguration
         return configuration;
     }
 
+    /**
+     * Converts this configuration to a {@link ProducerCleanUpConfiguration}, transferring
+     * registered clean and topic hooks.
+     *
+     * @return {@link ProducerCleanUpConfiguration} instance
+     */
     public ProducerCleanUpConfiguration toProducerCleanUpConfiguration() {
         final ProducerCleanUpConfiguration configuration = new ProducerCleanUpConfiguration();
         this.cleanHooks.forEach(configuration::registerCleanHook);

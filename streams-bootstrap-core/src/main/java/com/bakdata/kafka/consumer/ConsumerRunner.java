@@ -28,6 +28,7 @@ import com.bakdata.kafka.Runner;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
  * Runs a Kafka Consumer application
@@ -37,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumerRunner implements Runner {
 
     private final @NonNull ConsumerRunnable runnable;
+    private final @NonNull ConsumerConfig config;
+    private final @NonNull ConsumerExecutionOptions executionOptions;
 
     @Override
     public void close() {
@@ -47,6 +50,17 @@ public class ConsumerRunner implements Runner {
     @Override
     public void run() {
         log.info("Starting consumer");
-        this.runnable.run();
+        this.runConsumer();
+    }
+
+    private void runConsumer() {
+        log.info("Starting Kafka Consumer and calling start hook");
+        final RunningConsumer runningStreams = RunningConsumer.builder()
+                .consumerRunnable(this.runnable)
+                .config(this.config)
+                .build();
+        this.executionOptions.onStart(runningStreams);
+        // Run Kafka consumer until it shuts down
+        this.runnable.run(this.config);
     }
 }

@@ -22,35 +22,26 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer.apps;
+package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.DeserializerConfig;
 import com.bakdata.kafka.consumer.ConsumerApp;
 import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Getter
-@RequiredArgsConstructor
-public class StringPatternConsumer implements ConsumerApp {
+public class SimpleConsumerApp implements ConsumerApp {
 
     private final @NonNull List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
-    private DefaultConsumerRunnable<String, String> consumerRunnable = null;
-
-    @Override
-    public DeserializerConfig defaultSerializationConfig() {
-        return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
-    }
 
     @Override
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
@@ -58,12 +49,16 @@ public class StringPatternConsumer implements ConsumerApp {
         builder.subscribeToAllTopics(consumer);
         final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor =
                 records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(consumer, recordProcessor);
-        return this.consumerRunnable;
+        return builder.createDefaultConsumerRunnable(consumer, recordProcessor);
     }
 
     @Override
     public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
-        return "app-id";
+        return "group";
+    }
+
+    @Override
+    public DeserializerConfig defaultSerializationConfig() {
+        return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
     }
 }

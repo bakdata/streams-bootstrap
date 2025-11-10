@@ -27,6 +27,8 @@ package com.bakdata.kafka.consumer;
 import java.time.Duration;
 import java.util.Map;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -39,6 +41,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 public final class ConsumerExecutionOptions {
 
     /**
+     * Hook that is called after the {@link ConsumerRunnable} is started
+     */
+    @Builder.Default
+    private final @NonNull java.util.function.Consumer<RunningConsumer> onStart = runningStreams -> {};
+
+    /**
      * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
      * {@link Consumer#close(CloseOptions)} is called with
      * {@link CloseOptions#groupMembershipOperation(GroupMembershipOperation)} set to
@@ -46,17 +54,24 @@ public final class ConsumerExecutionOptions {
      */
     @Builder.Default
     private final boolean volatileGroupInstanceId = true;
+
     /**
      * Defines {@link CloseOptions#timeout(Duration)} when calling {@link Consumer#close(CloseOptions)}
      */
     @Builder.Default
     private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
+    /**
+     * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
+     */
+    @Builder.Default
+    @Getter
+    private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
+
     private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
         return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
-    // TODO use in ConsumerRunner
     CloseOptions createCloseOptions(final ConsumerConfig config) {
         final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
         final GroupMembershipOperation operation =
@@ -67,5 +82,9 @@ public final class ConsumerExecutionOptions {
     boolean shouldLeaveGroup(final Map<String, Object> originals) {
         final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
         return staticMembershipDisabled || this.volatileGroupInstanceId;
+    }
+
+    void onStart(final RunningConsumer runningConsumer) {
+        this.onStart.accept(runningConsumer);
     }
 }

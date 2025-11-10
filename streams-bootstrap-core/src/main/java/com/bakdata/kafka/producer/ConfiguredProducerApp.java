@@ -48,7 +48,7 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull ProducerAppConfiguration configuration;
 
-    public static Map<String, Object> createBaseConfig() {
+    private static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);

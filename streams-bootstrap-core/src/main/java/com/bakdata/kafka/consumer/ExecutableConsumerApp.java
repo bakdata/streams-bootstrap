@@ -31,6 +31,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
  * A {@link ConsumerApp} with a corresponding {@link ConsumerTopicConfig} and Kafka configuration
@@ -70,16 +71,19 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
 
     @Override
     public ConsumerRunner createRunner(final ConsumerExecutionOptions options) {
-        // TODO
-        final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics, this.kafkaProperties);
+        final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics, this.kafkaProperties, options);
         final AppConfiguration<ConsumerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder));
+        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder), this.getConfig(), options);
     }
 
     @Override
     public void close() {
         this.app.close();
+    }
+
+    public ConsumerConfig getConfig() {
+        return new ConsumerConfig(this.kafkaProperties);
     }
 
     private AppConfiguration<ConsumerTopicConfig> createConfiguration() {

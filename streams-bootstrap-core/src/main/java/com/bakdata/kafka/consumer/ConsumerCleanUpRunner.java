@@ -27,18 +27,21 @@ package com.bakdata.kafka.consumer;
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.streams.StreamsResetterClient;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.ConsumerGroupDescription;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
+import org.apache.kafka.clients.admin.OffsetSpec;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.GroupState;
+import org.apache.kafka.common.KafkaFuture;
+import org.apache.kafka.common.TopicPartition;
 
 /**
  * Clean up all topics specified by a {@link ConsumerTopicConfig}
@@ -56,6 +59,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
+     * @param groupId consumer group id to clean up
      * @return {@code ConsumerCleanUpRunner}
      */
     public static ConsumerCleanUpRunner create(@NonNull final ConsumerTopicConfig topics,
@@ -69,6 +73,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
+     * @param groupId consumer group id to clean up
      * @param configuration configuration for hooks that are called when running {@link #clean()}
      * @return {@code ConsumerCleanUpRunner}
      */
@@ -112,50 +117,43 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {
-            final List<String> inputTopics = this.getAllInputTopics();
-            final Collection<String> allTopics = this.adminClient.topics().list();
-            final List<String> bootstrapServers;
-            try {
-                bootstrapServers = this.adminClient.admin().describeCluster().nodes().get()
-                        .stream()
-                        .map(node -> "%s:%s".formatted(node.host(), node.port()))
-                        .toList();
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new CleanUpException("Error getting bootstrap servers", e);
-            } catch (final ExecutionException e) {
-                throw new CleanUpException("Error getting bootstrap servers", e);
+            final Optional<ConsumerGroupDescription> groupDescription =
+                    this.adminClient.consumerGroups().group(ConsumerCleanUpRunner.this.groupId).describe();
+            if (groupDescription.isEmpty()) {
+                return;
+            }
+            if (groupDescription.get().groupState() != GroupState.EMPTY) {
+                throw new CleanUpException("Error resetting application, consumer group is not empty");
             }
 
-            // TODO don't use streamsresetter, use consumergroupclient?
-            StreamsResetterClient.runResetter(inputTopics,
-                    allTopics,
-                    ConsumerCleanUpRunner.this.groupId,
-                    ConsumerCleanUpRunner.this.kafkaProperties,
-                    bootstrapServers);
+            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = this.adminClient.consumerGroups()
+                    .group(ConsumerCleanUpRunner.this.groupId).listOffsets();
+
+            final Map<TopicPartition, OffsetSpec> request = groupOffsets.keySet().stream()
+                    .collect(Collectors.toMap(tp -> tp, tp -> OffsetSpec.earliest()));
+            final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> earliestOffsets =
+                    runAdminFuture(this.adminClient.admin().listOffsets(request).all(),
+                            "Error resetting application, beginning consumer group offset could not be found");
+
+            final Map<TopicPartition, OffsetAndMetadata> resetOffsets = earliestOffsets.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey,
+                            e -> new OffsetAndMetadata(e.getValue().offset())));
+            runAdminFuture(
+                    this.adminClient.admin().alterConsumerGroupOffsets(ConsumerCleanUpRunner.this.groupId, resetOffsets)
+                            .all(), "Error resetting application, could not alter consumer group offsets");
 
             ConsumerCleanUpRunner.this.cleanHooks.runResetHooks();
         }
 
-        private List<String> getAllInputTopics() {
-            final Collection<String> allTopics = this.adminClient.topics().list();
-            final Collection<String> inputTopics = ConsumerCleanUpRunner.this.topics.getInputTopics();
-            final Collection<String> labeledInputTopics =
-                    ConsumerCleanUpRunner.this.topics.getLabeledInputTopics().values().stream().flatMap(List::stream)
-                            .toList();
-            final Pattern inputPattern = ConsumerCleanUpRunner.this.topics.getInputPattern();
-            final Collection<Pattern> labeledInputPatterns =
-                    ConsumerCleanUpRunner.this.topics.getLabeledInputPatterns().values();
-            final Collection<Pattern> allInputPatterns = Stream.concat(
-                    Optional.ofNullable(inputPattern).stream(), labeledInputPatterns.stream()).toList();
-
-            final Collection<String> patternMatchedTopics = allTopics.stream()
-                    .filter(topic -> allInputPatterns.stream()
-                            .anyMatch(pattern -> pattern.matcher(topic).matches()))
-                    .toList();
-            return Stream.of(inputTopics, labeledInputTopics, patternMatchedTopics)
-                    .flatMap(Collection::stream)
-                    .toList();
+        private static <T> T runAdminFuture(final KafkaFuture<T> action, final String errorMessage) {
+            try {
+                return action.get();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new CleanUpException(errorMessage, e);
+            } catch (final ExecutionException e) {
+                throw new CleanUpException(errorMessage, e);
+            }
         }
 
         private void clean() {

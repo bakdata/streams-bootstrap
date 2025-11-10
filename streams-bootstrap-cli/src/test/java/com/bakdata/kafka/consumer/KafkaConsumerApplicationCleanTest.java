@@ -22,22 +22,19 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumerproducer;
+package com.bakdata.kafka.consumer;
 
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestApplicationRunner;
-import com.bakdata.kafka.admin.AdminClientX;
-import com.bakdata.kafka.consumerproducer.apps.CloseFlagApp;
-import com.bakdata.kafka.consumerproducer.apps.Mirror;
+import com.bakdata.kafka.consumer.apps.CloseFlagApp;
+import com.bakdata.kafka.consumer.apps.StringConsumer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
 import org.assertj.core.api.SoftAssertions;
@@ -49,7 +46,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 @Slf4j
 @ExtendWith(SoftAssertionsExtension.class)
-class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
+class KafkaConsumerApplicationCleanTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
     @TempDir
@@ -58,27 +55,32 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
     private static CloseFlagApp createCloseFlagApplication() {
         final CloseFlagApp app = new CloseFlagApp();
         app.setInputTopics(List.of("input"));
-        app.setOutputTopic("output");
         return app;
     }
 
-    private static KafkaConsumerProducerApplication<?> createMirrorApplication() {
-        final KafkaConsumerProducerApplication<?> application =
-                new SimpleKafkaConsumerProducerApplication<>(Mirror::new);
-        application.setOutputTopic("output");
-        application.setInputTopics(List.of("input"));
-        return application;
+    private void runAppAndClose(final KafkaConsumerApplication<?> app) {
+        this.runApp(app);
+        app.stop();
+    }
+
+    private void runApp(final KafkaConsumerApplication<?> app) {
+        this.createTestRunner().run(app);
+        // Wait until consumer application has consumed all data
+        awaitProcessing(app.createExecutableApp());
     }
 
     @Test
     void shouldClean() {
-        try (final KafkaConsumerProducerApplication<?> app = createMirrorApplication()) {
+        final String input = "input";
+        try (final StringConsumer stringConsumer = new StringConsumer();
+                final KafkaConsumerApplication<?> application = new SimpleKafkaConsumerApplication<>(
+                        () -> stringConsumer)) {
+            application.setInputTopics(List.of(input));
             final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getOutputTopic());
             testClient.send()
                     .withKeySerializer(new StringSerializer())
                     .withValueSerializer(new StringSerializer())
-                    .to(app.getInputTopics().get(0), List.of(
+                    .to(input, List.of(
                             new SimpleProducerRecord<>("blub", "blub"),
                             new SimpleProducerRecord<>("bla", "bla"),
                             new SimpleProducerRecord<>("blub", "blub")
@@ -89,32 +91,36 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
                     new KeyValue<>("bla", "bla"),
                     new KeyValue<>("blub", "blub")
             );
-            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
-            // Wait until all applications are completely stopped before triggering cleanup
-            awaitClosed(app.createExecutableApp());
-            this.clean(app);
+            this.runAppAndClose(application);
+            this.assertContent(expectedValues, "All entries are read from the input topic after the 1st run",
+                    stringConsumer);
 
-            try (final AdminClientX admin = testClient.admin()) {
-                this.softly.assertThat(admin.topics().topic(app.getOutputTopic()).exists())
-                        .as("Output topic is deleted")
-                        .isFalse();
-            }
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            awaitClosed(application.createExecutableApp());
+            this.clean(application);
 
-            testClient.createTopic(app.getOutputTopic());
-            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 2nd run", app);
+            this.runAppAndClose(application);
+            final List<KeyValue<String, String>> entriesTwice = expectedValues.stream()
+                    .flatMap(entry -> Stream.of(entry, entry))
+                    .toList();
+            this.assertContent(entriesTwice, "All entries are read twice from the input topic after the 2nd run",
+                    stringConsumer);
         }
     }
 
     @Test
     void shouldReset() {
-        try (final KafkaConsumerProducerApplication<?> app = createMirrorApplication()) {
+        final String input = "input";
+        try (final StringConsumer stringConsumer = new StringConsumer();
+                final KafkaConsumerApplication<?> application = new SimpleKafkaConsumerApplication<>(
+                        () -> stringConsumer)) {
             final KafkaTestClient testClient = this.newTestClient();
-            testClient.createTopic(app.getOutputTopic());
+            application.setInputTopics(List.of(input));
             testClient.send()
                     .withKeySerializer(new StringSerializer())
                     .withValueSerializer(new StringSerializer())
-                    .to(app.getInputTopics().get(0), List.of(
+                    .to(input, List.of(
                             new SimpleProducerRecord<>("blub", "blub"),
                             new SimpleProducerRecord<>("bla", "bla"),
                             new SimpleProducerRecord<>("blub", "blub")
@@ -125,22 +131,21 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
                     new KeyValue<>("bla", "bla"),
                     new KeyValue<>("blub", "blub")
             );
-            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
 
-            // Wait until all applications are completely stopped before triggering cleanup
-            awaitClosed(app.createExecutableApp());
-            this.reset(app);
+            this.runAppAndClose(application);
+            this.assertContent(expectedValues, "All entries are read once from the input topic after the 1st run",
+                    stringConsumer);
 
-            try (final AdminClientX admin = testClient.admin()) {
-                this.softly.assertThat(admin.topics().topic(app.getOutputTopic()).exists())
-                        .as("Output topic exists")
-                        .isTrue();
-            }
+            // Wait until all stream applications are completely stopped before triggering cleanup
+            awaitClosed(application.createExecutableApp());
+            this.reset(application);
 
+            this.runAppAndClose(application);
             final List<KeyValue<String, String>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
                     .toList();
-            this.runAndAssertContent(entriesTwice, "All entries are twice in the input topic after the 2nd run", app);
+            this.assertContent(entriesTwice, "All entries are read twice from the input topic after the 2nd run",
+                    stringConsumer);
         }
     }
 
@@ -158,23 +163,12 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
         }
     }
 
-    private void clean(final KafkaConsumerProducerApplication<?> app) {
+    private void clean(final KafkaConsumerApplication<?> app) {
         this.createTestRunner().clean(app);
     }
 
-    private void reset(final KafkaConsumerProducerApplication<?> app) {
+    private void reset(final KafkaConsumerApplication<?> app) {
         this.createTestRunner().reset(app);
-    }
-
-    private void runAppAndClose(final KafkaConsumerProducerApplication<?> app) {
-        this.runApp(app);
-        app.stop();
-    }
-
-    private void runApp(final KafkaConsumerProducerApplication<?> app) {
-        this.createTestRunner().run(app);
-        // Wait until the application has consumed all data
-        awaitProcessing(app.createExecutableApp());
     }
 
     private TestApplicationRunner createTestRunner() {
@@ -184,22 +178,10 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
                 .withSessionTimeout(SESSION_TIMEOUT);
     }
 
-    private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
-        final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
-                .withKeyDeserializer(new StringDeserializer())
-                .withValueDeserializer(new StringDeserializer())
-                .from(outputTopic, POLL_TIMEOUT);
-        return records.stream()
+    private void assertContent(final Iterable<? extends KeyValue<String, String>> expectedValues,
+            final String description, final StringConsumer consumer) {
+        this.softly.assertThat(consumer.getConsumedRecords())
                 .map(consumerRecord -> new KeyValue<>(consumerRecord.key(), consumerRecord.value()))
-                .toList();
-    }
-
-    private void runAndAssertContent(final Iterable<? extends KeyValue<String, String>> expectedValues,
-            final String description, final KafkaConsumerProducerApplication<?> app) {
-        this.runAppAndClose(app);
-
-        final List<KeyValue<String, String>> output = this.readOutputTopic(app.getOutputTopic());
-        this.softly.assertThat(output)
                 .as(description)
                 .containsExactlyInAnyOrderElementsOf(expectedValues);
     }

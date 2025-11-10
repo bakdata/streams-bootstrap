@@ -42,7 +42,6 @@ kafka:
   # inputPattern: .*-input
   labeledInputPatterns: {}
   #   label: .*-input
-  # errorTopic: error
   # applicationId: foo
 
 commandLine: {}
@@ -103,7 +102,7 @@ autoscaling:
   minReplicas: 0
   maxReplicas: 1
   # idleReplicas: 0
-  ## use the 'topics' option for adding more topics, e.g., intermediate topics
+  ## all topics from kafka.inputTopics and kafka.labeledInputTopics are automatically taken
   topics: []
   #   - bar
   #   - baz

@@ -42,7 +42,7 @@ class StreamsCleanUpRunnerHelperTest {
                 "foo", "bar",
                 "baz", StringSerializer.class
         );
-        final File file = StreamsResetterClient.createTemporaryPropertiesFile("appId", config);
+        final File file = StreamsCleanUpRunner.createTemporaryPropertiesFile("appId", config);
 
         assertThat(file).exists();
 
@@ -51,7 +51,7 @@ class StreamsCleanUpRunnerHelperTest {
             properties.load(inStream);
         }
 
-        final Properties expected = StreamsResetterClient.toStringBasedProperties(config);
+        final Properties expected = StreamsCleanUpRunner.toStringBasedProperties(config);
         assertThat(properties).containsAllEntriesOf(expected);
     }
 }

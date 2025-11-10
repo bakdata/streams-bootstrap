@@ -850,7 +850,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
 
     @Override
     <KOut, VOut> KStreamX<KOut, VOut> process(
-            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             String... stateStoreNames);
 
     /**
@@ -866,7 +866,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier)
      */
     <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             String... stateStoreNames);
 
     /**
@@ -883,13 +883,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier, java.util.function.Predicate)
      */
     <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             String... stateStoreNames);
 
     @Override
     <KOut, VOut> KStreamX<KOut, VOut> process(
-            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
     /**
@@ -906,7 +906,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier)
      */
     <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
     /**
@@ -924,13 +924,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingProcessor#captureErrors(ProcessorSupplier, java.util.function.Predicate)
      */
     <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
 
     @Override
     <VOut> KStreamX<K, VOut> processValues(
-            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             String... stateStoreNames);
 
     /**
@@ -947,7 +947,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier)
      */
     <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             String... stateStoreNames);
 
     /**
@@ -965,13 +965,13 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier, java.util.function.Predicate)
      */
     <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             String... stateStoreNames);
 
     @Override
     <VOut> KStreamX<K, VOut> processValues(
-            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
     /**
@@ -989,7 +989,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier)
      */
     <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             Named named, String... stateStoreNames);
 
     /**
@@ -1008,7 +1008,7 @@ public interface KStreamX<K, V> extends KStream<K, V> {
      * @see ErrorCapturingValueProcessor#captureErrors(FixedKeyProcessorSupplier, java.util.function.Predicate)
      */
     <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             java.util.function.Predicate<Exception> errorFilter,
             Named named, String... stateStoreNames);
 }
