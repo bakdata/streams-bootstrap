@@ -73,18 +73,6 @@ public class ConsumerGroupVerifier {
         return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
     }
 
-//    /**
-//     * Create a new verifier from a {@code ConfiguredConsumerApp} with {@code RuntimeConfiguration}
-//     * @param app app to create verifier from
-//     * @param runtimeConfiguration Kafka properties to use for verifier
-//     * @return verifier
-//     */
-//    public static ConsumerGroupVerifier verify(final ConfiguredConsumerApp<?> app,
-//            final RuntimeConfiguration runtimeConfiguration) {
-//        return new ConsumerGroupVerifier(app.getUniqueAppId(),
-//                () -> AdminClientX.create(runtimeConfiguration.createKafkaProperties()));
-//    }
-
     /**
      * Check whether consumer group has state {@link GroupState#STABLE}
      * @return true if consumer group has state {@link GroupState#STABLE}

@@ -62,6 +62,8 @@ class ConsumerRunnerTest extends KafkaTest {
 
             final StringConsumer stringConsumer = (StringConsumer) app.app();
 
+            awaitProcessing(executableApp);
+
             final List<KeyValue<String, String>> consumedRecords = stringConsumer.getConsumedRecords()
                     .stream()
                     .map(TestHelper::toKeyValue)

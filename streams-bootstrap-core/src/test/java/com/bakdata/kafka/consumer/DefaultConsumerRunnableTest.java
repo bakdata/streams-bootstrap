@@ -37,7 +37,9 @@ import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import com.bakdata.kafka.consumer.apps.CustomProcessorConsumer;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -59,7 +61,11 @@ class DefaultConsumerRunnableTest extends KafkaTest {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build();
-        return new ConfiguredConsumerApp<>(new StringConsumer(), new ConsumerAppConfiguration(topics));
+        return createStringApplication(new ConsumerAppConfiguration(topics));
+    }
+
+    static ConfiguredConsumerApp<ConsumerApp> createStringApplication(final ConsumerAppConfiguration configuration) {
+        return new ConfiguredConsumerApp<>(new StringConsumer(), configuration);
     }
 
     static ConfiguredConsumerApp<ConsumerApp> createCustomProcessorConsumer(
@@ -139,7 +145,9 @@ class DefaultConsumerRunnableTest extends KafkaTest {
     @Test
     void shouldNotCommitAndTerminateWhenProcessorThrowsException() {
         try (final ConfiguredConsumerApp<ConsumerApp> app = createCustomProcessorConsumer(
-                processor -> {throw new RuntimeException("Error while processing records");});
+                processor -> {
+                    throw new RuntimeException("Error while processing records");
+                });
                 final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
@@ -187,6 +195,90 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
             assertThatThrownBy(runner::run).isInstanceOf(ConsumerApplicationException.class)
                     .hasMessage("Consumer already running");
+        }
+    }
+
+    @Test
+    void shouldSubscribeToInputPattern() {
+        final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
+                .inputPattern(Pattern.compile("inp.*"))
+                .build();
+        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication(
+                new ConsumerAppConfiguration(topics));
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic("input");
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to("input", List.of(
+                            new SimpleProducerRecord<>("blub", "blub")
+                    ));
+            final List<KeyValue<String, String>> expectedValues = List.of(new KeyValue<>("blub", "blub"));
+
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
+
+            runAsync(runner);
+            awaitActive(executableApp);
+            assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
+                    "Contains all elements after first run");
+        }
+    }
+
+    @Test
+    void shouldSubscribeToLabeledInputPattern() {
+        final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
+                .labeledInputPatterns(Map.of("LABEL", Pattern.compile("inp.*")))
+                .build();
+        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication(
+                new ConsumerAppConfiguration(topics));
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic("input");
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to("input", List.of(
+                            new SimpleProducerRecord<>("blub", "blub")
+                    ));
+            final List<KeyValue<String, String>> expectedValues = List.of(new KeyValue<>("blub", "blub"));
+
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
+
+            runAsync(runner);
+            awaitActive(executableApp);
+            assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
+                    "Contains all elements after first run");
+        }
+    }
+
+    @Test
+    void shouldSubscribeToLabeledInputTopics() {
+        final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
+                .labeledInputTopics(Map.of("LABEL", List.of("input")))
+                .build();
+        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication(
+                new ConsumerAppConfiguration(topics));
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ConsumerRunner runner = executableApp.createRunner()) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic("input");
+            testClient.send()
+                    .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                    .to("input", List.of(
+                            new SimpleProducerRecord<>("blub", "blub")
+                    ));
+            final List<KeyValue<String, String>> expectedValues = List.of(new KeyValue<>("blub", "blub"));
+
+            final StringConsumer stringConsumer = (StringConsumer) app.app();
+
+            runAsync(runner);
+            awaitActive(executableApp);
+            assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
+                    "Contains all elements after first run");
         }
     }
 }
