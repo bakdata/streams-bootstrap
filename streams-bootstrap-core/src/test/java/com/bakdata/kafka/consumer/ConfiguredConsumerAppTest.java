@@ -160,7 +160,7 @@ class ConfiguredConsumerAppTest {
         }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "not_foo"));
         assertThatThrownBy(configuredApp::getUniqueGroupId)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Provided application ID does not match ConsumerApp#getUniqueGroupId()");
+                .hasMessage("Provided group ID does not match ConsumerApp#getUniqueGroupId()");
     }
 
     @Test
@@ -183,7 +183,7 @@ class ConfiguredConsumerAppTest {
         }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "foo"));
         assertThatThrownBy(configuredApp::getUniqueGroupId)
                 .isInstanceOf(NullPointerException.class)
-                .hasMessage("Application ID cannot be null");
+                .hasMessage("Group ID cannot be null");
     }
 
     @Test
