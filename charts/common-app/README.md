@@ -135,7 +135,8 @@ Renders a `ConfigMap` for the Prometheus JMX exporter sidecar.
 | `kafka.outputTopic`          | Output topic for your streams application.                                                                                                                                       |         |
 | `kafka.labeledOutputTopics`  | Map of additional labeled output topics if you need to specify multiple topics with different message types.                                                                     | `{}`    |
 | `kafka.errorTopic`           | Error topic for your streams application.                                                                                                                                        |         |
-| `kafka.applicationId`        | Unique application ID for Kafka Streams. Required for auto-scaling                                                                                                               |         |
+| `kafka.applicationId`        | Unique application ID for Kafka Streams applications. Required for auto-scaling                                                                                                  |         |
+| `kafka.groupId`              | Unique group ID for Kafka Consumer applications. Required for auto-scaling                                                                                                       |         |
 
 ### Other
 

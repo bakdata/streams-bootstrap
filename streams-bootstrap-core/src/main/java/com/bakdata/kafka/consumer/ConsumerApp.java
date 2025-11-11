@@ -52,18 +52,18 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
     }
 
     /**
-     * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
-     * state encapsulation. Could be set to: className-inputTopic.
+     * This must be set to a unique value that identifies the consumer group this consumer belongs to.
+     * Could be set to: className-inputTopic.
      * <p>
-     * User may provide a unique application identifier via {@link ConsumerAppConfiguration#getUniqueAppId()}. If that
+     * User may provide a unique group identifier via {@link ConsumerAppConfiguration#getUniqueGroupId()}. If that
      * is the case, the returned application ID should match the provided one.
      *
      * @param configuration provides runtime configuration
-     * @return unique application identifier
+     * @return unique group identifier
      */
-    default String getUniqueAppId(final ConsumerAppConfiguration configuration) {
-        return configuration.getUniqueAppId()
-                .orElseThrow(() -> new IllegalArgumentException("Please provide an application ID"));
+    default String getUniqueGroupId(final ConsumerAppConfiguration configuration) {
+        return configuration.getUniqueGroupId()
+                .orElseThrow(() -> new IllegalArgumentException("Please provide a group ID"));
     }
 
     @Override

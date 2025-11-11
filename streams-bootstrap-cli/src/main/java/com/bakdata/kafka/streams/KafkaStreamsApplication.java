@@ -40,7 +40,6 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
@@ -56,7 +55,7 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getLabeledOutputTopics()}</li>
  *     <li>{@link #getErrorTopic()}</li>
  *     <li>{@link #isVolatileGroupInstanceId()}</li>
- *     <li>{@link #getApplicationId()}</li>
+ *     <li>{@link #getUniqueIdentifier()} Unique Application Id}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -141,7 +140,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
 
     @Override
     public StreamsAppConfiguration createConfiguration(final StreamsTopicConfig topics) {
-        return new StreamsAppConfiguration(topics, this.getApplicationId());
+        return new StreamsAppConfiguration(topics, this.getUniqueIdentifier());
     }
 
     /**

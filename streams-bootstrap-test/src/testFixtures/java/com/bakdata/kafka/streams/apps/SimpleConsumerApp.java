@@ -53,7 +53,7 @@ public class SimpleConsumerApp implements ConsumerApp {
     }
 
     @Override
-    public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+    public String getUniqueGroupId(final ConsumerAppConfiguration configuration) {
         return "group";
     }
 

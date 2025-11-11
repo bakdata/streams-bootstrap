@@ -272,8 +272,8 @@ The following configuration options are available:
 - `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
   message types (`<String=String>[,<String=String>...]`)
 
-- `--application-id`: Unique application ID to use for the Kafka consumer. Can also be provided by
-  implementing `ConsumerApp#getUniqueAppId()`
+- `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
+  implementing `ConsumerApp#getUniqueGroupId()`
 
 Additionally, the following commands are available:
 

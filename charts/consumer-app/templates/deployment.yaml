@@ -83,16 +83,6 @@ spec:
             - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
               value: {{ $value | quote }}
           {{- end }}
-          {{- range .Values.ports }}
-            {{- if .servicePort }} # TODO verify that there is at most one service port. Currently, if there are multiple service ports, the first one will be used
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: KAFKA_APPLICATION_SERVER
-              value: "$(POD_IP):{{ .containerPort }}"
-            {{- end }}
-          {{- end }}
           {{- if .Values.kafka.staticMembership }}
             - name: KAFKA_GROUP_INSTANCE_ID
               valueFrom:
@@ -132,9 +122,9 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
               value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
           {{- end }}
-          {{- if hasKey .Values.kafka "applicationId" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
-              value: {{ .Values.kafka.applicationId | quote }}
+          {{- if hasKey .Values.kafka "groupId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
+              value: {{ .Values.kafka.groupId | quote }}
           {{- end }}
           {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
