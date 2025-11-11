@@ -24,11 +24,18 @@
 
 package com.bakdata.kafka.consumerproducer;
 
-import lombok.Builder;
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
+import com.bakdata.kafka.producer.ProducerExecutionOptions;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Options to run a Kafka ConsumerProducer app
  */
-@Builder
+@Getter
+@RequiredArgsConstructor
 public final class ConsumerProducerExecutionOptions {
+
+    private final ConsumerExecutionOptions consumerExecutionOptions;
+    private final ProducerExecutionOptions producerExecutionOptions;
 }

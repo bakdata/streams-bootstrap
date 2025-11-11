@@ -27,8 +27,10 @@ package com.bakdata.kafka.consumerproducer;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.producer.ProducerBuilder;
+import com.bakdata.kafka.producer.ProducerExecutionOptions;
 import com.bakdata.kafka.producer.ProducerTopicConfig;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
@@ -74,15 +76,17 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
      */
     @Override
     public ConsumerProducerRunner createRunner() {
-        return this.createRunner(ConsumerProducerExecutionOptions.builder().build());
+        final ConsumerExecutionOptions consumerExecutionOptions = ConsumerExecutionOptions.builder().build();
+        final ProducerExecutionOptions producerExecutionOptions = ProducerExecutionOptions.builder().build();
+        return this.createRunner(
+                new ConsumerProducerExecutionOptions(consumerExecutionOptions, producerExecutionOptions));
     }
 
     @Override
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
-        final ConsumerBuilder
-                consumerBuilder =
+        final ConsumerBuilder consumerBuilder =
                 new ConsumerBuilder(ConsumerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
-                        this.consumerProperties);
+                        this.consumerProperties, options.getConsumerExecutionOptions());
         final ProducerBuilder
                 producerBuilder =
                 new ProducerBuilder(ProducerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
