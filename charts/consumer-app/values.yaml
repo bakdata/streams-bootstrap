@@ -42,7 +42,7 @@ kafka:
   # inputPattern: .*-input
   labeledInputPatterns: {}
   #   label: .*-input
-  # applicationId: foo
+  # groupId: foo
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"

@@ -110,7 +110,7 @@ class ExecutableConsumerAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final ConsumerAppConfiguration config) {
+        public String getUniqueGroupId(final ConsumerAppConfiguration config) {
             return "app-id";
         }
 

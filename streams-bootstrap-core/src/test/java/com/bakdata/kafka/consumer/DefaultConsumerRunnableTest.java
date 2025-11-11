@@ -120,7 +120,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
-                        adminClient.consumerGroups().group(app.getUniqueAppId());
+                        adminClient.consumerGroups().group(app.getUniqueGroupId());
 
                 this.softly.assertThat(consumerGroupClient.listOffsets().values())
                         .as("Offset for topic")
@@ -158,7 +158,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
-                        adminClient.consumerGroups().group(app.getUniqueAppId());
+                        adminClient.consumerGroups().group(app.getUniqueGroupId());
 
                 this.softly.assertThat(consumerGroupClient.listOffsets().values())
                         .as("Offset for topic")

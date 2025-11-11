@@ -49,8 +49,8 @@ import picocli.CommandLine.Option;
  *     <li>{@link #getInputPattern()}</li>
  *     <li>{@link #getLabeledInputTopics()}</li>
  *     <li>{@link #getLabeledInputPatterns()}</li>
- *     <li>{@link #isVolatileGroupInstanceId()} ()}</li>
- *     <li>{@link #getApplicationId()}</li>
+ *     <li>{@link #isVolatileGroupInstanceId()}</li>
+ *     <li>{@link #getUniqueIdentifier()} Unique Group Id</li>
  * </ul>
  * To implement your Kafka Consumer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -102,7 +102,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     public final Optional<ConsumerExecutionOptions> createExecutionOptions() {
         final ConsumerExecutionOptions executionOptions = ConsumerExecutionOptions.builder()
                 .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
-                .onStart(this::onStreamsStart)
+                .onStart(this::onConsumerStart)
                 .pollTimeout(this.getPollTimeout())
                 .build();
         return Optional.of(executionOptions);
@@ -126,7 +126,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
 
     @Override
     public ConsumerAppConfiguration createConfiguration(final ConsumerTopicConfig topics) {
-        return new ConsumerAppConfiguration(topics);
+        return new ConsumerAppConfiguration(topics, this.getUniqueIdentifier());
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
      *
      * @param runningConsumer running {@link ConsumerRunnable} instance along with its {@link ConsumerConfig}
      */
-    protected void onStreamsStart(final RunningConsumer runningConsumer) {
+    protected void onConsumerStart(final RunningConsumer runningConsumer) {
         // do nothing by default
     }
 }

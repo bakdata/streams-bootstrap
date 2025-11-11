@@ -168,7 +168,7 @@ class KafkaConsumerApplicationCliTest {
         }.startApplication(new String[]{
                 "--bootstrap-servers", "localhost:9092",
                 "--input-topics", "input",
-                "--application-id", "my-other-id"
+                "--group-id", "my-other-id"
         });
     }
 

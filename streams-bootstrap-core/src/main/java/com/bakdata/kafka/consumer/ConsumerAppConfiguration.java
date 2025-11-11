@@ -37,10 +37,10 @@ public class ConsumerAppConfiguration {
 
     @Getter
     private final @NonNull ConsumerTopicConfig topics;
-    private final String uniqueAppId;
+    private final String uniqueGroupId;
 
     /**
-     * Create a new {@code ConsumerAppConfiguration} with no provided {@link #uniqueAppId}
+     * Create a new {@code ConsumerAppConfiguration} with no provided {@link #uniqueGroupId}
      *
      * @param topics topics to use for app
      */
@@ -49,12 +49,12 @@ public class ConsumerAppConfiguration {
     }
 
     /**
-     * Get the provided unique application ID. If user did not provide a unique application ID, this will return empty.
+     * Get the provided unique group ID. If user did not provide a unique group ID, this will return empty.
      *
-     * @return provided unique application ID
-     * @see ConsumerApp#getUniqueAppId(ConsumerAppConfiguration)
+     * @return provided unique group ID
+     * @see ConsumerApp#getUniqueGroupId(ConsumerAppConfiguration)
      */
-    public Optional<String> getUniqueAppId() {
-        return Optional.ofNullable(this.uniqueAppId);
+    public Optional<String> getUniqueGroupId() {
+        return Optional.ofNullable(this.uniqueGroupId);
     }
 }

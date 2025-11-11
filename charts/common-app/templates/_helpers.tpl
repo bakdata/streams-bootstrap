@@ -69,15 +69,17 @@ Define annotations helper for Deployment.
 Includes default annotations and conditionally adds consumerGroup if applicable.
 */}}
 {{- define "common-app.deployment-annotations" -}}
-{{- if or .Values.annotations .Values.kafka.applicationId }}
+{{ /* Use applicationId for Kafka Streams, otherwise use groupId for Kafka Consumers */ }}
+{{- $uniqueId := coalesce .Values.kafka.applicationId .Values.kafka.groupId }}
+{{- if or .Values.annotations $uniqueId }}
   annotations:
 {{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
 {{- end }}
 
   {{- /* Conditionally add the consumerGroup annotation if needed */ -}}
-  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.kafka.applicationId | quote }}
+  {{- if and $uniqueId (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ $uniqueId | quote }}
   {{- end }}
 {{- end }}
 {{- end }}

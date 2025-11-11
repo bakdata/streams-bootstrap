@@ -59,7 +59,7 @@ public class CustomProcessorConsumer implements ConsumerApp {
     }
 
     @Override
-    public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+    public String getUniqueGroupId(final ConsumerAppConfiguration configuration) {
         return "app-id";
     }
 }

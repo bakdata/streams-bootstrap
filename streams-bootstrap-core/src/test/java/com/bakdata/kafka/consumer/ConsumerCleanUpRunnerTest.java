@@ -112,7 +112,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
-                        adminClient.consumerGroups().group(app.getUniqueAppId());
+                        adminClient.consumerGroups().group(app.getUniqueGroupId());
                 this.softly.assertThat(consumerGroupClient.exists())
                         .as("Consumer group exists")
                         .isTrue();
@@ -123,7 +123,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
-                        adminClient.consumerGroups().group(app.getUniqueAppId());
+                        adminClient.consumerGroups().group(app.getUniqueGroupId());
                 this.softly.assertThat(consumerGroupClient.exists())
                         .as("Consumer group is deleted")
                         .isFalse();
@@ -161,7 +161,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupsClient groups = adminClient.consumerGroups();
-                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
+                this.softly.assertThat(groups.group(app.getUniqueGroupId()).exists())
                         .as("Consumer group exists")
                         .isTrue();
             }
@@ -170,8 +170,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupsClient groups = adminClient.consumerGroups();
-                groups.group(app.getUniqueAppId()).delete();
-                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
+                groups.group(app.getUniqueGroupId()).delete();
+                this.softly.assertThat(groups.group(app.getUniqueGroupId()).exists())
                         .as("Consumer group is deleted")
                         .isFalse();
             }

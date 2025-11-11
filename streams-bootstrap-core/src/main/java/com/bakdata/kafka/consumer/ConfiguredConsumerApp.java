@@ -85,7 +85,7 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     public Map<String, Object> getKafkaProperties(final RuntimeConfiguration runtimeConfiguration) {
         final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration);
         return propertiesFactory.createKafkaProperties(Map.of(
-                ConsumerConfig.GROUP_ID_CONFIG, this.getUniqueAppId()
+                ConsumerConfig.GROUP_ID_CONFIG, this.getUniqueGroupId()
         ));
     }
 
@@ -93,17 +93,18 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      * Get unique application identifier of {@link ConsumerApp}
      *
      * @return unique application identifier
-     * @throws IllegalArgumentException if unique application identifier of {@link ConsumerApp} is different from
-     * provided application identifier in {@link ConsumerAppConfiguration}
-     * @see ConsumerApp#getUniqueAppId(ConsumerAppConfiguration)
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from
+     * provided group identifier in {@link ConsumerAppConfiguration}
+     * @see ConsumerApp#getUniqueGroupId(ConsumerAppConfiguration)
      */
-    public String getUniqueAppId() {
-        final String uniqueAppId =
-                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
-        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
-            throw new IllegalArgumentException("Provided application ID does not match ConsumerApp#getUniqueAppId()");
+    public String getUniqueGroupId() {
+        final String uniqueGroupId =
+                Objects.requireNonNull(this.app.getUniqueGroupId(this.configuration), "Group ID cannot be null");
+        if (this.configuration.getUniqueGroupId().map(configuredId -> !uniqueGroupId.equals(configuredId))
+                .orElse(false)) {
+            throw new IllegalArgumentException("Provided group ID does not match ConsumerApp#getUniqueGroupId()");
         }
-        return uniqueAppId;
+        return uniqueGroupId;
     }
 
     /**
@@ -115,7 +116,7 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
         final ConsumerTopicConfig topics = this.getTopics();
         final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
-        return new ExecutableConsumerApp<>(topics, kafkaProperties, this.getUniqueAppId(), this.app);
+        return new ExecutableConsumerApp<>(topics, kafkaProperties, this.getUniqueGroupId(), this.app);
     }
 
     /**

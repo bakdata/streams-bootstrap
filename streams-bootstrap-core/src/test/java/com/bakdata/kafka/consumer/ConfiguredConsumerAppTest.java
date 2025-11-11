@@ -154,13 +154,13 @@ class ConfiguredConsumerAppTest {
             }
 
             @Override
-            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+            public String getUniqueGroupId(final ConsumerAppConfiguration configuration) {
                 return "foo";
             }
         }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "not_foo"));
-        assertThatThrownBy(configuredApp::getUniqueAppId)
+        assertThatThrownBy(configuredApp::getUniqueGroupId)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Provided application ID does not match ConsumerApp#getUniqueAppId()");
+                .hasMessage("Provided application ID does not match ConsumerApp#getUniqueGroupId()");
     }
 
     @Test
@@ -177,11 +177,11 @@ class ConfiguredConsumerAppTest {
             }
 
             @Override
-            public String getUniqueAppId(final ConsumerAppConfiguration configuration) {
+            public String getUniqueGroupId(final ConsumerAppConfiguration configuration) {
                 return null;
             }
         }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "foo"));
-        assertThatThrownBy(configuredApp::getUniqueAppId)
+        assertThatThrownBy(configuredApp::getUniqueGroupId)
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Application ID cannot be null");
     }
@@ -199,7 +199,7 @@ class ConfiguredConsumerAppTest {
                 throw new UnsupportedOperationException();
             }
         }, new ConsumerAppConfiguration(emptyAppConfig().getTopics(), "foo"));
-        assertThat(configuredApp.getUniqueAppId()).isEqualTo("foo");
+        assertThat(configuredApp.getUniqueGroupId()).isEqualTo("foo");
     }
 
     private record TestConsumer(@NonNull Map<String, Object> kafkaProperties) implements ConsumerApp {
@@ -214,7 +214,7 @@ class ConfiguredConsumerAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final ConsumerAppConfiguration config) {
+        public String getUniqueGroupId(final ConsumerAppConfiguration config) {
             return "app-id";
         }
 
