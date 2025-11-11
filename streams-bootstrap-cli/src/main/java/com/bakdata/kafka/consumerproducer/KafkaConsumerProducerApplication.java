@@ -133,7 +133,7 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public ConsumerProducerAppConfiguration createConfiguration(final ConsumerProducerTopicConfig topics) {
-        return new ConsumerProducerAppConfiguration(topics, this.getApplicationId());
+        return new ConsumerProducerAppConfiguration(topics, this.getUniqueIdentifier());
     }
 
 }
