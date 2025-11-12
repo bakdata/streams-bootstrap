@@ -36,7 +36,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
@@ -53,7 +52,7 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getOutputTopic()}</li>
  *     <li>{@link #getLabeledOutputTopics()}</li>
  *     <li>{@link #isVolatileGroupInstanceId()}</li>
- *     <li>{@link #getApplicationId()} ()}</li>
+ *     <li>{@link #getUniqueIdentifier()} Unique Group Id</li>
  * </ul>
  * To implement your Kafka ConsumerProducer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
