@@ -29,6 +29,8 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.RuntimeConfiguration;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunner;
+import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -64,6 +66,14 @@ public class TestHelper {
 
     public static void run(final ExecutableConsumerApp<?> app) {
         try (final ConsumerRunner runner = app.createRunner()) {
+            runAsync(runner);
+            // Wait until consumer application has consumed all data
+            awaitProcessing(app);
+        }
+    }
+
+    public static void run(final ExecutableConsumerProducerApp<?> app) {
+        try (final ConsumerProducerRunner runner = app.createRunner()) {
             runAsync(runner);
             // Wait until consumer application has consumed all data
             awaitProcessing(app);

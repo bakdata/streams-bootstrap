@@ -25,17 +25,75 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
-import com.bakdata.kafka.producer.ProducerExecutionOptions;
+import java.time.Duration;
+import java.util.Map;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
+import org.apache.kafka.clients.consumer.CloseOptions;
+import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
  * Options to run a Kafka ConsumerProducer app
  */
-@Getter
-@RequiredArgsConstructor
+@Builder
 public final class ConsumerProducerExecutionOptions {
 
-    private final ConsumerExecutionOptions consumerExecutionOptions;
-    private final ProducerExecutionOptions producerExecutionOptions;
+    /**
+     * Hook that is called after the {@link ConsumerProducerRunnable} is started
+     */
+    @Builder.Default
+    private final @NonNull java.util.function.Consumer<RunningConsumerProducer> onStart = runningConsumerProducer -> {};
+
+    /**
+     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
+     * {@link Consumer#close(CloseOptions)} is called with
+     * {@link CloseOptions#groupMembershipOperation(GroupMembershipOperation)} set to
+     * {@link GroupMembershipOperation#REMAIN_IN_GROUP}
+     */
+    @Builder.Default
+    private final boolean volatileGroupInstanceId = true;
+
+    /**
+     * Defines {@link CloseOptions#timeout(Duration)} when calling {@link Consumer#close(CloseOptions)}
+     */
+    @Builder.Default
+    private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
+
+    /**
+     * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
+     */
+    @Builder.Default
+    @Getter
+    private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
+
+    private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
+        return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
+    }
+
+    CloseOptions createCloseOptions(final ConsumerConfig config) {
+        final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
+        final GroupMembershipOperation operation =
+                leaveGroup ? GroupMembershipOperation.LEAVE_GROUP : GroupMembershipOperation.DEFAULT;
+        return CloseOptions.groupMembershipOperation(operation).withTimeout(this.closeTimeout);
+    }
+
+    boolean shouldLeaveGroup(final Map<String, Object> originals) {
+        final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
+        return staticMembershipDisabled || this.volatileGroupInstanceId;
+    }
+
+    void onStart(final RunningConsumerProducer runningConsumerProducer) {
+        this.onStart.accept(runningConsumerProducer);
+    }
+
+    ConsumerExecutionOptions toConsumerExecutionOptions() {
+        return ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .pollTimeout(this.pollTimeout)
+                .closeTimeout(this.closeTimeout)
+                .build();
+    }
 }

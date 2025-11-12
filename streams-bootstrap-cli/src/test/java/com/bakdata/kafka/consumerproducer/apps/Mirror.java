@@ -24,15 +24,15 @@
 
 package com.bakdata.kafka.consumerproducer.apps;
 
+import com.bakdata.kafka.consumer.ConsumerRunnable;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.DefaultConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
-import java.time.Duration;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -43,42 +43,15 @@ public class Mirror implements ConsumerProducerApp {
 
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-        return new ConsumerProducerRunnable() {
-            private Consumer<String, String> consumer = null;
-            private Producer<String, String> producer = null;
-            private volatile boolean running = true;
-
-            @Override
-            public void close() {
-                this.running = false;
-                this.consumer.wakeup();
-            }
-
-            @Override
-            public void run() {
-                try {
-                    this.consumer = builder.consumerBuilder().createConsumer();
-                    this.consumer.subscribe(builder.topics().getInputTopics());
-                    this.producer = builder.producerBuilder().createProducer();
-                    // TODO handle runtime in streams-bootstrap
-                    // TODO bring this loop into streams-bootstrap and allow consumer access to subscribe and so on - countdownlatch to close poll loop
-                    while (this.running) {
-                        final ConsumerRecords<String, String> consumerRecords =
-                                this.consumer.poll(Duration.ofMillis(100L));
-                        consumerRecords.forEach(consumerRecord -> this.producer.send(
-                                new ProducerRecord<>(builder.topics().getOutputTopic(), consumerRecord.key(),
-                                        consumerRecord.value())));
-                    }
-                } finally {
-                    if (this.consumer != null) {
-                        this.consumer.close();
-                    }
-                    if (this.producer != null) {
-                        this.producer.close();
-                    }
-                }
-            }
-        };
+        final Producer<String, String> producer = builder.producerBuilder().createProducer();
+        final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
+        builder.consumerBuilder().subscribeToAllTopics(consumer);
+        final ConsumerRunnable
+                consumerRunnable = builder.consumerBuilder().createDefaultConsumerRunnable(consumer, records ->
+                records.forEach(consumerRecord ->
+                        producer.send(new ProducerRecord<>(builder.topics().getOutputTopic(),
+                                consumerRecord.key(), consumerRecord.value()))));
+        return new DefaultConsumerProducerRunnable<>(producer, consumerRunnable);
     }
 
     @Override

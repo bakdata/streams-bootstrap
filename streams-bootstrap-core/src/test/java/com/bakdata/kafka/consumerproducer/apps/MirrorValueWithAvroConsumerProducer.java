@@ -25,19 +25,18 @@
 package com.bakdata.kafka.consumerproducer.apps;
 
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.DefaultConsumerProducerRunnable;
 import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -47,8 +46,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 @RequiredArgsConstructor
 public class MirrorValueWithAvroConsumerProducer implements ConsumerProducerApp {
 
-    private final AtomicBoolean running = new AtomicBoolean(true);
-
     @Override
     public SerializerDeserializerConfig defaultSerializationConfig() {
         return new SerializerDeserializerConfig(StringSerializer.class, SpecificAvroSerializer.class,
@@ -57,34 +54,19 @@ public class MirrorValueWithAvroConsumerProducer implements ConsumerProducerApp 
 
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-        return () -> {
-            try (final Consumer<String, TestRecord> consumer = builder.consumerBuilder().createConsumer();
-                    final Producer<String, TestRecord> producer = builder.producerBuilder().createProducer()) {
-                this.initConsumer(consumer, producer, builder);
-            }
-        };
+        final Consumer<String, TestRecord> consumer = builder.consumerBuilder().createConsumer();
+        builder.consumerBuilder().subscribeToAllTopics(consumer);
+        final Producer<String, TestRecord> producer = builder.producerBuilder().createProducer();
+        final ConsumerRunnable consumerRunnable = builder.consumerBuilder().createDefaultConsumerRunnable(consumer,
+                records -> records.forEach(
+                        consumerRecord ->
+                                producer.send(new ProducerRecord<>(builder.topics().getOutputTopic(),
+                                        consumerRecord.key(), consumerRecord.value()))));
+        return new DefaultConsumerProducerRunnable<>(producer, consumerRunnable);
     }
 
     @Override
     public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
         return "app-id";
-    }
-
-    private void initConsumer(final Consumer<String, TestRecord> consumer, final Producer<String, TestRecord> producer,
-            final ConsumerProducerBuilder builder) {
-        consumer.subscribe(builder.topics().getInputTopics());
-        while (this.running.get()) {
-            final ConsumerRecords<String, TestRecord> consumerRecords = consumer.poll(Duration.ofMillis(100L));
-            consumerRecords.forEach(consumerRecord -> producer.send(
-                    new ProducerRecord<>(builder.topics().getOutputTopic(), consumerRecord.key(), consumerRecord.value())));
-        }
-    }
-
-    public void shutdown() {
-        this.running.set(false);
-    }
-
-    public void start() {
-        this.running.set(true);
     }
 }

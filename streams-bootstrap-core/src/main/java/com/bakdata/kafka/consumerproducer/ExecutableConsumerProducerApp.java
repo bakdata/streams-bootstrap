@@ -27,10 +27,8 @@ package com.bakdata.kafka.consumerproducer;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
-import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.producer.ProducerBuilder;
-import com.bakdata.kafka.producer.ProducerExecutionOptions;
 import com.bakdata.kafka.producer.ProducerTopicConfig;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
@@ -39,6 +37,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
  * A {@link ConsumerProducerApp} with a corresponding {@link StreamsTopicConfig} and Kafka configuration
@@ -76,17 +76,15 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
      */
     @Override
     public ConsumerProducerRunner createRunner() {
-        final ConsumerExecutionOptions consumerExecutionOptions = ConsumerExecutionOptions.builder().build();
-        final ProducerExecutionOptions producerExecutionOptions = ProducerExecutionOptions.builder().build();
-        return this.createRunner(
-                new ConsumerProducerExecutionOptions(consumerExecutionOptions, producerExecutionOptions));
+        final ConsumerProducerExecutionOptions executionOptions = ConsumerProducerExecutionOptions.builder().build();
+        return this.createRunner(executionOptions);
     }
 
     @Override
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
         final ConsumerBuilder consumerBuilder =
                 new ConsumerBuilder(ConsumerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
-                        this.consumerProperties, options.getConsumerExecutionOptions());
+                        this.consumerProperties, options.toConsumerExecutionOptions());
         final ProducerBuilder
                 producerBuilder =
                 new ProducerBuilder(ProducerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
@@ -95,12 +93,23 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
                 consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
         final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder));
+        return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder),
+                this.getConsumerConfig(),
+                this.getProducerConfig(),
+                options);
     }
 
     @Override
     public void close() {
         this.app.close();
+    }
+
+    public ConsumerConfig getConsumerConfig() {
+        return new ConsumerConfig(this.consumerProperties);
+    }
+
+    public ProducerConfig getProducerConfig() {
+        return new ProducerConfig(this.producerProperties);
     }
 
     private AppConfiguration<ConsumerProducerTopicConfig> createConfiguration() {

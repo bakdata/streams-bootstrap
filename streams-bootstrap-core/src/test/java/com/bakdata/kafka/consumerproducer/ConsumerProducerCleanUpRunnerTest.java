@@ -25,6 +25,8 @@
 package com.bakdata.kafka.consumerproducer;
 
 
+import static com.bakdata.kafka.consumerproducer.TestHelper.run;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -35,7 +37,6 @@ import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
-import com.bakdata.kafka.Runner;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.TestHelper;
@@ -83,12 +84,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             .inputTopics(List.of("input"))
             .outputTopic("output")
             .build();
-
-    private static Runner run(final ExecutableApp<? extends Runner, ?, ?> executableApp) {
-        final Runner consumerRunner = executableApp.createRunner();
-        new Thread(consumerRunner).start();
-        return consumerRunner;
-    }
 
     private static void reset(final ExecutableApp<?, ConsumerProducerCleanUpRunner, ?> app) {
         try (final ConsumerProducerCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
@@ -166,14 +161,10 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumerProducer stringConsumerProducer = (StringConsumerProducer) app.app();
-
             run(executableApp);
-            awaitProcessing(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "Output contains all elements after first run");
 
-            stringConsumerProducer.shutdown();
             awaitClosed(executableApp);
             clean(executableApp);
 
@@ -211,8 +202,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             final StringConsumerProducer stringConsumer = (StringConsumerProducer) app.app();
 
             run(executableApp);
-            awaitActive(executableApp);
-
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "Output contains all elements after first run");
 
@@ -224,7 +213,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                         .isTrue();
             }
 
-            stringConsumer.shutdown();
+            stringConsumer.close();
             awaitClosed(executableApp);
             clean(executableApp);
 
@@ -260,7 +249,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumerProducer stringConsumerProducer = (StringConsumerProducer) app.app();
             run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
                     "Contains all elements after first run");
@@ -272,7 +260,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                         .isTrue();
             }
 
-            stringConsumerProducer.shutdown();
             awaitClosed(executableApp);
 
             try (final AdminClientX adminClient = testClient.admin()) {
@@ -303,23 +290,16 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>(null, "c")
                     ));
 
-            final StringPatternConsumerProducer stringConsumerProducer = (StringPatternConsumerProducer) app.app();
-
             run(executableApp);
-            awaitProcessing(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
             run(executableApp);
-            awaitProcessing(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
 
             // Wait until all applications are completely stopped before triggering cleanup
-            stringConsumerProducer.shutdown();
             awaitClosed(executableApp);
             reset(executableApp);
 
-            stringConsumerProducer.start();
             run(executableApp);
-            awaitProcessing(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 6);
         }
     }
@@ -341,14 +321,9 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(null, testRecord)
                     ));
-
-            final MirrorValueWithAvroConsumerProducer stringConsumerProducer =
-                    (MirrorValueWithAvroConsumerProducer) app.app();
             run(executableApp);
-            awaitProcessing(executableApp);
 
             // Wait until all applications are completely stopped before triggering cleanup
-            stringConsumerProducer.shutdown();
             awaitClosed(executableApp);
             final String outputTopic = app.getTopics().getOutputTopic();
             this.softly.assertThat(client.getAllSubjects())
@@ -377,14 +352,10 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                     .to(app.getTopics().getInputTopics().get(0), List.of(
                             new SimpleProducerRecord<>(testRecord, "val")
                     ));
-            final MirrorKeyWithAvroConsumerProducer stringConsumerProducer =
-                    (MirrorKeyWithAvroConsumerProducer) app.app();
 
             run(executableApp);
-            awaitProcessing(executableApp);
 
             // Wait until all applications are completely stopped before triggering cleanup
-            stringConsumerProducer.shutdown();
             awaitClosed(executableApp);
             final String outputTopic = app.getTopics().getOutputTopic();
             this.softly.assertThat(client.getAllSubjects())
@@ -421,16 +392,17 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
     void shouldThrowExceptionOnResetterError() {
         try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
                 final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
-                        this.createConfig())) {
+                        this.createConfig());
+                final ConsumerProducerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
-            run(executableApp);
-            // Wait until consumer producer application has consumed all data
+            runAsync(runner);
+            // Wait until consumer application has consumed all data
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
                     .isInstanceOf(CleanUpException.class)
-                    .hasMessageContaining("Error running streams resetter. Exit code 1");
+                    .hasMessageContaining("Error resetting application, consumer group is not empty");
         }
     }
 
@@ -449,7 +421,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>(null, "b"),
                             new SimpleProducerRecord<>(null, "c")
                     ));
-            final StringConsumerProducer stringConsumerProducer = (StringConsumerProducer) app.app();
 
             run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 3);
@@ -457,11 +428,9 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             this.assertSize(app.getTopics().getOutputTopic(), 3);
 
             // Wait until all applications are completely stopped before triggering cleanup
-            stringConsumerProducer.shutdown();
             awaitClosed(executableApp);
             reset(executableApp);
 
-            stringConsumerProducer.start();
             run(executableApp);
             this.assertSize(app.getTopics().getOutputTopic(), 6);
         }

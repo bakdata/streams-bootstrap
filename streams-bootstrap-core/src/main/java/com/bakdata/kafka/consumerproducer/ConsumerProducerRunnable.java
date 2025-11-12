@@ -24,16 +24,21 @@
 
 package com.bakdata.kafka.consumerproducer;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+
 /**
  * Produce or consume messages to or from Kafka
  */
-@FunctionalInterface
 public interface ConsumerProducerRunnable extends AutoCloseable {
 
     /**
-     * Produce or consume messages to or from Kafka
+     * Produce or Consume messages from Kafka
+     *
+     * @param consumerConfig configuration for the consumer
+     * @param producerConfig configuration for the producer
      */
-    void run();
+    void run(ConsumerConfig consumerConfig, ProducerConfig producerConfig);
 
     @Override
     default void close() {

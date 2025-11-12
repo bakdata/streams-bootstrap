@@ -24,46 +24,43 @@
 
 package com.bakdata.kafka.consumerproducer;
 
-import com.bakdata.kafka.Runner;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-/**
- * Runs a Kafka Consumer and Producer application
- */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
-public class ConsumerProducerRunner implements Runner {
+public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
 
-    private final @NonNull ConsumerProducerRunnable runnable;
-    private final @NonNull ConsumerConfig consumerConfig;
-    private final @NonNull ProducerConfig producerConfig;
-    private final @NonNull ConsumerProducerExecutionOptions executionOptions;
+    private final Producer<KOut, VOut> producer;
+    @Getter
+    private final ConsumerRunnable consumerRunnable;
+
+    @Override
+    public void run(final ConsumerConfig consumerConfig, final ProducerConfig producerConfig) {
+        this.consumerRunnable.run(consumerConfig);
+    }
 
     @Override
     public void close() {
-        log.info("Closing consumer and producer");
-        this.runnable.close();
-    }
+        try {
+            log.debug("Closing consumer runnable");
+            this.consumerRunnable.close();
+        } catch (final RuntimeException e) {
+            log.warn("Error closing consumer runnable", e);
+        }
 
-    @Override
-    public void run() {
-        log.info("Starting consumer and producer");
-        this.runConsumerProducer();
-    }
+        try {
+            log.debug("Closing producer");
+            this.producer.close();
+        } catch (final RuntimeException e) {
+            log.warn("Error closing producer", e);
+        }
 
-    private void runConsumerProducer() {
-        log.info("Starting Kafka ConsumerProducer and calling start hook");
-        final RunningConsumerProducer runningConsumer = RunningConsumerProducer.builder()
-                .consumerProducerRunnable(this.runnable)
-                .consumerConfig(this.consumerConfig)
-                .producerConfig(this.producerConfig)
-                .build();
-        this.executionOptions.onStart(runningConsumer);
-        // Run Kafka application until it shuts down
-        this.runnable.run(this.consumerConfig, this.producerConfig);
+        log.info("ConsumerProducer was shut down gracefully");
     }
 }
