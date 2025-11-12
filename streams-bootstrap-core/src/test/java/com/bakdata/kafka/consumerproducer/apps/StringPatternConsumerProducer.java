@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka.consumerproducer.apps;
 
-import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
@@ -52,9 +51,9 @@ public class StringPatternConsumerProducer implements ConsumerProducerApp {
 
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-        final Consumer<String, TestRecord> consumer = builder.consumerBuilder().createConsumer();
+        final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
         builder.consumerBuilder().subscribeToAllTopics(consumer);
-        final Producer<String, TestRecord> producer = builder.producerBuilder().createProducer();
+        final Producer<String, String> producer = builder.producerBuilder().createProducer();
         final ConsumerRunnable consumerRunnable = builder.consumerBuilder().createDefaultConsumerRunnable(consumer,
                 records -> records.forEach(
                         consumerRecord ->
