@@ -1,3 +1,4 @@
+{{- define "common-app.configmap" -}}
 {{ if .Values.files }}
 apiVersion: v1
 kind: ConfigMap
@@ -14,3 +15,4 @@ data:
   {{ $key }}: {{ $value.content | quote }}
   {{- end }}
 {{ end }}
+{{- end -}}
