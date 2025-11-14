@@ -67,46 +67,4 @@ public class ConsumerProducerTopicConfig {
     @NonNull
     Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
-
-    /**
-     * Get input topics for a specified label
-     *
-     * @param label label of input topics
-     * @return topic names
-     */
-    public List<String> getInputTopics(final String label) {
-        final List<String> topics = this.labeledInputTopics.get(label);
-        if (topics == null) {
-            throw new IllegalArgumentException(String.format("No input topics for label '%s' available", label));
-        }
-        return topics;
-    }
-
-    /**
-     * Get input pattern for a specified label
-     *
-     * @param label label of input pattern
-     * @return topic pattern
-     */
-    public Pattern getInputPattern(final String label) {
-        final Pattern pattern = this.labeledInputPatterns.get(label);
-        if (pattern == null) {
-            throw new IllegalArgumentException(String.format("No input pattern for label '%s' available", label));
-        }
-        return pattern;
-    }
-
-    /**
-     * Get output topic for a specified label
-     *
-     * @param label label of output topic
-     * @return topic name
-     */
-    public String getOutputTopic(final String label) {
-        final String topic = this.labeledOutputTopics.get(label);
-        if (topic == null) {
-            throw new IllegalArgumentException(String.format("No output topic for label '%s' available", label));
-        }
-        return topic;
-    }
 }

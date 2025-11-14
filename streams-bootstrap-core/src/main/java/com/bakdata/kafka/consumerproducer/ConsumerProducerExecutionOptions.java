@@ -26,7 +26,6 @@ package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import java.time.Duration;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -68,22 +67,6 @@ public final class ConsumerProducerExecutionOptions {
     @Builder.Default
     @Getter
     private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
-
-    private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
-        return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
-    }
-
-    CloseOptions createCloseOptions(final ConsumerConfig config) {
-        final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
-        final GroupMembershipOperation operation =
-                leaveGroup ? GroupMembershipOperation.LEAVE_GROUP : GroupMembershipOperation.DEFAULT;
-        return CloseOptions.groupMembershipOperation(operation).withTimeout(this.closeTimeout);
-    }
-
-    boolean shouldLeaveGroup(final Map<String, Object> originals) {
-        final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
-        return staticMembershipDisabled || this.volatileGroupInstanceId;
-    }
 
     void onStart(final RunningConsumerProducer runningConsumerProducer) {
         this.onStart.accept(runningConsumerProducer);

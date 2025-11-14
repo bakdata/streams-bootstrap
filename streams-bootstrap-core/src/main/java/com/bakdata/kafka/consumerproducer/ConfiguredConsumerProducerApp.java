@@ -42,8 +42,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
  *
  * @param <T> type of {@link ConsumerProducerApp}
  */
-public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(@NonNull T app,
-                                                                           @NonNull ConsumerProducerAppConfiguration configuration)
+public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
+        @NonNull T app, @NonNull ConsumerProducerAppConfiguration configuration)
         implements ConfiguredApp<ExecutableConsumerProducerApp<T>> {
 
     /**
