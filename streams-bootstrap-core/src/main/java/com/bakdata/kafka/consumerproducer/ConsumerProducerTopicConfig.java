@@ -22,26 +22,49 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 /**
- * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
- * {@link ConsumerRunnable}
- *
- * @see ConsumerExecutionOptions#onStart(RunningConsumer)
+ * Provides topic configuration for a {@link ConsumerProducerApp}
  */
 @Builder
 @Value
-public class RunningConsumer {
+@EqualsAndHashCode
+public class ConsumerProducerTopicConfig {
 
+    @Builder.Default
     @NonNull
-    ConsumerConfig config;
+    List<String> inputTopics = emptyList();
+    /**
+     * Input topics that are identified by a label
+     */
+    @Builder.Default
     @NonNull
-    ConsumerRunnable consumerRunnable;
+    Map<String, List<String>> labeledInputTopics = emptyMap();
+    Pattern inputPattern;
+    /**
+     * Input patterns that are identified by a label
+     */
+    @Builder.Default
+    @NonNull
+    Map<String, Pattern> labeledInputPatterns = emptyMap();
+    String outputTopic;
+    /**
+     * Output topics that are identified by a label
+     */
+    @Builder.Default
+    @NonNull
+    Map<String, String> labeledOutputTopics = emptyMap();
+    String errorTopic;
 }

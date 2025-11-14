@@ -27,6 +27,7 @@ package com.bakdata.kafka.consumer;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -86,6 +87,15 @@ public class ConsumerTopicConfig {
             throw new IllegalArgumentException(String.format("No input pattern for label '%s' available", label));
         }
         return pattern;
+    }
+
+    public static ConsumerTopicConfig fromConsumerProducerTopicConfig(final ConsumerProducerTopicConfig topicConfig) {
+        return builder()
+                .inputTopics(topicConfig.getInputTopics())
+                .labeledInputTopics(topicConfig.getLabeledInputTopics())
+                .inputPattern(topicConfig.getInputPattern())
+                .labeledInputPatterns(topicConfig.getLabeledInputPatterns())
+                .build();
     }
 
 }

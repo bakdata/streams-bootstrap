@@ -22,15 +22,13 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
 import static com.bakdata.kafka.KafkaTest.awaitProcessing;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.RuntimeConfiguration;
-import com.bakdata.kafka.consumerproducer.ConsumerProducerRunner;
-import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -59,17 +57,10 @@ public class TestHelper {
                 });
     }
 
-    public static ExecutableConsumerApp<ConsumerApp> createExecutableApp(final ConfiguredConsumerApp<ConsumerApp> app,
+    public static ExecutableConsumerProducerApp<ConsumerProducerApp> createExecutableApp(
+            final ConfiguredConsumerProducerApp<ConsumerProducerApp> app,
             final RuntimeConfiguration runtimeConfiguration) {
         return app.withRuntimeConfiguration(runtimeConfiguration);
-    }
-
-    public static void run(final ExecutableConsumerApp<?> app) {
-        try (final ConsumerRunner runner = app.createRunner()) {
-            runAsync(runner);
-            // Wait until consumer application has consumed all data
-            awaitProcessing(app);
-        }
     }
 
     public static void run(final ExecutableConsumerProducerApp<?> app) {
@@ -80,8 +71,8 @@ public class TestHelper {
         }
     }
 
-    public static void reset(final ExecutableApp<?, ConsumerCleanUpRunner, ?> app) {
-        try (final ConsumerCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
+    public static void reset(final ExecutableApp<?, ConsumerProducerCleanUpRunner, ?> app) {
+        try (final ConsumerProducerCleanUpRunner cleanUpRunner = app.createCleanUpRunner()) {
             cleanUpRunner.reset();
         }
     }

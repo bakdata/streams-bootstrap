@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
- * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
- * {@link ConsumerRunnable}
- *
- * @see ConsumerExecutionOptions#onStart(RunningConsumer)
+ * Produce or consume messages to or from Kafka
  */
-@Builder
-@Value
-public class RunningConsumer {
+public interface ConsumerProducerRunnable extends AutoCloseable {
 
-    @NonNull
-    ConsumerConfig config;
-    @NonNull
-    ConsumerRunnable consumerRunnable;
+    /**
+     * Produce or Consume messages from Kafka
+     *
+     * @param consumerConfig configuration for the consumer
+     * @param producerConfig configuration for the producer
+     */
+    void run(ConsumerConfig consumerConfig, ProducerConfig producerConfig);
+
+    @Override
+    default void close() {
+        // do nothing by default
+    }
 }

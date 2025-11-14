@@ -42,7 +42,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
                                                            @NonNull ConsumerAppConfiguration configuration)
         implements ConfiguredApp<ExecutableConsumerApp<T>> {
-    private static Map<String, Object> createBaseConfig() {
+    public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
