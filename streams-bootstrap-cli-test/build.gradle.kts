@@ -16,7 +16,7 @@ dependencies {
     testImplementation(libs.mockito.junit)
     testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(libs.kafka.streams.avro.serde) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
     }
     testImplementation(libs.log4j.slf4j2)
 }
