@@ -37,6 +37,8 @@ import lombok.Value;
  * @see com.bakdata.kafka.streams.StreamsApp#setupCleanUp(AppConfiguration)
  * @see com.bakdata.kafka.producer.ProducerApp#setup(AppConfiguration)
  * @see com.bakdata.kafka.producer.ProducerApp#setupCleanUp(AppConfiguration)
+ * @see com.bakdata.kafka.consumer.ConsumerApp#setup(AppConfiguration)
+ * @see com.bakdata.kafka.consumer.ConsumerApp#setupCleanUp(AppConfiguration)
  */
 @Value
 @EqualsAndHashCode
