@@ -76,10 +76,6 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_PATTERN"
               value: {{ .Values.kafka.inputPattern | join "," | quote }}
             {{- end }}
-            {{- if hasKey .Values.kafka "errorTopic" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
-              value: {{ .Values.kafka.errorTopic | quote }}
-            {{- end }}
             {{- $delimiter := ";" }}
             {{- if and (hasKey .Values.kafka "labeledInputTopics") (.Values.kafka.labeledInputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_TOPICS"

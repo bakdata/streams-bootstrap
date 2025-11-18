@@ -38,7 +38,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
  * Options to run a Kafka Consumer app
  */
 @Builder
-public final class ConsumerExecutionOptions {
+public class ConsumerExecutionOptions {
 
     /**
      * Hook that is called after the {@link ConsumerRunnable} is started
