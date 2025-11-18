@@ -30,7 +30,7 @@ import lombok.Setter;
 import picocli.CommandLine;
 
 /**
- * Shared CLI options to configure Kafka Consumer or Kafka Streams applications.
+ * Shared CLI options to configure Kafka Consumer applications.
  */
 @Getter
 @Setter
@@ -39,8 +39,8 @@ public class ConsumerOptions {
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
-    @CommandLine.Option(names = {"--application-id", "--group-id"},
+    @CommandLine.Option(names = "--application-id",
             description = "Unique identifier for the Kafka application. Used as 'group.id' for Kafka Consumers or "
                     + "'application.id' for Kafka Streams.")
-    private String uniqueIdentifier;
+    private String groupId;
 }
