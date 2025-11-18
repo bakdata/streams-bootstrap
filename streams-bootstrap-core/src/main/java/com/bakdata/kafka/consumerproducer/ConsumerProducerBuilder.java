@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2024 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,18 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
-import lombok.Builder;
+import com.bakdata.kafka.consumer.ConsumerBuilder;
+import com.bakdata.kafka.producer.ProducerBuilder;
 import lombok.NonNull;
-import lombok.Value;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 /**
- * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
- * {@link ConsumerRunnable}
+ * Provides all runtime configurations when running a {@link ConsumerProducerApp}
  *
- * @see ConsumerExecutionOptions#onStart(RunningConsumer)
+ * @see ConsumerProducerApp#buildRunnable(ConsumerProducerBuilder)
  */
-@Builder
-@Value
-public class RunningConsumer {
-
-    @NonNull
-    ConsumerConfig config;
-    @NonNull
-    ConsumerRunnable consumerRunnable;
+public record ConsumerProducerBuilder(@NonNull ConsumerProducerTopicConfig topics,
+                                      @NonNull ConsumerBuilder consumerBuilder,
+                                      @NonNull ProducerBuilder producerBuilder) {
 }

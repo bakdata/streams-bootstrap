@@ -1,0 +1,82 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 bakdata
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package com.bakdata.kafka.consumerproducer;
+
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
+import java.time.Duration;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import org.apache.kafka.clients.consumer.CloseOptions;
+import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+
+/**
+ * Options to run a Kafka ConsumerProducer app
+ */
+@Builder
+public final class ConsumerProducerExecutionOptions {
+
+    /**
+     * Hook that is called after the {@link ConsumerProducerRunnable} is started
+     */
+    @Builder.Default
+    private final @NonNull java.util.function.Consumer<RunningConsumerProducer> onStart = runningConsumerProducer -> {};
+
+    /**
+     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
+     * {@link Consumer#close(CloseOptions)} is called with
+     * {@link CloseOptions#groupMembershipOperation(GroupMembershipOperation)} set to
+     * {@link GroupMembershipOperation#REMAIN_IN_GROUP}
+     */
+    @Builder.Default
+    private final boolean volatileGroupInstanceId = true;
+
+    /**
+     * Defines {@link CloseOptions#timeout(Duration)} when calling {@link Consumer#close(CloseOptions)}
+     */
+    @Builder.Default
+    private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
+
+    /**
+     * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
+     */
+    @Builder.Default
+    @Getter
+    private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
+
+    void onStart(final RunningConsumerProducer runningConsumerProducer) {
+        this.onStart.accept(runningConsumerProducer);
+    }
+
+    ConsumerExecutionOptions toConsumerExecutionOptions() {
+        return ConsumerExecutionOptions.builder()
+                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .pollTimeout(this.pollTimeout)
+                .closeTimeout(this.closeTimeout)
+                .build();
+    }
+}

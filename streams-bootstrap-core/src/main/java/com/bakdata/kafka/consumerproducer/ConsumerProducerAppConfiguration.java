@@ -22,26 +22,39 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
-import lombok.Builder;
+import java.util.Optional;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import lombok.RequiredArgsConstructor;
 
 /**
- * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
- * {@link ConsumerRunnable}
- *
- * @see ConsumerExecutionOptions#onStart(RunningConsumer)
+ * Configuration of a {@link ConsumerProducerApp}
  */
-@Builder
-@Value
-public class RunningConsumer {
+@RequiredArgsConstructor
+public class ConsumerProducerAppConfiguration {
 
-    @NonNull
-    ConsumerConfig config;
-    @NonNull
-    ConsumerRunnable consumerRunnable;
+    @Getter
+    private final @NonNull ConsumerProducerTopicConfig topics;
+    private final String uniqueAppId;
+
+    /**
+     * Create a new {@code ConsumerAppConfiguration} with no provided {@link #uniqueAppId}
+     *
+     * @param topics topics to use for app
+     */
+    public ConsumerProducerAppConfiguration(final ConsumerProducerTopicConfig topics) {
+        this(topics, null);
+    }
+
+    /**
+     * Get the provided unique application ID. If user did not provide a unique application ID, this will return empty.
+     *
+     * @return provided unique application ID
+     * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
+     */
+    public Optional<String> getUniqueAppId() {
+        return Optional.ofNullable(this.uniqueAppId);
+    }
 }

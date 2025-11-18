@@ -22,26 +22,30 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
+import com.bakdata.kafka.consumer.ConsumerRunnable;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
  * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
  * {@link ConsumerRunnable}
  *
- * @see ConsumerExecutionOptions#onStart(RunningConsumer)
+ * @see ConsumerProducerExecutionOptions#onStart(RunningConsumerProducer)
  */
 @Builder
 @Value
-public class RunningConsumer {
+public class RunningConsumerProducer {
 
     @NonNull
-    ConsumerConfig config;
+    ConsumerConfig consumerConfig;
     @NonNull
-    ConsumerRunnable consumerRunnable;
+    ProducerConfig producerConfig;
+    @NonNull
+    ConsumerProducerRunnable consumerProducerRunnable;
 }

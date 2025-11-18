@@ -1,0 +1,12 @@
+apiVersion: v2
+name: consumerproducer-app
+description: A helm chart for deploying a Kafka consumerproducer application based on the bakdata KafkaConsumerProducerApplication template.
+version: 0.2.0
+maintainers:
+  - name: bakdata
+    email: opensource@bakdata.com
+    url: bakdata.com
+dependencies:
+  - name: common-app
+    version: "0.1.0"
+    repository: "file://../common-app"
