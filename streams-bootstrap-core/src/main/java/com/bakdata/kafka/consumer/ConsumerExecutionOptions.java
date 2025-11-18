@@ -44,7 +44,7 @@ public final class ConsumerExecutionOptions {
      * Hook that is called after the {@link ConsumerRunnable} is started
      */
     @Builder.Default
-    private final @NonNull java.util.function.Consumer<RunningConsumer> onStart = runningStreams -> {};
+    private final @NonNull java.util.function.Consumer<RunningConsumer> onStart = runningConsumer -> {};
 
     /**
      * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,

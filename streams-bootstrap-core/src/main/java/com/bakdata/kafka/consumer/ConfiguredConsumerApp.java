@@ -47,6 +47,7 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
 
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        kafkaConfig.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
 
         return kafkaConfig;
     }
@@ -90,9 +91,9 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     }
 
     /**
-     * Get unique application identifier of {@link ConsumerApp}
+     * Get unique group identifier of {@link ConsumerApp}
      *
-     * @return unique application identifier
+     * @return unique group identifier
      * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from
      * provided group identifier in {@link ConsumerAppConfiguration}
      * @see ConsumerApp#getUniqueGroupId(ConsumerAppConfiguration)
@@ -114,9 +115,12 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      */
     @Override
     public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
-        final ConsumerTopicConfig topics = this.getTopics();
-        final Map<String, Object> kafkaProperties = this.getKafkaProperties(runtimeConfiguration);
-        return new ExecutableConsumerApp<>(topics, kafkaProperties, this.getUniqueGroupId(), this.app);
+        return ExecutableConsumerApp.<T>builder()
+                .app(this.app)
+                .groupId(this.getUniqueGroupId())
+                .kafkaProperties(this.getKafkaProperties(runtimeConfiguration))
+                .topics(this.getTopics())
+                .build();
     }
 
     /**

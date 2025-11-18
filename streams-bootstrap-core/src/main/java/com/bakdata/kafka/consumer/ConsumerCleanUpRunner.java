@@ -27,6 +27,7 @@ package com.bakdata.kafka.consumer;
 import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -117,8 +118,9 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {
-            final Optional<ConsumerGroupDescription> groupDescription =
-                    this.adminClient.consumerGroups().group(ConsumerCleanUpRunner.this.groupId).describe();
+            final ConsumerGroupClient groupClient = this.adminClient.consumerGroups()
+                    .group(ConsumerCleanUpRunner.this.groupId);
+            final Optional<ConsumerGroupDescription> groupDescription = groupClient.describe();
             if (groupDescription.isEmpty()) {
                 return;
             }
@@ -126,8 +128,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
                 throw new CleanUpException("Error resetting application, consumer group is not empty");
             }
 
-            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = this.adminClient.consumerGroups()
-                    .group(ConsumerCleanUpRunner.this.groupId).listOffsets();
+            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = groupClient.listOffsets();
 
             final Map<TopicPartition, OffsetSpec> request = groupOffsets.keySet().stream()
                     .collect(Collectors.toMap(tp -> tp, tp -> OffsetSpec.earliest()));

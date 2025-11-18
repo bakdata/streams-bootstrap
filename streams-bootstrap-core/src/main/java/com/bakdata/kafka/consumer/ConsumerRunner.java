@@ -55,11 +55,11 @@ public class ConsumerRunner implements Runner {
 
     private void runConsumer() {
         log.info("Starting Kafka Consumer and calling start hook");
-        final RunningConsumer runningStreams = RunningConsumer.builder()
+        final RunningConsumer runningConsumer = RunningConsumer.builder()
                 .consumerRunnable(this.runnable)
                 .config(this.config)
                 .build();
-        this.executionOptions.onStart(runningStreams);
+        this.executionOptions.onStart(runningConsumer);
         // Run Kafka consumer until it shuts down
         this.runnable.run(this.config);
     }
