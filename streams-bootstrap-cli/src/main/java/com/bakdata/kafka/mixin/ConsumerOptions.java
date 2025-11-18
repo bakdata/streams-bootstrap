@@ -39,8 +39,7 @@ public class ConsumerOptions {
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
     private boolean volatileGroupInstanceId;
-    @CommandLine.Option(names = "--application-id",
-            description = "Unique identifier for the Kafka application. Used as 'group.id' for Kafka Consumers or "
-                    + "'application.id' for Kafka Streams.")
+    @CommandLine.Option(names = "--group-id",
+            description = "Unique identifier for the Kafka Consumer applications, used as 'group.id'.")
     private String groupId;
 }
