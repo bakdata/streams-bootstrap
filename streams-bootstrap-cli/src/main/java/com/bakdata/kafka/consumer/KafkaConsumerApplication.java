@@ -50,7 +50,7 @@ import picocli.CommandLine.Option;
  *     <li>{@link #getLabeledInputTopics()}</li>
  *     <li>{@link #getLabeledInputPatterns()}</li>
  *     <li>{@link #isVolatileGroupInstanceId()}</li>
- *     <li>{@link #getUniqueIdentifier()} Unique Group Id</li>
+ *     <li>{@link #getGroupId()}</li>
  * </ul>
  * To implement your Kafka Consumer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -126,7 +126,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
 
     @Override
     public ConsumerAppConfiguration createConfiguration(final ConsumerTopicConfig topics) {
-        return new ConsumerAppConfiguration(topics, this.getUniqueIdentifier());
+        return new ConsumerAppConfiguration(topics, this.getGroupId());
     }
 
     /**

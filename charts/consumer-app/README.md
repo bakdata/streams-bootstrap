@@ -61,8 +61,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `kafka.labeledInputTopics`   | Map of additional labeled input topics if you need to specify multiple topics with different message types.                                                                      | `{}`    |
 | `kafka.inputPattern`         | Input pattern of topics for your consumer application.                                                                                                                           |         |
 | `kafka.labeledInputPatterns` | Map of additional labeled input patterns if you need to specify multiple topics with different message types.                                                                    | `{}`    |
-| `kafka.errorTopic`           | Error topic for your consumer application.                                                                                                                                       |         |
-| `kafka.groupId`              | Unique application ID for Kafka Consumer. Required for auto-scaling                                                                                                              |         |
+| `kafka.groupId`              | Unique group ID for Kafka Consumer. Required for auto-scaling                                                                                                                    |         |
 
 ### Other
 

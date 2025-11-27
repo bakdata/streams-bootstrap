@@ -33,7 +33,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serializer;
 
 /**
  * Provides all runtime configurations when running a {@link ConsumerApp}
@@ -56,10 +55,10 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
     }
 
     /**
-     * Create a new {@code Consumer} using {@link #kafkaProperties} and provided {@code Serializers}
+     * Create a new {@code Consumer} using {@link #kafkaProperties} and provided {@code Deserializers}
      *
-     * @param keyDeserializer {@code Serializer} to use for keys
-     * @param valueDeserializer {@code Serializer} to use for values
+     * @param keyDeserializer {@code Deserializer} to use for keys
+     * @param valueDeserializer {@code Deserializer} to use for values
      * @param <K> type of keys
      * @param <V> type of values
      * @return {@code Consumer}
@@ -71,7 +70,7 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
     }
 
     /**
-     * Create {@code Configurator} to configure {@link Serde} and {@link Serializer} using {@link #kafkaProperties}.
+     * Create {@code Configurator} to configure {@link Serde} and {@link Deserializer} using {@link #kafkaProperties}.
      *
      * @return {@code Configurator}
      */

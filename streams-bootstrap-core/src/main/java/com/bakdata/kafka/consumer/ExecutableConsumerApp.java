@@ -28,6 +28,7 @@ import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import java.util.Map;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
  *
  * @param <T> type of {@link ConsumerApp}
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@Builder(access = AccessLevel.PACKAGE)
 @Getter
 public class ExecutableConsumerApp<T extends ConsumerApp>
         implements ExecutableApp<ConsumerRunner, ConsumerCleanUpRunner, ConsumerExecutionOptions> {

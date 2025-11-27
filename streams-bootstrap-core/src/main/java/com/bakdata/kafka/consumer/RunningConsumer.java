@@ -24,6 +24,8 @@
 
 package com.bakdata.kafka.consumer;
 
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder;
+import java.util.function.Consumer;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -34,7 +36,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
  * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
  * {@link ConsumerRunnable}
  *
- * @see ConsumerExecutionOptions#onStart(RunningConsumer)
+ * @see ConsumerExecutionOptionsBuilder#onStart(Consumer) 
  */
 @Builder
 @Value

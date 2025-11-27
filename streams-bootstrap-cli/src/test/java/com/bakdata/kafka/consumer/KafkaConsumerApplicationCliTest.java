@@ -67,6 +67,11 @@ class KafkaConsumerApplicationCliTest {
                     public DeserializerConfig defaultSerializationConfig() {
                         throw new UnsupportedOperationException();
                     }
+
+                    @Override
+                    public String getUniqueGroupId(final ConsumerAppConfiguration configuration) {
+                        return "group-id";
+                    }
                 };
             }
 
@@ -76,7 +81,8 @@ class KafkaConsumerApplicationCliTest {
             }
         }.startApplication(new String[]{
                 "--bootstrap-server", "localhost:9092",
-                "--input-topics", "input"
+                "--input-topics", "input",
+                "--group-id", "group-id"
         });
     }
 

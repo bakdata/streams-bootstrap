@@ -56,7 +56,7 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
      * Could be set to: className-inputTopic.
      * <p>
      * User may provide a unique group identifier via {@link ConsumerAppConfiguration#getUniqueGroupId()}. If that
-     * is the case, the returned application ID should match the provided one.
+     * is the case, the returned group ID should match the provided one.
      *
      * @param configuration provides runtime configuration
      * @return unique group identifier
