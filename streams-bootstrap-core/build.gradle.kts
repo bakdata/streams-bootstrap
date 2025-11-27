@@ -13,11 +13,11 @@ dependencies {
     api(libs.kafka.streams)
     api(libs.kafka.clients)
     implementation(libs.kafka.schema.serializer) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
         exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
     api(libs.kafka.schema.registry.client) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
         exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
     implementation(libs.slf4j)
@@ -35,7 +35,7 @@ dependencies {
 
     testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(libs.kafka.streams.avro.serde) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
     }
     testImplementation(libs.kafka.group.coordinator)
     testImplementation(libs.log4j.slf4j2)
