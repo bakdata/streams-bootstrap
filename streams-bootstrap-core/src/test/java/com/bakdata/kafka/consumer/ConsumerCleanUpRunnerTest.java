@@ -77,9 +77,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
     private void assertSize(final Collection<ConsumerRecord<String, String>> records, final int expectedMessageCount) {
         Awaitility.await()
                 .atMost(Duration.ofSeconds(1))
-                .untilAsserted(() -> {
-                    this.softly.assertThat(records).hasSize(expectedMessageCount);
-                });
+                .untilAsserted(() -> this.softly.assertThat(records).hasSize(expectedMessageCount));
     }
 
     @Test
@@ -269,6 +267,15 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
             run(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 6);
+        }
+    }
+
+    @Test
+    void shouldNotThrowExceptionOnResetIfConsumerGroupNotExists() {
+        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
+                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig())) {
+            // The app is not run so the consumer group is never created
+            this.softly.assertThatCode(() -> reset(executableApp)).doesNotThrowAnyException();
         }
     }
 
