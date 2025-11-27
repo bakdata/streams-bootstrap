@@ -210,7 +210,7 @@ class KafkaConsumerProducerApplicationCliTest {
                 "--bootstrap-servers", "localhost:9092",
                 "--input-topics", "input",
                 "--output-topic", "output",
-                "--application-id", "my-other-id"
+                "--group-id", "my-other-id"
         });
     }
 

@@ -102,6 +102,10 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
               value: {{ .Values.kafka.applicationId | quote }}
             {{- end }}
+            {{- if hasKey .Values.kafka "groupId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
+              value: {{ .Values.kafka.groupId | quote }}
+            {{- end }}
             {{- range $key, $value := .Values.secrets }}
             - name: "{{ $key }}"
               valueFrom:

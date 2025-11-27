@@ -46,7 +46,7 @@ kafka:
   labeledOutputTopics: {}
   #   label: output
   # errorTopic: error
-  # applicationId: foo
+  # groupId: foo
 
 commandLine: {}
 #  MY_CLI_PARAM: "foo-bar"
@@ -175,10 +175,10 @@ affinity: {}
 persistence:
   enabled: false
 
-  ## The size of the PersistentVolume to allocate to each streams pod in the StatefulSet.
+  ## The size of the PersistentVolume to allocate to each ConsumerProducer pod in the StatefulSet.
   size: 1Gi
 
-  ## Kafka Streams data Persistent Volume Storage Class
+  ## Kafka ConsumerProducer data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined (the default) or set to null, no storageClassName spec is

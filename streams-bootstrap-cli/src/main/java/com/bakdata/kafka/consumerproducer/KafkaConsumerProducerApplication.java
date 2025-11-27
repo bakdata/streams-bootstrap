@@ -52,7 +52,7 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getOutputTopic()}</li>
  *     <li>{@link #getLabeledOutputTopics()}</li>
  *     <li>{@link #isVolatileGroupInstanceId()}</li>
- *     <li>{@link #getUniqueIdentifier()} Unique Group Id</li>
+ *     <li>{@link #getGroupId()}}</li>
  * </ul>
  * To implement your Kafka ConsumerProducer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -97,7 +97,7 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
      * Clear all state stores and consumer group offsets associated with the Kafka ConsumerProducer application.
      */
     @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
-            + "Kafka Streams application.")
+            + "Kafka ConsumerProducer application.")
     public void reset() {
         this.prepareClean();
         try (final CleanableApp<ConsumerProducerCleanUpRunner> app = this.createCleanableApp()) {
@@ -132,7 +132,7 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public ConsumerProducerAppConfiguration createConfiguration(final ConsumerProducerTopicConfig topics) {
-        return new ConsumerProducerAppConfiguration(topics, this.getUniqueIdentifier());
+        return new ConsumerProducerAppConfiguration(topics, this.getGroupId());
     }
 
 }

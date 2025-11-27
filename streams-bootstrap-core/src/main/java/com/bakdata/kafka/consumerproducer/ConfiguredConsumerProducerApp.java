@@ -94,19 +94,19 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
     }
 
     /**
-     * Get unique application identifier of {@link ConsumerProducerApp}
+     * Get unique group identifier of {@link ConsumerProducerApp}
      *
-     * @return unique application identifier
-     * @throws IllegalArgumentException if unique application identifier of {@link ConsumerProducerApp} is different
-     * from provided application identifier in {@link ConsumerProducerAppConfiguration}
+     * @return unique group identifier
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerProducerApp} is different
+     * from provided group identifier in {@link ConsumerProducerAppConfiguration}
      * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
-                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Application ID cannot be null");
+                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Group ID cannot be null");
         if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
             throw new IllegalArgumentException(
-                    "Provided application ID does not match ConsumerProducerApp#getUniqueAppId()");
+                    "Provided group ID does not match ConsumerProducerApp#getUniqueAppId()");
         }
         return uniqueAppId;
     }

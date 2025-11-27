@@ -56,15 +56,15 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | `kafka.bootstrapServers`     | Comma separated list of Kafka bootstrap servers to connect to.                                                                                                                   |         |
 | `kafka.schemaRegistryUrl`    | URL of Schema Registry to connect to.                                                                                                                                            | `null`  |
 | `kafka.staticMembership`     | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
-| `kafka.config`               | Configurations for your [Kafka Streams app](https://kafka.apache.org/documentation/#streamsconfigs).                                                                             | `{}`    |
-| `kafka.inputTopics`          | List of input topics for your streams application.                                                                                                                               | `[]`    |
+| `kafka.config`               | Configurations for your Kafka [Consumer](https://kafka.apache.org/documentation/#consumerconfigs) and [Producer](https://kafka.apache.org/documentation/#producerconfigs) app.   | `{}`    |
+| `kafka.inputTopics`          | List of input topics for your ConsumerProducer application.                                                                                                                      | `[]`    |
 | `kafka.labeledInputTopics`   | Map of additional labeled input topics if you need to specify multiple topics with different message types.                                                                      | `{}`    |
-| `kafka.inputPattern`         | Input pattern of topics for your streams application.                                                                                                                            |         |
+| `kafka.inputPattern`         | Input pattern of topics for your ConsumerProducer application.                                                                                                                   |         |
 | `kafka.labeledInputPatterns` | Map of additional labeled input patterns if you need to specify multiple topics with different message types.                                                                    | `{}`    |
-| `kafka.outputTopic`          | Output topic for your streams application.                                                                                                                                       |         |
+| `kafka.outputTopic`          | Output topic for your ConsumerProducer application.                                                                                                                              |         |
 | `kafka.labeledOutputTopics`  | Map of additional labeled output topics if you need to specify multiple topics with different message types.                                                                     | `{}`    |
-| `kafka.errorTopic`           | Error topic for your streams application.                                                                                                                                        |         |
-| `kafka.applicationId`        | Unique application ID for Kafka Streams. Required for auto-scaling                                                                                                               |         |
+| `kafka.errorTopic`           | Error topic for your ConsumerProducer application.                                                                                                                               |         |
+| `kafka.groupId`              | Unique group ID for Kafka ConsumerProducer. Required for auto-scaling                                                                                                            |         |
 
 ### Other
 

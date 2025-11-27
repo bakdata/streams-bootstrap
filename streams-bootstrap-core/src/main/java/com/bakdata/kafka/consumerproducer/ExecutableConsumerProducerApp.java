@@ -31,7 +31,6 @@ import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.producer.ProducerBuilder;
 import com.bakdata.kafka.producer.ProducerTopicConfig;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,7 +40,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
- * A {@link ConsumerProducerApp} with a corresponding {@link StreamsTopicConfig} and Kafka configuration
+ * A {@link ConsumerProducerApp} with a corresponding {@link ConsumerProducerTopicConfig} and Kafka configuration
  *
  * @param <T> type of {@link ConsumerProducerApp}
  */

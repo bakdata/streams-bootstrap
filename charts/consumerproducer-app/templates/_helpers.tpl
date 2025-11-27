@@ -69,15 +69,15 @@ Define annotations helper for Deployment.
 Includes default annotations and conditionally adds consumerGroup if applicable.
 */}}
 {{- define "consumerproducer-app.deployment-annotations" -}}
-{{- if or .Values.annotations .Values.kafka.applicationId }}
+{{- if or .Values.annotations .Values.kafka.groupId }}
   annotations:
 {{- range $key, $value := .Values.annotations }}
     {{ $key | quote }}: {{ $value | quote }}
 {{- end }}
 
   {{- /* Conditionally add the consumerGroup annotation if needed */ -}}
-  {{- if and .Values.kafka.applicationId (not .Values.annotations.consumerGroup) }}
-    consumerGroup: {{ .Values.kafka.applicationId | quote }}
+  {{- if and .Values.kafka.groupId (not .Values.annotations.consumerGroup) }}
+    consumerGroup: {{ .Values.kafka.groupId | quote }}
   {{- end }}
 {{- end }}
 {{- end }}

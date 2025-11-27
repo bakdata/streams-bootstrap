@@ -49,9 +49,9 @@ public class ConsumerProducerAppConfiguration {
     }
 
     /**
-     * Get the provided unique application ID. If user did not provide a unique application ID, this will return empty.
+     * Get the provided unique group ID. If user did not provide a unique group ID, this will return empty.
      *
-     * @return provided unique application ID
+     * @return provided unique group ID
      * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
      */
     public Optional<String> getUniqueAppId() {
