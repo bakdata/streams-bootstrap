@@ -293,10 +293,17 @@ processing and does not support intermediate topics out of the box
 Create a subclass of `KafkaConsumerProducerApplication`.
 
 ```java
-import com.bakdata.kafka.consumer.DefaultConsumerRunnable;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.DefaultConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -311,12 +318,15 @@ public class MyConsumerProducerApplication extends KafkaConsumerProducerApplicat
             @Override
             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
                 final Consumer<String, String> yourConsumer = builder.consumerBuilder().createConsumer();
+                builder.consumerBuilder().subscribeToAllTopics(yourConsumer);
                 final Producer<String, String> yourProducer = builder.producerBuilder().createProducer();
-                final DefaultConsumerRunnable<String, String> consumerRunnable = builder.consumerBuilder()
-                        .createDefaultConsumerRunnable(yourConsumer,
+                final ConsumerRunnable consumerRunnable = builder.consumerBuilder()
+                        .createDefaultConsumerRunnable(yourConsumer, records -> records.forEach(
                                 // your logic
-                                consumedValue -> consumedValue
-                        );
+                                consumerRecord -> yourProducer.send(
+                                        new ProducerRecord<>(builder.topics().getOutputTopic(), 
+                                                consumerRecord.key(),
+                                                consumerRecord.value()))));
                 return new DefaultConsumerProducerRunnable<>(yourProducer, consumerRunnable);
             }
 
@@ -364,7 +374,7 @@ The following configuration options are available:
   message types (`String=String>[,<String=String>...]`)
 
 - `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
-  implementing `ConsumerApp#getUniqueGroupId()`
+  implementing `ConsumerProducerApp#getUniqueGroupId()`
 
 - `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Consumer shutdown.
 
