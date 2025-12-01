@@ -1,1 +1,1 @@
-{{- include "common-app.service" . -}}
+{{- include "kafka-app.service" . -}}

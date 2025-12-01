@@ -1,1 +1,1 @@
-{{- include "common-app.deployment" . -}}
+{{- include "kafka-app.deployment" . -}}

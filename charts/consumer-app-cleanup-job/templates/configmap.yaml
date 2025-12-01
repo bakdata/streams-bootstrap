@@ -1,1 +1,1 @@
-{{- include "common-app.configmap" . -}}
+{{- include "kafka-app.configmap" . -}}
