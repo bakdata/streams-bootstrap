@@ -26,6 +26,8 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.HasCleanHook;
 import com.bakdata.kafka.HasTopicHooks;
+import com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration;
+import com.bakdata.kafka.producer.ProducerCleanUpConfiguration;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.NonNull;
@@ -84,4 +86,5 @@ public class StreamsCleanUpConfiguration
     void runTopicDeletionHooks(final String topic) {
         this.topicHooks.forEach(hook -> hook.deleted(topic));
     }
+
 }

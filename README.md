@@ -207,6 +207,80 @@ Additionally, the following commands are available:
 
 - `clean`: Delete all output topics associated with the Kafka Producer application.
 
+#### Kafka consumer
+
+Create a subclass of `KafkaConsumerApplication`.
+
+```java
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerBuilder;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumer.KafkaConsumerApplication;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+public class MyConsumerApplication extends KafkaConsumerApplication<ConsumerApp> {
+    public static void main(final String[] args) {
+        new MyConsumerApplication().startApplication(args);
+    }
+
+    @Override
+    public ConsumerApp createApp() {
+        return new ConsumerApp() {
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                return () -> {
+                    try (final Consumer<Object, Object> consumer = builder.createConsumer()) {
+                        // your consumer
+                    }
+                };
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
+            }
+
+            // Optionally you can define custom Kafka properties
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        // your config
+                );
+            }
+        };
+    }
+}
+```
+
+The following configuration options are available:
+
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
+
+- `--schema-registry-url`: The URL of the Schema Registry
+
+- `--kafka-config`: Kafka consumer configuration (`<String=String>[,<String=String>...]`)
+
+- `--input-topics`: List of input topics (comma-separated)
+
+- `--input-pattern`: Pattern of input topics
+
+- `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
+  implementing `ConsumerApp#getUniqueGroupId()`
+
+Additionally, the following commands are available:
+
+- `clean`: Reset the Kafka consumer application. Additionally, delete the consumer group.
+
+- `reset`: Clear all state stores, consumer group offsets associated with the Kafka consumer application.
+
 ### Helm Charts
 
 For the configuration and deployment to Kubernetes, you can use

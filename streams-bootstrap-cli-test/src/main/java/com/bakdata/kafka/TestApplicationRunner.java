@@ -27,6 +27,8 @@ package com.bakdata.kafka;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.KafkaConsumerApplication;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.KafkaStreamsApplication;
 import com.bakdata.kafka.streams.StreamsApp;
@@ -165,6 +167,19 @@ public final class TestApplicationRunner {
      * @return application exit code
      */
     public int reset(final KafkaStreamsApplication<? extends StreamsApp> app, final String... args) {
+        final String[] newArgs = this.setupArgs(args, List.of("reset"));
+        return app.startApplicationWithoutExit(newArgs);
+    }
+
+    /**
+     * Reset the application with the given arguments. {@code --bootstrap-servers}, {@code --schema-registry-url}, and
+     * {@code --kafka-config} are automatically configured.
+     *
+     * @param app application to reset
+     * @param args CLI arguments to pass to the application
+     * @return application exit code
+     */
+    public int reset(final KafkaConsumerApplication<? extends ConsumerApp> app, final String... args) {
         final String[] newArgs = this.setupArgs(args, List.of("reset"));
         return app.startApplicationWithoutExit(newArgs);
     }
