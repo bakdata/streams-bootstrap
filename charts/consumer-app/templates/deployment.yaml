@@ -14,17 +14,17 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ include "common-app.fullname" . }}
-  {{- include "common-app.deployment-annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.deployment-annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
-  serviceName: {{ include "common-app.fullname" . }}
+  serviceName: {{ include "kafka-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
@@ -32,7 +32,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "common-app.selectorLabels" . | nindent 6 }}
+      {{- include "kafka-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- if or .Values.podAnnotations .Values.files }}
@@ -45,7 +45,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        {{- include "common-app.selectorLabels" . | nindent 8 }}
+        {{- include "kafka-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
@@ -126,7 +126,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "common-app.fullname" . }}
+                  name: {{ include "kafka-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.secretRefs }}
@@ -222,12 +222,12 @@ spec:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ include "common-app.fullname" . }}-jmx
+            name: {{ include "kafka-app.fullname" . }}-jmx
         {{- end }}
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ include "common-app.fullname" . }}
+            name: {{ include "kafka-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
