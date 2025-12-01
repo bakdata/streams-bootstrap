@@ -1,4 +1,4 @@
-# consumer-app helm chart
+# consumerproducer-app helm chart
 
 This chart can be used to deploy a Kafka ConsumerProducer app developed using streams-bootstrap.
 

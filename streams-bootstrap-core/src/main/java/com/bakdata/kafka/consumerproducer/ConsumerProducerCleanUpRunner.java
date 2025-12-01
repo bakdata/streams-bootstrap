@@ -74,8 +74,8 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId,
             @NonNull final StreamsCleanUpConfiguration configuration) {
-        final ConsumerTopicConfig consumerTopicConfig = ConsumerTopicConfig.fromConsumerProducerTopicConfig(topics);
-        final ProducerTopicConfig producerTopicConfig = ProducerTopicConfig.fromConsumerProducerTopicConfig(topics);
+        final ConsumerTopicConfig consumerTopicConfig = topics.toConsumerTopicConfig();
+        final ProducerTopicConfig producerTopicConfig = topics.toProducerTopicConfig();
         final ConsumerCleanUpConfiguration consumerConfig = configuration.toConsumerCleanUpConfiguration();
         final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
         final ConsumerCleanUpRunner consumerCleanUpRunner =

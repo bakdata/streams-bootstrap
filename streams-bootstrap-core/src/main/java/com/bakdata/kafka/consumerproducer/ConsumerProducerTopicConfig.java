@@ -27,6 +27,8 @@ package com.bakdata.kafka.consumerproducer;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.consumer.ConsumerTopicConfig;
+import com.bakdata.kafka.producer.ProducerTopicConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -67,4 +69,20 @@ public class ConsumerProducerTopicConfig {
     @NonNull
     Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
+
+    public ConsumerTopicConfig toConsumerTopicConfig() {
+        return ConsumerTopicConfig.builder()
+                .inputTopics(this.getInputTopics())
+                .labeledInputTopics(this.getLabeledInputTopics())
+                .inputPattern(this.getInputPattern())
+                .labeledInputPatterns(this.getLabeledInputPatterns())
+                .build();
+    }
+
+    public ProducerTopicConfig toProducerTopicConfig() {
+        return ProducerTopicConfig.builder()
+                .outputTopic(this.getOutputTopic())
+                .labeledOutputTopics(this.getLabeledOutputTopics())
+                .build();
+    }
 }

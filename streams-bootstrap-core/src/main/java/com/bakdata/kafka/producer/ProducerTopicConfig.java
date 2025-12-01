@@ -62,11 +62,4 @@ public class ProducerTopicConfig {
         }
         return topic;
     }
-
-    public static ProducerTopicConfig fromConsumerProducerTopicConfig(final ConsumerProducerTopicConfig config) {
-        return builder()
-                .outputTopic(config.getOutputTopic())
-                .labeledOutputTopics(config.getLabeledOutputTopics())
-                .build();
-    }
 }

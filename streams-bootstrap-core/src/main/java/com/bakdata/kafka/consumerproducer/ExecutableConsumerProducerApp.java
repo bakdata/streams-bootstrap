@@ -81,13 +81,10 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
 
     @Override
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
-        final ConsumerBuilder consumerBuilder =
-                new ConsumerBuilder(ConsumerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
-                        this.consumerProperties, options.toConsumerExecutionOptions());
-        final ProducerBuilder
-                producerBuilder =
-                new ProducerBuilder(ProducerTopicConfig.fromConsumerProducerTopicConfig(this.topics),
-                        this.producerProperties);
+        final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics.toConsumerTopicConfig(),
+                this.consumerProperties, options.toConsumerExecutionOptions());
+        final ProducerBuilder producerBuilder = new ProducerBuilder(this.topics.toProducerTopicConfig(),
+                this.producerProperties);
         final ConsumerProducerBuilder
                 consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
         final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();

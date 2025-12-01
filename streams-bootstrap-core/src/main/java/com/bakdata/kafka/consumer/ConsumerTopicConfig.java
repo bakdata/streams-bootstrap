@@ -88,14 +88,4 @@ public class ConsumerTopicConfig {
         }
         return pattern;
     }
-
-    public static ConsumerTopicConfig fromConsumerProducerTopicConfig(final ConsumerProducerTopicConfig topicConfig) {
-        return builder()
-                .inputTopics(topicConfig.getInputTopics())
-                .labeledInputTopics(topicConfig.getLabeledInputTopics())
-                .inputPattern(topicConfig.getInputPattern())
-                .labeledInputPatterns(topicConfig.getLabeledInputPatterns())
-                .build();
-    }
-
 }
