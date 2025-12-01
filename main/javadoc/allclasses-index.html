@@ -55,7 +55,7 @@ loadScripts(document, 'script');</script>
 <h1 title="All Classes and Interfaces" class="title">All Classes and Interfaces</h1>
 </div>
 <div id="all-classes-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="all-classes-table-tab0" role="tab" aria-selected="true" aria-controls="all-classes-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="all-classes-table-tab1" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab1', 2)" class="table-tab">Interfaces</button><button id="all-classes-table-tab2" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab2', 2)" class="table-tab">Classes</button><button id="all-classes-table-tab5" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab5', 2)" class="table-tab">Exceptions</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="all-classes-table-tab0" role="tab" aria-selected="true" aria-controls="all-classes-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="all-classes-table-tab1" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab1', 2)" class="table-tab">Interfaces</button><button id="all-classes-table-tab2" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab2', 2)" class="table-tab">Classes</button><button id="all-classes-table-tab4" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab4', 2)" class="table-tab">Record Classes</button><button id="all-classes-table-tab5" role="tab" aria-selected="false" aria-controls="all-classes-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('all-classes-table', 'all-classes-table-tab5', 2)" class="table-tab">Exceptions</button></div>
 <div id="all-classes-table.tabpanel" role="tabpanel">
 <div class="summary-table two-column-summary" aria-labelledby="all-classes-table-tab0">
 <div class="table-header col-first">Class</div>
@@ -104,25 +104,86 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">An application with a corresponding configuration</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/ConfiguredProducerApp.html" title="class in com.bakdata.kafka.producer">ConfiguredProducerApp</a>&lt;<a href="com/bakdata/kafka/producer/ConfiguredProducerApp.html" title="type parameter in ConfiguredProducerApp">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/bakdata/kafka/consumer/ConfiguredConsumerApp.html" title="class in com.bakdata.kafka.consumer">ConfiguredConsumerApp</a>&lt;<a href="com/bakdata/kafka/consumer/ConfiguredConsumerApp.html" title="type parameter in ConfiguredConsumerApp">T</a> extends <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer">ConsumerApp</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="block">A <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a> with a corresponding <a href="com/bakdata/kafka/consumer/ConsumerAppConfiguration.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerAppConfiguration</code></a></div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/ConfiguredProducerApp.html" title="class in com.bakdata.kafka.producer">ConfiguredProducerApp</a>&lt;<a href="com/bakdata/kafka/producer/ConfiguredProducerApp.html" title="type parameter in ConfiguredProducerApp">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer"><code>ProducerApp</code></a> with a corresponding <a href="com/bakdata/kafka/producer/ProducerAppConfiguration.html" title="class in com.bakdata.kafka.producer"><code>ProducerAppConfiguration</code></a></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/ConfiguredStreamsApp.html" title="class in com.bakdata.kafka.streams">ConfiguredStreamsApp</a>&lt;<a href="com/bakdata/kafka/streams/ConfiguredStreamsApp.html" title="type parameter in ConfiguredStreamsApp">T</a> extends <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/ConfiguredStreamsApp.html" title="class in com.bakdata.kafka.streams">ConfiguredStreamsApp</a>&lt;<a href="com/bakdata/kafka/streams/ConfiguredStreamsApp.html" title="type parameter in ConfiguredStreamsApp">T</a> extends <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams"><code>StreamsApp</code></a> with a corresponding <a href="com/bakdata/kafka/streams/StreamsAppConfiguration.html" title="class in com.bakdata.kafka.streams"><code>StreamsAppConfiguration</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" title="class in com.bakdata.kafka.streams.kstream">ConsumedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" title="type parameter in ConsumedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" title="type parameter in ConsumedX">V</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" title="class in com.bakdata.kafka.streams.kstream">ConsumedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" title="type parameter in ConsumedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" title="type parameter in ConsumedX">V</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Use <code>Preconfigured</code> to lazily configure <code>Serde</code> for <code>Consumed</code> using <code>Configurator</code></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer">ConsumerApp</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Application that defines how to consume messages from Kafka and necessary configurations</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerAppConfiguration.html" title="class in com.bakdata.kafka.consumer">ConsumerAppConfiguration</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Configuration of a <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a></div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="com/bakdata/kafka/consumer/ConsumerApplicationException.html" title="class in com.bakdata.kafka.consumer">ConsumerApplicationException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="block">Exception thrown if running conumser application was unsuccessful</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/bakdata/kafka/consumer/ConsumerBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerBuilder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Provides all runtime configurations when running a <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a></div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpConfiguration</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Provides configuration options for <a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerCleanUpRunner</code></a></div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Clean up all topics specified by a <a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerTopicConfig</code></a></div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Options to run a Kafka Consumer app</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">This class offers helpers to interact with Kafka consumer groups.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/ConsumerGroupVerifier.html" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/ConsumerGroupVerifier.html" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Utility class to verify the state of a Kafka consumer group</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/mixin/ConsumerOptions.html" title="class in com.bakdata.kafka.mixin">ConsumerOptions</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Shared CLI options to configure Kafka Consumer applications.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer">ConsumerRunnable</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Consume messages from Kafka</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerRunner.html" title="class in com.bakdata.kafka.consumer">ConsumerRunner</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Runs a Kafka Consumer application</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Provides topic configuration for a <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a></div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.ConsumerTopicConfigBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig.ConsumerTopicConfigBuilder</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer">DefaultConsumerRunnable</a>&lt;<a href="com/bakdata/kafka/consumer/DefaultConsumerRunnable.html" title="type parameter in DefaultConsumerRunnable">K</a>,<wbr><a href="com/bakdata/kafka/consumer/DefaultConsumerRunnable.html" title="type parameter in DefaultConsumerRunnable">V</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Default implementation of <a href="com/bakdata/kafka/consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerRunnable</code></a> that manages the Kafka consumer poll loop and record processing
+ lifecycle.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/DeserializerConfig.html" title="class in com.bakdata.kafka">DeserializerConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Defines how to serialize the data in a Kafka producer</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/EnvironmentArgumentsParser.html" title="class in com.bakdata.kafka">EnvironmentArgumentsParser</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
@@ -141,53 +202,61 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">An application with a corresponding topic and Kafka configuration</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/ExecutableProducerApp.html" title="class in com.bakdata.kafka.producer">ExecutableProducerApp</a>&lt;<a href="com/bakdata/kafka/producer/ExecutableProducerApp.html" title="type parameter in ExecutableProducerApp">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/ExecutableConsumerApp.html" title="class in com.bakdata.kafka.consumer">ExecutableConsumerApp</a>&lt;<a href="com/bakdata/kafka/consumer/ExecutableConsumerApp.html" title="type parameter in ExecutableConsumerApp">T</a> extends <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer">ConsumerApp</a>&gt;</div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a> with a corresponding <a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerTopicConfig</code></a> and Kafka configuration</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/ExecutableProducerApp.html" title="class in com.bakdata.kafka.producer">ExecutableProducerApp</a>&lt;<a href="com/bakdata/kafka/producer/ExecutableProducerApp.html" title="type parameter in ExecutableProducerApp">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer"><code>ProducerApp</code></a> with a corresponding <a href="com/bakdata/kafka/producer/ProducerTopicConfig.html" title="class in com.bakdata.kafka.producer"><code>ProducerTopicConfig</code></a> and Kafka configuration</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/ExecutableStreamsApp.html" title="class in com.bakdata.kafka.streams">ExecutableStreamsApp</a>&lt;<a href="com/bakdata/kafka/streams/ExecutableStreamsApp.html" title="type parameter in ExecutableStreamsApp">T</a> extends <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/ExecutableStreamsApp.html" title="class in com.bakdata.kafka.streams">ExecutableStreamsApp</a>&lt;<a href="com/bakdata/kafka/streams/ExecutableStreamsApp.html" title="type parameter in ExecutableStreamsApp">T</a> extends <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams"><code>StreamsApp</code></a> with a corresponding <code>Topology</code> and <code>StreamsConfig</code></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="class in com.bakdata.kafka.streams.kstream">GroupedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="type parameter in GroupedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="type parameter in GroupedX">V</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="class in com.bakdata.kafka.streams.kstream">GroupedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="type parameter in GroupedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="type parameter in GroupedX">V</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Use <code>Preconfigured</code> to lazily configure <code>Serde</code> for <code>Grouped</code> using <code>Configurator</code></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/HasCleanHook.html" title="interface in com.bakdata.kafka">HasCleanHook</a>&lt;<a href="com/bakdata/kafka/HasCleanHook.html" title="type parameter in HasCleanHook">SELF</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/HasCleanHook.html" title="interface in com.bakdata.kafka">HasCleanHook</a>&lt;<a href="com/bakdata/kafka/HasCleanHook.html" title="type parameter in HasCleanHook">SELF</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface for performing actions when cleaning apps</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/HasTopicHooks.html" title="interface in com.bakdata.kafka">HasTopicHooks</a>&lt;<a href="com/bakdata/kafka/HasTopicHooks.html" title="type parameter in HasTopicHooks">SELF</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/HasTopicHooks.html" title="interface in com.bakdata.kafka">HasTopicHooks</a>&lt;<a href="com/bakdata/kafka/HasTopicHooks.html" title="type parameter in HasTopicHooks">SELF</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface for performing actions on topics</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/HasTopicHooks.TopicHook.html" title="interface in com.bakdata.kafka">HasTopicHooks.TopicHook</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/HasTopicHooks.TopicHook.html" title="interface in com.bakdata.kafka">HasTopicHooks.TopicHook</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Hook for performing actions on topics</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/mixin/InputOptions.html" title="class in com.bakdata.kafka.mixin">InputOptions</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/mixin/InputOptions.html" title="class in com.bakdata.kafka.mixin">InputOptions</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Shared CLI options to configure Kafka applications that consume input data.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="class in com.bakdata.kafka.streams.kstream">JoinedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="type parameter in JoinedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="type parameter in JoinedX">V1</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="type parameter in JoinedX">V2</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="class in com.bakdata.kafka.streams.kstream">JoinedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="type parameter in JoinedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="type parameter in JoinedX">V1</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/JoinedX.html" title="type parameter in JoinedX">V2</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Use <code>Preconfigured</code> to lazily configure <code>Serde</code> for <code>Joined</code> using <code>Configurator</code></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="com/bakdata/kafka/admin/KafkaAdminException.html" title="class in com.bakdata.kafka.admin">KafkaAdminException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="com/bakdata/kafka/admin/KafkaAdminException.html" title="class in com.bakdata.kafka.admin">KafkaAdminException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Exception thrown by if admin operations fail.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/KafkaApplication.html" title="class in com.bakdata.kafka">KafkaApplication</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">R</a> extends <a href="com/bakdata/kafka/Runner.html" title="interface in com.bakdata.kafka">Runner</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">CR</a> extends <a href="com/bakdata/kafka/CleanUpRunner.html" title="interface in com.bakdata.kafka">CleanUpRunner</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">O</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">E</a> extends <a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka">ExecutableApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">R</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">CR</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">O</a>&gt;,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">CA</a> extends <a href="com/bakdata/kafka/ConfiguredApp.html" title="interface in com.bakdata.kafka">ConfiguredApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">E</a>&gt;,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">T</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">A</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">AC</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/KafkaApplication.html" title="class in com.bakdata.kafka">KafkaApplication</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">R</a> extends <a href="com/bakdata/kafka/Runner.html" title="interface in com.bakdata.kafka">Runner</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">CR</a> extends <a href="com/bakdata/kafka/CleanUpRunner.html" title="interface in com.bakdata.kafka">CleanUpRunner</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">O</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">E</a> extends <a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka">ExecutableApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">R</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">CR</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">O</a>&gt;,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">CA</a> extends <a href="com/bakdata/kafka/ConfiguredApp.html" title="interface in com.bakdata.kafka">ConfiguredApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">E</a>&gt;,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">T</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">A</a>,<wbr><a href="com/bakdata/kafka/KafkaApplication.html" title="type parameter in KafkaApplication">AC</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The base class for creating Kafka applications.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/KafkaApplication.CleanableApp.html" title="class in com.bakdata.kafka">KafkaApplication.CleanableApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.CleanableApp.html" title="type parameter in KafkaApplication.CleanableApp">CR</a> extends <a href="com/bakdata/kafka/CleanUpRunner.html" title="interface in com.bakdata.kafka">CleanUpRunner</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/KafkaApplication.CleanableApp.html" title="class in com.bakdata.kafka">KafkaApplication.CleanableApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.CleanableApp.html" title="type parameter in KafkaApplication.CleanableApp">CR</a> extends <a href="com/bakdata/kafka/CleanUpRunner.html" title="interface in com.bakdata.kafka">CleanUpRunner</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Provides access to a <a href="com/bakdata/kafka/CleanUpRunner.html" title="interface in com.bakdata.kafka"><code>CleanUpRunner</code></a> and closes the associated <a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka"><code>ExecutableApp</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/KafkaApplication.RunnableApp.html" title="class in com.bakdata.kafka">KafkaApplication.RunnableApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.RunnableApp.html" title="type parameter in KafkaApplication.RunnableApp">R</a> extends <a href="com/bakdata/kafka/Runner.html" title="interface in com.bakdata.kafka">Runner</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/KafkaApplication.RunnableApp.html" title="class in com.bakdata.kafka">KafkaApplication.RunnableApp</a>&lt;<a href="com/bakdata/kafka/KafkaApplication.RunnableApp.html" title="type parameter in KafkaApplication.RunnableApp">R</a> extends <a href="com/bakdata/kafka/Runner.html" title="interface in com.bakdata.kafka">Runner</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Provides access to a <a href="com/bakdata/kafka/Runner.html" title="interface in com.bakdata.kafka"><code>Runner</code></a> and closes the associated <a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka"><code>ExecutableApp</code></a></div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/KafkaConsumerApplication.html" title="class in com.bakdata.kafka.consumer">KafkaConsumerApplication</a>&lt;<a href="com/bakdata/kafka/consumer/KafkaConsumerApplication.html" title="type parameter in KafkaConsumerApplication">T</a> extends <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer">ConsumerApp</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">The base class for creating Kafka Consumer applications.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/KafkaProducerApplication.html" title="class in com.bakdata.kafka.producer">KafkaProducerApplication</a>&lt;<a href="com/bakdata/kafka/producer/KafkaProducerApplication.html" title="type parameter in KafkaProducerApplication">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
@@ -308,6 +377,13 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface for running applications</div>
 </div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/RunningConsumer.html" title="class in com.bakdata.kafka.consumer">RunningConsumer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A running <code>KafkaConsumer</code> instance along with its <code>ConsumerConfig</code> and
+ <a href="com/bakdata/kafka/consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerRunnable</code></a></div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/RunningConsumer.RunningConsumerBuilder.html" title="class in com.bakdata.kafka.consumer">RunningConsumer.RunningConsumerBuilder</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/RunningStreams.html" title="class in com.bakdata.kafka.streams">RunningStreams</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A running <code>KafkaStreams</code> instance along with its <code>StreamsConfig</code> and
@@ -353,112 +429,116 @@ loadScripts(document, 'script');</script>
 <div class="block">Extends the <code>SessionWindowedKStream</code> interface by adding methods to simplify Serde configuration, error
  handling, and topic access</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/SimpleKafkaProducerApplication.html" title="class in com.bakdata.kafka.producer">SimpleKafkaProducerApplication</a>&lt;<a href="com/bakdata/kafka/producer/SimpleKafkaProducerApplication.html" title="type parameter in SimpleKafkaProducerApplication">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/consumer/SimpleKafkaConsumerApplication.html" title="class in com.bakdata.kafka.consumer">SimpleKafkaConsumerApplication</a>&lt;<a href="com/bakdata/kafka/consumer/SimpleKafkaConsumerApplication.html" title="type parameter in SimpleKafkaConsumerApplication">T</a> extends <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer">ConsumerApp</a>&gt;</div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block"><code>KafkaConsumerApplication</code> without any additional configuration options.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/producer/SimpleKafkaProducerApplication.html" title="class in com.bakdata.kafka.producer">SimpleKafkaProducerApplication</a>&lt;<a href="com/bakdata/kafka/producer/SimpleKafkaProducerApplication.html" title="type parameter in SimpleKafkaProducerApplication">T</a> extends <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer">ProducerApp</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block"><a href="com/bakdata/kafka/producer/KafkaProducerApplication.html" title="class in com.bakdata.kafka.producer"><code>KafkaProducerApplication</code></a> without any additional configuration options.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/SimpleKafkaStreamsApplication.html" title="class in com.bakdata.kafka.streams">SimpleKafkaStreamsApplication</a>&lt;<a href="com/bakdata/kafka/streams/SimpleKafkaStreamsApplication.html" title="type parameter in SimpleKafkaStreamsApplication">T</a> extends <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/SimpleKafkaStreamsApplication.html" title="class in com.bakdata.kafka.streams">SimpleKafkaStreamsApplication</a>&lt;<a href="com/bakdata/kafka/streams/SimpleKafkaStreamsApplication.html" title="type parameter in SimpleKafkaStreamsApplication">T</a> extends <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block"><a href="com/bakdata/kafka/streams/KafkaStreamsApplication.html" title="class in com.bakdata.kafka.streams"><code>KafkaStreamsApplication</code></a> without any additional configuration options.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StoresX.html" title="class in com.bakdata.kafka.streams.kstream">StoresX</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StoresX.html" title="class in com.bakdata.kafka.streams.kstream">StoresX</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Use <code>Preconfigured</code> to lazily configure <code>Serde</code> for <code>Stores</code> using <code>Configurator</code></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="class in com.bakdata.kafka.streams.kstream">StreamJoinedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="type parameter in StreamJoinedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="type parameter in StreamJoinedX">V1</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="type parameter in StreamJoinedX">V2</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="class in com.bakdata.kafka.streams.kstream">StreamJoinedX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="type parameter in StreamJoinedX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="type parameter in StreamJoinedX">V1</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/StreamJoinedX.html" title="type parameter in StreamJoinedX">V2</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Use <code>Preconfigured</code> to lazily configure <code>Serde</code> for <code>StreamJoined</code> using <code>Configurator</code></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams">StreamsApp</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Application that defines a Kafka Streams <code>Topology</code> and necessary configurations</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsAppConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsAppConfiguration</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsAppConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsAppConfiguration</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Configuration of a <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams"><code>StreamsApp</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="com/bakdata/kafka/streams/StreamsApplicationException.html" title="class in com.bakdata.kafka.streams">StreamsApplicationException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="com/bakdata/kafka/streams/StreamsApplicationException.html" title="class in com.bakdata.kafka.streams">StreamsApplicationException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Exception thrown if running streams application was unsuccessful</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StreamsBuilderX.html" title="class in com.bakdata.kafka.streams.kstream">StreamsBuilderX</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StreamsBuilderX.html" title="class in com.bakdata.kafka.streams.kstream">StreamsBuilderX</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Provides all runtime configurations and supports building a <code>Topology</code> of a
  <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams"><code>StreamsApp</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpConfiguration</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpConfiguration</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Provides configuration options for <a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html" title="class in com.bakdata.kafka.streams"><code>StreamsCleanUpRunner</code></a></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpRunner</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpRunner</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Clean up the state and artifacts of your Kafka Streams app</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsConfigX.html" title="class in com.bakdata.kafka.streams">StreamsConfigX</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsConfigX.html" title="class in com.bakdata.kafka.streams">StreamsConfigX</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Class for simplified access to configs provided by <code>StreamsConfig</code></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StreamsContext.html" title="class in com.bakdata.kafka.streams.kstream">StreamsContext</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/kstream/StreamsContext.html" title="class in com.bakdata.kafka.streams.kstream">StreamsContext</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Provides context for the configured Kafka Streams application environment, i.e., topic configuration and
  StreamsConfig</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsExecutionOptions.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsExecutionOptions.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Options to run a Kafka Streams app using <a href="com/bakdata/kafka/streams/StreamsRunner.html" title="class in com.bakdata.kafka.streams"><code>StreamsRunner</code></a></div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsRunner.html" title="class in com.bakdata.kafka.streams">StreamsRunner</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsRunner.html" title="class in com.bakdata.kafka.streams">StreamsRunner</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Runs a Kafka Streams application</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsTopicConfig.html" title="class in com.bakdata.kafka.streams">StreamsTopicConfig</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsTopicConfig.html" title="class in com.bakdata.kafka.streams">StreamsTopicConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Provides topic configuration for a <a href="com/bakdata/kafka/streams/StreamsApp.html" title="interface in com.bakdata.kafka.streams"><code>StreamsApp</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsTopicConfig.StreamsTopicConfigBuilder.html" title="class in com.bakdata.kafka.streams">StreamsTopicConfig.StreamsTopicConfigBuilder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/StringListConverter.html" title="class in com.bakdata.kafka">StringListConverter</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/StreamsTopicConfig.StreamsTopicConfigBuilder.html" title="class in com.bakdata.kafka.streams">StreamsTopicConfig.StreamsTopicConfigBuilder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/StringListConverter.html" title="class in com.bakdata.kafka">StringListConverter</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Converter for lists inside collection type parsed by PicoCLI.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/TestApplicationRunner.html" title="class in com.bakdata.kafka">TestApplicationRunner</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/TestApplicationRunner.html" title="class in com.bakdata.kafka">TestApplicationRunner</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Class that provides helpers for using running <a href="com/bakdata/kafka/KafkaApplication.html" title="class in com.bakdata.kafka"><code>KafkaApplication</code></a> in tests</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/TestApplicationTopologyFactory.html" title="class in com.bakdata.kafka.streams">TestApplicationTopologyFactory</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/TestApplicationTopologyFactory.html" title="class in com.bakdata.kafka.streams">TestApplicationTopologyFactory</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Class that provides helpers for using Fluent Kafka Streams Tests with <a href="com/bakdata/kafka/streams/KafkaStreamsApplication.html" title="class in com.bakdata.kafka.streams"><code>KafkaStreamsApplication</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/TestSchemaRegistry.html" title="class in com.bakdata.kafka">TestSchemaRegistry</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/TestSchemaRegistry.html" title="class in com.bakdata.kafka">TestSchemaRegistry</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Class that provides helpers for using schema registry in tests.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/TestTopologyFactory.html" title="class in com.bakdata.kafka.streams">TestTopologyFactory</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/streams/TestTopologyFactory.html" title="class in com.bakdata.kafka.streams">TestTopologyFactory</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Class that provides helpers for using Fluent Kafka Streams Tests with <a href="com/bakdata/kafka/streams/ConfiguredStreamsApp.html" title="class in com.bakdata.kafka.streams"><code>ConfiguredStreamsApp</code></a></div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/streams/kstream/TimeWindowedCogroupedKStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">TimeWindowedCogroupedKStreamX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/TimeWindowedCogroupedKStreamX.html" title="type parameter in TimeWindowedCogroupedKStreamX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/TimeWindowedCogroupedKStreamX.html" title="type parameter in TimeWindowedCogroupedKStreamX">VOut</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/streams/kstream/TimeWindowedCogroupedKStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">TimeWindowedCogroupedKStreamX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/TimeWindowedCogroupedKStreamX.html" title="type parameter in TimeWindowedCogroupedKStreamX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/TimeWindowedCogroupedKStreamX.html" title="type parameter in TimeWindowedCogroupedKStreamX">VOut</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Extends the <code>TimeWindowedCogroupedKStream</code> interface by adding methods to simplify Serde configuration,
  error handling, and topic access</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/streams/kstream/TimeWindowedKStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">TimeWindowedKStreamX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/TimeWindowedKStreamX.html" title="type parameter in TimeWindowedKStreamX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/TimeWindowedKStreamX.html" title="type parameter in TimeWindowedKStreamX">V</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/bakdata/kafka/streams/kstream/TimeWindowedKStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">TimeWindowedKStreamX</a>&lt;<a href="com/bakdata/kafka/streams/kstream/TimeWindowedKStreamX.html" title="type parameter in TimeWindowedKStreamX">K</a>,<wbr><a href="com/bakdata/kafka/streams/kstream/TimeWindowedKStreamX.html" title="type parameter in TimeWindowedKStreamX">V</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Extends the <code>TimeWindowedKStream</code> interface by adding methods to simplify Serde configuration,
  error handling, and topic access</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/TopicsClient.html" title="class in com.bakdata.kafka.admin">TopicsClient</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/TopicsClient.html" title="class in com.bakdata.kafka.admin">TopicsClient</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">This class offers helpers to interact with Kafka topics.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/TopicSettings.html" title="class in com.bakdata.kafka.admin">TopicSettings</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/TopicSettings.html" title="class in com.bakdata.kafka.admin">TopicSettings</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Contains information about a topic, including number of partitions and replication factor.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/TopicSettings.TopicSettingsBuilder.html" title="class in com.bakdata.kafka.admin">TopicSettings.TopicSettingsBuilder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/bakdata/kafka/admin/TopicSettings.TopicSettingsBuilder.html" title="class in com.bakdata.kafka.admin">TopicSettings.TopicSettingsBuilder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 </div>
 </div>
 </div>

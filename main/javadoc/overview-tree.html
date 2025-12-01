@@ -53,6 +53,7 @@ loadScripts(document, 'script');</script>
 <ul class="horizontal">
 <li><a href="com/bakdata/kafka/package-tree.html">com.bakdata.kafka</a>, </li>
 <li><a href="com/bakdata/kafka/admin/package-tree.html">com.bakdata.kafka.admin</a>, </li>
+<li><a href="com/bakdata/kafka/consumer/package-tree.html">com.bakdata.kafka.consumer</a>, </li>
 <li><a href="com/bakdata/kafka/mixin/package-tree.html">com.bakdata.kafka.mixin</a>, </li>
 <li><a href="com/bakdata/kafka/producer/package-tree.html">com.bakdata.kafka.producer</a>, </li>
 <li><a href="com/bakdata/kafka/streams/package-tree.html">com.bakdata.kafka.streams</a>, </li>
@@ -71,12 +72,24 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ConfiguredProducerApp.html" class="type-name-link" title="class in com.bakdata.kafka.producer">ConfiguredProducerApp</a>&lt;T&gt; (implements com.bakdata.kafka.<a href="com/bakdata/kafka/ConfiguredApp.html" title="interface in com.bakdata.kafka">ConfiguredApp</a>&lt;E&gt;)</li>
 <li class="circle">com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/ConfiguredStreamsApp.html" class="type-name-link" title="class in com.bakdata.kafka.streams">ConfiguredStreamsApp</a>&lt;T&gt; (implements com.bakdata.kafka.<a href="com/bakdata/kafka/ConfiguredApp.html" title="interface in com.bakdata.kafka">ConfiguredApp</a>&lt;E&gt;)</li>
 <li class="circle">com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/ConsumedX.html" class="type-name-link" title="class in com.bakdata.kafka.streams.kstream">ConsumedX</a>&lt;K,<wbr>V&gt;</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerAppConfiguration.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerAppConfiguration</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerCleanUpConfiguration.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpConfiguration</a> (implements com.bakdata.kafka.<a href="com/bakdata/kafka/HasCleanHook.html" title="interface in com.bakdata.kafka">HasCleanHook</a>&lt;SELF&gt;)</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a> (implements com.bakdata.kafka.<a href="com/bakdata/kafka/CleanUpRunner.html" title="interface in com.bakdata.kafka">CleanUpRunner</a>)</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerExecutionOptions.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></li>
 <li class="circle">com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/ConsumerGroupsClient.html" class="type-name-link" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient</a></li>
 <li class="circle">com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html" class="type-name-link" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient.ConsumerGroupClient</a></li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/ConsumerGroupVerifier.html" class="type-name-link" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></li>
+<li class="circle">com.bakdata.kafka.mixin.<a href="com/bakdata/kafka/mixin/ConsumerOptions.html" class="type-name-link" title="class in com.bakdata.kafka.mixin">ConsumerOptions</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerRunner.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerRunner</a> (implements com.bakdata.kafka.<a href="com/bakdata/kafka/Runner.html" title="interface in com.bakdata.kafka">Runner</a>)</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.ConsumerTopicConfigBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig.ConsumerTopicConfigBuilder</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/DefaultConsumerRunnable.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">DefaultConsumerRunnable</a>&lt;K,<wbr>V&gt; (implements com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer">ConsumerRunnable</a>)</li>
+<li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/DeserializerConfig.html" class="type-name-link" title="class in com.bakdata.kafka">DeserializerConfig</a> (implements com.bakdata.kafka.<a href="com/bakdata/kafka/SerializationConfig.html" title="interface in com.bakdata.kafka">SerializationConfig</a>)</li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/EnvironmentArgumentsParser.html" class="type-name-link" title="class in com.bakdata.kafka">EnvironmentArgumentsParser</a></li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/EnvironmentKafkaConfigParser.html" class="type-name-link" title="class in com.bakdata.kafka">EnvironmentKafkaConfigParser</a></li>
 <li class="circle">com.bakdata.kafka.mixin.<a href="com/bakdata/kafka/mixin/ErrorOptions.html" class="type-name-link" title="class in com.bakdata.kafka.mixin">ErrorOptions</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ExecutableConsumerApp.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ExecutableConsumerApp</a>&lt;T&gt; (implements com.bakdata.kafka.<a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka">ExecutableApp</a>&lt;R,<wbr>C,<wbr>O&gt;)</li>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ExecutableProducerApp.html" class="type-name-link" title="class in com.bakdata.kafka.producer">ExecutableProducerApp</a>&lt;T&gt; (implements com.bakdata.kafka.<a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka">ExecutableApp</a>&lt;R,<wbr>C,<wbr>O&gt;)</li>
 <li class="circle">com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/ExecutableStreamsApp.html" class="type-name-link" title="class in com.bakdata.kafka.streams">ExecutableStreamsApp</a>&lt;T&gt; (implements com.bakdata.kafka.<a href="com/bakdata/kafka/ExecutableApp.html" title="interface in com.bakdata.kafka">ExecutableApp</a>&lt;R,<wbr>C,<wbr>O&gt;)</li>
 <li class="circle">com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/GroupedX.html" class="type-name-link" title="class in com.bakdata.kafka.streams.kstream">GroupedX</a>&lt;K,<wbr>V&gt;</li>
@@ -84,6 +97,11 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/JoinedX.html" class="type-name-link" title="class in com.bakdata.kafka.streams.kstream">JoinedX</a>&lt;K,<wbr>V1,<wbr>V2&gt;</li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/KafkaApplication.html" class="type-name-link" title="class in com.bakdata.kafka">KafkaApplication</a>&lt;R,<wbr>CR,<wbr>O,<wbr>E,<wbr>CA,<wbr>T,<wbr>A,<wbr>AC&gt; (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>)
 <ul>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/KafkaConsumerApplication.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">KafkaConsumerApplication</a>&lt;T&gt;
+<ul>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/SimpleKafkaConsumerApplication.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">SimpleKafkaConsumerApplication</a>&lt;T&gt;</li>
+</ul>
+</li>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/KafkaProducerApplication.html" class="type-name-link" title="class in com.bakdata.kafka.producer">KafkaProducerApplication</a>&lt;T&gt;
 <ul>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/SimpleKafkaProducerApplication.html" class="type-name-link" title="class in com.bakdata.kafka.producer">SimpleKafkaProducerApplication</a>&lt;T&gt;</li>
@@ -115,7 +133,15 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerTopicConfig.html" class="type-name-link" title="class in com.bakdata.kafka.producer">ProducerTopicConfig</a></li>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerTopicConfig.ProducerTopicConfigBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.producer">ProducerTopicConfig.ProducerTopicConfigBuilder</a></li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/ReaderBuilder.html" class="type-name-link" title="class in com.bakdata.kafka">ReaderBuilder</a>&lt;K,<wbr>V&gt;</li>
+<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
+<ul>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConfiguredConsumerApp.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConfiguredConsumerApp</a>&lt;T&gt; (implements com.bakdata.kafka.<a href="com/bakdata/kafka/ConfiguredApp.html" title="interface in com.bakdata.kafka">ConfiguredApp</a>&lt;E&gt;)</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerBuilder</a></li>
+</ul>
+</li>
 <li class="circle">com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/RepartitionedX.html" class="type-name-link" title="class in com.bakdata.kafka.streams.kstream">RepartitionedX</a>&lt;K,<wbr>V&gt;</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/RunningConsumer.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">RunningConsumer</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/RunningConsumer.RunningConsumerBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">RunningConsumer.RunningConsumerBuilder</a></li>
 <li class="circle">com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/RunningStreams.html" class="type-name-link" title="class in com.bakdata.kafka.streams">RunningStreams</a></li>
 <li class="circle">com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/RunningStreams.RunningStreamsBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.streams">RunningStreams.RunningStreamsBuilder</a></li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/RuntimeConfiguration.html" class="type-name-link" title="class in com.bakdata.kafka">RuntimeConfiguration</a></li>
@@ -149,6 +175,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/RuntimeException.html" class="type-name-link external-link" title="class or interface in java.lang">RuntimeException</a>
 <ul>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/CleanUpException.html" class="type-name-link" title="class in com.bakdata.kafka">CleanUpException</a></li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerApplicationException.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerApplicationException</a></li>
 <li class="circle">com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/KafkaAdminException.html" class="type-name-link" title="class in com.bakdata.kafka.admin">KafkaAdminException</a></li>
 <li class="circle">com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsApplicationException.html" class="type-name-link" title="class in com.bakdata.kafka.streams">StreamsApplicationException</a></li>
 </ul>
@@ -172,6 +199,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/App.html" class="type-name-link" title="interface in com.bakdata.kafka">App</a>&lt;T,<wbr>C&gt;
 <ul>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerApp.html" class="type-name-link" title="interface in com.bakdata.kafka.consumer">ConsumerApp</a></li>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerApp.html" class="type-name-link" title="interface in com.bakdata.kafka.producer">ProducerApp</a>
 <ul>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/LargeMessageProducerApp.html" class="type-name-link" title="interface in com.bakdata.kafka.producer">LargeMessageProducerApp</a></li>
@@ -186,6 +214,7 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/CleanUpRunner.html" class="type-name-link" title="interface in com.bakdata.kafka">CleanUpRunner</a></li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/ConfiguredApp.html" class="type-name-link" title="interface in com.bakdata.kafka">ConfiguredApp</a>&lt;E&gt;</li>
+<li class="circle">com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerRunnable.html" class="type-name-link" title="interface in com.bakdata.kafka.consumer">ConsumerRunnable</a></li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/ExecutableApp.html" class="type-name-link" title="interface in com.bakdata.kafka">ExecutableApp</a>&lt;R,<wbr>C,<wbr>O&gt;</li>
 <li class="circle">com.bakdata.kafka.<a href="com/bakdata/kafka/HasTopicHooks.TopicHook.html" class="type-name-link" title="interface in com.bakdata.kafka">HasTopicHooks.TopicHook</a></li>
 <li class="circle">com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerRunnable.html" class="type-name-link" title="interface in com.bakdata.kafka.producer">ProducerRunnable</a></li>
