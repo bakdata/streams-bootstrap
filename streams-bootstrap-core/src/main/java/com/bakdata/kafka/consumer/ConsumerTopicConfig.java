@@ -27,7 +27,6 @@ package com.bakdata.kafka.consumer;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
-import com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
