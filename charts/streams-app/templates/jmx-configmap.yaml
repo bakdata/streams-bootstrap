@@ -1,1 +1,1 @@
-{{- include "common-app.jmx-configmap" . -}}
+{{- include "kafka-app.jmx-configmap" . -}}

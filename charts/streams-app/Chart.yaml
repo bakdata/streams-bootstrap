@@ -7,6 +7,6 @@ maintainers:
     email: opensource@bakdata.com
     url: bakdata.com
 dependencies:
-  - name: common-app
+  - name: kafka-app
     version: "0.1.0"
-    repository: "file://../common-app"
+    repository: "file://../kafka-app"

@@ -1,4 +1,4 @@
-{{- define "common-app.deployment" -}}
+{{- define "kafka-app.deployment" -}}
 {{- $root := . -}}
 {{- if and .Values.persistence.enabled (not .Values.persistence.size) }}
 {{- fail "When persistence is enabled, you must set .Values.persistence.size" }}
@@ -15,17 +15,17 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ include "common-app.fullname" . }}
-  {{- include "common-app.deployment-annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.deployment-annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 spec:
   {{- if .Values.statefulSet }}
-  serviceName: {{ include "common-app.fullname" . }}
+  serviceName: {{ include "kafka-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
@@ -33,7 +33,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "common-app.selectorLabels" . | nindent 6 }}
+      {{- include "kafka-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- if or .Values.podAnnotations .Values.files }}
@@ -46,7 +46,7 @@ spec:
       {{- end }}
     {{- end }}
       labels:
-        {{- include "common-app.selectorLabels" . | nindent 8 }}
+        {{- include "kafka-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.podLabels }}
         {{ $key }}: {{ $value }}
@@ -149,7 +149,7 @@ spec:
             - name: "{{ $key }}"
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "common-app.fullname" . }}
+                  name: {{ include "kafka-app.fullname" . }}
                   key: "{{ $key }}"
           {{- end }}
           {{- range $key, $value := .Values.secretRefs }}
@@ -227,7 +227,7 @@ spec:
           imagePullPolicy: "{{ .Values.prometheus.jmx.imagePullPolicy }}"
           args:
             - {{ .Values.prometheus.jmx.port | quote }}
-            - /etc/jmx-{{ include "common-app.name" . }}/jmx-kafka-{{ include "common-app.name" . }}-prometheus.yml
+            - /etc/jmx-{{ include "kafka-app.name" . }}/jmx-kafka-{{ include "kafka-app.name" . }}-prometheus.yml
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-XX:MaxRAMPercentage=90.0"
@@ -238,19 +238,19 @@ spec:
 {{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
           volumeMounts:
             - name: jmx-config
-              mountPath: /etc/jmx-{{ include "common-app.name" . }}
+              mountPath: /etc/jmx-{{ include "kafka-app.name" . }}
       {{- end }}
       {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
         {{- if .Values.prometheus.jmx.enabled }}
         - name: jmx-config
           configMap:
-            name: {{ include "common-app.fullname" . }}-jmx
+            name: {{ include "kafka-app.fullname" . }}-jmx
         {{- end }}
         {{- if .Values.files }}
         - name: config
           configMap:
-            name: {{ include "common-app.fullname" . }}
+            name: {{ include "kafka-app.fullname" . }}
         {{- end }}
         {{- range .Values.secretFilesRefs }}
         - name: {{ .volume }}
