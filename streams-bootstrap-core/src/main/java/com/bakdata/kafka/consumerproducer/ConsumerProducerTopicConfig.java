@@ -22,11 +22,13 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import com.bakdata.kafka.consumer.ConsumerTopicConfig;
+import com.bakdata.kafka.producer.ProducerTopicConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -36,12 +38,12 @@ import lombok.NonNull;
 import lombok.Value;
 
 /**
- * Provides topic configuration for a {@link ConsumerApp}
+ * Provides topic configuration for a {@link ConsumerProducerApp}
  */
 @Builder
 @Value
 @EqualsAndHashCode
-public class ConsumerTopicConfig {
+public class ConsumerProducerTopicConfig {
 
     @Builder.Default
     @NonNull
@@ -59,32 +61,28 @@ public class ConsumerTopicConfig {
     @Builder.Default
     @NonNull
     Map<String, Pattern> labeledInputPatterns = emptyMap();
-
+    String outputTopic;
     /**
-     * Get input topics for a specified label
-     *
-     * @param label label of input topics
-     * @return topic names
+     * Output topics that are identified by a label
      */
-    public List<String> getInputTopics(final String label) {
-        final List<String> topics = this.labeledInputTopics.get(label);
-        if (topics == null) {
-            throw new IllegalArgumentException(String.format("No input topics for label '%s' available", label));
-        }
-        return topics;
+    @Builder.Default
+    @NonNull
+    Map<String, String> labeledOutputTopics = emptyMap();
+    String errorTopic;
+
+    public ConsumerTopicConfig toConsumerTopicConfig() {
+        return ConsumerTopicConfig.builder()
+                .inputTopics(this.getInputTopics())
+                .labeledInputTopics(this.getLabeledInputTopics())
+                .inputPattern(this.getInputPattern())
+                .labeledInputPatterns(this.getLabeledInputPatterns())
+                .build();
     }
 
-    /**
-     * Get input pattern for a specified label
-     *
-     * @param label label of input pattern
-     * @return topic pattern
-     */
-    public Pattern getInputPattern(final String label) {
-        final Pattern pattern = this.labeledInputPatterns.get(label);
-        if (pattern == null) {
-            throw new IllegalArgumentException(String.format("No input pattern for label '%s' available", label));
-        }
-        return pattern;
+    public ProducerTopicConfig toProducerTopicConfig() {
+        return ProducerTopicConfig.builder()
+                .outputTopic(this.getOutputTopic())
+                .labeledOutputTopics(this.getLabeledOutputTopics())
+                .build();
     }
 }

@@ -177,6 +177,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
 
     /**
      * Called after starting Kafka Streams
+     *
      * @param runningStreams running {@link KafkaStreams} instance along with its {@link StreamsConfig} and
      * {@link org.apache.kafka.streams.Topology}
      */

@@ -24,8 +24,6 @@
 
 package com.bakdata.kafka.producer;
 
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.mixin.OutputOptions;
 import java.util.Optional;
@@ -35,7 +33,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 

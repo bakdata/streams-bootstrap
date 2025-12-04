@@ -275,11 +275,115 @@ The following configuration options are available:
 - `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
   implementing `ConsumerApp#getUniqueGroupId()`
 
+- `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Consumer shutdown.
+
 Additionally, the following commands are available:
 
 - `clean`: Reset the Kafka consumer application. Additionally, delete the consumer group.
 
 - `reset`: Clear all state stores, consumer group offsets associated with the Kafka consumer application.
+
+#### Kafka ConsumerProducer
+
+In contrast to Kafka Streams, the Consumer-Producer application combines a Consumer and Producer to enable efficient 
+batch processing. While this offers lower overhead for simple transformations, it lacks built-in support for stateful 
+processing and does not support intermediate topics out of the box
+
+
+Create a subclass of `KafkaConsumerProducerApplication`.
+
+```java
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.DefaultConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+public class MyConsumerProducerApplication extends KafkaConsumerProducerApplication<ConsumerProducerApp> {
+    public static void main(final String[] args) {
+        new MyConsumerProducerApplication().startApplication(args);
+    }
+
+    @Override
+    public ConsumerProducerApp createApp() {
+        return new ConsumerProducerApp() {
+            @Override
+            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+                final Consumer<String, String> yourConsumer = builder.consumerBuilder().createConsumer();
+                builder.consumerBuilder().subscribeToAllTopics(yourConsumer);
+                final Producer<String, String> yourProducer = builder.producerBuilder().createProducer();
+                final ConsumerRunnable consumerRunnable = builder.consumerBuilder()
+                        .createDefaultConsumerRunnable(yourConsumer, records -> records.forEach(
+                                // your logic
+                                consumerRecord -> yourProducer.send(
+                                        new ProducerRecord<>(builder.topics().getOutputTopic(), 
+                                                consumerRecord.key(),
+                                                consumerRecord.value()))));
+                return new DefaultConsumerProducerRunnable<>(yourProducer, consumerRunnable);
+            }
+
+            @Override
+            public SerializerDeserializerConfig defaultSerializationConfig() {
+                return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                        StringDeserializer.class, StringDeserializer.class);
+            }
+
+            // Optionally you can define custom Kafka properties
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        // your config
+                );
+            }
+        };
+    }
+}
+```
+
+The following configuration options are available:
+
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
+
+- `--schema-registry-url`: The URL of the Schema Registry
+
+- `--kafka-config`: Kafka Consumer and Producer configuration (`<String=String>[,<String=String>...]`)
+
+- `--input-topics`: List of input topics (comma-separated)
+
+- `--input-pattern`: Pattern of input topics
+
+- `--output-topic`: The output topic
+
+- `--error-topic`: A topic to write errors to
+
+- `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-output-topics`: Additional labeled output topics if you need to specify multiple topics with different
+  message types (`String=String>[,<String=String>...]`)
+
+- `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
+  implementing `ConsumerProducerApp#getUniqueGroupId()`
+
+- `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Consumer shutdown.
+
+Additionally, the following commands are available:
+
+- `clean`: Reset the Kafka ConsumerProducer application. Additionally, delete the consumer group and all output 
+- associated with the Kafka ConsumerProducer application.
+
+- `reset`: Clear all state stores, consumer group offsets associated with the Kafka ConsumerProducer application.
 
 ### Helm Charts
 
