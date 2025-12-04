@@ -26,7 +26,6 @@ package com.bakdata.kafka.streams.kstream;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
-import static java.util.Collections.emptyMap;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
@@ -550,7 +549,10 @@ class MaterializedXTest {
 
     @Test
     void shouldThrowIfRetentionIsTooShort() {
-        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
+        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), Map.of(
+                "application.id", "app-id",
+                "bootstrap.servers", "localhost:9092"
+        ));
         final KStreamX<String, String> input = builder.stream("input");
         final KGroupedStreamX<String, String> grouped = input.groupByKey();
         final TimeWindowedKStreamX<String, String> windowed =

@@ -26,12 +26,15 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.Preconfigured;
+import com.bakdata.kafka.streams.StreamsConfigX;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.kstream.GlobalKTable;
@@ -41,9 +44,17 @@ import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(SoftAssertionsExtension.class)
 class StreamsBuilderXTest {
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
     void shouldReadFromInput() {
@@ -628,6 +639,146 @@ class StreamsBuilderXTest {
                     .hasKey("foo")
                     .hasValue("barbaz")
                     .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldAddLineageToStream() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        StreamsConfigX.LINEAGE_ENABLED_CONFIG, true
+                );
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(
+                                                    Integer.parseInt(new String(header.value(),
+                                                            StandardCharsets.UTF_8)))
+                                            .isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(
+                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
+                                            .isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
+    @Test
+    void shouldNotAddLineageToStream() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray()).isEmpty();
+                    });
+        }
+    }
+
+    @Test
+    void shouldAddLineageToTable() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                input.toStream().to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        StreamsConfigX.LINEAGE_ENABLED_CONFIG, true
+                );
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(
+                                                    Integer.parseInt(new String(header.value(),
+                                                            StandardCharsets.UTF_8)))
+                                            .isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(
+                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
+                                            .isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
+    @Test
+    void shouldNotAddLineageToTable() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> input = builder.table("input");
+                input.toStream().to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input().add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput().toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray()).isEmpty();
+                    });
         }
     }
 
