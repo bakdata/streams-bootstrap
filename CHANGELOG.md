@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0](https://github.com/bakdata/streams-bootstrap/tree/6.0.0) - 2025-12-04
+### What's changed
+
+* Add consumer application by @raphala in [#385](https://github.com/bakdata/streams-bootstrap/pull/385)
+
+* Add ConsumerProducer application by @raphala in [#387](https://github.com/bakdata/streams-bootstrap/pull/387)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.2.0...6.0.0
+
 ## [5.2.0](https://github.com/bakdata/streams-bootstrap/tree/5.2.0) - 2025-11-27
 ### What's changed
 
