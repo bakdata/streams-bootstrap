@@ -84,3 +84,72 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.common-env" -}}
+- name: ENV_PREFIX
+  value: {{ .Values.configurationEnvPrefix }}_
+{{- range $key, $value := .Values.kafka.config }}
+- name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- if hasKey .Values.kafka "bootstrapServers" }}
+- name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
+  value: {{ .Values.kafka.bootstrapServers | quote }}
+{{- end }}
+{{- if hasKey .Values.kafka "schemaRegistryUrl" }}
+- name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
+  value: {{ .Values.kafka.schemaRegistryUrl | quote }}
+{{- end }}
+{{- range $key, $value := .Values.secrets }}
+- name: "{{ $key }}"
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "common-app.fullname" . }}
+      key: "{{ $key }}"
+{{- end }}
+{{- range $key, $value := .Values.secretRefs }}
+- name: "{{ $key }}"
+  valueFrom:
+    secretKeyRef:
+      name: {{ $value.name }}
+      key: "{{ $value.key }}"
+{{- end }}
+{{- range $key, $value := .Values.commandLine }}
+- name: "{{ .Values.configurationEnvPrefix }}_{{ $key }}"
+  value: {{ $value | quote }}
+{{- end }}
+{{- range $key, $value := .Values.env }}
+- name: {{ $key | quote }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+{{- define "common-app.volume-mounts" -}}
+{{- range $key, $value := .Values.files }}
+- name: config
+  mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
+  subPath: {{ $key | quote }}
+{{- end }}
+{{- range .Values.secretFilesRefs }}
+- name: {{ .volume }}
+  mountPath: {{ .mountPath }}
+  {{- if .readOnly }}
+  readOnly: true
+  {{- end }}
+  {{- if .subPath}}
+  subPath: {{.subPath }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "common-app.volumes" -}}
+{{- if .Values.files }}
+- name: config
+  configMap:
+    name: {{ include "common-app.fullname" . }}
+{{- end }}
+{{- range .Values.secretFilesRefs }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .name }}
+{{- end }}
+{{- end }}

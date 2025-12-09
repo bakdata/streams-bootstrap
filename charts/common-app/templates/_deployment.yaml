@@ -78,12 +78,7 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           env:
-            - name: ENV_PREFIX
-              value: {{ .Values.configurationEnvPrefix }}_
-          {{- range $key, $value := .Values.kafka.config }}
-            - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
-              value: {{ $value | quote }}
-          {{- end }}
+          {{- include "common-app.common-env" . | nindent 12 }}
           {{- range .Values.ports }}
             {{- if .servicePort }} # TODO verify that there is at most one service port. Currently, if there are multiple service ports, the first one will be used
             - name: POD_IP
@@ -103,14 +98,6 @@ spec:
           {{- if not .Values.statefulSet }}
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
               value: "true"
-          {{- end }}
-          {{- if hasKey .Values.kafka "bootstrapServers" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
-              value: {{ .Values.kafka.bootstrapServers | quote }}
-          {{- end }}
-          {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-              value: {{ .Values.kafka.schemaRegistryUrl | quote }}
           {{- end }}
           {{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
             - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
@@ -149,28 +136,6 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
               value: {{ .Values.kafka.groupId | quote }}
           {{- end }}
-          {{- range $key, $value := .Values.secrets }}
-            - name: "{{ $key }}"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "common-app.fullname" . }}
-                  key: "{{ $key }}"
-          {{- end }}
-          {{- range $key, $value := .Values.secretRefs }}
-            - name: "{{ $key }}"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $value.name }}
-                  key: "{{ $value.key }}"
-          {{- end }}
-          {{- range $key, $value := .Values.commandLine }}
-            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-              value: {{ $value | quote }}
-          {{- end }}
-          {{- range $key, $value := .Values.env }}
-            - name: {{ $key | quote }}
-              value: {{ $value | quote }}
-          {{- end }}
             - name: JAVA_TOOL_OPTIONS
               value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
                 -Dcom.sun.management.jmxremote.authenticate=false
@@ -183,21 +148,7 @@ spec:
                 {{ .Values.javaOptions.others | join " " }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
           volumeMounts:
-            {{- range $key, $value := .Values.files }}
-            - name: config
-              mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
-              subPath: {{ $key | quote }}
-            {{- end }}
-            {{- range .Values.secretFilesRefs }}
-            - name: {{ .volume }}
-              mountPath: {{ .mountPath }}
-              {{- if .readOnly }}
-              readOnly: true
-              {{- end }}
-              {{- if .subPath}}
-              subPath: {{.subPath }}
-              {{- end }}
-            {{- end }}
+            {{- include "common-app.volume-mounts" . | nindent 12 }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
               mountPath: /tmp/kafka-streams
@@ -251,16 +202,7 @@ spec:
           configMap:
             name: {{ include "common-app.fullname" . }}-jmx
         {{- end }}
-        {{- if .Values.files }}
-        - name: config
-          configMap:
-            name: {{ include "common-app.fullname" . }}
-        {{- end }}
-        {{- range .Values.secretFilesRefs }}
-        - name: {{ .volume }}
-          secret:
-            secretName: {{ .name }}
-        {{- end }}
+        {{- include "common-app.volumes" . | nindent 8 }}
       {{- end }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
   volumeClaimTemplates:
