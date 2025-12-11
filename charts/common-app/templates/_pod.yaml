@@ -123,6 +123,6 @@ spec:
       {{- .Values.readinessProbe | toYaml | nindent 8 }}
       {{- end }}
   {{- if .Values.prometheus.jmx.enabled }}
-    - {{ include "common-app.prometheus-container" . }}
+{{- include "common-app.prometheus-container" . | nindent 4 }}
   {{- end }}
 {{- end -}}
