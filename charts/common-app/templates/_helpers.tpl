@@ -85,6 +85,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 
 {{- define "common-app.common-env" -}}
+{{- $root := . -}}
 - name: ENV_PREFIX
   value: {{ .Values.configurationEnvPrefix }}_
 {{- range $key, $value := .Values.kafka.config }}
@@ -114,7 +115,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
       key: "{{ $value.key }}"
 {{- end }}
 {{- range $key, $value := .Values.commandLine }}
-- name: "{{ .Values.configurationEnvPrefix }}_{{ $key }}"
+- name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
   value: {{ $value | quote }}
 {{- end }}
 {{- range $key, $value := .Values.env }}
