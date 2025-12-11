@@ -204,7 +204,7 @@ spec:
           imagePullPolicy: "{{ .Values.prometheus.jmx.imagePullPolicy }}"
           args:
             - {{ .Values.prometheus.jmx.port | quote }}
-            - /etc/jmx-consumer-app/jmx-kafka-consumer-app-prometheus.yml
+            - /etc/jmx-kafka-app/jmx-kafka-app-prometheus.yml
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-XX:MaxRAMPercentage=90.0"
@@ -215,7 +215,7 @@ spec:
 {{ toYaml .Values.prometheus.jmx.resources | indent 12 }}
           volumeMounts:
             - name: jmx-config
-              mountPath: /etc/jmx-consumer-app
+              mountPath: /etc/jmx-kafka-app
       {{- end }}
       {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
