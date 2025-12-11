@@ -176,15 +176,6 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 4 }}
   {{- end }}
-  {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
-  volumes:
-    {{- if .Values.prometheus.jmx.enabled }}
-    - name: jmx-config
-      configMap:
-        name: {{ include "common-app.fullname" . }}-jmx
-    {{- end }}
-    {{- include "common-app.volumes" . | nindent 4 }}
-  {{- end }}
 {{- end }}
 
 {{- define "common-app.pod-metadata" -}}

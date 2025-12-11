@@ -3,6 +3,15 @@ metadata:
 {{- include "common-app.pod-metadata" . }}
 spec:
 {{- include "common-app.pod-spec" . }}
+  {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
+  volumes:
+    {{- if .Values.prometheus.jmx.enabled }}
+    - name: jmx-config
+      configMap:
+        name: {{ include "common-app.fullname" . }}-jmx
+    {{- end }}
+    {{- include "common-app.volumes" . | nindent 4 }}
+  {{- end }}
   containers:
 {{- include "common-app.kafka-container" . | nindent 4 }}
   {{- if .Values.prometheus.jmx.enabled }}
