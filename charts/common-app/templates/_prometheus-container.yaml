@@ -12,7 +12,7 @@ ports:
   - containerPort: {{ .Values.prometheus.jmx.port }}
     name: prometheus
 resources:
-{{ toYaml .Values.prometheus.jmx.resources | indent 2 }}
+{{ toYaml .Values.prometheus.jmx.resources | indent 8 }}
 volumeMounts:
   - name: jmx-config
     mountPath: /etc/jmx-{{ .Chart.Name }}
