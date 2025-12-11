@@ -186,3 +186,21 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
     {{- include "common-app.volumes" . | nindent 4 }}
   {{- end }}
 {{- end }}
+
+{{- define "common-app.pod-metadata" -}}
+{{- if or .Values.podAnnotations .Values.files }}
+  annotations:
+  {{- if .Values.files }}
+    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+  {{- end }}
+  {{- range $key, $value := .Values.podAnnotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+  labels:
+    {{- include "common-app.selectorLabels" . | nindent 4 }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
+    {{- range $key, $value := .Values.podLabels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+{{- end }}
