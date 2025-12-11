@@ -154,3 +154,35 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
     secretName: {{ .name }}
 {{- end }}
 {{- end }}
+
+{{- define "common-app.pod-spec" -}}
+{{- $root := . -}}
+  {{- if .Values.serviceAccountName }}
+  serviceAccountName: {{ .Values.serviceAccountName }}
+  {{- end }}
+  {{- if .Values.tolerations }}
+  tolerations:
+{{ toYaml .Values.tolerations | indent 4 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+  affinity:
+    {{- tpl (toYaml .) $root | nindent 4 }}
+  {{- end }}
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{ .Values.priorityClassName }}
+  {{- end }}
+  terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+  {{- if .Values.imagePullSecrets }}
+  imagePullSecrets:
+{{- toYaml .Values.imagePullSecrets | nindent 4 }}
+  {{- end }}
+  {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
+  volumes:
+    {{- if .Values.prometheus.jmx.enabled }}
+    - name: jmx-config
+      configMap:
+        name: {{ include "common-app.fullname" . }}-jmx
+    {{- end }}
+    {{- include "common-app.volumes" . | nindent 4 }}
+  {{- end }}
+{{- end }}
