@@ -20,23 +20,10 @@ spec:
         value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
     {{- end }}
       - name: JAVA_TOOL_OPTIONS
-        value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
-                {{ .Values.javaOptions.others | join " " }}'
-    {{- range .Values.ports }}
+        value: '{{ include "common-app.java-tool-options" . }}'
+    {{- if .Values.ports }}
     ports:
-      - containerPort: {{ .containerPort }}
-        name: {{ .name | quote }}
-        {{- if .protocol }}
-        protocol: {{ .protocol | quote }}
-        {{- end }}
-    {{- end }}
-    {{- if .Values.livenessProbe }}
-    livenessProbe:
-    {{- .Values.livenessProbe | toYaml | nindent 6 }}
-    {{- end }}
-    {{- if .Values.readinessProbe }}
-    readinessProbe:
-    {{- .Values.readinessProbe | toYaml | nindent 6 }}
+      {{- include "common-app.ports" . | nindent 6 }}
     {{- end }}
     {{- if or (.Values.files) (.Values.secretFilesRefs) }}
     volumeMounts:

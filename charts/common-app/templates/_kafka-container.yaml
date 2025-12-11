@@ -67,8 +67,7 @@
         -Djava.rmi.server.hostname={{ .Values.jmx.host }}
         -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.port }}
         {{- end }}
-        -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
-        {{ .Values.javaOptions.others | join " " }}'
+        {{ include "common-app.java-tool-options" . }}'
 {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
   volumeMounts:
     {{- include "common-app.volume-mounts" . | nindent 4 }}
@@ -79,24 +78,10 @@
 {{- end }}
 {{- if or (.Values.jmx.enabled) (.Values.ports) }}
   ports:
-    {{- range .Values.ports }}
-    - containerPort: {{ .containerPort }}
-      name: {{ .name | quote }}
-      {{- if .protocol }}
-      protocol: {{ .protocol | quote }}
-      {{- end }}
-    {{- end }}
+    {{- include "common-app.ports" . | nindent 4 }}
     {{- if .Values.jmx.enabled }}
     - containerPort: {{ .Values.jmx.port }}
       name: jmx
     {{- end }}
 {{- end }}
-  {{- if .Values.livenessProbe }}
-  livenessProbe:
-  {{- .Values.livenessProbe | toYaml | nindent 4 }}
-  {{- end }}
-  {{- if .Values.readinessProbe }}
-  readinessProbe:
-  {{- .Values.readinessProbe | toYaml | nindent 4 }}
-  {{- end }}
 {{- end -}}

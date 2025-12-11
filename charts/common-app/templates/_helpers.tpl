@@ -155,6 +155,16 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.ports" -}}
+{{- range .Values.ports }}
+- containerPort: {{ .containerPort }}
+  name: {{ .name | quote }}
+  {{- if .protocol }}
+  protocol: {{ .protocol | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
 {{- define "common-app.pod-spec" -}}
 {{- $root := . -}}
   {{- if .Values.serviceAccountName }}
@@ -202,4 +212,17 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   imagePullPolicy: "{{ .Values.imagePullPolicy }}"
   resources:
 {{ toYaml .Values.resources | indent 4 }}
+  {{- if .Values.livenessProbe }}
+  livenessProbe:
+{{- .Values.livenessProbe | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.readinessProbe }}
+  readinessProbe:
+{{- .Values.readinessProbe | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{- define "common-app.java-tool-options" -}}
+-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
+{{ .Values.javaOptions.others | join " " }}
 {{- end }}
