@@ -165,7 +165,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.pod-spec" -}}
+{{- define "common-app.common-pod-spec" -}}
 {{- $root := . -}}
   {{- if .Values.serviceAccountName }}
   serviceAccountName: {{ .Values.serviceAccountName }}
@@ -178,14 +178,18 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   affinity:
     {{- tpl (toYaml .) $root | nindent 4 }}
   {{- end }}
-  {{- if .Values.priorityClassName }}
-  priorityClassName: {{ .Values.priorityClassName }}
-  {{- end }}
-  terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
   {{- if .Values.imagePullSecrets }}
   imagePullSecrets:
 {{- toYaml .Values.imagePullSecrets | nindent 4 }}
   {{- end }}
+{{- end }}
+
+{{- define "common-app.pod-spec" -}}
+{{- include "common-app.common-pod-spec" . }}
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{ .Values.priorityClassName }}
+  {{- end }}
+  terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
 {{- end }}
 
 {{- define "common-app.pod-metadata" -}}
