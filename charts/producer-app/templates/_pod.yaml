@@ -1,32 +1,14 @@
 {{- define "producer-app.podTemplate" -}}
 {{- $root := . -}}
 metadata:
-{{- if or .Values.podAnnotations (and .Values.deployment .Values.files) }}
-  annotations:
-  {{- if and .Values.deployment .Values.files }}
-    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-  {{- end }}
-  {{- range $key, $value := .Values.podAnnotations }}
-    {{ $key | quote }}: {{ $value | quote }}
-  {{- end }}
-{{- end }}
-  labels:
-    {{- include "common-app.selectorLabels" . | nindent 4 }}
-    streams-bootstrap/kind: {{ .Chart.Name }}
-    {{- range $key, $value := .Values.podLabels }}
-    {{ $key }}: {{ $value }}
-    {{- end }}
+{{- include "common-app.pod-metadata" . }}
 spec:
 {{- include "common-app.pod-spec" . }}
   {{- if not .Values.deployment }}
   restartPolicy: {{ .Values.restartPolicy }}
   {{- end }}
   containers:
-  - name: "kafka-app"
-    image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-    imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-    resources:
-{{ toYaml .Values.resources | indent 6 }}
+  {{- include "common-app.common-kafka-container" . | nindent 2 }}
     env:
     {{- include "common-app.common-env" . | nindent 6 }}
     {{- if hasKey .Values.kafka "outputTopic" }}

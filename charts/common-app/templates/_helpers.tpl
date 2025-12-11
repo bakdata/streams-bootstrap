@@ -195,3 +195,11 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
     {{ $key }}: {{ $value }}
     {{- end }}
 {{- end }}
+
+{{- define "common-app.common-kafka-container" -}}
+- name: "kafka-app"
+  image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+  imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+  resources:
+{{ toYaml .Values.resources | indent 4 }}
+{{- end }}

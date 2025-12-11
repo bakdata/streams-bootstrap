@@ -1,9 +1,5 @@
 {{- define "common-app.kafka-container" -}}
-- name: "kafka-app"
-  image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-  imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-  resources:
-{{ toYaml .Values.resources | indent 4 }}
+  {{- include "common-app.common-kafka-container" . }}
   env:
   {{- include "common-app.common-env" . | nindent 4 }}
   {{- range .Values.ports }}
