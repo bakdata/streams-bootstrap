@@ -24,4 +24,60 @@ metadata:
 spec:
 {{- include "common-app.deployment-spec" . }}
   template:
-{{ include "consumerproducer-app.pod" . | indent 4 }}
+    metadata:
+    {{- include "common-app.pod-metadata" . | indent 4 }}
+    spec:
+    {{- include "common-app.pod-spec" . | indent 4 }}
+      containers:
+        {{- include "common-app.common-kafka-container" . | nindent 8 }}
+          env:
+          {{- include "common-app.common-env" . | nindent 12 }}
+          {{- range .Values.ports }}
+            {{- if .servicePort }} # TODO verify that there is at most one service port. Currently, if there are multiple service ports, the first one will be used
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: KAFKA_APPLICATION_SERVER
+              value: "$(POD_IP):{{ .containerPort }}"
+            {{- end }}
+          {{- end }}
+          {{- include "common-app.group-instance-id-env" . | indent 12 }}
+          {{- include "common-app.input-env" . | indent 12 }}
+          {{- include "common-app.output-env" . | indent 12 }}
+          {{- include "common-app.error-env" . | indent 12 }}
+          {{- if hasKey .Values.kafka "groupId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
+              value: {{ .Values.kafka.groupId | quote }}
+          {{- end }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '{{ include "common-app.java-tool-jmx-options" . }}
+                {{ include "common-app.java-tool-options" . }}'
+        {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
+          volumeMounts:
+            {{- include "common-app.volume-mounts" . | nindent 8 }}
+            {{- if and .Values.persistence.enabled .Values.statefulSet }}
+            - name: datadir
+              mountPath: /tmp/kafka-streams
+            {{- end }}
+        {{- end }}
+        {{- if or (.Values.jmx.enabled) (.Values.ports) }}
+          ports:
+            {{- include "common-app.ports" . | nindent 8 }}
+            {{- if .Values.jmx.enabled }}
+            - containerPort: {{ .Values.jmx.port }}
+              name: jmx
+            {{- end }}
+        {{- end }}
+      {{- if .Values.prometheus.jmx.enabled }}
+      {{- include "common-app.prometheus-container" . | nindent 8 }}
+      {{- end }}
+      {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
+      volumes:
+        {{- if .Values.prometheus.jmx.enabled }}
+        - name: jmx-config
+          configMap:
+            name: {{ include "common-app.fullname" . }}-jmx
+        {{- end }}
+        {{- include "common-app.volumes" . | nindent 8 }}
+      {{- end }}
