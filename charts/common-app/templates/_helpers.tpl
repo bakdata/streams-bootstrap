@@ -230,3 +230,33 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
 {{ .Values.javaOptions.others | join " " }}
 {{- end }}
+
+{{- define "common-app.deployment-spec" -}}
+  {{- if .Values.statefulSet }}
+  serviceName: {{ include "common-app.fullname" . }}
+  podManagementPolicy: Parallel
+  {{- end }}
+  {{- if (not .Values.autoscaling.enabled) }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "common-app.selectorLabels" . | nindent 6 }}
+  {{- if and .Values.persistence.enabled .Values.statefulSet }}
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: "{{ .Values.persistence.size }}"
+        {{- if .Values.persistence.storageClass }}
+        {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+        {{- end }}
+        {{- end }}
+  {{- end }}
+{{- end }}
