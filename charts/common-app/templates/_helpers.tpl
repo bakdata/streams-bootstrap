@@ -349,3 +349,25 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
         {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "common-app.deployment" -}}
+{{- if .Capabilities.APIVersions.Has "apps/v1" }}
+apiVersion: apps/v1
+{{- else }}
+apiVersion: apps/v1beta1
+{{- end }}
+{{- if .Values.statefulSet }}
+kind: StatefulSet
+{{- else }}
+kind: Deployment
+{{- end }}
+metadata:
+  name: {{ include "common-app.fullname" . }}
+  {{- include "common-app.deployment-annotations" . }}
+  labels:
+    {{- include "common-app.labels" . | nindent 4 }}
+    streams-bootstrap/kind: {{ .Chart.Name }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key | quote }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}

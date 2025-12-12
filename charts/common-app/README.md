@@ -24,15 +24,6 @@ You can then include the library's templates in your own templates/ files. The l
 
 You can include any of the following templates in your application chart.
 
-### `common-app.deployment`
-Renders the main `Deployment` for the application.
-* **Enabled by:** `.Values.deployment: true`.
-* **Usage (`templates/deployment.yaml`):**
-    ```yaml
-    {{- include "common-app.deployment" . -}}
-    ```
-
-
 ### `common-app.service`
 Renders a `Service` to expose the application.
 * **Enabled by:** `.Values.service.enabled: true`.
