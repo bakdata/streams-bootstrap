@@ -162,6 +162,19 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.group-instance-id-env" -}}
+{{- if .Values.kafka.staticMembership }}
+- name: KAFKA_GROUP_INSTANCE_ID
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+{{- end }}
+{{- if not .Values.statefulSet }}
+- name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
+  value: "true"
+{{- end }}
+{{- end }}
+
 {{- define "common-app.volume-mounts" -}}
 {{- range $key, $value := .Values.files }}
 - name: config

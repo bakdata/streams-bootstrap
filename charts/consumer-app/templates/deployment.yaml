@@ -33,16 +33,7 @@ spec:
         {{- include "common-app.common-kafka-container" . | nindent 8 }}
           env:
           {{- include "common-app.common-env" . | nindent 12 }}
-          {{- if .Values.kafka.staticMembership }}
-            - name: KAFKA_GROUP_INSTANCE_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-          {{- end }}
-          {{- if not .Values.statefulSet }}
-            - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
-              value: "true"
-          {{- end }}
+          {{- include "common-app.group-instance-id-env" . | indent 12 }}
           {{- include "common-app.input-env" . | indent 12 }}
           {{- if hasKey .Values.kafka "groupId" }}
             - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"

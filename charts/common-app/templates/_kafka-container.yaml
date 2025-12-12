@@ -12,16 +12,7 @@
       value: "$(POD_IP):{{ .containerPort }}"
     {{- end }}
   {{- end }}
-  {{- if .Values.kafka.staticMembership }}
-    - name: KAFKA_GROUP_INSTANCE_ID
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
-  {{- end }}
-  {{- if not .Values.statefulSet }}
-    - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
-      value: "true"
-  {{- end }}
+  {{- include "common-app.group-instance-id-env" . | indent 4 }}
   {{- include "common-app.input-env" . | indent 4 }}
   {{- include "common-app.output-env" . | indent 4 }}
   {{- include "common-app.error-env" . | indent 4 }}
