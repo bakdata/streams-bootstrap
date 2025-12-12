@@ -249,6 +249,15 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   {{- end }}
 {{- end }}
 
+{{- define "common-app.cleanup-pod-spec" -}}
+{{- include "common-app.common-pod-spec" . }}
+  restartPolicy: {{ .Values.restartPolicy }}
+  {{- if or (.Values.files) (.Values.secretFilesRefs) }}
+  volumes:
+    {{- include "common-app.volumes" . | nindent 8 }}
+  {{- end }}
+{{- end }}
+
 {{- define "common-app.pod-spec" -}}
 {{- include "common-app.common-pod-spec" . }}
   {{- if .Values.priorityClassName }}
@@ -320,6 +329,11 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.cleanup-job-spec" -}}
+ttlSecondsAfterFinished: 30
+backoffLimit: {{ .Values.backoffLimit }}
+{{- end }}
+
 {{- define "common-app.deployment-spec" -}}
   {{- if .Values.statefulSet }}
   serviceName: {{ include "common-app.fullname" . }}
@@ -367,6 +381,19 @@ metadata:
   labels:
     {{- include "common-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key | quote }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
+
+{{- define "common-app.cleanup-job" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common-app.fullname" . }}
+  {{- include "common-app.annotations" . }}
+  labels:
+    {{- include "common-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
