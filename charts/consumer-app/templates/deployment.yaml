@@ -41,10 +41,6 @@ spec:
       {{- end }}
       {{- if or (.Values.prometheus.jmx.enabled) (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
-        {{- if .Values.prometheus.jmx.enabled }}
-        - name: jmx-config
-          configMap:
-            name: {{ include "common-app.fullname" . }}-jmx
-        {{- end }}
-        {{- include "common-app.volumes" . | nindent 8 }}
+        {{- include "common-app.jmx-volume" . | indent 8 }}
+        {{- include "common-app.volumes" . | indent 8 }}
       {{- end }}

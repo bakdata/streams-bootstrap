@@ -220,6 +220,14 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.jmx-volume" -}}
+{{- if .Values.prometheus.jmx.enabled }}
+- name: jmx-config
+  configMap:
+    name: {{ include "common-app.fullname" . }}-jmx
+{{- end }}
+{{- end }}
+
 {{- define "common-app.ports" -}}
 {{- range .Values.ports }}
 - containerPort: {{ .containerPort }}
