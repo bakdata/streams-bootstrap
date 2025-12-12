@@ -42,11 +42,8 @@ spec:
         {{- end }}
         {{- if or (.Values.jmx.enabled) (.Values.ports) }}
           ports:
-            {{- include "common-app.ports" . | nindent 8 }}
-            {{- if .Values.jmx.enabled }}
-            - containerPort: {{ .Values.jmx.port }}
-              name: jmx
-            {{- end }}
+            {{- include "common-app.ports" . | indent 12 }}
+            {{- include "common-app.jmx-port" . | indent 12 }}
         {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
       {{- include "common-app.prometheus-container" . | nindent 8 }}

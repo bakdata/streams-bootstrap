@@ -238,6 +238,13 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.jmx-port" -}}
+{{- if .Values.jmx.enabled }}
+- containerPort: {{ .Values.jmx.port }}
+  name: jmx
+{{- end }}
+{{- end }}
+
 {{- define "common-app.common-pod-spec" -}}
 {{- $root := . -}}
   {{- if .Values.serviceAccountName }}
