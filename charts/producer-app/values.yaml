@@ -36,6 +36,9 @@ tolerations: []
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
+# priorityClass
+# priorityClassName: ""
+
 ## Affinity for pod assignment (evaluated as template)
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ##
@@ -119,3 +122,5 @@ readinessProbe: {}
 podAnnotations: {}
 
 podLabels: {}
+
+terminationGracePeriodSeconds: 300

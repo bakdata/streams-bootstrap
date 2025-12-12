@@ -1,0 +1,19 @@
+{{- define "common-app.prometheus-container" -}}
+- name: prometheus-jmx-exporter
+  image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
+  imagePullPolicy: "{{ .Values.prometheus.jmx.imagePullPolicy }}"
+  args:
+    - {{ .Values.prometheus.jmx.port | quote }}
+    - /etc/jmx-{{ .Chart.Name }}/jmx-kafka-{{ .Chart.Name }}-prometheus.yml
+  env:
+    - name: JAVA_TOOL_OPTIONS
+      value: "-XX:MaxRAMPercentage=90.0"
+  ports:
+    - containerPort: {{ .Values.prometheus.jmx.port }}
+      name: prometheus
+  resources:
+{{ toYaml .Values.prometheus.jmx.resources | indent 4 }}
+  volumeMounts:
+    - name: jmx-config
+      mountPath: /etc/jmx-{{ .Chart.Name }}
+{{- end -}}
