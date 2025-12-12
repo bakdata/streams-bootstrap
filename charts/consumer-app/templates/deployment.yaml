@@ -43,35 +43,13 @@ spec:
             - name: "{{ .Values.configurationEnvPrefix }}_VOLATILE_GROUP_INSTANCE_ID"
               value: "true"
           {{- end }}
-          {{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
-              value: {{ .Values.kafka.inputTopics | join "," | quote }}
-          {{- end }}
-          {{- if hasKey .Values.kafka "inputPattern" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_INPUT_PATTERN"
-              value: {{ .Values.kafka.inputPattern | quote }}
-          {{- end }}
-          {{- $delimiter := ";" }}
-          {{- if and (hasKey .Values.kafka "labeledInputTopics") (.Values.kafka.labeledInputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.labeledInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
-          {{- end }}
-          {{- if and (hasKey .Values.kafka "labeledInputPatterns") (.Values.kafka.labeledInputPatterns) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
-              value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
-          {{- end }}
+          {{- include "common-app.input-env" . | indent 12 }}
           {{- if hasKey .Values.kafka "groupId" }}
             - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
               value: {{ .Values.kafka.groupId | quote }}
           {{- end }}
             - name: JAVA_TOOL_OPTIONS
-              value: '-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
-                -Dcom.sun.management.jmxremote.authenticate=false
-                -Dcom.sun.management.jmxremote.ssl=false
-                {{- if .Values.jmx.enabled }}
-                -Djava.rmi.server.hostname={{ .Values.jmx.host }}
-                -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.port }}
-                {{- end }}
+              value: '{{ include "common-app.java-tool-jmx-options" . }}
                 {{ include "common-app.java-tool-options" . }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
           volumeMounts:

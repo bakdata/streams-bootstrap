@@ -124,6 +124,44 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.input-env" -}}
+{{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
+- name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
+  value: {{ .Values.kafka.inputTopics | join "," | quote }}
+{{- end }}
+{{- if hasKey .Values.kafka "inputPattern" }}
+- name: "{{ .Values.configurationEnvPrefix }}_INPUT_PATTERN"
+  value: {{ .Values.kafka.inputPattern | quote }}
+{{- end }}
+{{- $delimiter := ";" }}
+{{- if and (hasKey .Values.kafka "labeledInputTopics") (.Values.kafka.labeledInputTopics) }}
+- name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_TOPICS"
+  value: "{{- range $key, $value := .Values.kafka.labeledInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
+{{- end }}
+{{- if and (hasKey .Values.kafka "labeledInputPatterns") (.Values.kafka.labeledInputPatterns) }}
+- name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
+  value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
+{{- end }}
+{{- end }}
+
+{{- define "common-app.output-env" -}}
+{{- if hasKey .Values.kafka "outputTopic" }}
+- name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
+  value: {{ .Values.kafka.outputTopic | quote }}
+{{- end }}
+{{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
+- name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
+  value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
+{{- end }}
+{{- end }}
+
+{{- define "common-app.error-env" -}}
+{{- if hasKey .Values.kafka "errorTopic" }}
+- name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
+  value: {{ .Values.kafka.errorTopic | quote }}
+{{- end }}
+{{- end }}
+
 {{- define "common-app.volume-mounts" -}}
 {{- range $key, $value := .Values.files }}
 - name: config
@@ -229,6 +267,16 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- define "common-app.java-tool-options" -}}
 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
 {{ .Values.javaOptions.others | join " " }}
+{{- end }}
+
+{{- define "common-app.java-tool-jmx-options" -}}
+-Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+{{- if .Values.jmx.enabled }}
+-Djava.rmi.server.hostname={{ .Values.jmx.host }}
+-Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.port }}
+{{- end }}
 {{- end }}
 
 {{- define "common-app.deployment-spec" -}}

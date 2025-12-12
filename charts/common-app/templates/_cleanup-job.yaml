@@ -26,36 +26,10 @@ spec:
             - reset
             {{- end }}
           env:
-          {{- include "common-app.common-env" . | nindent 12 }}
-            {{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
-              value: {{ .Values.kafka.inputTopics | join "," | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "inputPattern" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_INPUT_PATTERN"
-              value: {{ .Values.kafka.inputPattern | join "," | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "outputTopic" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-              value: {{ .Values.kafka.outputTopic | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "errorTopic" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
-              value: {{ .Values.kafka.errorTopic | quote }}
-            {{- end }}
-            {{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
-            {{- end }}
-            {{- $delimiter := ";" }}
-            {{- if and (hasKey .Values.kafka "labeledInputTopics") (.Values.kafka.labeledInputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.labeledInputTopics }}{{ $key }}={{ $value | join $delimiter }},{{- end }}"
-            {{- end }}
-            {{- if and (hasKey .Values.kafka "labeledInputPatterns") (.Values.kafka.labeledInputPatterns) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_INPUT_PATTERNS"
-              value: "{{- range $key, $value := .Values.kafka.labeledInputPatterns }}{{ $key }}={{ $value }},{{- end }}"
-            {{- end }}
+          {{- include "common-app.common-env" . | indent 12 }}
+          {{- include "common-app.input-env" . | indent 12 }}
+          {{- include "common-app.output-env" . | indent 12 }}
+          {{- include "common-app.error-env" . | indent 12 }}
             {{- if hasKey .Values.kafka "applicationId" }}
             - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
               value: {{ .Values.kafka.applicationId | quote }}
