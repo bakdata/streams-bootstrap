@@ -18,27 +18,27 @@ spec:
       restartPolicy: {{ .Values.restartPolicy }}
       containers:
         {{- include "common-app.common-kafka-container" . | nindent 8 }}
-        args:
-            {{- if .Values.kafka.deleteOutput }}
-          - clean
-            {{- else }}
-          - reset
-            {{- end }}
-        env:
-          {{- include "common-app.common-env" . | nindent 12 }}
-          {{- include "common-app.input-env" . | indent 12 }}
-          {{- include "common-app.output-env" . | indent 12 }}
-          {{- include "common-app.error-env" . | indent 12 }}
-            {{- if hasKey .Values.kafka "groupId" }}
-          - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
-            value: {{ .Values.kafka.groupId | quote }}
-            {{- end }}
-          - name: JAVA_TOOL_OPTIONS
-            value: '{{ include "common-app.java-tool-options" . }}'
+          args:
+              {{- if .Values.kafka.deleteOutput }}
+            - clean
+              {{- else }}
+            - reset
+              {{- end }}
+          env:
+            {{- include "common-app.common-env" . | nindent 12 }}
+            {{- include "common-app.input-env" . | indent 12 }}
+            {{- include "common-app.output-env" . | indent 12 }}
+            {{- include "common-app.error-env" . | indent 12 }}
+              {{- if hasKey .Values.kafka "groupId" }}
+            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
+              value: {{ .Values.kafka.groupId | quote }}
+              {{- end }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '{{ include "common-app.java-tool-options" . }}'
           {{- if or (.Values.files) (.Values.secretFilesRefs) }}
-        volumeMounts:
-            {{- include "common-app.volume-mounts" . | nindent 12 }}
-        {{- end }}
+          volumeMounts:
+              {{- include "common-app.volume-mounts" . | nindent 12 }}
+          {{- end }}
       {{- if or (.Values.files) (.Values.secretFilesRefs) }}
       volumes:
         {{- include "common-app.volumes" . | nindent 8 }}
