@@ -1,4 +1,4 @@
-{{- define "common-app.pod" -}}
+{{- define "streams-app.pod" -}}
 metadata:
 {{- include "common-app.pod-metadata" . }}
 spec:
@@ -13,7 +13,7 @@ spec:
     {{- include "common-app.volumes" . | nindent 4 }}
   {{- end }}
   containers:
-{{- include "common-app.kafka-container" . | nindent 4 }}
+{{- include "streams-app.kafka-container" . | nindent 4 }}
   {{- if .Values.prometheus.jmx.enabled }}
 {{- include "common-app.prometheus-container" . | nindent 4 }}
   {{- end }}

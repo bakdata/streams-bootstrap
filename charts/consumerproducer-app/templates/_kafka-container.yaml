@@ -1,4 +1,4 @@
-{{- define "common-app.kafka-container" -}}
+{{- define "consumerproducer-app.kafka-container" -}}
   {{- include "common-app.common-kafka-container" . }}
   env:
   {{- include "common-app.common-env" . | nindent 4 }}
@@ -16,10 +16,6 @@
   {{- include "common-app.input-env" . | indent 4 }}
   {{- include "common-app.output-env" . | indent 4 }}
   {{- include "common-app.error-env" . | indent 4 }}
-  {{- if hasKey .Values.kafka "applicationId" }}
-    - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
-      value: {{ .Values.kafka.applicationId | quote }}
-  {{- end }}
   {{- if hasKey .Values.kafka "groupId" }}
     - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
       value: {{ .Values.kafka.groupId | quote }}

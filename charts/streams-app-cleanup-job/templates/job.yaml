@@ -1,1 +1,46 @@
-{{- include "common-app.cleanup-job" . -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common-app.fullname" . }}
+  {{- include "common-app.annotations" . }}
+  labels:
+    {{- include "common-app.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key | quote }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  ttlSecondsAfterFinished: 30
+  template:
+    metadata:
+{{- include "common-app.pod-metadata" . | indent 4 }}
+    spec:
+{{- include "common-app.common-pod-spec" . | indent 4 }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      containers:
+        {{- include "common-app.common-kafka-container" . | nindent 8 }}
+        args:
+            {{- if .Values.kafka.deleteOutput }}
+          - clean
+            {{- else }}
+          - reset
+            {{- end }}
+        env:
+          {{- include "common-app.common-env" . | nindent 12 }}
+          {{- include "common-app.input-env" . | indent 12 }}
+          {{- include "common-app.output-env" . | indent 12 }}
+          {{- include "common-app.error-env" . | indent 12 }}
+            {{- if hasKey .Values.kafka "applicationId" }}
+          - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
+            value: {{ .Values.kafka.applicationId | quote }}
+            {{- end }}
+          - name: JAVA_TOOL_OPTIONS
+            value: '{{ include "common-app.java-tool-options" . }}'
+          {{- if or (.Values.files) (.Values.secretFilesRefs) }}
+        volumeMounts:
+            {{- include "common-app.volume-mounts" . | nindent 12 }}
+        {{- end }}
+      {{- if or (.Values.files) (.Values.secretFilesRefs) }}
+      volumes:
+        {{- include "common-app.volumes" . | nindent 8 }}
+      {{- end }}
+  backoffLimit: {{ .Values.backoffLimit }}
