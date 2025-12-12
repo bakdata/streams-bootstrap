@@ -14,17 +14,7 @@ spec:
   ttlSecondsAfterFinished: 30
   template:
     metadata:
-    {{- if .Values.podAnnotations }}
-      annotations:
-      {{- range $key, $value := .Values.podAnnotations }}
-        {{ $key | quote }}: {{ $value | quote }}
-      {{- end }}
-    {{- end }}
-      labels:
-        {{- include "common-app.selectorLabels" . | nindent 8 }}
-        {{- range $key, $value := .Values.podLabels }}
-        {{ $key }}: {{ $value }}
-        {{- end }}
+{{- include "common-app.pod-metadata" . | indent 4 }}
     spec:
 {{- include "common-app.common-pod-spec" . | indent 4 }}
       restartPolicy: {{ .Values.restartPolicy }}
