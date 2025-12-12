@@ -275,6 +275,20 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
     {{- end }}
 {{- end }}
 
+{{- define "common-app.cleanup-pod-metadata" -}}
+{{- if .Values.podAnnotations }}
+  annotations:
+  {{- range $key, $value := .Values.podAnnotations }}
+    {{ $key | quote }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+  labels:
+    {{- include "common-app.selectorLabels" . | nindent 4 }}
+    {{- range $key, $value := .Values.podLabels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+{{- end }}
+
 {{- define "common-app.common-kafka-container" -}}
 - name: "kafka-app"
   image: "{{ .Values.image }}:{{ .Values.imageTag }}"

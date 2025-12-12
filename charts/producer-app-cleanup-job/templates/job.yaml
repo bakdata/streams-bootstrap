@@ -12,7 +12,7 @@ spec:
   ttlSecondsAfterFinished: 30
   template:
     metadata:
-{{- include "common-app.pod-metadata" . | indent 4 }}
+{{- include "common-app.cleanup-pod-metadata" . | indent 4 }}
     spec:
 {{- include "common-app.common-pod-spec" . | indent 4 }}
       restartPolicy: {{ .Values.restartPolicy }}
