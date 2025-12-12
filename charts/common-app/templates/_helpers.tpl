@@ -175,6 +175,20 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
+{{- define "common-app.group-id-env" -}}
+{{- if hasKey .Values.kafka "groupId" }}
+- name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
+  value: {{ .Values.kafka.groupId | quote }}
+{{- end }}
+{{- end }}
+
+{{- define "common-app.application-id-env" -}}
+{{- if hasKey .Values.kafka "applicationId" }}
+- name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
+  value: {{ .Values.kafka.applicationId | quote }}
+{{- end }}
+{{- end }}
+
 {{- define "common-app.volume-mounts" -}}
 {{- range $key, $value := .Values.files }}
 - name: config

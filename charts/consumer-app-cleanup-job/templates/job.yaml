@@ -27,10 +27,7 @@ spec:
           env:
             {{- include "common-app.common-env" . | nindent 12 }}
             {{- include "common-app.input-env" . | indent 12 }}
-              {{- if hasKey .Values.kafka "groupId" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
-              value: {{ .Values.kafka.groupId | quote }}
-              {{- end }}
+            {{- include "common-app.group-id-env" . | indent 12 }}
             - name: JAVA_TOOL_OPTIONS
               value: '{{ include "common-app.java-tool-options" . }}'
           {{- if or (.Values.files) (.Values.secretFilesRefs) }}
