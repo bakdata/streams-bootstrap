@@ -1,5 +1,4 @@
 {{- define "producer-app.podTemplate" -}}
-{{- $root := . -}}
 metadata:
 {{- include "common-app.pod-metadata" . }}
 spec:

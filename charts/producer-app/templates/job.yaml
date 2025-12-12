@@ -1,5 +1,4 @@
 {{- if not .Values.deployment -}}
-{{- $root := . -}}
   {{- if .Values.schedule -}}
     {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1

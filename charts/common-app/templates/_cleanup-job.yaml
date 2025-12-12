@@ -1,5 +1,4 @@
 {{- define "common-app.cleanup-job" -}}
-{{- $root := . -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
