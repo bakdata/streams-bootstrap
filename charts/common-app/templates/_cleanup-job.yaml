@@ -26,7 +26,7 @@ spec:
             - reset
             {{- end }}
           env:
-          {{- include "common-app.common-env" . | indent 12 }}
+          {{- include "common-app.common-env" . | nindent 12 }}
           {{- include "common-app.input-env" . | indent 12 }}
           {{- include "common-app.output-env" . | indent 12 }}
           {{- include "common-app.error-env" . | indent 12 }}
