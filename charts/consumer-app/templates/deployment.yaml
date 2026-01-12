@@ -22,7 +22,7 @@ spec:
                 {{ include "common-app.java-tool-options" . }}'
         {{- if or (.Values.files) (and .Values.persistence.enabled .Values.statefulSet) (.Values.secretFilesRefs) }}
           volumeMounts:
-            {{- include "common-app.volume-mounts" . | nindent 12 }}
+            {{- include "common-app.volume-mounts" . | indent 12 }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
               mountPath: /tmp/kafka-consumer
