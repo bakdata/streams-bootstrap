@@ -11,7 +11,7 @@ spec:
     spec:
     {{- include "common-app.pod-spec" . | indent 4 }}
       containers:
-        {{- include "common-app.common-kafka-container" . | nindent 8 }}
+        {{- include "common-app.kafka-container" . | nindent 8 }}
           env:
           {{- include "common-app.common-env" . | nindent 12 }}
           {{- range .Values.ports }}

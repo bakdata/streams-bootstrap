@@ -7,7 +7,7 @@ spec:
   restartPolicy: {{ .Values.restartPolicy }}
   {{- end }}
   containers:
-  {{- include "common-app.common-kafka-container" . | nindent 2 }}
+  {{- include "common-app.kafka-container" . | nindent 2 }}
     env:
     {{- include "common-app.common-env" . | nindent 6 }}
     {{- include "common-app.output-env" . | indent 6 }}

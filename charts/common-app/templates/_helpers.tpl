@@ -319,6 +319,10 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   imagePullPolicy: "{{ .Values.imagePullPolicy }}"
   resources:
 {{ toYaml .Values.resources | indent 4 }}
+{{- end }}
+
+{{- define "common-app.kafka-container" -}}
+{{- include "common-app.common-kafka-container" . }}
   {{- if .Values.livenessProbe }}
   livenessProbe:
 {{- .Values.livenessProbe | toYaml | nindent 4 }}
