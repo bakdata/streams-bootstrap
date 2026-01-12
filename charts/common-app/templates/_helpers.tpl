@@ -104,7 +104,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 - name: "{{ $key }}"
   valueFrom:
     secretKeyRef:
-      name: {{ include "common-app.fullname" . }}
+      name: {{ include "common-app.fullname" $root }}
       key: "{{ $key }}"
 {{- end }}
 {{- range $key, $value := .Values.secretRefs }}
