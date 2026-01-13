@@ -1,5 +1,4 @@
 {{- if not .Values.deployment -}}
-{{- $root := . -}}
   {{- if .Values.schedule -}}
     {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1
@@ -37,18 +36,8 @@ spec:
         {{ $key | quote }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- if .Values.ttlSecondsAfterFinished }}
-      ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
-      {{- end }}
-      template:
-{{ include "producer-app.podTemplate" . | indent 8 }}
-      backoffLimit: {{ .Values.backoffLimit }}
+      {{- include "producer-app.jobSpec" . | indent 6 }}
   {{ else }}
-  {{- if .Values.ttlSecondsAfterFinished }}
-  ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
-  {{- end }}
-  template:
-{{ include "producer-app.podTemplate" . | indent 4 }}
-  backoffLimit: {{ .Values.backoffLimit }}
+  {{- include "producer-app.jobSpec" . | indent 2 }}
   {{- end -}}
 {{- end }}
