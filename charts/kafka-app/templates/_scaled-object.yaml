@@ -1,4 +1,4 @@
-{{- define "common-app.scaled-object" -}}
+{{- define "kafka-app.scaled-object" -}}
 {{ if .Values.autoscaling.enabled }}
   {{- $uniqueId := coalesce .Values.kafka.applicationId .Values.kafka.groupId -}}
   {{- if not (and $uniqueId .Values.autoscaling.lagThreshold) }}
@@ -8,10 +8,10 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "common-app.fullname" . }}-so
-  {{- include "common-app.annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}-so
+  {{- include "kafka-app.annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
@@ -27,7 +27,7 @@ spec:
     {{- else }}
     kind: Deployment
     {{- end }}
-    name: {{ include "common-app.fullname" . }}
+    name: {{ include "kafka-app.fullname" . }}
   pollingInterval: {{ .Values.autoscaling.pollingInterval }}
   cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
   minReplicaCount: {{ .Values.autoscaling.minReplicas }}

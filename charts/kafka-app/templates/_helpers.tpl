@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "common-app.name" -}}
+{{- define "kafka-app.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "common-app.fullname" -}}
+{{- define "kafka-app.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -27,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "common-app.chart" -}}
+{{- define "kafka-app.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "common-app.labels" -}}
-helm.sh/chart: {{ include "common-app.chart" . }}
-{{ include "common-app.selectorLabels" . }}
+{{- define "kafka-app.labels" -}}
+helm.sh/chart: {{ include "kafka-app.chart" . }}
+{{ include "kafka-app.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,8 +46,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "common-app.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "common-app.name" . }}
+{{- define "kafka-app.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kafka-app.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -55,7 +55,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Define default annotations from .Values.annotations.
 This will be used across resources.
 */}}
-{{- define "common-app.annotations" -}}
+{{- define "kafka-app.annotations" -}}
 {{- if or .Values.annotations }}
   annotations:
 {{- range $key, $value := .Values.annotations }}
@@ -68,7 +68,7 @@ This will be used across resources.
 Define annotations helper for Deployment.
 Includes default annotations and conditionally adds consumerGroup if applicable.
 */}}
-{{- define "common-app.deployment-annotations" -}}
+{{- define "kafka-app.deployment-annotations" -}}
 {{/* Use applicationId for Kafka Streams, otherwise use groupId for Kafka Consumers */}}
 {{- $uniqueId := coalesce .Values.kafka.applicationId .Values.kafka.groupId }}
 {{- if or .Values.annotations $uniqueId }}
@@ -84,7 +84,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.common-env" -}}
+{{- define "kafka-app.common-env" -}}
 {{- $root := . -}}
 - name: ENV_PREFIX
   value: {{ .Values.configurationEnvPrefix }}_
@@ -104,7 +104,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 - name: "{{ $key }}"
   valueFrom:
     secretKeyRef:
-      name: {{ include "common-app.fullname" $root }}
+      name: {{ include "kafka-app.fullname" $root }}
       key: "{{ $key }}"
 {{- end }}
 {{- range $key, $value := .Values.secretRefs }}
@@ -124,7 +124,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.input-env" -}}
+{{- define "kafka-app.input-env" -}}
 {{- if and (hasKey .Values.kafka "inputTopics") (.Values.kafka.inputTopics) }}
 - name: "{{ .Values.configurationEnvPrefix }}_INPUT_TOPICS"
   value: {{ .Values.kafka.inputTopics | join "," | quote }}
@@ -144,7 +144,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.output-env" -}}
+{{- define "kafka-app.output-env" -}}
 {{- if hasKey .Values.kafka "outputTopic" }}
 - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
   value: {{ .Values.kafka.outputTopic | quote }}
@@ -155,14 +155,14 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.error-env" -}}
+{{- define "kafka-app.error-env" -}}
 {{- if hasKey .Values.kafka "errorTopic" }}
 - name: "{{ .Values.configurationEnvPrefix }}_ERROR_TOPIC"
   value: {{ .Values.kafka.errorTopic | quote }}
 {{- end }}
 {{- end }}
 
-{{- define "common-app.group-instance-id-env" -}}
+{{- define "kafka-app.group-instance-id-env" -}}
 {{- if .Values.kafka.staticMembership }}
 - name: KAFKA_GROUP_INSTANCE_ID
   valueFrom:
@@ -175,21 +175,21 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.group-id-env" -}}
+{{- define "kafka-app.group-id-env" -}}
 {{- if hasKey .Values.kafka "groupId" }}
 - name: "{{ .Values.configurationEnvPrefix }}_GROUP_ID"
   value: {{ .Values.kafka.groupId | quote }}
 {{- end }}
 {{- end }}
 
-{{- define "common-app.application-id-env" -}}
+{{- define "kafka-app.application-id-env" -}}
 {{- if hasKey .Values.kafka "applicationId" }}
 - name: "{{ .Values.configurationEnvPrefix }}_APPLICATION_ID"
   value: {{ .Values.kafka.applicationId | quote }}
 {{- end }}
 {{- end }}
 
-{{- define "common-app.volume-mounts" -}}
+{{- define "kafka-app.volume-mounts" -}}
 {{- range $key, $value := .Values.files }}
 - name: config
   mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
@@ -207,11 +207,11 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.volumes" -}}
+{{- define "kafka-app.volumes" -}}
 {{- if .Values.files }}
 - name: config
   configMap:
-    name: {{ include "common-app.fullname" . }}
+    name: {{ include "kafka-app.fullname" . }}
 {{- end }}
 {{- range .Values.secretFilesRefs }}
 - name: {{ .volume }}
@@ -220,15 +220,15 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.jmx-volume" -}}
+{{- define "kafka-app.jmx-volume" -}}
 {{- if .Values.prometheus.jmx.enabled }}
 - name: jmx-config
   configMap:
-    name: {{ include "common-app.fullname" . }}-jmx
+    name: {{ include "kafka-app.fullname" . }}-jmx
 {{- end }}
 {{- end }}
 
-{{- define "common-app.ports" -}}
+{{- define "kafka-app.ports" -}}
 {{- range .Values.ports }}
 - containerPort: {{ .containerPort }}
   name: {{ .name | quote }}
@@ -238,14 +238,14 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.jmx-port" -}}
+{{- define "kafka-app.jmx-port" -}}
 {{- if .Values.jmx.enabled }}
 - containerPort: {{ .Values.jmx.port }}
   name: jmx
 {{- end }}
 {{- end }}
 
-{{- define "common-app.common-pod-spec" -}}
+{{- define "kafka-app.common-pod-spec" -}}
 {{- $root := . -}}
   {{- if .Values.serviceAccountName }}
   serviceAccountName: {{ .Values.serviceAccountName }}
@@ -264,24 +264,24 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   {{- end }}
 {{- end }}
 
-{{- define "common-app.cleanup-pod-spec" -}}
-{{- include "common-app.common-pod-spec" . }}
+{{- define "kafka-app.cleanup-pod-spec" -}}
+{{- include "kafka-app.common-pod-spec" . }}
   restartPolicy: {{ .Values.restartPolicy }}
   {{- if or (.Values.files) (.Values.secretFilesRefs) }}
   volumes:
-    {{- include "common-app.volumes" . | nindent 8 }}
+    {{- include "kafka-app.volumes" . | nindent 8 }}
   {{- end }}
 {{- end }}
 
-{{- define "common-app.pod-spec" -}}
-{{- include "common-app.common-pod-spec" . }}
+{{- define "kafka-app.pod-spec" -}}
+{{- include "kafka-app.common-pod-spec" . }}
   {{- if .Values.priorityClassName }}
   priorityClassName: {{ .Values.priorityClassName }}
   {{- end }}
   terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
 {{- end }}
 
-{{- define "common-app.pod-metadata" -}}
+{{- define "kafka-app.pod-metadata" -}}
 {{- if or .Values.podAnnotations .Values.files }}
   annotations:
   {{- if .Values.files }}
@@ -292,14 +292,14 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   {{- end }}
 {{- end }}
   labels:
-    {{- include "common-app.selectorLabels" . | nindent 4 }}
+    {{- include "kafka-app.selectorLabels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
     {{- end }}
 {{- end }}
 
-{{- define "common-app.cleanup-pod-metadata" -}}
+{{- define "kafka-app.cleanup-pod-metadata" -}}
 {{- if .Values.podAnnotations }}
   annotations:
   {{- range $key, $value := .Values.podAnnotations }}
@@ -307,13 +307,13 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   {{- end }}
 {{- end }}
   labels:
-    {{- include "common-app.selectorLabels" . | nindent 4 }}
+    {{- include "kafka-app.selectorLabels" . | nindent 4 }}
     {{- range $key, $value := .Values.podLabels }}
     {{ $key }}: {{ $value }}
     {{- end }}
 {{- end }}
 
-{{- define "common-app.common-kafka-container" -}}
+{{- define "kafka-app.common-kafka-container" -}}
 - name: "kafka-app"
   image: "{{ .Values.image }}:{{ .Values.imageTag }}"
   imagePullPolicy: "{{ .Values.imagePullPolicy }}"
@@ -321,8 +321,8 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{ toYaml .Values.resources | indent 4 }}
 {{- end }}
 
-{{- define "common-app.kafka-container" -}}
-{{- include "common-app.common-kafka-container" . }}
+{{- define "kafka-app.kafka-container" -}}
+{{- include "kafka-app.common-kafka-container" . }}
   {{- if .Values.livenessProbe }}
   livenessProbe:
 {{- .Values.livenessProbe | toYaml | nindent 4 }}
@@ -333,12 +333,12 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
   {{- end }}
 {{- end }}
 
-{{- define "common-app.java-tool-options" -}}
+{{- define "kafka-app.java-tool-options" -}}
 -XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
 {{ .Values.javaOptions.others | join " " }}
 {{- end }}
 
-{{- define "common-app.java-tool-jmx-options" -}}
+{{- define "kafka-app.java-tool-jmx-options" -}}
 -Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
 -Dcom.sun.management.jmxremote.authenticate=false
 -Dcom.sun.management.jmxremote.ssl=false
@@ -348,14 +348,14 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- end }}
 {{- end }}
 
-{{- define "common-app.cleanup-job-spec" -}}
+{{- define "kafka-app.cleanup-job-spec" -}}
 ttlSecondsAfterFinished: 30
 backoffLimit: {{ .Values.backoffLimit }}
 {{- end }}
 
-{{- define "common-app.deployment-spec" -}}
+{{- define "kafka-app.deployment-spec" -}}
   {{- if .Values.statefulSet }}
-  serviceName: {{ include "common-app.fullname" . }}
+  serviceName: {{ include "kafka-app.fullname" . }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
@@ -363,7 +363,7 @@ backoffLimit: {{ .Values.backoffLimit }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "common-app.selectorLabels" . | nindent 6 }}
+      {{- include "kafka-app.selectorLabels" . | nindent 6 }}
   {{- if and .Values.persistence.enabled .Values.statefulSet }}
   volumeClaimTemplates:
     - metadata:
@@ -383,7 +383,7 @@ backoffLimit: {{ .Values.backoffLimit }}
   {{- end }}
 {{- end }}
 
-{{- define "common-app.deployment" -}}
+{{- define "kafka-app.deployment" -}}
 {{- if .Capabilities.APIVersions.Has "apps/v1" }}
 apiVersion: apps/v1
 {{- else }}
@@ -395,24 +395,24 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ include "common-app.fullname" . }}
-  {{- include "common-app.deployment-annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.deployment-annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 {{- end }}
 
-{{- define "common-app.cleanup-job" -}}
+{{- define "kafka-app.cleanup-job" -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "common-app.fullname" . }}
-  {{- include "common-app.annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}

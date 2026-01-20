@@ -1,6 +1,6 @@
 dependencies:
-- name: common-app
-  repository: file://../common-app
+- name: kafka-app
+  repository: file://../kafka-app
   version: 0.1.0
-digest: sha256:bfb2c4a354de9dcac6f2a441aa8462633200eb9eeec2fdbca120b8e3597d62d2
-generated: "2025-11-07T16:23:28.620151+01:00"
+digest: sha256:5e8276c2722e7e1d58528df277ea76528c31231169ff79a4cb8f59a0e21baed9
+generated: "2026-01-20T15:03:20.221761+01:00"
