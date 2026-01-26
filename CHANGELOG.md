@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.0](https://github.com/bakdata/streams-bootstrap/tree/6.1.0) - 2026-01-26
+### What's changed
+
+* Modularize helm charts by @philipp94831 in [#391](https://github.com/bakdata/streams-bootstrap/pull/391)
+
+* Rename library chart to kafka-app by @raphala in [#390](https://github.com/bakdata/streams-bootstrap/pull/390)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/6.0.0...6.1.0
+
 ## [6.0.0](https://github.com/bakdata/streams-bootstrap/tree/6.0.0) - 2025-12-04
 ### What's changed
 
