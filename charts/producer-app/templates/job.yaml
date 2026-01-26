@@ -1,5 +1,4 @@
 {{- if not .Values.deployment -}}
-{{- $root := . -}}
   {{- if .Values.schedule -}}
     {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1
@@ -12,10 +11,10 @@ apiVersion: batch/v1
 kind: Job
   {{- end }}
 metadata:
-  name: {{ include "producer-app.fullname" . }}
-  {{- include "producer-app.annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.annotations" . }}
   labels:
-    {{- include "producer-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
@@ -29,26 +28,16 @@ spec:
   concurrencyPolicy: Replace
   jobTemplate:
     metadata:
-      {{- include "producer-app.annotations" . | indent 4 }}
+      {{- include "kafka-app.annotations" . | indent 4 }}
       labels:
-        {{- include "producer-app.selectorLabels" . | nindent 8 }}
+        {{- include "kafka-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.labels }}
         {{ $key | quote }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- if .Values.ttlSecondsAfterFinished }}
-      ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
-      {{- end }}
-      template:
-{{ include "producer-app.podTemplate" . | indent 8 }}
-      backoffLimit: {{ .Values.backoffLimit }}
+      {{- include "producer-app.jobSpec" . | indent 6 }}
   {{ else }}
-  {{- if .Values.ttlSecondsAfterFinished }}
-  ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
-  {{- end }}
-  template:
-{{ include "producer-app.podTemplate" . | indent 4 }}
-  backoffLimit: {{ .Values.backoffLimit }}
+  {{- include "producer-app.jobSpec" . | indent 2 }}
   {{- end -}}
 {{- end }}

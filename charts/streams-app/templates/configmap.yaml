@@ -1,16 +1,1 @@
-{{ if .Values.files }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "streams-app.fullname" . }}
-  {{- include "streams-app.annotations" . }}
-  labels:
-    {{- include "streams-app.labels" . | nindent 4 }}
-    {{- range $key, $value := .Values.labels }}
-    {{ $key | quote }}: {{ $value | quote }}
-    {{- end }}
-data:
-  {{- range $key, $value := .Values.files }}
-  {{ $key }}: {{ $value.content | quote }}
-  {{- end }}
-{{ end }}
+{{- include "kafka-app.configmap" . -}}

@@ -838,14 +838,14 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <KOut, VOut> KStreamX<KOut, VOut> process(
-            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.process(processorSupplier, stateStoreNames));
     }
 
     @Override
     public <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             final String... stateStoreNames) {
         return this.processCapturingErrorsInternal(ErrorCapturingProcessor.captureErrors(processorSupplier),
                 stateStoreNames);
@@ -853,7 +853,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             final java.util.function.Predicate<Exception> errorFilter,
             final String... stateStoreNames) {
         return this.processCapturingErrorsInternal(
@@ -863,14 +863,16 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <KOut, VOut> KStreamX<KOut, VOut> process(
-            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier, final Named named,
+            final ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
+            final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.process(processorSupplier, named, stateStoreNames));
     }
 
     @Override
     public <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier, final Named named,
+            final ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
+            final Named named,
             final String... stateStoreNames) {
         return this.processCapturingErrorsInternal(ErrorCapturingProcessor.captureErrors(processorSupplier), named,
                 stateStoreNames);
@@ -878,7 +880,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrors(
-            final ProcessorSupplier<? super K, ? super V, KOut, VOut> processorSupplier,
+            final ProcessorSupplier<? super K, ? super V, ? extends KOut, ? extends VOut> processorSupplier,
             final java.util.function.Predicate<Exception> errorFilter,
             final Named named, final String... stateStoreNames) {
         return this.processCapturingErrorsInternal(
@@ -888,14 +890,14 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <VOut> KStreamX<K, VOut> processValues(
-            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.processValues(processorSupplier, stateStoreNames));
     }
 
     @Override
     public <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             final String... stateStoreNames) {
         return this.processValuesCapturingErrorsInternal(ErrorCapturingValueProcessor.captureErrors(processorSupplier),
                 stateStoreNames);
@@ -903,7 +905,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             final java.util.function.Predicate<Exception> errorFilter, final String... stateStoreNames) {
         return this.processValuesCapturingErrorsInternal(
                 ErrorCapturingValueProcessor.captureErrors(processorSupplier, errorFilter),
@@ -913,14 +915,14 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <VOut> KStreamX<K, VOut> processValues(
-            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier, final Named named,
+            final FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier, final Named named,
             final String... stateStoreNames) {
         return this.context.wrap(this.wrapped.processValues(processorSupplier, named, stateStoreNames));
     }
 
     @Override
     public <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier, final Named named,
+            final FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier, final Named named,
             final String... stateStoreNames) {
         return this.processValuesCapturingErrorsInternal(ErrorCapturingValueProcessor.captureErrors(processorSupplier),
                 named,
@@ -929,87 +931,87 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
 
     @Override
     public <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrors(
-            final FixedKeyProcessorSupplier<? super K, ? super V, VOut> processorSupplier,
+            final FixedKeyProcessorSupplier<? super K, ? super V, ? extends VOut> processorSupplier,
             final java.util.function.Predicate<Exception> errorFilter, final Named named,
             final String... stateStoreNames) {
         return this.processValuesCapturingErrorsInternal(
                 ErrorCapturingValueProcessor.captureErrors(processorSupplier, errorFilter), named, stateStoreNames);
     }
 
-    private <KR, VR> KeyValueKErrorStreamX<K, V, KR, VR> mapCapturingErrorsInternal(
+    private <KR, VR> KErrorStreamX<K, V, KR, VR> mapCapturingErrorsInternal(
             final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper) {
         final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper);
         return new KeyValueKErrorStreamX<>(map);
     }
 
-    private <KR, VR> KeyValueKErrorStreamX<K, V, KR, VR> mapCapturingErrorsInternal(
+    private <KR, VR> KErrorStreamX<K, V, KR, VR> mapCapturingErrorsInternal(
             final KeyValueMapper<K, V, KeyValue<KR, ProcessedKeyValue<K, V, VR>>> mapper, final Named named) {
         final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.map(mapper, named);
         return new KeyValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> mapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrorsInternal(
             final ValueMapper<V, ProcessedValue<V, VR>> mapper) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> mapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrorsInternal(
             final ValueMapper<V, ProcessedValue<V, VR>> mapper,
             final Named named) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> mapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, ProcessedValue<V, VR>> mapper) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> mapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> mapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, ProcessedValue<V, VR>> mapper, final Named named) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.mapValues(mapper, named);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <KR, VR> KeyValueKErrorStreamX<K, V, KR, VR> flatMapCapturingErrorsInternal(
+    private <KR, VR> KErrorStreamX<K, V, KR, VR> flatMapCapturingErrorsInternal(
             final KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>> mapper) {
         final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper);
         return new KeyValueKErrorStreamX<>(map);
     }
 
-    private <KR, VR> KeyValueKErrorStreamX<K, V, KR, VR> flatMapCapturingErrorsInternal(
+    private <KR, VR> KErrorStreamX<K, V, KR, VR> flatMapCapturingErrorsInternal(
             final KeyValueMapper<K, V, Iterable<KeyValue<KR, ProcessedKeyValue<K, V, VR>>>> mapper, final Named named) {
         final KStreamX<KR, ProcessedKeyValue<K, V, VR>> map = this.flatMap(mapper, named);
         return new KeyValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> flatMapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapper<V, Iterable<ProcessedValue<V, VR>>> mapper) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> flatMapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapper<V, Iterable<ProcessedValue<V, VR>>> mapper, final Named named) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> flatMapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> mapper) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VR> ValueKErrorStreamX<K, V, VR> flatMapValuesCapturingErrorsInternal(
+    private <VR> KErrorStreamX<K, V, K, VR> flatMapValuesCapturingErrorsInternal(
             final ValueMapperWithKey<K, V, Iterable<ProcessedValue<V, VR>>> mapper, final Named named) {
         final KStreamX<K, ProcessedValue<V, VR>> map = this.flatMapValues(mapper, named);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <KOut, VOut> KeyValueKErrorStreamX<K, V, KOut, VOut> processCapturingErrorsInternal(
+    private <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrorsInternal(
             final ProcessorSupplier<K, V, KOut, ProcessedKeyValue<K, V, VOut>> processorSupplier,
             final String... stateStoreNames) {
         final KStreamX<KOut, ProcessedKeyValue<K, V, VOut>> map =
@@ -1017,7 +1019,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return new KeyValueKErrorStreamX<>(map);
     }
 
-    private <KOut, VOut> KeyValueKErrorStreamX<K, V, KOut, VOut> processCapturingErrorsInternal(
+    private <KOut, VOut> KErrorStreamX<K, V, KOut, VOut> processCapturingErrorsInternal(
             final ProcessorSupplier<K, V, KOut, ProcessedKeyValue<K, V, VOut>> processorSupplier, final Named named,
             final String... stateStoreNames) {
         final KStreamX<KOut, ProcessedKeyValue<K, V, VOut>> map =
@@ -1025,14 +1027,14 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return new KeyValueKErrorStreamX<>(map);
     }
 
-    private <VOut> ValueKErrorStreamX<K, V, VOut> processValuesCapturingErrorsInternal(
+    private <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrorsInternal(
             final FixedKeyProcessorSupplier<? super K, V, ProcessedValue<V, VOut>> processorSupplier,
             final String... stateStoreNames) {
         final KStreamX<K, ProcessedValue<V, VOut>> map = this.processValues(processorSupplier, stateStoreNames);
         return new ValueKErrorStreamX<>(map);
     }
 
-    private <VOut> ValueKErrorStreamX<K, V, VOut> processValuesCapturingErrorsInternal(
+    private <VOut> KErrorStreamX<K, V, K, VOut> processValuesCapturingErrorsInternal(
             final FixedKeyProcessorSupplier<? super K, V, ProcessedValue<V, VOut>> processorSupplier,
             final Named named, final String... stateStoreNames) {
         final KStreamX<K, ProcessedValue<V, VOut>> map =

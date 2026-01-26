@@ -1,0 +1,6 @@
+dependencies:
+- name: kafka-app
+  repository: file://../kafka-app
+  version: 0.1.0
+digest: sha256:5e8276c2722e7e1d58528df277ea76528c31231169ff79a4cb8f59a0e21baed9
+generated: "2026-01-20T15:03:57.8081+01:00"

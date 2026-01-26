@@ -1,8 +1,12 @@
-apiVersion: v1
+apiVersion: v2
 name: producer-app
 description: A helm chart for deploying a Kafka producer application based on the bakdata KafkaProducerApplication template.
-version: 0.1.0
+version: 0.2.0
 maintainers:
   - name: bakdata
     email: opensource@bakdata.com
     url: bakdata.com
+dependencies:
+  - name: kafka-app
+    version: "0.1.0"
+    repository: "file://../kafka-app"

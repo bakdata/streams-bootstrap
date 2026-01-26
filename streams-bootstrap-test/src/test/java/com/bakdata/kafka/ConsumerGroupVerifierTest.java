@@ -27,12 +27,26 @@ package com.bakdata.kafka;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerAppConfiguration;
+import com.bakdata.kafka.consumer.ConsumerRunner;
+import com.bakdata.kafka.consumer.ConsumerTopicConfig;
+import com.bakdata.kafka.consumer.ExecutableConsumerApp;
+import com.bakdata.kafka.consumerproducer.ConfiguredConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunner;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig;
+import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.StreamsRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.apps.SimpleConsumerApp;
+import com.bakdata.kafka.streams.apps.SimpleConsumerProducerApp;
 import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -65,6 +79,81 @@ class ConsumerGroupVerifierTest extends KafkaTest {
         final KafkaTestClient testClient = new KafkaTestClient(configuration);
         testClient.createTopic("input");
         try (final StreamsRunner runner = executableApp.createRunner()) {
+            testClient.send()
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
+                    .to("input", List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+            runAsync(runner);
+            awaitProcessing(executableApp);
+            final List<ConsumerRecord<String, String>> records = testClient.read()
+                    .withKeyDeserializer(new StringDeserializer())
+                    .withValueDeserializer(new StringDeserializer())
+                    .from("output", POLL_TIMEOUT);
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                    });
+        }
+        awaitClosed(executableApp);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(executableApp);
+        this.softly.assertThat(verifier.isActive()).isFalse();
+    }
+
+    @Test
+    void shouldVerifyConsumer() {
+        final SimpleConsumerApp app = new SimpleConsumerApp();
+        final ConfiguredConsumerApp<ConsumerApp> configuredApp =
+                new ConfiguredConsumerApp<>(app, new ConsumerAppConfiguration(ConsumerTopicConfig.builder()
+                        .inputTopics(List.of("input"))
+                        .build()));
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.getBootstrapServers())
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT);
+        final ExecutableConsumerApp<ConsumerApp> executableApp = configuredApp.withRuntimeConfiguration(configuration);
+        final KafkaTestClient testClient = new KafkaTestClient(configuration);
+        testClient.createTopic("input");
+        try (final ConsumerRunner runner = executableApp.createRunner()) {
+            testClient.send()
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
+                    .to("input", List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+            runAsync(runner);
+            awaitProcessing(executableApp);
+            this.softly.assertThat(app.getConsumedRecords())
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                    });
+        }
+        awaitClosed(executableApp);
+        final ConsumerGroupVerifier verifier = ConsumerGroupVerifier.verify(executableApp);
+        this.softly.assertThat(verifier.isActive()).isFalse();
+    }
+
+    @Test
+    void shouldVerifyConsumerProducer() {
+        final SimpleConsumerProducerApp app = new SimpleConsumerProducerApp();
+        final ConfiguredConsumerProducerApp<ConsumerProducerApp> configuredApp =
+                new ConfiguredConsumerProducerApp<>(app, new ConsumerProducerAppConfiguration(
+                        ConsumerProducerTopicConfig.builder()
+                                .inputTopics(List.of("input"))
+                                .outputTopic("output")
+                                .build()));
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.getBootstrapServers())
+                .withNoStateStoreCaching()
+                .withSessionTimeout(SESSION_TIMEOUT);
+        final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp =
+                configuredApp.withRuntimeConfiguration(configuration);
+        final KafkaTestClient testClient = new KafkaTestClient(configuration);
+        testClient.createTopic("input");
+        try (final ConsumerProducerRunner runner = executableApp.createRunner()) {
             testClient.send()
                     .withKeySerializer(new StringSerializer())
                     .withValueSerializer(new StringSerializer())

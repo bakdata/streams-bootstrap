@@ -24,26 +24,25 @@
 
 package com.bakdata.kafka.producer;
 
-import static java.util.Collections.emptyMap;
-
 import com.bakdata.kafka.KafkaApplication;
-import java.util.Map;
+import com.bakdata.kafka.mixin.OutputOptions;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 
 
 /**
  * <p>The base class for creating Kafka Producer applications.</p>
  * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
  * <ul>
- *     <li>{@link #outputTopic}</li>
- *     <li>{@link #labeledOutputTopics}</li>
+ *     <li>{@link #getOutputTopic()}</li>
+ *     <li>{@link #getLabeledOutputTopics()}</li>
  * </ul>
  * To implement your Kafka Producer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -59,11 +58,9 @@ import picocli.CommandLine.Command;
 public abstract class KafkaProducerApplication<T extends ProducerApp> extends
         KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ExecutableProducerApp<T>,
                 ConfiguredProducerApp<T>, ProducerTopicConfig, T, ProducerAppConfiguration> {
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    private String outputTopic;
-    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
-            description = "Additional labeled output topics")
-    private Map<String, String> labeledOutputTopics = emptyMap();
+    @Mixin
+    @Delegate
+    private OutputOptions outputOptions = new OutputOptions();
 
     /**
      * Delete all output topics associated with the Kafka Producer application.
@@ -82,8 +79,8 @@ public abstract class KafkaProducerApplication<T extends ProducerApp> extends
     @Override
     public final ProducerTopicConfig createTopicConfig() {
         return ProducerTopicConfig.builder()
-                .outputTopic(this.outputTopic)
-                .labeledOutputTopics(this.labeledOutputTopics)
+                .outputTopic(this.getOutputTopic())
+                .labeledOutputTopics(this.getLabeledOutputTopics())
                 .build();
     }
 

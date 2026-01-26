@@ -1,0 +1,12 @@
+apiVersion: v2
+name: consumer-app
+description: A helm chart for deploying a Kafka consumer application based on the bakdata KafkaConsumerApplication template.
+version: 0.2.0
+maintainers:
+  - name: bakdata
+    email: opensource@bakdata.com
+    url: bakdata.com
+dependencies:
+  - name: kafka-app
+    version: "0.1.0"
+    repository: "file://../kafka-app"
