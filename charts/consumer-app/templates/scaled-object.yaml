@@ -1,1 +1,1 @@
-{{- include "common-app.scaled-object" . -}}
+{{- include "kafka-app.scaled-object" . -}}

@@ -11,10 +11,10 @@ apiVersion: batch/v1
 kind: Job
   {{- end }}
 metadata:
-  name: {{ include "common-app.fullname" . }}
-  {{- include "common-app.annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
@@ -28,9 +28,9 @@ spec:
   concurrencyPolicy: Replace
   jobTemplate:
     metadata:
-      {{- include "common-app.annotations" . | indent 4 }}
+      {{- include "kafka-app.annotations" . | indent 4 }}
       labels:
-        {{- include "common-app.selectorLabels" . | nindent 8 }}
+        {{- include "kafka-app.selectorLabels" . | nindent 8 }}
         streams-bootstrap/kind: {{ .Chart.Name }}
         {{- range $key, $value := .Values.labels }}
         {{ $key | quote }}: {{ $value | quote }}

@@ -6,10 +6,10 @@ apiVersion: apps/v1beta1
 {{- end }}
 kind: Deployment
 metadata:
-  name: {{ include "common-app.fullname" . }}
-  {{- include "common-app.annotations" . }}
+  name: {{ include "kafka-app.fullname" . }}
+  {{- include "kafka-app.annotations" . }}
   labels:
-    {{- include "common-app.labels" . | nindent 4 }}
+    {{- include "kafka-app.labels" . | nindent 4 }}
     streams-bootstrap/kind: {{ .Chart.Name }}
     {{- range $key, $value := .Values.labels }}
     {{ $key | quote }}: {{ $value | quote }}
@@ -18,7 +18,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "common-app.selectorLabels" . | nindent 6 }}
+      {{- include "kafka-app.selectorLabels" . | nindent 6 }}
   template:
 {{ include "producer-app.podTemplate" . | indent 4 }}
 {{- end }}

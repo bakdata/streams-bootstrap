@@ -1,28 +1,28 @@
 {{- define "producer-app.podTemplate" -}}
 metadata:
-{{- include "common-app.pod-metadata" . }}
+{{- include "kafka-app.pod-metadata" . }}
 spec:
-{{- include "common-app.pod-spec" . }}
+{{- include "kafka-app.pod-spec" . }}
   {{- if not .Values.deployment }}
   restartPolicy: {{ .Values.restartPolicy }}
   {{- end }}
   containers:
-  {{- include "common-app.kafka-container" . | nindent 2 }}
+  {{- include "kafka-app.kafka-container" . | nindent 2 }}
     env:
-    {{- include "common-app.common-env" . | nindent 6 }}
-    {{- include "common-app.output-env" . | indent 6 }}
+    {{- include "kafka-app.common-env" . | nindent 6 }}
+    {{- include "kafka-app.output-env" . | indent 6 }}
       - name: JAVA_TOOL_OPTIONS
-        value: '{{ include "common-app.java-tool-options" . }}'
+        value: '{{ include "kafka-app.java-tool-options" . }}'
     {{- if .Values.ports }}
     ports:
-      {{- include "common-app.ports" . | nindent 6 }}
+      {{- include "kafka-app.ports" . | nindent 6 }}
     {{- end }}
     {{- if or (.Values.files) (.Values.secretFilesRefs) }}
     volumeMounts:
-      {{- include "common-app.volume-mounts" . | nindent 6 }}
+      {{- include "kafka-app.volume-mounts" . | nindent 6 }}
     {{- end }}
   {{- if or (.Values.files) (.Values.secretFilesRefs) }}
   volumes:
-    {{- include "common-app.volumes" . | nindent 4 }}
+    {{- include "kafka-app.volumes" . | nindent 4 }}
   {{- end }}
 {{- end -}}

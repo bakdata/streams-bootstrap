@@ -1,4 +1,4 @@
-{{- define "common-app.prometheus-container" -}}
+{{- define "kafka-app.prometheus-container" -}}
 - name: prometheus-jmx-exporter
   image: "{{ .Values.prometheus.jmx.image }}:{{ .Values.prometheus.jmx.imageTag }}"
   imagePullPolicy: "{{ .Values.prometheus.jmx.imagePullPolicy }}"

@@ -1,4 +1,4 @@
-# common-app library helm chart
+# kafka-app library helm chart
 
 This is a **library chart** used to provide common, reusable templates for Kafka applications.
 
@@ -14,9 +14,9 @@ type: application
 version: 0.1.0
 
 dependencies:
-  - name: common-app
+  - name: kafka-app
     version: "0.1.0"
-    repository: "file://../common-app" # Or an HTTP repository
+    repository: "file://../kafka-app" # Or an HTTP repository
 ```
 You can then include the library's templates in your own templates/ files. The library templates will be rendered using the values from your application's values.yaml file.
 
@@ -24,48 +24,48 @@ You can then include the library's templates in your own templates/ files. The l
 
 You can include any of the following templates in your application chart.
 
-### `common-app.service`
+### `kafka-app.service`
 Renders a `Service` to expose the application.
 * **Enabled by:** `.Values.service.enabled: true`.
 * **Usage (`templates/service.yaml`):**
     ```yaml
-    {{- include "common-app.service" . -}}
+    {{- include "kafka-app.service" . -}}
     ```
 
 
-### `common-app.scaled-object`
+### `kafka-app.scaled-object`
 Renders a KEDA `ScaledObject` for autoscaling.
 * **Enabled by:** `.Values.autoscaling.enabled: true`.
 * **Usage (`templates/scaled-object.yaml`):**
     ```yaml
-    {{- include "common-app.scaled-object" . -}}
+    {{- include "kafka-app.scaled-object" . -}}
     ```
 
 
-### `common-app.configmap`
+### `kafka-app.configmap`
 Renders a `ConfigMap` for mounting files specified in `.Values.files`.
 * **Enabled by:** Providing values under the `.Values.files` key.
 * **Usage (`templates/configmap.yaml`):**
     ```yaml
-    {{- include "common-app.configmap" . -}}
+    {{- include "kafka-app.configmap" . -}}
     ```
 
 
-### `common-app.secrets`
+### `kafka-app.secrets`
 Renders a `Secret` for populating environment variables from `.Values.secrets`.
 * **Enabled by:** Providing values under the `.Values.secrets` key.
 * **Usage (`templates/secrets.yaml`):**
     ```yaml
-    {{- include "common-app.secrets" . -}}
+    {{- include "kafka-app.secrets" . -}}
     ```
 
 
-### `common-app.jmx-configmap`
+### `kafka-app.jmx-configmap`
 Renders a `ConfigMap` for the Prometheus JMX exporter sidecar.
 * **Enabled by:** `.Values.prometheus.jmx.enabled: true`.
 * **Usage (`templates/jmx-configmap.yaml`):**
     ```yaml
-    {{- include "common-app.jmx-configmap" . -}}
+    {{- include "kafka-app.jmx-configmap" . -}}
     ```
 
 ## Configurations This Library Uses
