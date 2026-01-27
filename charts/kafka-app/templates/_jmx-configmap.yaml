@@ -1,0 +1,21 @@
+{{- define "kafka-app.jmx-configmap" -}}
+{{- if and .Values.prometheus.jmx.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kafka-app.fullname" . }}-jmx
+  {{- include "kafka-app.annotations" . }}
+  labels:
+    {{- include "kafka-app.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key | quote }}: {{ $value | quote }}
+    {{- end }}
+data:
+  jmx-kafka-{{ .Chart.Name }}-prometheus.yml: |+
+    jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:{{ .Values.jmx.port }}/jmxrmi
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    ssl: false
+    rules: {{ toYaml .Values.prometheus.jmx.metricRules | nindent 4 }}
+{{- end }}
+{{- end -}}

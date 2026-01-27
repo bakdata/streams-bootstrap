@@ -127,6 +127,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create options for running the app
+     *
      * @return run options if available
      * @see ExecutableApp#createRunner(Object)
      */
@@ -134,6 +135,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Topics used by app
+     *
      * @return topic configuration
      */
     public abstract T createTopicConfig();
@@ -223,6 +225,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create a new {@link RunnableApp}
+     *
      * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
@@ -236,6 +239,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create a new {@link CleanableApp}
+     *
      * @return {@link CleanableApp}
      */
     public final CleanableApp<CR> createCleanableApp() {

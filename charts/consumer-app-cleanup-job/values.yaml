@@ -1,0 +1,96 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image: consumerApp
+imageTag: latest
+imagePullPolicy: Always
+
+imagePullSecrets: []
+
+restartPolicy: OnFailure
+
+configurationEnvPrefix: "APP"
+
+files: {}
+#  log4j2.xml:
+#    mountPath: app/resources
+#    content: "foo bar"
+
+kafka:
+  # bootstrapServers: "test:9092"
+  # schemaRegistryUrl: "url:1234"
+  config: {}
+  #   max.poll.records: 500
+  #   Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
+  #   max.request.size: "1000000"
+  inputTopics: []
+  # - input
+  # - input2
+  labeledInputTopics: {}
+  #   label:
+  #     - input
+  #     - input2
+  # inputPattern: .*-input
+  labeledInputPatterns: {}
+  #   label: .*-input
+  deleteOutput: false
+
+commandLine: {}
+#  MY_CLI_PARAM: "foo-bar"
+
+env: {}
+#  MY_ENV_VARIABLE: foo-bar
+#
+secrets: {}
+#  MY_SECRET: fo-bar
+secretRefs: {}
+#  MY_SECRET:
+#    name: secretName
+#    key: secretKey
+secretFilesRefs: []
+#  - name: my-secret
+#    volume: secret-volume
+#    mountPath: /etc/test
+#    readOnly: true
+#    subPath: optional-subpath
+
+annotations: {}
+#  MY_ANNOTATION: "foo-bar"
+
+labels: {}
+#  MY_LABEL: "foo-bar"
+
+# serviceAccountName: foo
+
+tolerations: []
+#   - key: "foo"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+#   - key: "bar"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+
+
+## Affinity for pod assignment (evaluated as template)
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 300Mi
+  limits:
+    cpu: 500m
+    memory: 2G
+
+javaOptions:
+  maxRAMPercentage: 75
+  others: []
+#   - "-XX:MinRAMPercentage=50.0"
+
+backoffLimit: 6
+
+podAnnotations: {}
+
+podLabels: {}

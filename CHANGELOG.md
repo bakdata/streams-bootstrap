@@ -1,1059 +1,1342 @@
-# Change Log
+# Changelog
 
-## [5.1.2](https://github.com/bakdata/streams-bootstrap/tree/5.1.2) (2025-07-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.2...5.1.2)
+All notable changes to this project will be documented in this file.
 
+## [6.1.0](https://github.com/bakdata/streams-bootstrap/tree/6.1.0) - 2026-01-26
+### What's changed
 
-## [5.1.2](https://github.com/bakdata/streams-bootstrap/tree/5.1.2) (2025-07-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.1...5.1.2)
+* Modularize helm charts by @philipp94831 in [#391](https://github.com/bakdata/streams-bootstrap/pull/391)
 
-**Merged pull requests:**
+* Rename library chart to kafka-app by @raphala in [#390](https://github.com/bakdata/streams-bootstrap/pull/390)
 
-- Fix Wiki dependencies [\#363](https://github.com/bakdata/streams-bootstrap/pull/363) ([@vostres](https://github.com/vostres))
-- Host Javadoc on Github Pages [\#356](https://github.com/bakdata/streams-bootstrap/pull/356) ([@vostres](https://github.com/vostres))
 
-## [5.1.1](https://github.com/bakdata/streams-bootstrap/tree/5.1.1) (2025-07-25)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/6.0.0...6.1.0
 
-**Merged pull requests:**
+## [6.0.0](https://github.com/bakdata/streams-bootstrap/tree/6.0.0) - 2025-12-04
+### What's changed
 
-- Add Github Workflow for Github Pages Wiki [\#354](https://github.com/bakdata/streams-bootstrap/pull/354) ([@vostres](https://github.com/vostres))
+* Add consumer application by @raphala in [#385](https://github.com/bakdata/streams-bootstrap/pull/385)
 
-## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) (2025-07-22)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.1.0)
+* Add ConsumerProducer application by @raphala in [#387](https://github.com/bakdata/streams-bootstrap/pull/387)
 
-**Merged pull requests:**
 
-- Update Kafka dependencies [\#357](https://github.com/bakdata/streams-bootstrap/pull/357) ([@philipp94831](https://github.com/philipp94831))
-- Refactor admin clients [\#347](https://github.com/bakdata/streams-bootstrap/pull/347) ([@philipp94831](https://github.com/philipp94831))
-- Use topic hook for schema registry reset [\#251](https://github.com/bakdata/streams-bootstrap/pull/251) ([@philipp94831](https://github.com/philipp94831))
-- Run dependabot monthly [\#352](https://github.com/bakdata/streams-bootstrap/pull/352) ([@philipp94831](https://github.com/philipp94831))
-- Reduce avro usage in tests [\#348](https://github.com/bakdata/streams-bootstrap/pull/348) ([@philipp94831](https://github.com/philipp94831))
-- Replace usages of `@code` with `@link` [\#346](https://github.com/bakdata/streams-bootstrap/pull/346) ([@philipp94831](https://github.com/philipp94831))
-- Handle non\-existent topics and consumer groups [\#345](https://github.com/bakdata/streams-bootstrap/pull/345) ([@philipp94831](https://github.com/philipp94831))
-- Update version in README [\#344](https://github.com/bakdata/streams-bootstrap/pull/344) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.2.0...6.0.0
 
-**Upgraded dependencies:**
+## [5.2.0](https://github.com/bakdata/streams-bootstrap/tree/5.2.0) - 2025-11-27
+### What's changed
 
-- Bump the plugins group with 2 updates [\#326](https://github.com/bakdata/streams-bootstrap/pull/326) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump org.junit.jupiter:junit\-jupiter from 5.13.2 to 5.13.3 in the test\-dependencies group across 1 directory [\#355](https://github.com/bakdata/streams-bootstrap/pull/355) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump org.apache.logging.log4j:log4j\-slf4j2\-impl from 2.25.0 to 2.25.1 in the log\-dependencies group [\#350](https://github.com/bakdata/streams-bootstrap/pull/350) ([@dependabot[bot]](https://github.com/apps/dependabot))
+* Bump com.bakdata.kafka:large-message-bom from 3.0.0 to 3.1.0 in the kafka-dependencies group by @dependabot[bot] in [#361](https://github.com/bakdata/streams-bootstrap/pull/361)
 
-## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) (2025-07-09)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/5.0.0...5.0.1)
+* Select keys from value exclusively by @philipp94831 in [#364](https://github.com/bakdata/streams-bootstrap/pull/364)
 
-**Merged pull requests:**
+* Bump bakdata/ci-templates from 1.66.1 to 1.70.0 by @dependabot[bot] in [#371](https://github.com/bakdata/streams-bootstrap/pull/371)
 
-- Remove unnecessary getters [\#343](https://github.com/bakdata/streams-bootstrap/pull/343) ([@philipp94831](https://github.com/philipp94831))
-- Use Kafka config from StreamsApplication [\#341](https://github.com/bakdata/streams-bootstrap/pull/341) ([@philipp94831](https://github.com/philipp94831))
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#372](https://github.com/bakdata/streams-bootstrap/pull/372)
 
-**Upgraded dependencies:**
+* Fix dependabot pushes by allowing content writes for docs job by @yannick-roeder in [#379](https://github.com/bakdata/streams-bootstrap/pull/379)
 
-- Bump the test\-dependencies group across 1 directory with 5 updates [\#334](https://github.com/bakdata/streams-bootstrap/pull/334) ([@dependabot[bot]](https://github.com/apps/dependabot))
+* Bump the freefair-plugins group with 2 updates by @dependabot[bot] in [#373](https://github.com/bakdata/streams-bootstrap/pull/373)
 
-## [5.0.0](https://github.com/bakdata/streams-bootstrap/tree/5.0.0) (2025-07-07)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.3...5.0.0)
+* Move CLI options to Mixin classes by @raphala in [#383](https://github.com/bakdata/streams-bootstrap/pull/383)
 
-**Merged pull requests:**
+* Bump the test-dependencies group across 1 directory with 4 updates by @dependabot[bot] in [#374](https://github.com/bakdata/streams-bootstrap/pull/374)
 
-- Upgrade to Gradle 8.14 [\#329](https://github.com/bakdata/streams-bootstrap/pull/329) ([@philipp94831](https://github.com/philipp94831))
-- Pass application ID to getUniqueAppId [\#336](https://github.com/bakdata/streams-bootstrap/pull/336) ([@philipp94831](https://github.com/philipp94831))
-- Rename packages [\#339](https://github.com/bakdata/streams-bootstrap/pull/339) ([@philipp94831](https://github.com/philipp94831))
-- Fix Java 17 code issues [\#340](https://github.com/bakdata/streams-bootstrap/pull/340) ([@philipp94831](https://github.com/philipp94831))
-- Convert start application methods to instance methods [\#338](https://github.com/bakdata/streams-bootstrap/pull/338) ([@philipp94831](https://github.com/philipp94831))
-- Rename ImprovedAdminClient and ImprovedStreamsConfig [\#335](https://github.com/bakdata/streams-bootstrap/pull/335) ([@philipp94831](https://github.com/philipp94831))
-- Use preconfigured for reading/sending test messages [\#316](https://github.com/bakdata/streams-bootstrap/pull/316) ([@philipp94831](https://github.com/philipp94831))
-- Fix publication [\#331](https://github.com/bakdata/streams-bootstrap/pull/331) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Kafka 4.0 [\#288](https://github.com/bakdata/streams-bootstrap/pull/288) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Java 17 [\#289](https://github.com/bakdata/streams-bootstrap/pull/289) ([@philipp94831](https://github.com/philipp94831))
-- Add test module for CLI [\#276](https://github.com/bakdata/streams-bootstrap/pull/276) ([@philipp94831](https://github.com/philipp94831))
-- Refactor endpoint config [\#313](https://github.com/bakdata/streams-bootstrap/pull/313) ([@philipp94831](https://github.com/philipp94831))
-- Migrate to Central Portal [\#325](https://github.com/bakdata/streams-bootstrap/pull/325) ([@philipp94831](https://github.com/philipp94831))
-- Separate schema registry from TestTopologyFactory [\#315](https://github.com/bakdata/streams-bootstrap/pull/315) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Kafka 3.9.1 [\#318](https://github.com/bakdata/streams-bootstrap/pull/318) ([@philipp94831](https://github.com/philipp94831))
-- Reflect current release in installation instructions [\#314](https://github.com/bakdata/streams-bootstrap/pull/314) ([@jkbe](https://github.com/jkbe))
-- Add tests for test module [\#290](https://github.com/bakdata/streams-bootstrap/pull/290) ([@philipp94831](https://github.com/philipp94831))
+* Introduce common helm library chart by @raphala in [#386](https://github.com/bakdata/streams-bootstrap/pull/386)
 
-**Upgraded dependencies:**
+* Upgrade to Kafka 4.1 by @philipp94831 in [#377](https://github.com/bakdata/streams-bootstrap/pull/377)
 
-- Bump org.apache.logging.log4j:log4j\-slf4j2\-impl from 2.24.3 to 2.25.0 in the log\-dependencies group [\#322](https://github.com/bakdata/streams-bootstrap/pull/322) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump the kafka\-dependencies group across 1 directory with 3 updates [\#333](https://github.com/bakdata/streams-bootstrap/pull/333) ([@dependabot[bot]](https://github.com/apps/dependabot))
 
-## [4.1.3](https://github.com/bakdata/streams-bootstrap/tree/4.1.3) (2025-05-06)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.2...4.1.3)
+### New Contributors
+* @raphala made their first contribution in [#386](https://github.com/bakdata/streams-bootstrap/pull/386)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.1.2...5.2.0
 
-- Exclude Slf4j 1.x dependencies [\#312](https://github.com/bakdata/streams-bootstrap/pull/312) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Gradle 8.13 [\#306](https://github.com/bakdata/streams-bootstrap/pull/306) ([@philipp94831](https://github.com/philipp94831))
-- Fix Helm publish for dependabot [\#304](https://github.com/bakdata/streams-bootstrap/pull/304) ([@philipp94831](https://github.com/philipp94831))
-- Configure Dependabot [\#293](https://github.com/bakdata/streams-bootstrap/pull/293) ([@philipp94831](https://github.com/philipp94831))
-- Migrate to version catalog [\#292](https://github.com/bakdata/streams-bootstrap/pull/292) ([@philipp94831](https://github.com/philipp94831))
+## [5.1.2](https://github.com/bakdata/streams-bootstrap/tree/5.1.2) - 2025-07-29
+### What's changed
 
-**Upgraded dependencies:**
+* Host Javadoc on Github Pages by @vostres in [#356](https://github.com/bakdata/streams-bootstrap/pull/356)
 
-- Bump the test\-dependencies group with 2 updates [\#311](https://github.com/bakdata/streams-bootstrap/pull/311) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump info.picocli:picocli from 4.7.6 to 4.7.7 [\#310](https://github.com/bakdata/streams-bootstrap/pull/310) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump bakdata/ci\-templates from 1.32.0 to 1.66.1 [\#309](https://github.com/bakdata/streams-bootstrap/pull/309) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump the test\-dependencies group across 1 directory with 7 updates [\#307](https://github.com/bakdata/streams-bootstrap/pull/307) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump org.slf4j:slf4j\-api from 2.0.16 to 2.0.17 in the log\-dependencies group [\#295](https://github.com/bakdata/streams-bootstrap/pull/295) ([@dependabot[bot]](https://github.com/apps/dependabot))
-- Bump the plugins group with 3 updates [\#297](https://github.com/bakdata/streams-bootstrap/pull/297) ([@dependabot[bot]](https://github.com/apps/dependabot))
+* Fix Wiki dependencies by @vostres in [#363](https://github.com/bakdata/streams-bootstrap/pull/363)
 
-## [4.1.2](https://github.com/bakdata/streams-bootstrap/tree/4.1.2) (2025-04-02)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.1...4.1.2)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.1.1...5.1.2
 
-- Use Slf4j logging for large\-messages [\#291](https://github.com/bakdata/streams-bootstrap/pull/291) ([@philipp94831](https://github.com/philipp94831))
+## [5.1.1](https://github.com/bakdata/streams-bootstrap/tree/5.1.1) - 2025-07-25
+### What's changed
 
-## [4.1.1](https://github.com/bakdata/streams-bootstrap/tree/4.1.1) (2025-03-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.1.0...4.1.1)
+* Add Github Workflow for Github Pages Wiki by @vostres in [#354](https://github.com/bakdata/streams-bootstrap/pull/354)
 
-**Merged pull requests:**
 
-- Use OSS Kafka clients [\#272](https://github.com/bakdata/streams-bootstrap/pull/272) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.1.0...5.1.1
 
-## [4.1.0](https://github.com/bakdata/streams-bootstrap/tree/4.1.0) (2025-03-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.1...4.1.0)
+## [5.1.0](https://github.com/bakdata/streams-bootstrap/tree/5.1.0) - 2025-07-22
+### What's changed
 
-**Merged pull requests:**
+* Update version in README by @philipp94831 in [#344](https://github.com/bakdata/streams-bootstrap/pull/344)
 
-- Upgrade to Kafka 3.9 [\#279](https://github.com/bakdata/streams-bootstrap/pull/279) ([@philipp94831](https://github.com/philipp94831))
+* Handle non-existent topics and consumer groups by @philipp94831 in [#345](https://github.com/bakdata/streams-bootstrap/pull/345)
 
-## [4.0.1](https://github.com/bakdata/streams-bootstrap/tree/4.0.1) (2025-03-18)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/4.0.0...4.0.1)
+* Replace usages of `@code` with `@link` by @philipp94831 in [#346](https://github.com/bakdata/streams-bootstrap/pull/346)
 
-**Merged pull requests:**
+* Reduce avro usage in tests by @philipp94831 in [#348](https://github.com/bakdata/streams-bootstrap/pull/348)
 
-- Update kafka\-streams\-utils [\#287](https://github.com/bakdata/streams-bootstrap/pull/287) ([@philipp94831](https://github.com/philipp94831))
+* Run dependabot monthly by @philipp94831 in [#352](https://github.com/bakdata/streams-bootstrap/pull/352)
 
-## [4.0.0](https://github.com/bakdata/streams-bootstrap/tree/4.0.0) (2025-03-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.1...4.0.0)
+* Bump org.apache.logging.log4j:log4j-slf4j2-impl from 2.25.0 to 2.25.1 in the log-dependencies group by @dependabot[bot] in [#350](https://github.com/bakdata/streams-bootstrap/pull/350)
 
-**Closed issues:**
+* Bump org.junit.jupiter:junit-jupiter from 5.13.2 to 5.13.3 in the test-dependencies group across 1 directory by @dependabot[bot] in [#355](https://github.com/bakdata/streams-bootstrap/pull/355)
 
-- Use recommended standard labels in Helm charts [\#170](https://github.com/bakdata/streams-bootstrap/issues/170)
+* Bump the plugins group with 2 updates by @dependabot[bot] in [#326](https://github.com/bakdata/streams-bootstrap/pull/326)
 
-**Merged pull requests:**
+* Use topic hook for schema registry reset by @philipp94831 in [#251](https://github.com/bakdata/streams-bootstrap/pull/251)
 
-- Use Kafka Streams utils [\#285](https://github.com/bakdata/streams-bootstrap/pull/285) ([@philipp94831](https://github.com/philipp94831))
-- Create BOM [\#284](https://github.com/bakdata/streams-bootstrap/pull/284) ([@philipp94831](https://github.com/philipp94831))
-- Test topic client with single broker [\#286](https://github.com/bakdata/streams-bootstrap/pull/286) ([@philipp94831](https://github.com/philipp94831))
-- Use custom streams implementation to simplify error handling, writing to topics and serde configuration [\#265](https://github.com/bakdata/streams-bootstrap/pull/265) ([@philipp94831](https://github.com/philipp94831))
-- Do not add Helm labels to templates [\#283](https://github.com/bakdata/streams-bootstrap/pull/283) ([@philipp94831](https://github.com/philipp94831))
-- Use Helm best practices [\#281](https://github.com/bakdata/streams-bootstrap/pull/281) ([@philipp94831](https://github.com/philipp94831))
+* Refactor admin clients by @philipp94831 in [#347](https://github.com/bakdata/streams-bootstrap/pull/347)
 
-## [3.6.1](https://github.com/bakdata/streams-bootstrap/tree/3.6.1) (2025-02-26)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.6.0...3.6.1)
+* Update Kafka dependencies by @philipp94831 in [#357](https://github.com/bakdata/streams-bootstrap/pull/357)
 
-**Merged pull requests:**
 
-- Configure JMX for remote access [\#282](https://github.com/bakdata/streams-bootstrap/pull/282) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.0.1...5.1.0
 
-## [3.6.0](https://github.com/bakdata/streams-bootstrap/tree/3.6.0) (2025-02-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.2...3.6.0)
+## [5.0.1](https://github.com/bakdata/streams-bootstrap/tree/5.0.1) - 2025-07-09
+### What's changed
 
-**Merged pull requests:**
+* Bump the test-dependencies group across 1 directory with 5 updates by @dependabot[bot] in [#334](https://github.com/bakdata/streams-bootstrap/pull/334)
 
-- Allow flexible configuration of JMX rules [\#280](https://github.com/bakdata/streams-bootstrap/pull/280) ([@philipp94831](https://github.com/philipp94831))
-- Test topic client using multiple brokers [\#277](https://github.com/bakdata/streams-bootstrap/pull/277) ([@philipp94831](https://github.com/philipp94831))
+* Use Kafka config from StreamsApplication by @philipp94831 in [#341](https://github.com/bakdata/streams-bootstrap/pull/341)
 
-## [3.5.2](https://github.com/bakdata/streams-bootstrap/tree/3.5.2) (2025-02-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.2)
+* Remove unnecessary getters by @philipp94831 in [#343](https://github.com/bakdata/streams-bootstrap/pull/343)
 
-**Merged pull requests:**
 
-- Retry topic verification [\#278](https://github.com/bakdata/streams-bootstrap/pull/278) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/5.0.0...5.0.1
 
-## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) (2025-01-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.1)
+## [5.0.0](https://github.com/bakdata/streams-bootstrap/tree/5.0.0) - 2025-07-07
+### What's changed
 
-**Closed issues:**
+* Add tests for test module by @philipp94831 in [#290](https://github.com/bakdata/streams-bootstrap/pull/290)
 
-- Close method is called twice on shutdown [\#263](https://github.com/bakdata/streams-bootstrap/issues/263)
+* Reflect current release in installation instructions by @jkbe in [#314](https://github.com/bakdata/streams-bootstrap/pull/314)
 
-**Merged pull requests:**
+* Upgrade to Kafka 3.9.1 by @philipp94831 in [#318](https://github.com/bakdata/streams-bootstrap/pull/318)
 
-- Call close on KafkaApplication only once [\#275](https://github.com/bakdata/streams-bootstrap/pull/275) ([@philipp94831](https://github.com/philipp94831))
+* Separate schema registry from TestTopologyFactory by @philipp94831 in [#315](https://github.com/bakdata/streams-bootstrap/pull/315)
 
-## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) (2025-01-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.5.0)
+* Migrate to Central Portal by @philipp94831 in [#325](https://github.com/bakdata/streams-bootstrap/pull/325)
 
-**Merged pull requests:**
+* Refactor endpoint config by @philipp94831 in [#313](https://github.com/bakdata/streams-bootstrap/pull/313)
 
-- Run tests in parallel [\#274](https://github.com/bakdata/streams-bootstrap/pull/274) ([@philipp94831](https://github.com/philipp94831))
-- Use Awaitility [\#273](https://github.com/bakdata/streams-bootstrap/pull/273) ([@philipp94831](https://github.com/philipp94831))
-- Add methods for simplified testing of Kafka endpoints [\#270](https://github.com/bakdata/streams-bootstrap/pull/270) ([@philipp94831](https://github.com/philipp94831))
-- Fix Helm publish [\#271](https://github.com/bakdata/streams-bootstrap/pull/271) ([@yannick-roeder](https://github.com/yannick-roeder))
+* Add test module for CLI by @philipp94831 in [#276](https://github.com/bakdata/streams-bootstrap/pull/276)
 
-## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) (2025-01-09)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.3.0...3.4.0)
+* Upgrade to Java 17 by @philipp94831 in [#289](https://github.com/bakdata/streams-bootstrap/pull/289)
 
-**Merged pull requests:**
+* Upgrade to Kafka 4.0 by @philipp94831 in [#288](https://github.com/bakdata/streams-bootstrap/pull/288)
 
-- Use Confluent MockSchemaRegistry [\#269](https://github.com/bakdata/streams-bootstrap/pull/269) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade large\-message to 2.9 [\#268](https://github.com/bakdata/streams-bootstrap/pull/268) ([@philipp94831](https://github.com/philipp94831))
+* Fix publication by @philipp94831 in [#331](https://github.com/bakdata/streams-bootstrap/pull/331)
 
-## [3.3.0](https://github.com/bakdata/streams-bootstrap/tree/3.3.0) (2025-01-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.2.0...3.3.0)
+* Use preconfigured for reading/sending test messages by @philipp94831 in [#316](https://github.com/bakdata/streams-bootstrap/pull/316)
 
-**Merged pull requests:**
+* Bump the kafka-dependencies group across 1 directory with 3 updates by @dependabot[bot] in [#333](https://github.com/bakdata/streams-bootstrap/pull/333)
 
-- Upgrade to Kafka 3.8 [\#267](https://github.com/bakdata/streams-bootstrap/pull/267) ([@philipp94831](https://github.com/philipp94831))
+* Rename ImprovedAdminClient and ImprovedStreamsConfig by @philipp94831 in [#335](https://github.com/bakdata/streams-bootstrap/pull/335)
 
-## [3.2.0](https://github.com/bakdata/streams-bootstrap/tree/3.2.0) (2025-01-07)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.2.0)
+* Convert start application methods to instance methods by @philipp94831 in [#338](https://github.com/bakdata/streams-bootstrap/pull/338)
 
-**Merged pull requests:**
+* Fix Java 17 code issues by @philipp94831 in [#340](https://github.com/bakdata/streams-bootstrap/pull/340)
 
-- Upgrade to Kafka 3.7 [\#266](https://github.com/bakdata/streams-bootstrap/pull/266) ([@philipp94831](https://github.com/philipp94831))
-- Replace kafka\-junit with testcontainers [\#264](https://github.com/bakdata/streams-bootstrap/pull/264) ([@philipp94831](https://github.com/philipp94831))
-- Fix version in README [\#262](https://github.com/bakdata/streams-bootstrap/pull/262) ([@philipp94831](https://github.com/philipp94831))
+* Rename packages by @philipp94831 in [#339](https://github.com/bakdata/streams-bootstrap/pull/339)
 
-## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) (2024-12-05)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.1.0)
+* Pass application ID to getUniqueAppId by @philipp94831 in [#336](https://github.com/bakdata/streams-bootstrap/pull/336)
 
-**Merged pull requests:**
+* Bump org.apache.logging.log4j:log4j-slf4j2-impl from 2.24.3 to 2.25.0 in the log-dependencies group by @dependabot[bot] in [#322](https://github.com/bakdata/streams-bootstrap/pull/322)
 
-- Retain type of Streams/ProducerApp in CLI module [\#261](https://github.com/bakdata/streams-bootstrap/pull/261) ([@philipp94831](https://github.com/philipp94831))
+* Upgrade to Gradle 8.14 by @philipp94831 in [#329](https://github.com/bakdata/streams-bootstrap/pull/329)
 
-## [3.0.4](https://github.com/bakdata/streams-bootstrap/tree/3.0.4) (2024-12-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.3...3.0.4)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/4.1.3...5.0.0
 
-- Do not configure replicas if autoscaling is enabled [\#260](https://github.com/bakdata/streams-bootstrap/pull/260) ([@philipp94831](https://github.com/philipp94831))
+## [4.1.3](https://github.com/bakdata/streams-bootstrap/tree/4.1.3) - 2025-05-06
+### What's changed
 
-## [3.0.3](https://github.com/bakdata/streams-bootstrap/tree/3.0.3) (2024-11-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.2...3.0.3)
+* Migrate to version catalog by @philipp94831 in [#292](https://github.com/bakdata/streams-bootstrap/pull/292)
 
-**Merged pull requests:**
+* Configure Dependabot by @philipp94831 in [#293](https://github.com/bakdata/streams-bootstrap/pull/293)
 
-- Fix producer app name template [\#259](https://github.com/bakdata/streams-bootstrap/pull/259) ([@raminqaf](https://github.com/raminqaf))
+* Fix Helm publish for dependabot by @philipp94831 in [#304](https://github.com/bakdata/streams-bootstrap/pull/304)
 
-## [3.0.2](https://github.com/bakdata/streams-bootstrap/tree/3.0.2) (2024-10-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/3.0.1...3.0.2)
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#297](https://github.com/bakdata/streams-bootstrap/pull/297)
 
-**Merged pull requests:**
+* Bump org.slf4j:slf4j-api from 2.0.16 to 2.0.17 in the log-dependencies group by @dependabot[bot] in [#295](https://github.com/bakdata/streams-bootstrap/pull/295)
 
-- Add annotations to all Kubernetes resources [\#258](https://github.com/bakdata/streams-bootstrap/pull/258) ([@raminqaf](https://github.com/raminqaf))
+* Upgrade to Gradle 8.13 by @philipp94831 in [#306](https://github.com/bakdata/streams-bootstrap/pull/306)
 
-## [3.0.1](https://github.com/bakdata/streams-bootstrap/tree/3.0.1) (2024-08-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.23.0...3.0.1)
+* Bump the test-dependencies group across 1 directory with 7 updates by @dependabot[bot] in [#307](https://github.com/bakdata/streams-bootstrap/pull/307)
 
-**Closed issues:**
+* Bump bakdata/ci-templates from 1.32.0 to 1.66.1 by @dependabot[bot] in [#309](https://github.com/bakdata/streams-bootstrap/pull/309)
 
-- Change default productive  to false [\#151](https://github.com/bakdata/streams-bootstrap/issues/151)
-- CloseOptions supports timeout [\#189](https://github.com/bakdata/streams-bootstrap/issues/189)
-- Rename `\-\-brokers` to `\-\-bootstrap\-server` [\#232](https://github.com/bakdata/streams-bootstrap/issues/232)
-- Remove avro dependency [\#235](https://github.com/bakdata/streams-bootstrap/issues/235)
-- Rename extra\-input/output topic to named\-input/output topic [\#231](https://github.com/bakdata/streams-bootstrap/issues/231)
-- Remove guava dependency [\#236](https://github.com/bakdata/streams-bootstrap/issues/236)
-- Remove dependency on log4j [\#162](https://github.com/bakdata/streams-bootstrap/issues/162)
-- Separate rclone chart from streams\-bootstrap [\#229](https://github.com/bakdata/streams-bootstrap/issues/229)
-- Investigate the necessity of `nameOverride` [\#185](https://github.com/bakdata/streams-bootstrap/issues/185)
-- Distinguish pod and deployment annotations in Helm charts [\#171](https://github.com/bakdata/streams-bootstrap/issues/171)
-- Migrate from Azure Pipelines to GitHub Actions [\#139](https://github.com/bakdata/streams-bootstrap/issues/139)
+* Bump info.picocli:picocli from 4.7.6 to 4.7.7 by @dependabot[bot] in [#310](https://github.com/bakdata/streams-bootstrap/pull/310)
 
-**Merged pull requests:**
+* Bump the test-dependencies group with 2 updates by @dependabot[bot] in [#311](https://github.com/bakdata/streams-bootstrap/pull/311)
 
-- Create v3 [\#250](https://github.com/bakdata/streams-bootstrap/pull/250) ([@philipp94831](https://github.com/philipp94831))
-- Pre\-bump version to 3.0.1\-SNAPSHOT [\#257](https://github.com/bakdata/streams-bootstrap/pull/257) ([@philipp94831](https://github.com/philipp94831))
-- Add hook to prepare running of app [\#256](https://github.com/bakdata/streams-bootstrap/pull/256) ([@philipp94831](https://github.com/philipp94831))
-- Validate persistence mandatory chart values \(persistence.size\) [\#255](https://github.com/bakdata/streams-bootstrap/pull/255) ([@raminqaf](https://github.com/raminqaf))
-- Validate autoscaling mandatory fields when it is enabled [\#254](https://github.com/bakdata/streams-bootstrap/pull/254) ([@raminqaf](https://github.com/raminqaf))
-- Fix Sonarqube issues [\#253](https://github.com/bakdata/streams-bootstrap/pull/253) ([@philipp94831](https://github.com/philipp94831))
-- Rename Streams section in Helm chart docs [\#252](https://github.com/bakdata/streams-bootstrap/pull/252) ([@philipp94831](https://github.com/philipp94831))
-- Make CleanUpRunner closeable [\#247](https://github.com/bakdata/streams-bootstrap/pull/247) ([@philipp94831](https://github.com/philipp94831))
-- Rename TestTopologyFactory [\#249](https://github.com/bakdata/streams-bootstrap/pull/249) ([@philipp94831](https://github.com/philipp94831))
-- Replace Guava usages [\#246](https://github.com/bakdata/streams-bootstrap/pull/246) ([@philipp94831](https://github.com/philipp94831))
-- Remove unnecessary schema registry configurations in tests [\#248](https://github.com/bakdata/streams-bootstrap/pull/248) ([@philipp94831](https://github.com/philipp94831))
-- Add CLI parameter to specify streams application ID [\#243](https://github.com/bakdata/streams-bootstrap/pull/243) ([@philipp94831](https://github.com/philipp94831))
-- Rename `\-\-brokers` to `\-\-bootstrap\-servers` [\#242](https://github.com/bakdata/streams-bootstrap/pull/242) ([@philipp94831](https://github.com/philipp94831))
-- Rename extra topics to labeled topics [\#240](https://github.com/bakdata/streams-bootstrap/pull/240) ([@philipp94831](https://github.com/philipp94831))
-- Rename streams section to kafka in Helm charts [\#241](https://github.com/bakdata/streams-bootstrap/pull/241) ([@philipp94831](https://github.com/philipp94831))
-- Add default serialization config to apps [\#239](https://github.com/bakdata/streams-bootstrap/pull/239) ([@philipp94831](https://github.com/philipp94831))
-- Remove log4j dependency and debug parameter [\#238](https://github.com/bakdata/streams-bootstrap/pull/238) ([@philipp94831](https://github.com/philipp94831))
-- Add HostInfo to ImprovedStreamsConfig [\#230](https://github.com/bakdata/streams-bootstrap/pull/230) ([@raminqaf](https://github.com/raminqaf))
-- Use KAFKA\_ as prefix for environment Kafka config [\#209](https://github.com/bakdata/streams-bootstrap/pull/209) ([@philipp94831](https://github.com/philipp94831))
-- Remove guava dependency [\#237](https://github.com/bakdata/streams-bootstrap/pull/237) ([@philipp94831](https://github.com/philipp94831))
-- Separate CLI and application [\#207](https://github.com/bakdata/streams-bootstrap/pull/207) ([@philipp94831](https://github.com/philipp94831))
-- feat: remove rclone [\#234](https://github.com/bakdata/streams-bootstrap/pull/234) ([@DerTiedemann](https://github.com/DerTiedemann))
-- fix: add gh actions badge [\#233](https://github.com/bakdata/streams-bootstrap/pull/233) ([@DerTiedemann](https://github.com/DerTiedemann))
+* Exclude Slf4j 1.x dependencies by @philipp94831 in [#312](https://github.com/bakdata/streams-bootstrap/pull/312)
 
-## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) (2024-06-12)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.23.0)
 
-**Merged pull requests:**
+### New Contributors
+* @dependabot[bot] made their first contribution in [#311](https://github.com/bakdata/streams-bootstrap/pull/311)
 
-- Add dynamic application.server config to streams app chart [\#214](https://github.com/bakdata/streams-bootstrap/pull/214) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/4.1.2...4.1.3
 
-## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) (2024-06-11)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.1)
+## [4.1.2](https://github.com/bakdata/streams-bootstrap/tree/4.1.2) - 2025-04-02
+### What's changed
 
-**Merged pull requests:**
+* Use Slf4j logging for large-messages by @philipp94831 in [#291](https://github.com/bakdata/streams-bootstrap/pull/291)
 
-- Use same variable names for clean up job as for main chart [\#228](https://github.com/bakdata/streams-bootstrap/pull/228) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) (2024-06-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.21.0...2.22.0)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/4.1.1...4.1.2
 
-**Merged pull requests:**
+## [4.1.1](https://github.com/bakdata/streams-bootstrap/tree/4.1.1) - 2025-03-21
+### What's changed
 
-- Support mounting of external secrets [\#225](https://github.com/bakdata/streams-bootstrap/pull/225) ([@torbsto](https://github.com/torbsto))
+* Use OSS Kafka clients by @philipp94831 in [#272](https://github.com/bakdata/streams-bootstrap/pull/272)
 
-## [2.21.0](https://github.com/bakdata/streams-bootstrap/tree/2.21.0) (2024-05-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.1...2.21.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/4.1.0...4.1.1
 
-- Make affinity in charts more generic [\#224](https://github.com/bakdata/streams-bootstrap/pull/224) ([@yannick-roeder](https://github.com/yannick-roeder))
+## [4.1.0](https://github.com/bakdata/streams-bootstrap/tree/4.1.0) - 2025-03-21
+### What's changed
 
-## [2.20.1](https://github.com/bakdata/streams-bootstrap/tree/2.20.1) (2024-05-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.20.0...2.20.1)
+* Upgrade to Kafka 3.9 by @philipp94831 in [#279](https://github.com/bakdata/streams-bootstrap/pull/279)
 
-**Merged pull requests:**
 
-- Roll deployments on config map updates [\#227](https://github.com/bakdata/streams-bootstrap/pull/227) ([@philipp94831](https://github.com/philipp94831))
-- Fix content of config maps [\#226](https://github.com/bakdata/streams-bootstrap/pull/226) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/4.0.1...4.1.0
 
-## [2.20.0](https://github.com/bakdata/streams-bootstrap/tree/2.20.0) (2024-05-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.2...2.20.0)
+## [4.0.1](https://github.com/bakdata/streams-bootstrap/tree/4.0.1) - 2025-03-18
+### What's changed
 
-**Merged pull requests:**
+* Update kafka-streams-utils by @philipp94831 in [#287](https://github.com/bakdata/streams-bootstrap/pull/287)
 
-- Mount arbitrary files to apps [\#223](https://github.com/bakdata/streams-bootstrap/pull/223) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.19.2](https://github.com/bakdata/streams-bootstrap/tree/2.19.2) (2024-05-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.1...2.19.2)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/4.0.0...4.0.1
 
-**Merged pull requests:**
+## [4.0.0](https://github.com/bakdata/streams-bootstrap/tree/4.0.0) - 2025-03-13
+### What's changed
 
-- Fix indentation of Rclone annotations [\#222](https://github.com/bakdata/streams-bootstrap/pull/222) ([@philipp94831](https://github.com/philipp94831))
-- Bump CI template version to fix Helm lint [\#221](https://github.com/bakdata/streams-bootstrap/pull/221) ([@yannick-roeder](https://github.com/yannick-roeder))
+* Use Helm best practices by @philipp94831 in [#281](https://github.com/bakdata/streams-bootstrap/pull/281)
 
-## [2.19.1](https://github.com/bakdata/streams-bootstrap/tree/2.19.1) (2024-05-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.19.0...2.19.1)
+* Do not add Helm labels to templates by @philipp94831 in [#283](https://github.com/bakdata/streams-bootstrap/pull/283)
 
-**Merged pull requests:**
+* Use custom streams implementation to simplify error handling, writing to topics and serde configuration by @philipp94831 in [#265](https://github.com/bakdata/streams-bootstrap/pull/265)
 
-- Fix default values for podLabels and podAnnotations [\#220](https://github.com/bakdata/streams-bootstrap/pull/220) ([@philipp94831](https://github.com/philipp94831))
+* Test topic client with single broker by @philipp94831 in [#286](https://github.com/bakdata/streams-bootstrap/pull/286)
 
-## [2.19.0](https://github.com/bakdata/streams-bootstrap/tree/2.19.0) (2024-05-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.1...2.19.0)
+* Create BOM by @philipp94831 in [#284](https://github.com/bakdata/streams-bootstrap/pull/284)
 
-**Merged pull requests:**
+* Use Kafka Streams utils by @philipp94831 in [#285](https://github.com/bakdata/streams-bootstrap/pull/285)
 
-- Remove awsRole from helm charts [\#219](https://github.com/bakdata/streams-bootstrap/pull/219) ([@philipp94831](https://github.com/philipp94831))
-- Add Values.podLabels and Values.podAnnotations [\#217](https://github.com/bakdata/streams-bootstrap/pull/217) ([@vostres](https://github.com/vostres))
-- Fix naming of helm releases [\#216](https://github.com/bakdata/streams-bootstrap/pull/216) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.18.1](https://github.com/bakdata/streams-bootstrap/tree/2.18.1) (2024-05-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.18.0...2.18.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.6.1...4.0.0
 
-**Merged pull requests:**
+## [3.6.1](https://github.com/bakdata/streams-bootstrap/tree/3.6.1) - 2025-02-26
+### What's changed
 
-- Shorten log4j\-config\-volume to log4j [\#218](https://github.com/bakdata/streams-bootstrap/pull/218) ([@raminqaf](https://github.com/raminqaf))
-- Add terminationGracePeriodSeconds [\#212](https://github.com/bakdata/streams-bootstrap/pull/212) ([@vostres](https://github.com/vostres))
-- Prevent closing of reused admin clients [\#213](https://github.com/bakdata/streams-bootstrap/pull/213) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade fluent kafka streams to 2.13.1 [\#215](https://github.com/bakdata/streams-bootstrap/pull/215) ([@philipp94831](https://github.com/philipp94831))
-- Publish snapshots for Helm charts [\#211](https://github.com/bakdata/streams-bootstrap/pull/211) ([@philipp94831](https://github.com/philipp94831))
-- Update CI templates [\#210](https://github.com/bakdata/streams-bootstrap/pull/210) ([@philipp94831](https://github.com/philipp94831))
+* Configure JMX for remote access by @philipp94831 in [#282](https://github.com/bakdata/streams-bootstrap/pull/282)
 
-## [2.18.0](https://github.com/bakdata/streams-bootstrap/tree/2.18.0) (2024-04-17)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.17.0...2.18.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.6.0...3.6.1
 
-- Bump fluent\-kafka\-streams\-tests [\#208](https://github.com/bakdata/streams-bootstrap/pull/208) ([@jkbe](https://github.com/jkbe))
+## [3.6.0](https://github.com/bakdata/streams-bootstrap/tree/3.6.0) - 2025-02-24
+### What's changed
 
-## [2.17.0](https://github.com/bakdata/streams-bootstrap/tree/2.17.0) (2024-03-01)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.1...2.17.0)
+* Test topic client using multiple brokers by @philipp94831 in [#277](https://github.com/bakdata/streams-bootstrap/pull/277)
 
-**Merged pull requests:**
+* Allow flexible configuration of JMX rules by @philipp94831 in [#280](https://github.com/bakdata/streams-bootstrap/pull/280)
 
-- Upgrade to Kafka 3.6 [\#206](https://github.com/bakdata/streams-bootstrap/pull/206) ([@philipp94831](https://github.com/philipp94831))
-- Migrate azure pipeline to GH\-action [\#191](https://github.com/bakdata/streams-bootstrap/pull/191) ([@MichaelKora](https://github.com/MichaelKora))
-- Improve CI caching [\#205](https://github.com/bakdata/streams-bootstrap/pull/205) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Gradle 8.4 [\#204](https://github.com/bakdata/streams-bootstrap/pull/204) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.16.1](https://github.com/bakdata/streams-bootstrap/tree/2.16.1) (2024-02-02)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.16.0...2.16.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.5.2...3.6.0
 
-**Closed issues:**
+## [3.5.2](https://github.com/bakdata/streams-bootstrap/tree/3.5.2) - 2025-02-13
+### What's changed
 
-- Fix secretRefs for cleanup job [\#202](https://github.com/bakdata/streams-bootstrap/issues/202)
+* Retry topic verification by @philipp94831 in [#278](https://github.com/bakdata/streams-bootstrap/pull/278)
 
-**Merged pull requests:**
 
-- Fix secretRefs for cleanup jobs [\#203](https://github.com/bakdata/streams-bootstrap/pull/203) ([@mkcode92](https://github.com/mkcode92))
-- Fix Jacoco for Java 17 [\#201](https://github.com/bakdata/streams-bootstrap/pull/201) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.5.1...3.5.2
 
-## [2.16.0](https://github.com/bakdata/streams-bootstrap/tree/2.16.0) (2024-01-26)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.3...2.16.0)
+## [3.5.1](https://github.com/bakdata/streams-bootstrap/tree/3.5.1) - 2025-01-23
+### What's changed
 
-**Merged pull requests:**
+* Call close on KafkaApplication only once by @philipp94831 in [#275](https://github.com/bakdata/streams-bootstrap/pull/275)
 
-- Add missing default values for internal topics [\#200](https://github.com/bakdata/streams-bootstrap/pull/200) ([@philipp94831](https://github.com/philipp94831))
-- Simplify configuration of internal topics for autoscaling [\#198](https://github.com/bakdata/streams-bootstrap/pull/198) ([@philipp94831](https://github.com/philipp94831))
-- Build in CI using JDK 17 [\#199](https://github.com/bakdata/streams-bootstrap/pull/199) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.15.3](https://github.com/bakdata/streams-bootstrap/tree/2.15.3) (2024-01-09)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.2...2.15.3)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.5.0...3.5.1
 
-**Merged pull requests:**
+## [3.5.0](https://github.com/bakdata/streams-bootstrap/tree/3.5.0) - 2025-01-20
+### What's changed
 
-- Update dependencies [\#196](https://github.com/bakdata/streams-bootstrap/pull/196) ([@philipp94831](https://github.com/philipp94831))
+* Fix Helm publish by @yannick-roeder in [#271](https://github.com/bakdata/streams-bootstrap/pull/271)
 
-## [2.15.2](https://github.com/bakdata/streams-bootstrap/tree/2.15.2) (2024-01-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.1...2.15.2)
+* Add methods for simplified testing of Kafka endpoints by @philipp94831 in [#270](https://github.com/bakdata/streams-bootstrap/pull/270)
 
-**Merged pull requests:**
+* Use Awaitility by @philipp94831 in [#273](https://github.com/bakdata/streams-bootstrap/pull/273)
 
-- Update dependencies [\#195](https://github.com/bakdata/streams-bootstrap/pull/195) ([@philipp94831](https://github.com/philipp94831))
+* Run tests in parallel by @philipp94831 in [#274](https://github.com/bakdata/streams-bootstrap/pull/274)
 
-## [2.15.1](https://github.com/bakdata/streams-bootstrap/tree/2.15.1) (2023-12-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.15.0...2.15.1)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.4.0...3.5.0
 
-- Add slf4j dependency [\#194](https://github.com/bakdata/streams-bootstrap/pull/194) ([@philipp94831](https://github.com/philipp94831))
+## [3.4.0](https://github.com/bakdata/streams-bootstrap/tree/3.4.0) - 2025-01-09
+### What's changed
 
-## [2.15.0](https://github.com/bakdata/streams-bootstrap/tree/2.15.0) (2023-11-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.14.0...2.15.0)
+* Upgrade large-message to 2.9 by @philipp94831 in [#268](https://github.com/bakdata/streams-bootstrap/pull/268)
 
-**Merged pull requests:**
+* Use Confluent MockSchemaRegistry by @philipp94831 in [#269](https://github.com/bakdata/streams-bootstrap/pull/269)
 
-- Upgrade to Kafka 3.5 [\#192](https://github.com/bakdata/streams-bootstrap/pull/192) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.14.0](https://github.com/bakdata/streams-bootstrap/tree/2.14.0) (2023-10-30)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.13.0...2.14.0)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.3.0...3.4.0
 
-**Merged pull requests:**
+## [3.3.0](https://github.com/bakdata/streams-bootstrap/tree/3.3.0) - 2025-01-08
+### What's changed
 
-- Add modules for easy usage with Fluent Kafka Streams Tests and Large Message SerDe [\#188](https://github.com/bakdata/streams-bootstrap/pull/188) ([@philipp94831](https://github.com/philipp94831))
+* Upgrade to Kafka 3.8 by @philipp94831 in [#267](https://github.com/bakdata/streams-bootstrap/pull/267)
 
-## [2.13.0](https://github.com/bakdata/streams-bootstrap/tree/2.13.0) (2023-09-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.1...2.13.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.2.0...3.3.0
 
-- Make Schema Registry URL optional [\#187](https://github.com/bakdata/streams-bootstrap/pull/187) ([@raminqaf](https://github.com/raminqaf))
+## [3.2.0](https://github.com/bakdata/streams-bootstrap/tree/3.2.0) - 2025-01-07
+### What's changed
 
-**Fixed bugs:**
+* Fix version in README by @philipp94831 in [#262](https://github.com/bakdata/streams-bootstrap/pull/262)
 
-- Cleanup job fails if topic doesn't have associated schema [\#186](https://github.com/bakdata/streams-bootstrap/issues/186)
+* Replace kafka-junit with testcontainers by @philipp94831 in [#264](https://github.com/bakdata/streams-bootstrap/pull/264)
 
-## [2.12.1](https://github.com/bakdata/streams-bootstrap/tree/2.12.1) (2023-08-15)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.12.0...2.12.1)
+* Upgrade to Kafka 3.7 by @philipp94831 in [#266](https://github.com/bakdata/streams-bootstrap/pull/266)
 
-**Closed issues:**
 
-- Upgrade to Kafka 3.4 [\#172](https://github.com/bakdata/streams-bootstrap/issues/172)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.1.0...3.2.0
 
-**Merged pull requests:**
+## [3.1.0](https://github.com/bakdata/streams-bootstrap/tree/3.1.0) - 2024-12-05
+### What's changed
 
-- Switch to official Rclone image [\#176](https://github.com/bakdata/streams-bootstrap/pull/176) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to Kafka 3.4 [\#184](https://github.com/bakdata/streams-bootstrap/pull/184) ([@torbsto](https://github.com/torbsto))
+* Retain type of Streams/ProducerApp in CLI module by @philipp94831 in [#261](https://github.com/bakdata/streams-bootstrap/pull/261)
 
-## [2.12.0](https://github.com/bakdata/streams-bootstrap/tree/2.12.0) (2023-05-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.2...2.12.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.0.4...3.1.0
 
-- Create method to register topic clean up hooks [\#183](https://github.com/bakdata/streams-bootstrap/pull/183) ([@philipp94831](https://github.com/philipp94831))
-- Fail streams\-app templating if no topics are provided for ScaledObject triggers [\#182](https://github.com/bakdata/streams-bootstrap/pull/182) ([@jkbe](https://github.com/jkbe))
+## [3.0.4](https://github.com/bakdata/streams-bootstrap/tree/3.0.4) - 2024-12-03
+### What's changed
 
-## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) (2023-04-19)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2)
+* Do not configure replicas if autoscaling is enabled by @philipp94831 in [#260](https://github.com/bakdata/streams-bootstrap/pull/260)
 
-**Merged pull requests:**
 
-- Make brokers and schema registry url optional chart configs [\#181](https://github.com/bakdata/streams-bootstrap/pull/181) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.0.3...3.0.4
 
-## [2.11.1](https://github.com/bakdata/streams-bootstrap/tree/2.11.1) (2023-04-17)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.11.0...2.11.1)
+## [3.0.3](https://github.com/bakdata/streams-bootstrap/tree/3.0.3) - 2024-11-29
+### What's changed
 
-**Fixed bugs:**
+* Fix producer app name template in [#259](https://github.com/bakdata/streams-bootstrap/pull/259)
 
-- Fix service selector to match pod labels [\#180](https://github.com/bakdata/streams-bootstrap/pull/180) ([@raminqaf](https://github.com/raminqaf))
 
-## [2.11.0](https://github.com/bakdata/streams-bootstrap/tree/2.11.0) (2023-04-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.10.0...2.11.0)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.0.2...3.0.3
 
-**Merged pull requests:**
+## [3.0.2](https://github.com/bakdata/streams-bootstrap/tree/3.0.2) - 2024-10-29
+### What's changed
 
-- Reference existing secrets from helm charts [\#179](https://github.com/bakdata/streams-bootstrap/pull/179) ([@philipp94831](https://github.com/philipp94831))
-- Support deployment of bootstrap application with an HTTP server [\#178](https://github.com/bakdata/streams-bootstrap/pull/178) ([@torbsto](https://github.com/torbsto))
-- Support additional triggers for KEDA autoscaling [\#177](https://github.com/bakdata/streams-bootstrap/pull/177) ([@torbsto](https://github.com/torbsto))
+* Add annotations to all Kubernetes resources in [#258](https://github.com/bakdata/streams-bootstrap/pull/258)
 
-## [2.10.0](https://github.com/bakdata/streams-bootstrap/tree/2.10.0) (2023-03-15)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.9.0...2.10.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/3.0.1...3.0.2
 
-- Producer App can be deployed as k8s Deployment [\#175](https://github.com/bakdata/streams-bootstrap/pull/175) ([@mkcode92](https://github.com/mkcode92))
-- Remove duplicate of changelog config [\#174](https://github.com/bakdata/streams-bootstrap/pull/174) ([@yannick-roeder](https://github.com/yannick-roeder))
+## [3.0.1](https://github.com/bakdata/streams-bootstrap/tree/3.0.1) - 2024-08-20
+### What's changed
 
-## [2.9.0](https://github.com/bakdata/streams-bootstrap/tree/2.9.0) (2023-02-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.8.0...2.9.0)
+* fix: add gh actions badge by @DerTiedemann in [#233](https://github.com/bakdata/streams-bootstrap/pull/233)
 
-**Merged pull requests:**
+* feat: remove rclone by @DerTiedemann in [#234](https://github.com/bakdata/streams-bootstrap/pull/234)
 
-- Fix casing of consumerGroup value [\#173](https://github.com/bakdata/streams-bootstrap/pull/173) ([@disrupted](https://github.com/disrupted))
+* Separate CLI and application (#207) by @philipp94831
 
-## [2.8.0](https://github.com/bakdata/streams-bootstrap/tree/2.8.0) (2023-01-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.7.0...2.8.0)
+* Remove guava dependency (#237) by @philipp94831
 
-**Merged pull requests:**
+* Use KAFKA_ as prefix for environment Kafka config (#209) by @philipp94831
 
-- Upgrade to Kafka 3.3.2 [\#169](https://github.com/bakdata/streams-bootstrap/pull/169) ([@philipp94831](https://github.com/philipp94831))
+* Add HostInfo to ImprovedStreamsConfig (#230)
 
-## [2.7.0](https://github.com/bakdata/streams-bootstrap/tree/2.7.0) (2023-01-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.6.0...2.7.0)
+* Remove log4j dependency and debug parameter (#238) by @philipp94831
 
-**Closed issues:**
+* Add default serialization config to apps (#239) by @philipp94831
 
-- Support new KafkaStreams close options [\#163](https://github.com/bakdata/streams-bootstrap/issues/163)
+* Rename streams section to kafka in Helm charts (#241) by @philipp94831
 
-**Merged pull requests:**
+* Rename extra topics to labeled topics (#240) by @philipp94831
 
-- Update dependencies [\#168](https://github.com/bakdata/streams-bootstrap/pull/168) ([@philipp94831](https://github.com/philipp94831))
-- Improve backwards compatibility with 2.5 and older versions [\#167](https://github.com/bakdata/streams-bootstrap/pull/167) ([@philipp94831](https://github.com/philipp94831))
-- Send leave group requests in case of streams application shutdown [\#165](https://github.com/bakdata/streams-bootstrap/pull/165) ([@philipp94831](https://github.com/philipp94831))
-- Fix Helm lint [\#166](https://github.com/bakdata/streams-bootstrap/pull/166) ([@philipp94831](https://github.com/philipp94831))
-- Use environment config when creating admin client [\#164](https://github.com/bakdata/streams-bootstrap/pull/164) ([@philipp94831](https://github.com/philipp94831))
+* Rename `--brokers` to `--bootstrap-servers` (#242) by @philipp94831
 
-## [2.6.0](https://github.com/bakdata/streams-bootstrap/tree/2.6.0) (2022-12-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.5.0...2.6.0)
+* Add CLI parameter to specify streams application ID (#243) by @philipp94831
 
-**Closed issues:**
+* Remove unnecessary schema registry configurations in tests (#248) by @philipp94831
 
-- Missing CLI arguments in clean job don't crash the app [\#105](https://github.com/bakdata/streams-bootstrap/issues/105)
+* Replace Guava usages (#246) by @philipp94831
 
-**Merged pull requests:**
+* Rename TestTopologyFactory (#249) by @philipp94831
 
-- Use new CommandLine API [\#161](https://github.com/bakdata/streams-bootstrap/pull/161) ([@philipp94831](https://github.com/philipp94831))
-- Use the latest version of the workflow [\#160](https://github.com/bakdata/streams-bootstrap/pull/160) ([@MichaelKora](https://github.com/MichaelKora))
+* Make CleanUpRunner closeable (#247) by @philipp94831
 
-## [2.5.0](https://github.com/bakdata/streams-bootstrap/tree/2.5.0) (2022-12-22)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.4.2...2.5.0)
+* Rename Streams section in Helm chart docs (#252) by @philipp94831
 
-**Merged pull requests:**
+* Fix Sonarqube issues (#253) by @philipp94831
 
-- Upgrade to Kafka 3.3 [\#157](https://github.com/bakdata/streams-bootstrap/pull/157) ([@philipp94831](https://github.com/philipp94831))
+* Validate autoscaling mandatory fields when it is enabled (#254)
 
-## [2.4.2](https://github.com/bakdata/streams-bootstrap/tree/2.4.2) (2022-12-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.4.1...2.4.2)
+* Validate persistence mandatory chart values (persistence.size) (#255)
 
-**Closed issues:**
+* Add hook to prepare running of app (#256) by @philipp94831
 
-- Release helm charts to GitHub Pages [\#140](https://github.com/bakdata/streams-bootstrap/issues/140)
-- Add optional ServiceAccount to Pod specs [\#154](https://github.com/bakdata/streams-bootstrap/issues/154)
+* Create v3 by @philipp94831 in [#250](https://github.com/bakdata/streams-bootstrap/pull/250)
 
-**Merged pull requests:**
 
-- Lint and release helm charts [\#158](https://github.com/bakdata/streams-bootstrap/pull/158) ([@MichaelKora](https://github.com/MichaelKora))
-- Remove tgz files and index.yaml [\#159](https://github.com/bakdata/streams-bootstrap/pull/159) ([@MichaelKora](https://github.com/MichaelKora))
-- Add ServiceAccountName option to Helm charts [\#156](https://github.com/bakdata/streams-bootstrap/pull/156) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Configure access token for changelog generation [\#155](https://github.com/bakdata/streams-bootstrap/pull/155) ([@philipp94831](https://github.com/philipp94831))
+### New Contributors
+* @DerTiedemann made their first contribution in [#234](https://github.com/bakdata/streams-bootstrap/pull/234)
 
-## [2.4.1](https://github.com/bakdata/streams-bootstrap/tree/2.4.1) (2022-11-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.4.0...2.4.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.23.0...3.0.1
 
-**Merged pull requests:**
+## [2.23.0](https://github.com/bakdata/streams-bootstrap/tree/2.23.0) - 2024-06-12
+### What's changed
 
-- Clean schema registry subjects of named foreign key joins [\#153](https://github.com/bakdata/streams-bootstrap/pull/153) ([@philipp94831](https://github.com/philipp94831))
-- Do not configure empty input topics [\#152](https://github.com/bakdata/streams-bootstrap/pull/152) ([@philipp94831](https://github.com/philipp94831))
+* Add dynamic application.server config to streams app chart by @philipp94831 in [#214](https://github.com/bakdata/streams-bootstrap/pull/214)
 
-**Fixed bugs:**
 
-- Chart should not set inputTopics to empty string if none are specified [\#149](https://github.com/bakdata/streams-bootstrap/issues/149)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.22.1...2.23.0
 
-## [2.4.0](https://github.com/bakdata/streams-bootstrap/tree/2.4.0) (2022-11-16)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.3.1...2.4.0)
+## [2.22.1](https://github.com/bakdata/streams-bootstrap/tree/2.22.1) - 2024-06-11
+### What's changed
 
-**Merged pull requests:**
+* Use same variable names for clean up job as for main chart by @philipp94831 in [#228](https://github.com/bakdata/streams-bootstrap/pull/228)
 
-- Support multiple extra input topics [\#150](https://github.com/bakdata/streams-bootstrap/pull/150) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.3.1](https://github.com/bakdata/streams-bootstrap/tree/2.3.1) (2022-10-12)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.3.0...2.3.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.22.0...2.22.1
 
-**Merged pull requests:**
+## [2.22.0](https://github.com/bakdata/streams-bootstrap/tree/2.22.0) - 2024-06-10
+### What's changed
 
-- Fix discovery of repartition topics [\#148](https://github.com/bakdata/streams-bootstrap/pull/148) ([@philipp94831](https://github.com/philipp94831))
-- Make input topic accessors public [\#147](https://github.com/bakdata/streams-bootstrap/pull/147) ([@philipp94831](https://github.com/philipp94831))
+* Support mounting of external secrets by @torbsto in [#225](https://github.com/bakdata/streams-bootstrap/pull/225)
 
-## [2.3.0](https://github.com/bakdata/streams-bootstrap/tree/2.3.0) (2022-07-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.2.0...2.3.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.21.0...2.22.0
 
-- Upgrade to Kafka 3.2 and Confluent 7.2 [\#146](https://github.com/bakdata/streams-bootstrap/pull/146) ([@philipp94831](https://github.com/philipp94831))
+## [2.21.0](https://github.com/bakdata/streams-bootstrap/tree/2.21.0) - 2024-05-24
+### What's changed
 
-## [2.2.0](https://github.com/bakdata/streams-bootstrap/tree/2.2.0) (2022-06-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.1.2...2.2.0)
+* Make affinity in charts more generic by @yannick-roeder in [#224](https://github.com/bakdata/streams-bootstrap/pull/224)
 
-**Merged pull requests:**
 
-- Upgrade to Kafka 3.1 and Confluent 7.1 [\#145](https://github.com/bakdata/streams-bootstrap/pull/145) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.20.1...2.21.0
 
-## [2.1.2](https://github.com/bakdata/streams-bootstrap/tree/2.1.2) (2022-06-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.1.1...2.1.2)
+## [2.20.1](https://github.com/bakdata/streams-bootstrap/tree/2.20.1) - 2024-05-23
+### What's changed
 
-**Merged pull requests:**
+* Fix content of config maps by @philipp94831 in [#226](https://github.com/bakdata/streams-bootstrap/pull/226)
 
-- Update documentation [\#144](https://github.com/bakdata/streams-bootstrap/pull/144) ([@philipp94831](https://github.com/philipp94831))
-- Remove default schedule for producer jobs [\#143](https://github.com/bakdata/streams-bootstrap/pull/143) ([@philipp94831](https://github.com/philipp94831))
-- Fix key\-value pairs indentation inside pod.yaml file [\#141](https://github.com/bakdata/streams-bootstrap/pull/141) ([@irux](https://github.com/irux))
-- Update CronJob apiVersion due to deprecation [\#142](https://github.com/bakdata/streams-bootstrap/pull/142) ([@jkbe](https://github.com/jkbe))
+* Roll deployments on config map updates by @philipp94831 in [#227](https://github.com/bakdata/streams-bootstrap/pull/227)
 
-## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) (2022-03-02)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1)
 
-**Closed issues:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.20.0...2.20.1
 
-- Clean up should check if topic deletion was successful [\#134](https://github.com/bakdata/streams-bootstrap/issues/134)
+## [2.20.0](https://github.com/bakdata/streams-bootstrap/tree/2.20.0) - 2024-05-23
+### What's changed
 
-**Merged pull requests:**
+* Mount arbitrary files to apps by @philipp94831 in [#223](https://github.com/bakdata/streams-bootstrap/pull/223)
 
-- Add more configurations to jobs and cron jobs [\#136](https://github.com/bakdata/streams-bootstrap/pull/136) ([@philipp94831](https://github.com/philipp94831))
-- Verify deletion of topics [\#135](https://github.com/bakdata/streams-bootstrap/pull/135) ([@philipp94831](https://github.com/philipp94831))
 
-## [2.1.0](https://github.com/bakdata/streams-bootstrap/tree/2.1.0) (2022-02-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/2.0.0...2.1.0)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.19.2...2.20.0
 
-**Merged pull requests:**
+## [2.19.2](https://github.com/bakdata/streams-bootstrap/tree/2.19.2) - 2024-05-14
+### What's changed
 
-- Add input pattern config [\#132](https://github.com/bakdata/streams-bootstrap/pull/132) ([@philipp94831](https://github.com/philipp94831))
-- Add imagePullSecrets to streams\-app helm chart [\#133](https://github.com/bakdata/streams-bootstrap/pull/133) ([@raminqaf](https://github.com/raminqaf))
-- Fix clean for pattern subscriptions [\#131](https://github.com/bakdata/streams-bootstrap/pull/131) ([@philipp94831](https://github.com/philipp94831))
-- Add option for streams state persistence [\#130](https://github.com/bakdata/streams-bootstrap/pull/130) ([@philipp94831](https://github.com/philipp94831))
+* Bump CI template version to fix Helm lint by @yannick-roeder in [#221](https://github.com/bakdata/streams-bootstrap/pull/221)
 
-## [2.0.0](https://github.com/bakdata/streams-bootstrap/tree/2.0.0) (2022-01-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.9.3...2.0.0)
+* Fix indentation of Rclone annotations by @philipp94831 in [#222](https://github.com/bakdata/streams-bootstrap/pull/222)
 
-**Closed issues:**
 
-- Upgrade Kafka Streams to 3.0 [\#126](https://github.com/bakdata/streams-bootstrap/issues/126)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.19.1...2.19.2
 
-**Merged pull requests:**
+## [2.19.1](https://github.com/bakdata/streams-bootstrap/tree/2.19.1) - 2024-05-13
+### What's changed
 
-- Update to Kafka 3.0.0 [\#129](https://github.com/bakdata/streams-bootstrap/pull/129) ([@philipp94831](https://github.com/philipp94831))
+* Fix default values for podLabels and podAnnotations by @philipp94831 in [#220](https://github.com/bakdata/streams-bootstrap/pull/220)
 
-## [1.9.3](https://github.com/bakdata/streams-bootstrap/tree/1.9.3) (2021-12-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.9.2...1.9.3)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.19.0...2.19.1
 
-- Update log4j to 2.17.0 [\#128](https://github.com/bakdata/streams-bootstrap/pull/128) ([@philipp94831](https://github.com/philipp94831))
+## [2.19.0](https://github.com/bakdata/streams-bootstrap/tree/2.19.0) - 2024-05-13
+### What's changed
 
-## [1.9.2](https://github.com/bakdata/streams-bootstrap/tree/1.9.2) (2021-12-16)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.9.1...1.9.2)
+* Fix naming of helm releases by @philipp94831 in [#216](https://github.com/bakdata/streams-bootstrap/pull/216)
 
-**Merged pull requests:**
+* Add Values.podLabels and Values.podAnnotations by @vostres in [#217](https://github.com/bakdata/streams-bootstrap/pull/217)
 
-- Update log4j to 2.16.0 [\#127](https://github.com/bakdata/streams-bootstrap/pull/127) ([@philipp94831](https://github.com/philipp94831))
+* Remove awsRole from helm charts by @philipp94831 in [#219](https://github.com/bakdata/streams-bootstrap/pull/219)
 
-## [1.9.1](https://github.com/bakdata/streams-bootstrap/tree/1.9.1) (2021-12-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.9.0...1.9.1)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.18.1...2.19.0
 
-- Update log4j to 2.15.0 [\#125](https://github.com/bakdata/streams-bootstrap/pull/125) ([@philipp94831](https://github.com/philipp94831))
+## [2.18.1](https://github.com/bakdata/streams-bootstrap/tree/2.18.1) - 2024-05-08
+### What's changed
 
-## [1.9.0](https://github.com/bakdata/streams-bootstrap/tree/1.9.0) (2021-09-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.8.0...1.9.0)
+* Update CI templates by @philipp94831 in [#210](https://github.com/bakdata/streams-bootstrap/pull/210)
 
-**Closed issues:**
+* Publish snapshots for Helm charts by @philipp94831 in [#211](https://github.com/bakdata/streams-bootstrap/pull/211)
 
-- Restart failed clean up jobs rather than creating new pods [\#94](https://github.com/bakdata/streams-bootstrap/issues/94)
-- Fix vulnerable dependencies [\#114](https://github.com/bakdata/streams-bootstrap/issues/114)
+* Upgrade fluent kafka streams to 2.13.1 by @philipp94831 in [#215](https://github.com/bakdata/streams-bootstrap/pull/215)
 
-**Merged pull requests:**
+* Prevent closing of reused admin clients by @philipp94831 in [#213](https://github.com/bakdata/streams-bootstrap/pull/213)
 
-- Upgrade to Kafka 2.8 [\#124](https://github.com/bakdata/streams-bootstrap/pull/124) ([@philipp94831](https://github.com/philipp94831))
-- Add workaround for rclone config permissions [\#123](https://github.com/bakdata/streams-bootstrap/pull/123) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Fix rclone volume permissions [\#122](https://github.com/bakdata/streams-bootstrap/pull/122) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Restart failed cleanup jobs instead of creating new pods [\#120](https://github.com/bakdata/streams-bootstrap/pull/120) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Update openbridge/ob\_bulkstash version and allow arguments [\#121](https://github.com/bakdata/streams-bootstrap/pull/121) ([@aqchen](https://github.com/aqchen))
-- Downgrad Gradle to 6.7.1 [\#119](https://github.com/bakdata/streams-bootstrap/pull/119) ([@philipp94831](https://github.com/philipp94831))
+* Add terminationGracePeriodSeconds by @vostres in [#212](https://github.com/bakdata/streams-bootstrap/pull/212)
 
-## [1.8.0](https://github.com/bakdata/streams-bootstrap/tree/1.8.0) (2021-09-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.7.1...1.8.0)
+* Shorten log4j-config-volume to log4j in [#218](https://github.com/bakdata/streams-bootstrap/pull/218)
 
-**Merged pull requests:**
 
-- Migrate to Log4j 2 [\#115](https://github.com/bakdata/streams-bootstrap/pull/115) ([@philipp94831](https://github.com/philipp94831))
-- Suspend rclone cron jobs [\#117](https://github.com/bakdata/streams-bootstrap/pull/117) ([@philipp94831](https://github.com/philipp94831))
-- Auto\-scale stateful sets [\#116](https://github.com/bakdata/streams-bootstrap/pull/116) ([@philipp94831](https://github.com/philipp94831))
+### New Contributors
+* @vostres made their first contribution in [#212](https://github.com/bakdata/streams-bootstrap/pull/212)
 
-## [1.7.1](https://github.com/bakdata/streams-bootstrap/tree/1.7.1) (2021-08-20)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.7.0...1.7.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.18.0...2.18.1
 
-**Closed issues:**
+## [2.18.0](https://github.com/bakdata/streams-bootstrap/tree/2.18.0) - 2024-04-17
+### What's changed
 
-- Clean schemas of pseudo topics created when performing a foreign key join [\#112](https://github.com/bakdata/streams-bootstrap/issues/112)
-- Extend the Readme [\#99](https://github.com/bakdata/streams-bootstrap/issues/99)
+* Bump fluent-kafka-streams-tests by @jkbe in [#208](https://github.com/bakdata/streams-bootstrap/pull/208)
 
-**Merged pull requests:**
 
-- Clean schemas of pseudo topics created when performing a foreign key join [\#113](https://github.com/bakdata/streams-bootstrap/pull/113) ([@philipp94831](https://github.com/philipp94831))
-- Support KEDA idleReplicaCount [\#109](https://github.com/bakdata/streams-bootstrap/pull/109) ([@philipp94831](https://github.com/philipp94831))
-- producer chart: job/cronjob switch [\#110](https://github.com/bakdata/streams-bootstrap/pull/110) ([@mkcode92](https://github.com/mkcode92))
-- Make producer\-app's CronJob schedule optional [\#108](https://github.com/bakdata/streams-bootstrap/pull/108) ([@torbsto](https://github.com/torbsto))
-- Fix consumer group annotation [\#107](https://github.com/bakdata/streams-bootstrap/pull/107) ([@philipp94831](https://github.com/philipp94831))
-- Fix nil warnings about empty yaml lists in value files [\#106](https://github.com/bakdata/streams-bootstrap/pull/106) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Add node affinity to helm chart [\#103](https://github.com/bakdata/streams-bootstrap/pull/103) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Reset schema of internal topics when they are deleted  [\#104](https://github.com/bakdata/streams-bootstrap/pull/104) ([@torbsto](https://github.com/torbsto))
-- Extend the readme [\#100](https://github.com/bakdata/streams-bootstrap/pull/100) ([@VictorKuenstler](https://github.com/VictorKuenstler))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.17.0...2.18.0
 
-**Fixed bugs:**
+## [2.17.0](https://github.com/bakdata/streams-bootstrap/tree/2.17.0) - 2024-03-01
+### What's changed
 
-- Add serviceName for StatefulSet [\#102](https://github.com/bakdata/streams-bootstrap/pull/102) ([@disrupted](https://github.com/disrupted))
+* Upgrade to Gradle 8.4 by @philipp94831 in [#204](https://github.com/bakdata/streams-bootstrap/pull/204)
 
-## [1.7.0](https://github.com/bakdata/streams-bootstrap/tree/1.7.0) (2021-02-18)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0)
+* Migrate azure pipeline to GH-action by @MichaelKora in [#191](https://github.com/bakdata/streams-bootstrap/pull/191)
 
-**Closed issues:**
+* Upgrade to Kafka 3.6 by @philipp94831 in [#206](https://github.com/bakdata/streams-bootstrap/pull/206)
 
-- Update to Kafka 2.6/Confluent 6.0 [\#96](https://github.com/bakdata/streams-bootstrap/issues/96)
-- Add support for tolerations in streams helm charts [\#86](https://github.com/bakdata/streams-bootstrap/issues/86)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.16.1...2.17.0
 
-- Update Kafka to 2.7 [\#98](https://github.com/bakdata/streams-bootstrap/pull/98) ([@philipp94831](https://github.com/philipp94831))
-- Add priority class to helm charts [\#97](https://github.com/bakdata/streams-bootstrap/pull/97) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Add consumer group annotation from autoscaling [\#95](https://github.com/bakdata/streams-bootstrap/pull/95) ([@VictorKuenstler](https://github.com/VictorKuenstler))
+## [2.16.1](https://github.com/bakdata/streams-bootstrap/tree/2.16.1) - 2024-02-02
+### What's changed
 
-## [1.6.0](https://github.com/bakdata/streams-bootstrap/tree/1.6.0) (2021-01-25)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.5...1.6.0)
+* Fix Jacoco for Java 17 by @philipp94831 in [#201](https://github.com/bakdata/streams-bootstrap/pull/201)
 
-**Merged pull requests:**
+* Fix secretRefs for cleanup jobs by @mkcode92 in [#203](https://github.com/bakdata/streams-bootstrap/pull/203)
 
-- Rename to streams\-bootstrap [\#93](https://github.com/bakdata/streams-bootstrap/pull/93) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.5.5](https://github.com/bakdata/streams-bootstrap/tree/1.5.5) (2021-01-21)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.4...1.5.5)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.16.0...2.16.1
 
-**Merged pull requests:**
+## [2.16.0](https://github.com/bakdata/streams-bootstrap/tree/2.16.0) - 2024-01-26
+### What's changed
 
-- Expose AdminClient from CleanUpRunner [\#92](https://github.com/bakdata/streams-bootstrap/pull/92) ([@philipp94831](https://github.com/philipp94831))
-- Upgrade to helm 3 [\#91](https://github.com/bakdata/streams-bootstrap/pull/91) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Reduce helm chart size [\#90](https://github.com/bakdata/streams-bootstrap/pull/90) ([@philipp94831](https://github.com/philipp94831))
+* Build in CI using JDK 17 by @philipp94831 in [#199](https://github.com/bakdata/streams-bootstrap/pull/199)
 
-## [1.5.4](https://github.com/bakdata/streams-bootstrap/tree/1.5.4) (2020-12-18)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.3...1.5.4)
+* Simplify configuration of internal topics for autoscaling by @philipp94831 in [#198](https://github.com/bakdata/streams-bootstrap/pull/198)
 
-**Merged pull requests:**
+* Add missing default values for internal topics by @philipp94831 in [#200](https://github.com/bakdata/streams-bootstrap/pull/200)
 
-- Add producer application [\#89](https://github.com/bakdata/streams-bootstrap/pull/89) ([@philipp94831](https://github.com/philipp94831))
-- Add tolerations to deployment [\#87](https://github.com/bakdata/streams-bootstrap/pull/87) ([@yannick-roeder](https://github.com/yannick-roeder))
 
-## [1.5.3](https://github.com/bakdata/streams-bootstrap/tree/1.5.3) (2020-11-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.2...1.5.3)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.15.3...2.16.0
 
-**Merged pull requests:**
+## [2.15.3](https://github.com/bakdata/streams-bootstrap/tree/2.15.3) - 2024-01-09
+### What's changed
 
-- Do not delete consumer group if it does not exist [\#85](https://github.com/bakdata/streams-bootstrap/pull/85) ([@philipp94831](https://github.com/philipp94831))
+* Update dependencies by @philipp94831 in [#196](https://github.com/bakdata/streams-bootstrap/pull/196)
 
-## [1.5.2](https://github.com/bakdata/streams-bootstrap/tree/1.5.2) (2020-11-23)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.1...1.5.2)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.15.2...2.15.3
 
-- Delete consumer groups on delete output [\#84](https://github.com/bakdata/streams-bootstrap/pull/84) ([@philipp94831](https://github.com/philipp94831))
-- Fix comment for autoscaling [\#83](https://github.com/bakdata/streams-bootstrap/pull/83) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Add scaled object for autoscaling with keda [\#82](https://github.com/bakdata/streams-bootstrap/pull/82) ([@yannick-roeder](https://github.com/yannick-roeder))
+## [2.15.2](https://github.com/bakdata/streams-bootstrap/tree/2.15.2) - 2024-01-08
+### What's changed
 
-## [1.5.1](https://github.com/bakdata/streams-bootstrap/tree/1.5.1) (2020-11-03)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.5.0...1.5.1)
+* Update dependencies by @philipp94831 in [#195](https://github.com/bakdata/streams-bootstrap/pull/195)
 
-**Merged pull requests:**
 
-- Add extra input topics to streams app [\#81](https://github.com/bakdata/streams-bootstrap/pull/81) ([@philipp94831](https://github.com/philipp94831))
-- Remove container suffix from container name [\#73](https://github.com/bakdata/streams-bootstrap/pull/73) ([@yannick-roeder](https://github.com/yannick-roeder))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.15.1...2.15.2
 
-**Fixed bugs:**
+## [2.15.1](https://github.com/bakdata/streams-bootstrap/tree/2.15.1) - 2023-12-20
+### What's changed
 
-- Container can not be launched if name exceeds 63 characters [\#69](https://github.com/bakdata/streams-bootstrap/issues/69)
+* Add slf4j dependency by @philipp94831 in [#194](https://github.com/bakdata/streams-bootstrap/pull/194)
 
-## [1.5.0](https://github.com/bakdata/streams-bootstrap/tree/1.5.0) (2020-09-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.6...1.5.0)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.15.0...2.15.1
 
-- Add labels, annotations and configurable name to rclone CronJob [\#80](https://github.com/bakdata/streams-bootstrap/pull/80) ([@philipp94831](https://github.com/philipp94831))
-- Update Kafka to 2.5.1 and Confluent to 5.5.1 [\#79](https://github.com/bakdata/streams-bootstrap/pull/79) ([@philipp94831](https://github.com/philipp94831))
+## [2.15.0](https://github.com/bakdata/streams-bootstrap/tree/2.15.0) - 2023-11-10
+### What's changed
 
-## [1.4.6](https://github.com/bakdata/streams-bootstrap/tree/1.4.6) (2020-08-26)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.5...1.4.6)
+* Upgrade to Kafka 3.5 by @philipp94831 in [#192](https://github.com/bakdata/streams-bootstrap/pull/192)
 
-**Merged pull requests:**
 
-- Close resources after streams client [\#78](https://github.com/bakdata/streams-bootstrap/pull/78) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.14.0...2.15.0
 
-## [1.4.5](https://github.com/bakdata/streams-bootstrap/tree/1.4.5) (2020-08-06)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.4...1.4.5)
+## [2.14.0](https://github.com/bakdata/streams-bootstrap/tree/2.14.0) - 2023-10-30
+### What's changed
 
-**Closed issues:**
+* Add modules for easy usage with Fluent Kafka Streams Tests and Large Message SerDe by @philipp94831 in [#188](https://github.com/bakdata/streams-bootstrap/pull/188)
 
-- Use inheritance for streams helm charts [\#71](https://github.com/bakdata/streams-bootstrap/issues/71)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.13.0...2.14.0
 
-- Make helm chart backwards compatible [\#77](https://github.com/bakdata/streams-bootstrap/pull/77) ([@philipp94831](https://github.com/philipp94831))
-- Specify additional output topics via default CLI [\#75](https://github.com/bakdata/streams-bootstrap/pull/75) ([@philipp94831](https://github.com/philipp94831))
-- Trim rclone job name [\#76](https://github.com/bakdata/streams-bootstrap/pull/76) ([@philipp94831](https://github.com/philipp94831))
-- Add annotations to clean up job [\#74](https://github.com/bakdata/streams-bootstrap/pull/74) ([@philipp94831](https://github.com/philipp94831))
-- Remove duplicated streams chart [\#72](https://github.com/bakdata/streams-bootstrap/pull/72) ([@philipp94831](https://github.com/philipp94831))
-- Fix yaml file for kubernetes \> 1.16 [\#70](https://github.com/bakdata/streams-bootstrap/pull/70) ([@VictorKuenstler](https://github.com/VictorKuenstler))
-- Make JAVA\_TOOL\_OPTIONS configurable [\#68](https://github.com/bakdata/streams-bootstrap/pull/68) ([@philipp94831](https://github.com/philipp94831))
+## [2.13.0](https://github.com/bakdata/streams-bootstrap/tree/2.13.0) - 2023-09-21
+### What's changed
 
-## [1.4.4](https://github.com/bakdata/streams-bootstrap/tree/1.4.4) (2020-04-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.3...1.4.4)
+* Make Schema Registry URL optional in [#187](https://github.com/bakdata/streams-bootstrap/pull/187)
 
-**Merged pull requests:**
 
-- Close resources on streams creation error [\#67](https://github.com/bakdata/streams-bootstrap/pull/67) ([@philipp94831](https://github.com/philipp94831))
-- Only run streams resetter for existing topics [\#66](https://github.com/bakdata/streams-bootstrap/pull/66) ([@philipp94831](https://github.com/philipp94831))
-- Use Kubernetes secrets for password parameters [\#64](https://github.com/bakdata/streams-bootstrap/pull/64) ([@yannick-roeder](https://github.com/yannick-roeder))
-- Merge streams chart for statefulset and deployment [\#65](https://github.com/bakdata/streams-bootstrap/pull/65) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.12.1...2.13.0
 
-## [1.4.3](https://github.com/bakdata/streams-bootstrap/tree/1.4.3) (2020-04-02)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.2...1.4.3)
+## [2.12.1](https://github.com/bakdata/streams-bootstrap/tree/2.12.1) - 2023-08-15
+### What's changed
 
-**Implemented enhancements:**
+* Upgrade to Kafka 3.4 by @torbsto in [#184](https://github.com/bakdata/streams-bootstrap/pull/184)
 
-- Override log4j.properties when using provided [\#62](https://github.com/bakdata/streams-bootstrap/pull/62) ([@b-feldmann](https://github.com/b-feldmann))
+* Switch to official Rclone image by @philipp94831 in [#176](https://github.com/bakdata/streams-bootstrap/pull/176)
 
-**Merged pull requests:**
 
-- Revert PicoCli api usage to exit application properly [\#63](https://github.com/bakdata/streams-bootstrap/pull/63) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.12.0...2.12.1
 
-## [1.4.2](https://github.com/bakdata/streams-bootstrap/tree/1.4.2) (2020-03-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.1...1.4.2)
+## [2.12.0](https://github.com/bakdata/streams-bootstrap/tree/2.12.0) - 2023-05-10
+### What's changed
 
-**Merged pull requests:**
+* Fail streams-app templating if no topics are provided for ScaledObject triggers by @jkbe in [#182](https://github.com/bakdata/streams-bootstrap/pull/182)
 
-- Run streams resetter for external source topics and intermediate topics [\#61](https://github.com/bakdata/streams-bootstrap/pull/61) ([@philipp94831](https://github.com/philipp94831))
-- Add helm chart to deploy streams app as statefulset with static group membership [\#60](https://github.com/bakdata/streams-bootstrap/pull/60) ([@philipp94831](https://github.com/philipp94831))
+* Create method to register topic clean up hooks by @philipp94831 in [#183](https://github.com/bakdata/streams-bootstrap/pull/183)
 
-## [1.4.1](https://github.com/bakdata/streams-bootstrap/tree/1.4.1) (2020-03-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.4.0...1.4.1)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.11.2...2.12.0
 
-- Allow specification of boolean flags without any value [\#59](https://github.com/bakdata/streams-bootstrap/pull/59) ([@philipp94831](https://github.com/philipp94831))
-- Add topic client [\#58](https://github.com/bakdata/streams-bootstrap/pull/58) ([@philipp94831](https://github.com/philipp94831))
-- Do not exit application [\#57](https://github.com/bakdata/streams-bootstrap/pull/57) ([@philipp94831](https://github.com/philipp94831))
+## [2.11.2](https://github.com/bakdata/streams-bootstrap/tree/2.11.2) - 2023-04-19
+### What's changed
 
-## [1.4.0](https://github.com/bakdata/streams-bootstrap/tree/1.4.0) (2020-03-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.4...1.4.0)
+* Make brokers and schema registry url optional chart configs by @philipp94831 in [#181](https://github.com/bakdata/streams-bootstrap/pull/181)
 
-**Merged pull requests:**
 
-- Remove DeadLetter [\#56](https://github.com/bakdata/streams-bootstrap/pull/56) ([@philipp94831](https://github.com/philipp94831))
-- Move error handlers to com.bakdata.kafka:error\-handling [\#55](https://github.com/bakdata/streams-bootstrap/pull/55) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.11.1...2.11.2
 
-## [1.3.4](https://github.com/bakdata/streams-bootstrap/tree/1.3.4) (2020-03-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.3...1.3.4)
+## [2.11.1](https://github.com/bakdata/streams-bootstrap/tree/2.11.1) - 2023-04-17
+### What's changed
 
-**Merged pull requests:**
+* Fix service selector to match pod labels in [#180](https://github.com/bakdata/streams-bootstrap/pull/180)
 
-- Parse streams config from separate environment variables [\#54](https://github.com/bakdata/streams-bootstrap/pull/54) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.3.3](https://github.com/bakdata/streams-bootstrap/tree/1.3.3) (2020-02-27)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.2...1.3.3)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.11.0...2.11.1
 
-**Merged pull requests:**
+## [2.11.0](https://github.com/bakdata/streams-bootstrap/tree/2.11.0) - 2023-04-14
+### What's changed
 
-- Exit application with proper code [\#53](https://github.com/bakdata/streams-bootstrap/pull/53) ([@philipp94831](https://github.com/philipp94831))
+* Support additional triggers for KEDA autoscaling by @torbsto in [#177](https://github.com/bakdata/streams-bootstrap/pull/177)
 
-## [1.3.2](https://github.com/bakdata/streams-bootstrap/tree/1.3.2) (2020-02-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.1...1.3.2)
+* Support deployment of bootstrap application with an HTTP server by @torbsto in [#178](https://github.com/bakdata/streams-bootstrap/pull/178)
 
-**Merged pull requests:**
+* Reference existing secrets from helm charts by @philipp94831 in [#179](https://github.com/bakdata/streams-bootstrap/pull/179)
 
-- Check for errors when running streams resetter [\#52](https://github.com/bakdata/streams-bootstrap/pull/52) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.3.1](https://github.com/bakdata/streams-bootstrap/tree/1.3.1) (2020-01-30)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.3.0...1.3.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.10.0...2.11.0
 
-**Merged pull requests:**
+## [2.10.0](https://github.com/bakdata/streams-bootstrap/tree/2.10.0) - 2023-03-15
+### What's changed
 
-- Add hook for Streams state transitions [\#51](https://github.com/bakdata/streams-bootstrap/pull/51) ([@philipp94831](https://github.com/philipp94831))
-- Fix parsing of environment parameters with ENV\_PREFIX in name [\#50](https://github.com/bakdata/streams-bootstrap/pull/50) ([@philipp94831](https://github.com/philipp94831))
+* Remove duplicate of changelog config by @yannick-roeder in [#174](https://github.com/bakdata/streams-bootstrap/pull/174)
 
-## [1.3.0](https://github.com/bakdata/streams-bootstrap/tree/1.3.0) (2020-01-29)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.2.1...1.3.0)
+* Producer App can be deployed as k8s Deployment by @mkcode92 in [#175](https://github.com/bakdata/streams-bootstrap/pull/175)
 
-**Merged pull requests:**
 
-- Update Kafka to 2.4.0 [\#49](https://github.com/bakdata/streams-bootstrap/pull/49) ([@philipp94831](https://github.com/philipp94831))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.9.0...2.10.0
 
-## [1.2.1](https://github.com/bakdata/streams-bootstrap/tree/1.2.1) (2020-01-10)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.2.0...1.2.1)
+## [2.9.0](https://github.com/bakdata/streams-bootstrap/tree/2.9.0) - 2023-02-21
+### What's changed
 
-**Merged pull requests:**
+* Fix casing of consumerGroup value by @disrupted in [#173](https://github.com/bakdata/streams-bootstrap/pull/173)
 
-- Configure StreamsResetter with application properties [\#48](https://github.com/bakdata/streams-bootstrap/pull/48) ([@torbsto](https://github.com/torbsto))
-- Support schema registry authentication [\#47](https://github.com/bakdata/streams-bootstrap/pull/47) ([@philipp94831](https://github.com/philipp94831))
 
-## [1.2.0](https://github.com/bakdata/streams-bootstrap/tree/1.2.0) (2020-01-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.13...1.2.0)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.8.0...2.9.0
 
-**Implemented enhancements:**
+## [2.8.0](https://github.com/bakdata/streams-bootstrap/tree/2.8.0) - 2023-01-24
+### What's changed
 
-- Call close after application clean up [\#46](https://github.com/bakdata/streams-bootstrap/pull/46) ([@philipp94831](https://github.com/philipp94831))
-- Apply overridden Kafka config before CLI passed configuration [\#44](https://github.com/bakdata/streams-bootstrap/issues/44)
+* Upgrade to Kafka 3.3.2 by @philipp94831 in [#169](https://github.com/bakdata/streams-bootstrap/pull/169)
 
-**Merged pull requests:**
 
-- Prioritize Kafka Streams Config passed via CLI over overridden properties [\#45](https://github.com/bakdata/streams-bootstrap/pull/45) ([@philipp94831](https://github.com/philipp94831))
-- Add custom annotations [\#43](https://github.com/bakdata/streams-bootstrap/pull/43) ([@SvenLehmann](https://github.com/SvenLehmann))
-- Improve values.yaml structure [\#42](https://github.com/bakdata/streams-bootstrap/pull/42) ([@SvenLehmann](https://github.com/SvenLehmann))
-- Allow custom labels for jobs and deployments [\#41](https://github.com/bakdata/streams-bootstrap/pull/41) ([@SvenLehmann](https://github.com/SvenLehmann))
-- Reset internal topics [\#40](https://github.com/bakdata/streams-bootstrap/pull/40) ([@torbsto](https://github.com/torbsto))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.7.0...2.8.0
 
-## [1.1.13](https://github.com/bakdata/streams-bootstrap/tree/1.1.13) (2019-11-15)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.12...1.1.13)
+## [2.7.0](https://github.com/bakdata/streams-bootstrap/tree/2.7.0) - 2023-01-03
+### What's changed
 
-**Merged pull requests:**
+* Use environment config when creating admin client by @philipp94831 in [#164](https://github.com/bakdata/streams-bootstrap/pull/164)
 
-- Classify all Kafka errors as recoverable bar some exceptions [\#38](https://github.com/bakdata/streams-bootstrap/pull/38) ([@philipp94831](https://github.com/philipp94831))
-- Make PodAffinity rule configurable [\#37](https://github.com/bakdata/streams-bootstrap/pull/37) ([@SvenLehmann](https://github.com/SvenLehmann))
-- Add flat value transformers for error handling [\#36](https://github.com/bakdata/streams-bootstrap/pull/36) ([@philipp94831](https://github.com/philipp94831))
+* Fix Helm lint by @philipp94831 in [#166](https://github.com/bakdata/streams-bootstrap/pull/166)
 
-## [1.1.12](https://github.com/bakdata/streams-bootstrap/tree/1.1.12) (2019-11-07)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.11...1.1.12)
+* Send leave group requests in case of streams application shutdown by @philipp94831 in [#165](https://github.com/bakdata/streams-bootstrap/pull/165)
 
-**Merged pull requests:**
+* Improve backwards compatibility with 2.5 and older versions by @philipp94831 in [#167](https://github.com/bakdata/streams-bootstrap/pull/167)
 
-- Fix schema registry clean up [\#35](https://github.com/bakdata/streams-bootstrap/pull/35) ([@philipp94831](https://github.com/philipp94831))
+* Update dependencies by @philipp94831 in [#168](https://github.com/bakdata/streams-bootstrap/pull/168)
 
-## [1.1.11](https://github.com/bakdata/streams-bootstrap/tree/1.1.11) (2019-11-05)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.10...1.1.11)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.6.0...2.7.0
 
-- Improve code quality [\#34](https://github.com/bakdata/streams-bootstrap/pull/34) ([@philipp94831](https://github.com/philipp94831))
-- Add common error handlers [\#33](https://github.com/bakdata/streams-bootstrap/pull/33) ([@philipp94831](https://github.com/philipp94831))
+## [2.6.0](https://github.com/bakdata/streams-bootstrap/tree/2.6.0) - 2022-12-29
+### What's changed
 
-## [1.1.10](https://github.com/bakdata/streams-bootstrap/tree/1.1.10) (2019-10-31)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.9...1.1.10)
+* Use the latest version of the workflow by @MichaelKora in [#160](https://github.com/bakdata/streams-bootstrap/pull/160)
 
-**Merged pull requests:**
+* Use new CommandLine API by @philipp94831 in [#161](https://github.com/bakdata/streams-bootstrap/pull/161)
 
--  Delete schemas during clean up  [\#32](https://github.com/bakdata/streams-bootstrap/pull/32) ([@torbsto](https://github.com/torbsto))
-- Add a helm chart for running Streams App as a job [\#31](https://github.com/bakdata/streams-bootstrap/pull/31) ([@SvenLehmann](https://github.com/SvenLehmann))
 
-## [1.1.9](https://github.com/bakdata/streams-bootstrap/tree/1.1.9) (2019-10-25)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.8...1.1.9)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.5.0...2.6.0
 
-**Merged pull requests:**
+## [2.5.0](https://github.com/bakdata/streams-bootstrap/tree/2.5.0) - 2022-12-22
+### What's changed
 
-- Delete error topic if requested [\#30](https://github.com/bakdata/streams-bootstrap/pull/30) ([@SvenLehmann](https://github.com/SvenLehmann))
+* Upgrade to Kafka 3.3 by @philipp94831 in [#157](https://github.com/bakdata/streams-bootstrap/pull/157)
 
-## [1.1.8](https://github.com/bakdata/streams-bootstrap/tree/1.1.8) (2019-10-17)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.7...1.1.8)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.4.2...2.5.0
 
-- Expose delete topic method to subclasses [\#29](https://github.com/bakdata/streams-bootstrap/pull/29) ([@philipp94831](https://github.com/philipp94831))
+## [2.4.2](https://github.com/bakdata/streams-bootstrap/tree/2.4.2) - 2022-12-21
+### What's changed
 
-## [1.1.7](https://github.com/bakdata/streams-bootstrap/tree/1.1.7) (2019-10-16)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.6...1.1.7)
+* Configure access token for changelog generation by @philipp94831 in [#155](https://github.com/bakdata/streams-bootstrap/pull/155)
 
-**Merged pull requests:**
+* Add ServiceAccountName option to Helm charts by @yannick-roeder in [#156](https://github.com/bakdata/streams-bootstrap/pull/156)
 
-- Change reprocessing to clean up [\#26](https://github.com/bakdata/streams-bootstrap/pull/26) ([@torbsto](https://github.com/torbsto))
+* Remove tgz files and index.yaml by @MichaelKora in [#159](https://github.com/bakdata/streams-bootstrap/pull/159)
 
-## [1.1.6](https://github.com/bakdata/streams-bootstrap/tree/1.1.6) (2019-10-11)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.5...1.1.6)
+* Lint and release helm charts by @MichaelKora in [#158](https://github.com/bakdata/streams-bootstrap/pull/158)
 
-**Merged pull requests:**
 
-- Add utility method for single input topic [\#28](https://github.com/bakdata/streams-bootstrap/pull/28) ([@torbsto](https://github.com/torbsto))
+### New Contributors
+* @MichaelKora made their first contribution in [#158](https://github.com/bakdata/streams-bootstrap/pull/158)
 
-## [1.1.5](https://github.com/bakdata/streams-bootstrap/tree/1.1.5) (2019-10-08)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.4...1.1.5)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.4.1...2.4.2
 
-**Merged pull requests:**
+## [2.4.1](https://github.com/bakdata/streams-bootstrap/tree/2.4.1) - 2022-11-29
+### What's changed
 
-- Allow multiple input topics and add an error topic [\#27](https://github.com/bakdata/streams-bootstrap/pull/27) ([@torbsto](https://github.com/torbsto))
+* Do not configure empty input topics by @philipp94831 in [#152](https://github.com/bakdata/streams-bootstrap/pull/152)
 
-## [1.1.4](https://github.com/bakdata/streams-bootstrap/tree/1.1.4) (2019-09-11)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.3...1.1.4)
+* Clean schema registry subjects of named foreign key joins by @philipp94831 in [#153](https://github.com/bakdata/streams-bootstrap/pull/153)
 
-**Closed issues:**
 
-- External stream configuration parameter cannot handle primitive data types other than String [\#23](https://github.com/bakdata/streams-bootstrap/issues/23)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.4.0...2.4.1
 
-**Merged pull requests:**
+## [2.4.0](https://github.com/bakdata/streams-bootstrap/tree/2.4.0) - 2022-11-16
+### What's changed
 
-- Add hook for registering an uncaught exception handler [\#25](https://github.com/bakdata/streams-bootstrap/pull/25) ([@philipp94831](https://github.com/philipp94831))
-- Add rclone chart [\#24](https://github.com/bakdata/streams-bootstrap/pull/24) ([@lawben](https://github.com/lawben))
-- Allow kafka streams configuration with external parameter [\#22](https://github.com/bakdata/streams-bootstrap/pull/22) ([@fapaul](https://github.com/fapaul))
-- Add JMX prometheus [\#21](https://github.com/bakdata/streams-bootstrap/pull/21) ([@lawben](https://github.com/lawben))
+* Support multiple extra input topics by @philipp94831 in [#150](https://github.com/bakdata/streams-bootstrap/pull/150)
 
-## [1.1.3](https://github.com/bakdata/streams-bootstrap/tree/1.1.3) (2019-08-01)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.2...1.1.3)
 
-**Implemented enhancements:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.3.1...2.4.0
 
-- Add CLI parameter to allow reprocessing of data [\#14](https://github.com/bakdata/streams-bootstrap/pull/14) ([@SvenLehmann](https://github.com/SvenLehmann))
+## [2.3.1](https://github.com/bakdata/streams-bootstrap/tree/2.3.1) - 2022-10-12
+### What's changed
 
-**Merged pull requests:**
+* Make input topic accessors public by @philipp94831 in [#147](https://github.com/bakdata/streams-bootstrap/pull/147)
 
-- Release new version of kafka\-streams chart [\#20](https://github.com/bakdata/streams-bootstrap/pull/20) ([@fapaul](https://github.com/fapaul))
-- Change clean up visibility [\#19](https://github.com/bakdata/streams-bootstrap/pull/19) ([@fapaul](https://github.com/fapaul))
-- Change reset visibility [\#18](https://github.com/bakdata/streams-bootstrap/pull/18) ([@fapaul](https://github.com/fapaul))
-- Initialize topolgy stream before cleanup [\#17](https://github.com/bakdata/streams-bootstrap/pull/17) ([@fapaul](https://github.com/fapaul))
--  Add cleanup possibility on processor startup [\#15](https://github.com/bakdata/streams-bootstrap/pull/15) ([@fapaul](https://github.com/fapaul))
-- Fix duplicate in app name [\#16](https://github.com/bakdata/streams-bootstrap/pull/16) ([@lawben](https://github.com/lawben))
-- Change log level on debug for child app in different package [\#13](https://github.com/bakdata/streams-bootstrap/pull/13) ([@fapaul](https://github.com/fapaul))
-- Add unique AppID method [\#12](https://github.com/bakdata/streams-bootstrap/pull/12) ([@lawben](https://github.com/lawben))
-- Log initial configuration on debug [\#11](https://github.com/bakdata/streams-bootstrap/pull/11) ([@fapaul](https://github.com/fapaul))
+* Fix discovery of repartition topics by @philipp94831 in [#148](https://github.com/bakdata/streams-bootstrap/pull/148)
 
-## [1.1.2](https://github.com/bakdata/streams-bootstrap/tree/1.1.2) (2019-06-27)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.1...1.1.2)
 
-**Merged pull requests:**
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.3.0...2.3.1
 
-- Add support for AWS roles and pod resources [\#10](https://github.com/bakdata/streams-bootstrap/pull/10) ([@SvenLehmann](https://github.com/SvenLehmann))
-- Update readme with latest release version number [\#9](https://github.com/bakdata/streams-bootstrap/pull/9) ([@fapaul](https://github.com/fapaul))
+## [2.3.0](https://github.com/bakdata/streams-bootstrap/tree/2.3.0) - 2022-07-13
+### What's changed
 
-## [1.1.1](https://github.com/bakdata/streams-bootstrap/tree/1.1.1) (2019-05-24)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.1.0...1.1.1)
+* Upgrade to Kafka 3.2 and Confluent 7.2 by @philipp94831 in [#146](https://github.com/bakdata/streams-bootstrap/pull/146)
 
-**Merged pull requests:**
 
-- Add log4j binding for sl4j [\#8](https://github.com/bakdata/streams-bootstrap/pull/8) ([@fapaul](https://github.com/fapaul))
-- Set arity for boolean options to 1 to match environment key value pairs [\#7](https://github.com/bakdata/streams-bootstrap/pull/7) ([@fapaul](https://github.com/fapaul))
-- Comply default stream application name schema with kube dns [\#6](https://github.com/bakdata/streams-bootstrap/pull/6) ([@fapaul](https://github.com/fapaul))
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.2.0...2.3.0
 
-## [1.1.0](https://github.com/bakdata/streams-bootstrap/tree/1.1.0) (2019-05-14)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.0.1...1.1.0)
+## [2.2.0](https://github.com/bakdata/streams-bootstrap/tree/2.2.0) - 2022-06-23
+### What's changed
 
-**Merged pull requests:**
+* Upgrade to Kafka 3.1 and Confluent 7.1 by @philipp94831 in [#145](https://github.com/bakdata/streams-bootstrap/pull/145)
 
-- Remove default custom environment variables ingestion from values.yaml [\#5](https://github.com/bakdata/streams-bootstrap/pull/5) ([@lawben](https://github.com/lawben))
-- Add default log properties [\#4](https://github.com/bakdata/streams-bootstrap/pull/4) ([@lawben](https://github.com/lawben))
-- Bakdata Kafka Streams Helm Repository [\#3](https://github.com/bakdata/streams-bootstrap/pull/3) ([@fapaul](https://github.com/fapaul))
 
-## [1.0.1](https://github.com/bakdata/streams-bootstrap/tree/1.0.1) (2019-03-27)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/1.0.0...1.0.1)
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.1.2...2.2.0
 
+## [2.1.2](https://github.com/bakdata/streams-bootstrap/tree/2.1.2) - 2022-06-08
+### What's changed
 
-## [1.0.0](https://github.com/bakdata/streams-bootstrap/tree/1.0.0) (2019-03-13)
-[View commits](https://github.com/bakdata/streams-bootstrap/compare/a9757f7ec96ccc43c91d668d00314d9106b9b9c6...1.0.0)
+* Update CronJob apiVersion due to deprecation by @jkbe in [#142](https://github.com/bakdata/streams-bootstrap/pull/142)
 
-**Closed issues:**
+* Fix key-value pairs indentation inside pod.yaml file by @irux in [#141](https://github.com/bakdata/streams-bootstrap/pull/141)
 
-- Extract common Kafka Streams parts [\#1](https://github.com/bakdata/streams-bootstrap/issues/1)
+* Remove default schedule for producer jobs by @philipp94831 in [#143](https://github.com/bakdata/streams-bootstrap/pull/143)
 
-**Merged pull requests:**
+* Update documentation by @philipp94831 in [#144](https://github.com/bakdata/streams-bootstrap/pull/144)
 
-- Kafka streams application [\#2](https://github.com/bakdata/streams-bootstrap/pull/2) ([@fapaul](https://github.com/fapaul))
+
+### New Contributors
+* @irux made their first contribution in [#141](https://github.com/bakdata/streams-bootstrap/pull/141)
+* @jkbe made their first contribution in [#142](https://github.com/bakdata/streams-bootstrap/pull/142)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.1.1...2.1.2
+
+## [2.1.1](https://github.com/bakdata/streams-bootstrap/tree/2.1.1) - 2022-03-02
+### What's changed
+
+* Verify deletion of topics by @philipp94831 in [#135](https://github.com/bakdata/streams-bootstrap/pull/135)
+
+* Add more configurations to jobs and cron jobs by @philipp94831 in [#136](https://github.com/bakdata/streams-bootstrap/pull/136)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.1.0...2.1.1
+
+## [2.1.0](https://github.com/bakdata/streams-bootstrap/tree/2.1.0) - 2022-02-21
+### What's changed
+
+* Add option for streams state persistence by @philipp94831 in [#130](https://github.com/bakdata/streams-bootstrap/pull/130)
+
+* Fix clean for pattern subscriptions by @philipp94831 in [#131](https://github.com/bakdata/streams-bootstrap/pull/131)
+
+* Add imagePullSecrets to streams-app helm chart by @raminqaf in [#133](https://github.com/bakdata/streams-bootstrap/pull/133)
+
+* Add input pattern config by @philipp94831 in [#132](https://github.com/bakdata/streams-bootstrap/pull/132)
+
+
+### New Contributors
+* @raminqaf made their first contribution in [#133](https://github.com/bakdata/streams-bootstrap/pull/133)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/2.0.0...2.1.0
+
+## [2.0.0](https://github.com/bakdata/streams-bootstrap/tree/2.0.0) - 2022-01-13
+### What's changed
+
+* Update to Kafka 3.0.0 by @philipp94831 in [#129](https://github.com/bakdata/streams-bootstrap/pull/129)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.9.3...2.0.0
+
+## [1.9.3](https://github.com/bakdata/streams-bootstrap/tree/1.9.3) - 2021-12-20
+### What's changed
+
+* Update log4j to 2.17.0 by @philipp94831 in [#128](https://github.com/bakdata/streams-bootstrap/pull/128)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.9.2...1.9.3
+
+## [1.9.2](https://github.com/bakdata/streams-bootstrap/tree/1.9.2) - 2021-12-16
+### What's changed
+
+* Update log4j to 2.16.0 by @philipp94831 in [#127](https://github.com/bakdata/streams-bootstrap/pull/127)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.9.1...1.9.2
+
+## [1.9.1](https://github.com/bakdata/streams-bootstrap/tree/1.9.1) - 2021-12-10
+### What's changed
+
+* Update log4j to 2.15.0 by @philipp94831 in [#125](https://github.com/bakdata/streams-bootstrap/pull/125)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.9.0...1.9.1
+
+## [1.9.0](https://github.com/bakdata/streams-bootstrap/tree/1.9.0) - 2021-09-14
+### What's changed
+
+* Downgrad Gradle to 6.7.1 by @philipp94831 in [#119](https://github.com/bakdata/streams-bootstrap/pull/119)
+
+* Update openbridge/ob_bulkstash version and allow arguments by @aqchen in [#121](https://github.com/bakdata/streams-bootstrap/pull/121)
+
+* Restart failed cleanup jobs instead of creating new pods by @yannick-roeder in [#120](https://github.com/bakdata/streams-bootstrap/pull/120)
+
+* Fix rclone volume permissions by @yannick-roeder in [#122](https://github.com/bakdata/streams-bootstrap/pull/122)
+
+* Add workaround for rclone config permissions by @yannick-roeder in [#123](https://github.com/bakdata/streams-bootstrap/pull/123)
+
+* Upgrade to Kafka 2.8 by @philipp94831 in [#124](https://github.com/bakdata/streams-bootstrap/pull/124)
+
+
+### New Contributors
+* @aqchen made their first contribution in [#121](https://github.com/bakdata/streams-bootstrap/pull/121)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.8.0...1.9.0
+
+## [1.8.0](https://github.com/bakdata/streams-bootstrap/tree/1.8.0) - 2021-09-03
+### What's changed
+
+* Auto-scale stateful sets by @philipp94831 in [#116](https://github.com/bakdata/streams-bootstrap/pull/116)
+
+* Suspend rclone cron jobs by @philipp94831 in [#117](https://github.com/bakdata/streams-bootstrap/pull/117)
+
+* Migrate to Log4j 2 by @philipp94831 in [#115](https://github.com/bakdata/streams-bootstrap/pull/115)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.7.1...1.8.0
+
+## [1.7.1](https://github.com/bakdata/streams-bootstrap/tree/1.7.1) - 2021-08-20
+### What's changed
+
+* Extend the readme in [#100](https://github.com/bakdata/streams-bootstrap/pull/100)
+
+* Add serviceName for StatefulSet by @disrupted in [#102](https://github.com/bakdata/streams-bootstrap/pull/102)
+
+* Reset schema of internal topics when they are deleted by @torbsto in [#104](https://github.com/bakdata/streams-bootstrap/pull/104)
+
+* Add node affinity to helm chart by @yannick-roeder in [#103](https://github.com/bakdata/streams-bootstrap/pull/103)
+
+* Fix nil warnings about empty yaml lists in value files by @yannick-roeder in [#106](https://github.com/bakdata/streams-bootstrap/pull/106)
+
+* Fix consumer group annotation by @philipp94831 in [#107](https://github.com/bakdata/streams-bootstrap/pull/107)
+
+* Make producer-app's CronJob schedule optional by @torbsto in [#108](https://github.com/bakdata/streams-bootstrap/pull/108)
+
+* producer chart: job/cronjob switch by @mkcode92 in [#110](https://github.com/bakdata/streams-bootstrap/pull/110)
+
+* Support KEDA idleReplicaCount by @philipp94831 in [#109](https://github.com/bakdata/streams-bootstrap/pull/109)
+
+* Clean schemas of pseudo topics created when performing a foreign key join by @philipp94831 in [#113](https://github.com/bakdata/streams-bootstrap/pull/113)
+
+
+### New Contributors
+* @mkcode92 made their first contribution in [#110](https://github.com/bakdata/streams-bootstrap/pull/110)
+* @disrupted made their first contribution in [#102](https://github.com/bakdata/streams-bootstrap/pull/102)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.7.0...1.7.1
+
+## [1.7.0](https://github.com/bakdata/streams-bootstrap/tree/1.7.0) - 2021-02-18
+### What's changed
+
+* Add consumer group annotation from autoscaling in [#95](https://github.com/bakdata/streams-bootstrap/pull/95)
+
+* Add priority class to helm charts by @yannick-roeder in [#97](https://github.com/bakdata/streams-bootstrap/pull/97)
+
+* Update Kafka to 2.7 by @philipp94831 in [#98](https://github.com/bakdata/streams-bootstrap/pull/98)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.6.0...1.7.0
+
+## [1.6.0](https://github.com/bakdata/streams-bootstrap/tree/1.6.0) - 2021-01-25
+### What's changed
+
+* Rename to streams-bootstrap by @philipp94831 in [#93](https://github.com/bakdata/streams-bootstrap/pull/93)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.5.5...1.6.0
+
+## [1.5.5](https://github.com/bakdata/streams-bootstrap/tree/1.5.5) - 2021-01-21
+### What's changed
+
+* Reduce helm chart size by @philipp94831 in [#90](https://github.com/bakdata/streams-bootstrap/pull/90)
+
+* Upgrade to helm 3 by @yannick-roeder in [#91](https://github.com/bakdata/streams-bootstrap/pull/91)
+
+* Expose AdminClient from CleanUpRunner by @philipp94831 in [#92](https://github.com/bakdata/streams-bootstrap/pull/92)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.5.4...1.5.5
+
+## [1.5.4](https://github.com/bakdata/streams-bootstrap/tree/1.5.4) - 2020-12-18
+### What's changed
+
+* Add tolerations to deployment by @yannick-roeder in [#87](https://github.com/bakdata/streams-bootstrap/pull/87)
+
+* Add producer application by @philipp94831 in [#89](https://github.com/bakdata/streams-bootstrap/pull/89)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.5.3...1.5.4
+
+## [1.5.3](https://github.com/bakdata/streams-bootstrap/tree/1.5.3) - 2020-11-24
+### What's changed
+
+* Do not delete consumer group if it does not exist by @philipp94831 in [#85](https://github.com/bakdata/streams-bootstrap/pull/85)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.5.2...1.5.3
+
+## [1.5.2](https://github.com/bakdata/streams-bootstrap/tree/1.5.2) - 2020-11-23
+### What's changed
+
+* Add scaled object for autoscaling with keda by @yannick-roeder in [#82](https://github.com/bakdata/streams-bootstrap/pull/82)
+
+* Fix comment for autoscaling by @yannick-roeder in [#83](https://github.com/bakdata/streams-bootstrap/pull/83)
+
+* Delete consumer groups on delete output by @philipp94831 in [#84](https://github.com/bakdata/streams-bootstrap/pull/84)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.5.1...1.5.2
+
+## [1.5.1](https://github.com/bakdata/streams-bootstrap/tree/1.5.1) - 2020-11-03
+### What's changed
+
+* Remove container suffix from container name by @yannick-roeder in [#73](https://github.com/bakdata/streams-bootstrap/pull/73)
+
+* Add extra input topics to streams app by @philipp94831 in [#81](https://github.com/bakdata/streams-bootstrap/pull/81)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.5.0...1.5.1
+
+## [1.5.0](https://github.com/bakdata/streams-bootstrap/tree/1.5.0) - 2020-09-29
+### What's changed
+
+* Update Kafka to 2.5.1 and Confluent to 5.5.1 by @philipp94831 in [#79](https://github.com/bakdata/streams-bootstrap/pull/79)
+
+* Add labels, annotations and configurable name to rclone CronJob by @philipp94831 in [#80](https://github.com/bakdata/streams-bootstrap/pull/80)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.6...1.5.0
+
+## [1.4.6](https://github.com/bakdata/streams-bootstrap/tree/1.4.6) - 2020-08-26
+### What's changed
+
+* Close resources after streams client by @philipp94831 in [#78](https://github.com/bakdata/streams-bootstrap/pull/78)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.5...1.4.6
+
+## [1.4.5](https://github.com/bakdata/streams-bootstrap/tree/1.4.5) - 2020-08-06
+### What's changed
+
+* Make JAVA_TOOL_OPTIONS configurable by @philipp94831 in [#68](https://github.com/bakdata/streams-bootstrap/pull/68)
+
+* Fix yaml file for kubernetes > 1.16 by @VictorKuenstler in [#70](https://github.com/bakdata/streams-bootstrap/pull/70)
+
+* Remove duplicated streams chart by @philipp94831 in [#72](https://github.com/bakdata/streams-bootstrap/pull/72)
+
+* Add annotations to clean up job by @philipp94831 in [#74](https://github.com/bakdata/streams-bootstrap/pull/74)
+
+* Trim rclone job name by @philipp94831 in [#76](https://github.com/bakdata/streams-bootstrap/pull/76)
+
+* Specify additional output topics via default CLI by @philipp94831 in [#75](https://github.com/bakdata/streams-bootstrap/pull/75)
+
+* Make helm chart backwards compatible by @philipp94831 in [#77](https://github.com/bakdata/streams-bootstrap/pull/77)
+
+
+### New Contributors
+* @VictorKuenstler made their first contribution in [#70](https://github.com/bakdata/streams-bootstrap/pull/70)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.4...1.4.5
+
+## [1.4.4](https://github.com/bakdata/streams-bootstrap/tree/1.4.4) - 2020-04-14
+### What's changed
+
+* Merge streams chart for statefulset and deployment by @philipp94831 in [#65](https://github.com/bakdata/streams-bootstrap/pull/65)
+
+* Use Kubernetes secrets for password parameters by @yannick-roeder in [#64](https://github.com/bakdata/streams-bootstrap/pull/64)
+
+* Only run streams resetter for existing topics by @philipp94831 in [#66](https://github.com/bakdata/streams-bootstrap/pull/66)
+
+* Close resources on streams creation error by @philipp94831 in [#67](https://github.com/bakdata/streams-bootstrap/pull/67)
+
+
+### New Contributors
+* @yannick-roeder made their first contribution in [#64](https://github.com/bakdata/streams-bootstrap/pull/64)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.3...1.4.4
+
+## [1.4.3](https://github.com/bakdata/streams-bootstrap/tree/1.4.3) - 2020-04-02
+### What's changed
+
+* Override log4j.properties when using provided by @b-feldmann in [#62](https://github.com/bakdata/streams-bootstrap/pull/62)
+
+* Revert PicoCli api usage to exit application properly by @philipp94831 in [#63](https://github.com/bakdata/streams-bootstrap/pull/63)
+
+
+### New Contributors
+* @b-feldmann made their first contribution in [#62](https://github.com/bakdata/streams-bootstrap/pull/62)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.2...1.4.3
+
+## [1.4.2](https://github.com/bakdata/streams-bootstrap/tree/1.4.2) - 2020-03-24
+### What's changed
+
+* Add helm chart to deploy streams app as statefulset with static group membership by @philipp94831 in [#60](https://github.com/bakdata/streams-bootstrap/pull/60)
+
+* Run streams resetter for external source topics and intermediate topics by @philipp94831 in [#61](https://github.com/bakdata/streams-bootstrap/pull/61)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.1...1.4.2
+
+## [1.4.1](https://github.com/bakdata/streams-bootstrap/tree/1.4.1) - 2020-03-13
+### What's changed
+
+* Do not exit application by @philipp94831 in [#57](https://github.com/bakdata/streams-bootstrap/pull/57)
+
+* Add topic client by @philipp94831 in [#58](https://github.com/bakdata/streams-bootstrap/pull/58)
+
+* Allow specification of boolean flags without any value by @philipp94831 in [#59](https://github.com/bakdata/streams-bootstrap/pull/59)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.4.0...1.4.1
+
+## [1.4.0](https://github.com/bakdata/streams-bootstrap/tree/1.4.0) - 2020-03-10
+### What's changed
+
+* Move error handlers to com.bakdata.kafka:error-handling by @philipp94831 in [#55](https://github.com/bakdata/streams-bootstrap/pull/55)
+
+* Remove DeadLetter by @philipp94831 in [#56](https://github.com/bakdata/streams-bootstrap/pull/56)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.3.4...1.4.0
+
+## [1.3.4](https://github.com/bakdata/streams-bootstrap/tree/1.3.4) - 2020-03-10
+### What's changed
+
+* Parse streams config from separate environment variables by @philipp94831 in [#54](https://github.com/bakdata/streams-bootstrap/pull/54)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.3.3...1.3.4
+
+## [1.3.3](https://github.com/bakdata/streams-bootstrap/tree/1.3.3) - 2020-02-27
+### What's changed
+
+* Exit application with proper code by @philipp94831 in [#53](https://github.com/bakdata/streams-bootstrap/pull/53)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.3.2...1.3.3
+
+## [1.3.2](https://github.com/bakdata/streams-bootstrap/tree/1.3.2) - 2020-02-24
+### What's changed
+
+* Check for errors when running streams resetter by @philipp94831 in [#52](https://github.com/bakdata/streams-bootstrap/pull/52)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.3.1...1.3.2
+
+## [1.3.1](https://github.com/bakdata/streams-bootstrap/tree/1.3.1) - 2020-01-30
+### What's changed
+
+* Fix parsing of environment parameters with ENV_PREFIX in name by @philipp94831 in [#50](https://github.com/bakdata/streams-bootstrap/pull/50)
+
+* Add hook for Streams state transitions by @philipp94831 in [#51](https://github.com/bakdata/streams-bootstrap/pull/51)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.3.0...1.3.1
+
+## [1.3.0](https://github.com/bakdata/streams-bootstrap/tree/1.3.0) - 2020-01-29
+### What's changed
+
+* Update Kafka to 2.4.0 by @philipp94831 in [#49](https://github.com/bakdata/streams-bootstrap/pull/49)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.2.1...1.3.0
+
+## [1.2.1](https://github.com/bakdata/streams-bootstrap/tree/1.2.1) - 2020-01-10
+### What's changed
+
+* Support schema registry authentication by @philipp94831 in [#47](https://github.com/bakdata/streams-bootstrap/pull/47)
+
+* Configure StreamsResetter with application properties by @torbsto in [#48](https://github.com/bakdata/streams-bootstrap/pull/48)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.2.0...1.2.1
+
+## [1.2.0](https://github.com/bakdata/streams-bootstrap/tree/1.2.0) - 2020-01-08
+### What's changed
+
+* Reset internal topics by @torbsto in [#40](https://github.com/bakdata/streams-bootstrap/pull/40)
+
+* Allow custom labels for jobs and deployments by @SvenLehmann in [#41](https://github.com/bakdata/streams-bootstrap/pull/41)
+
+* Improve values.yaml structure by @SvenLehmann in [#42](https://github.com/bakdata/streams-bootstrap/pull/42)
+
+* Add custom annotations by @SvenLehmann in [#43](https://github.com/bakdata/streams-bootstrap/pull/43)
+
+* Prioritize Kafka Streams Config passed via CLI over overridden properties by @philipp94831 in [#45](https://github.com/bakdata/streams-bootstrap/pull/45)
+
+* Call close after application clean up by @philipp94831 in [#46](https://github.com/bakdata/streams-bootstrap/pull/46)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.13...1.2.0
+
+## [1.1.13](https://github.com/bakdata/streams-bootstrap/tree/1.1.13) - 2019-11-15
+### What's changed
+
+* Add flat value transformers for error handling by @philipp94831 in [#36](https://github.com/bakdata/streams-bootstrap/pull/36)
+
+* Make PodAffinity rule configurable by @SvenLehmann in [#37](https://github.com/bakdata/streams-bootstrap/pull/37)
+
+* Classify all Kafka errors as recoverable bar some exceptions by @philipp94831 in [#38](https://github.com/bakdata/streams-bootstrap/pull/38)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.12...1.1.13
+
+## [1.1.12](https://github.com/bakdata/streams-bootstrap/tree/1.1.12) - 2019-11-07
+### What's changed
+
+* Fix schema registry clean up by @philipp94831 in [#35](https://github.com/bakdata/streams-bootstrap/pull/35)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.11...1.1.12
+
+## [1.1.11](https://github.com/bakdata/streams-bootstrap/tree/1.1.11) - 2019-11-05
+### What's changed
+
+* Add common error handlers by @philipp94831 in [#33](https://github.com/bakdata/streams-bootstrap/pull/33)
+
+* Improve code quality by @philipp94831 in [#34](https://github.com/bakdata/streams-bootstrap/pull/34)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.10...1.1.11
+
+## [1.1.10](https://github.com/bakdata/streams-bootstrap/tree/1.1.10) - 2019-10-31
+### What's changed
+
+* Add a helm chart for running Streams App as a job by @SvenLehmann in [#31](https://github.com/bakdata/streams-bootstrap/pull/31)
+
+* Delete schemas during clean up by @torbsto in [#32](https://github.com/bakdata/streams-bootstrap/pull/32)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.9...1.1.10
+
+## [1.1.9](https://github.com/bakdata/streams-bootstrap/tree/1.1.9) - 2019-10-25
+### What's changed
+
+* Delete error topic if requested by @SvenLehmann in [#30](https://github.com/bakdata/streams-bootstrap/pull/30)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.8...1.1.9
+
+## [1.1.8](https://github.com/bakdata/streams-bootstrap/tree/1.1.8) - 2019-10-17
+### What's changed
+
+* Expose delete topic method to subclasses by @philipp94831 in [#29](https://github.com/bakdata/streams-bootstrap/pull/29)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.7...1.1.8
+
+## [1.1.7](https://github.com/bakdata/streams-bootstrap/tree/1.1.7) - 2019-10-16
+### What's changed
+
+* Change reprocessing to clean up in [#26](https://github.com/bakdata/streams-bootstrap/pull/26)
+
+* Prepare release 1.1.7 by @philipp94831
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.6...1.1.7
+
+## [1.1.6](https://github.com/bakdata/streams-bootstrap/tree/1.1.6) - 2019-10-11
+### What's changed
+
+* Add utility method for single input topic by @torbsto in [#28](https://github.com/bakdata/streams-bootstrap/pull/28)
+
+
+### New Contributors
+* @torbsto made their first contribution in [#28](https://github.com/bakdata/streams-bootstrap/pull/28)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.5...1.1.6
+
+## [1.1.5](https://github.com/bakdata/streams-bootstrap/tree/1.1.5) - 2019-10-08
+### What's changed
+
+* Allow multiple input topics and add an error topic in [#27](https://github.com/bakdata/streams-bootstrap/pull/27)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.4...1.1.5
+
+## [1.1.4](https://github.com/bakdata/streams-bootstrap/tree/1.1.4) - 2019-09-11
+### What's changed
+
+* Add JMX prometheus by @lawben in [#21](https://github.com/bakdata/streams-bootstrap/pull/21)
+
+* Allow kafka streams configuration with external parameter in [#22](https://github.com/bakdata/streams-bootstrap/pull/22)
+
+* Add rclone chart by @lawben in [#24](https://github.com/bakdata/streams-bootstrap/pull/24)
+
+* Add hook for registering an uncaught exception handler by @philipp94831 in [#25](https://github.com/bakdata/streams-bootstrap/pull/25)
+
+
+### New Contributors
+* @philipp94831 made their first contribution in [#25](https://github.com/bakdata/streams-bootstrap/pull/25)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.3...1.1.4
+
+## [1.1.3](https://github.com/bakdata/streams-bootstrap/tree/1.1.3) - 2019-08-01
+### What's changed
+
+* Log initial configuration on debug in [#11](https://github.com/bakdata/streams-bootstrap/pull/11)
+
+* Add unique AppID method by @lawben in [#12](https://github.com/bakdata/streams-bootstrap/pull/12)
+
+* Change log level on debug for child app in different package in [#13](https://github.com/bakdata/streams-bootstrap/pull/13)
+
+* Add CLI parameter to allow reprocessing of data by @SvenLehmann in [#14](https://github.com/bakdata/streams-bootstrap/pull/14)
+
+* Fix duplicate in app name by @lawben in [#16](https://github.com/bakdata/streams-bootstrap/pull/16)
+
+* Add cleanup possibility on processor startup in [#15](https://github.com/bakdata/streams-bootstrap/pull/15)
+
+* Initialize topolgy stream before cleanup by @fapaul in [#17](https://github.com/bakdata/streams-bootstrap/pull/17)
+
+* Change reset visibility in [#18](https://github.com/bakdata/streams-bootstrap/pull/18)
+
+* Change clean up visibility in [#19](https://github.com/bakdata/streams-bootstrap/pull/19)
+
+* Release new version of kafka-streams chart in [#20](https://github.com/bakdata/streams-bootstrap/pull/20)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.2...1.1.3
+
+## [1.1.2](https://github.com/bakdata/streams-bootstrap/tree/1.1.2) - 2019-06-27
+### What's changed
+
+* Update readme with latest release version number in [#9](https://github.com/bakdata/streams-bootstrap/pull/9)
+
+* Add support for AWS roles and pod resources by @SvenLehmann in [#10](https://github.com/bakdata/streams-bootstrap/pull/10)
+
+
+### New Contributors
+* @SvenLehmann made their first contribution in [#10](https://github.com/bakdata/streams-bootstrap/pull/10)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.1...1.1.2
+
+## [1.1.1](https://github.com/bakdata/streams-bootstrap/tree/1.1.1) - 2019-05-24
+### What's changed
+
+* Bump version in README by @lawben
+
+* Comply default stream application name schema with kube dns by @fapaul in [#6](https://github.com/bakdata/streams-bootstrap/pull/6)
+
+* Set arity for boolean options to 1 to match environment key value pairs by @fapaul in [#7](https://github.com/bakdata/streams-bootstrap/pull/7)
+
+* Add log4j binding for sl4j in [#8](https://github.com/bakdata/streams-bootstrap/pull/8)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.1.0...1.1.1
+
+## [1.1.0](https://github.com/bakdata/streams-bootstrap/tree/1.1.0) - 2019-05-14
+### What's changed
+
+* Bakdata Kafka Streams Helm Repository by @fapaul in [#3](https://github.com/bakdata/streams-bootstrap/pull/3)
+
+* Update README.md by @lawben
+
+* Add default log properties by @lawben in [#4](https://github.com/bakdata/streams-bootstrap/pull/4)
+
+* Remove default custom environment variables ingestion from values.yaml by @lawben in [#5](https://github.com/bakdata/streams-bootstrap/pull/5)
+
+* Bumped versions
+
+
+### New Contributors
+* @lawben made their first contribution in [#5](https://github.com/bakdata/streams-bootstrap/pull/5)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.0.1...1.1.0
+
+## [1.0.1](https://github.com/bakdata/streams-bootstrap/tree/1.0.1) - 2019-03-27
+### What's changed
+
+* Changed group name to simply com.bakdata
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/1.0.0...1.0.1
+
+## [1.0.0](https://github.com/bakdata/streams-bootstrap/tree/1.0.0) - 2019-03-13
+### What's changed
+
+* Initial setup
+
+* Replaced Travis status badge with azure
+
+* Kafka streams application by @fapaul in [#2](https://github.com/bakdata/streams-bootstrap/pull/2)
+
+
+### New Contributors
+* @bakdata-bot made their first contribution
+* @fapaul made their first contribution in [#2](https://github.com/bakdata/streams-bootstrap/pull/2)
+* @ made their first contribution
+
+<!-- generated by git-cliff -->

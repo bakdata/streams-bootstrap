@@ -54,7 +54,8 @@ import picocli.CommandLine.Mixin;
  *     <li>{@link #getOutputTopic()}</li>
  *     <li>{@link #getLabeledOutputTopics()}</li>
  *     <li>{@link #getErrorTopic()}</li>
- *     <li>{@link #volatileGroupInstanceId}</li>
+ *     <li>{@link #isVolatileGroupInstanceId()}</li>
+ *     <li>{@link #getApplicationId()}</li>
  * </ul>
  * To implement your Kafka Streams application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
@@ -115,7 +116,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     @Override
     public final Optional<StreamsExecutionOptions> createExecutionOptions() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
                 .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
                 .stateListener(this::createStateListener)
                 .onStart(this::onStreamsStart)
@@ -143,7 +144,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
 
     @Override
     public StreamsAppConfiguration createConfiguration(final StreamsTopicConfig topics) {
-        return new StreamsAppConfiguration(topics, this.applicationId);
+        return new StreamsAppConfiguration(topics, this.getApplicationId());
     }
 
     /**
@@ -176,6 +177,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
 
     /**
      * Called after starting Kafka Streams
+     *
      * @param runningStreams running {@link KafkaStreams} instance along with its {@link StreamsConfig} and
      * {@link org.apache.kafka.streams.Topology}
      */
