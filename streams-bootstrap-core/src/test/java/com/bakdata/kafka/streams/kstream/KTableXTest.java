@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.function.Function;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Named;
@@ -1836,8 +1837,8 @@ class KTableXTest {
     @Test
     void shouldHaveQueryableStoreName() {
         final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), Map.of(
-                "application.id", "app-id",
-                "bootstrap.servers", "localhost:9092"
+                StreamsConfig.APPLICATION_ID_CONFIG, "app-id",
+                StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
         ));
         final KTableX<Object, Object> table = builder.stream("input").toTable(Materialized.as("store"));
         this.softly.assertThat(table.queryableStoreName()).isEqualTo("store");

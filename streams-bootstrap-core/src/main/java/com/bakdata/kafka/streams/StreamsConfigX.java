@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,8 +49,9 @@ import org.apache.kafka.streams.state.HostInfo;
 @ToString(callSuper = true)
 public class StreamsConfigX extends AbstractConfig {
 
-    public static final String LINEAGE_ENABLED_CONFIG = "streams.bootstrap.lineage.enabled";
-    private static final String LINEAGE_ENABLED_DOC = "";
+    private static final String PREFIX = "streams.bootstrap.";
+    public static final String LINEAGE_ENABLED_CONFIG = PREFIX + "lineage.enabled";
+    private static final String LINEAGE_ENABLED_DOC = "Add headers containing lineage information to each record read from a topic";
     private static final ConfigDef CONFIG_DEF = StreamsConfig.configDef()
             .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC);
     @NonNull

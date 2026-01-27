@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.Materialized.StoreType;
 import org.apache.kafka.streams.kstream.SessionWindows;
@@ -550,8 +551,8 @@ class MaterializedXTest {
     @Test
     void shouldThrowIfRetentionIsTooShort() {
         final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), Map.of(
-                "application.id", "app-id",
-                "bootstrap.servers", "localhost:9092"
+                StreamsConfig.APPLICATION_ID_CONFIG, "app-id",
+                StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
         ));
         final KStreamX<String, String> input = builder.stream("input");
         final KGroupedStreamX<String, String> grouped = input.groupByKey();
