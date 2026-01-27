@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.streams.kstream;
 
+import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,11 +34,9 @@ import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
 import java.time.Duration;
-import java.util.Map;
 import java.util.function.Function;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Named;
@@ -1836,10 +1835,7 @@ class KTableXTest {
 
     @Test
     void shouldHaveQueryableStoreName() {
-        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), Map.of(
-                StreamsConfig.APPLICATION_ID_CONFIG, "app-id",
-                StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
-        ));
+        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
         final KTableX<Object, Object> table = builder.stream("input").toTable(Materialized.as("store"));
         this.softly.assertThat(table.queryableStoreName()).isEqualTo("store");
     }

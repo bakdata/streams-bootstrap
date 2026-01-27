@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,10 +75,10 @@ class ConsumerRunnerTest extends KafkaTest {
 
     private void writeInputTopic(final String inputTopic, final SimpleProducerRecord<String, String> producerRecord) {
         final KafkaTestClient testClient = this.newTestClient();
-        testClient.send()
+        testClient.<String, String>send()
                 .with(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .with(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-                .to(inputTopic, (Iterable) List.of(producerRecord));
+                .to(inputTopic, List.of(producerRecord));
     }
 
 }

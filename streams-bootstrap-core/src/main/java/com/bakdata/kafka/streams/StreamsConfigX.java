@@ -30,14 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.ToString;
 import lombok.Value;
-import org.apache.kafka.common.config.AbstractConfig;
-import org.apache.kafka.common.config.ConfigDef;
-import org.apache.kafka.common.config.ConfigDef.Importance;
-import org.apache.kafka.common.config.ConfigDef.Type;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.state.HostInfo;
 
@@ -45,27 +39,10 @@ import org.apache.kafka.streams.state.HostInfo;
  * Class for simplified access to configs provided by {@link StreamsConfig}
  */
 @Value
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class StreamsConfigX extends AbstractConfig {
+public class StreamsConfigX {
 
-    private static final String PREFIX = "streams.bootstrap.";
-    public static final String LINEAGE_ENABLED_CONFIG = PREFIX + "lineage.enabled";
-    private static final String LINEAGE_ENABLED_DOC = "Add headers containing lineage information to each record read from a topic";
-    private static final ConfigDef CONFIG_DEF = StreamsConfig.configDef()
-            .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC);
     @NonNull
     StreamsConfig streamsConfig;
-
-    /**
-     * Create a new {@code StreamsConfigX} from a {@link StreamsConfig}
-     *
-     * @param streamsConfig streams config
-     */
-    public StreamsConfigX(final StreamsConfig streamsConfig) {
-        super(CONFIG_DEF, streamsConfig.originals());
-        this.streamsConfig = streamsConfig;
-    }
 
     private static HostInfo createHostInfo(final String applicationServerConfig) {
         final String[] hostAndPort = applicationServerConfig.split(":");
@@ -74,41 +51,29 @@ public class StreamsConfigX extends AbstractConfig {
 
     /**
      * Get the application id of the underlying {@link StreamsConfig}
-     *
      * @return application id
      * @see StreamsConfig#APPLICATION_ID_CONFIG
      */
     public String getAppId() {
-        return this.getString(StreamsConfig.APPLICATION_ID_CONFIG);
+        return this.streamsConfig.getString(StreamsConfig.APPLICATION_ID_CONFIG);
     }
 
     /**
      * Get the bootstrap servers of the underlying {@link StreamsConfig}
-     *
      * @return list of bootstrap servers
      * @see StreamsConfig#BOOTSTRAP_SERVERS_CONFIG
      */
     public List<String> getBoostrapServers() {
-        return this.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
-    }
-
-    /**
-     * Check if adding lineage headers is enabled. This is controlled by {@link #LINEAGE_ENABLED_CONFIG}
-     *
-     * @return true if lineage headers are added to streams and tables
-     */
-    public boolean isLineageEnabled() {
-        return this.getBoolean(LINEAGE_ENABLED_CONFIG);
+        return this.streamsConfig.getList(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG);
     }
 
     /**
      * Get all configs of the underlying {@link StreamsConfig}
-     *
      * @return Kafka configs
      * @see StreamsConfig#originals()
      */
     public Map<String, Object> getKafkaProperties() {
-        return Collections.unmodifiableMap(this.originals());
+        return Collections.unmodifiableMap(this.streamsConfig.originals());
     }
 
     /**
@@ -118,7 +83,7 @@ public class StreamsConfigX extends AbstractConfig {
      * {@link StreamsConfig#APPLICATION_SERVER_CONFIG} is set; otherwise, an empty {@link Optional}.
      */
     public Optional<HostInfo> getApplicationServer() {
-        final String applicationServerConfig = this.getString(APPLICATION_SERVER_CONFIG);
+        final String applicationServerConfig = this.streamsConfig.getString(APPLICATION_SERVER_CONFIG);
         return applicationServerConfig.isEmpty() ? Optional.empty()
                 : Optional.of(createHostInfo(applicationServerConfig));
     }

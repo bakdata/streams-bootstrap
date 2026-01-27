@@ -26,6 +26,7 @@ package com.bakdata.kafka.streams.kstream;
 
 import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
 import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
+import static java.util.Collections.emptyMap;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
@@ -55,7 +56,6 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.Materialized.StoreType;
 import org.apache.kafka.streams.kstream.SessionWindows;
@@ -550,10 +550,7 @@ class MaterializedXTest {
 
     @Test
     void shouldThrowIfRetentionIsTooShort() {
-        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), Map.of(
-                StreamsConfig.APPLICATION_ID_CONFIG, "app-id",
-                StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"
-        ));
+        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
         final KStreamX<String, String> input = builder.stream("input");
         final KGroupedStreamX<String, String> grouped = input.groupByKey();
         final TimeWindowedKStreamX<String, String> windowed =

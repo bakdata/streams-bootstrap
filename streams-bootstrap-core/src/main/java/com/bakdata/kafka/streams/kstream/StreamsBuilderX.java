@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
-import com.bakdata.kafka.streams.StreamsConfigX;
+import com.bakdata.kafka.streams.StreamsBuilderXConfig;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import java.util.Collection;
 import java.util.Map;
@@ -36,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
@@ -77,7 +76,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KStreamX<K, V> stream(final String topic) {
         final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topic));
-        return initialize(stream);
+        return this.initialize(stream);
     }
 
     /**
@@ -85,7 +84,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KStreamX<K, V> stream(final String topic, final Consumed<K, V> consumed) {
         final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topic, consumed));
-        return initialize(stream);
+        return this.initialize(stream);
     }
 
     /**
@@ -100,7 +99,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KStreamX<K, V> stream(final Collection<String> topics) {
         final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topics));
-        return initialize(stream);
+        return this.initialize(stream);
     }
 
     /**
@@ -108,7 +107,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KStreamX<K, V> stream(final Collection<String> topics, final Consumed<K, V> consumed) {
         final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topics, consumed));
-        return initialize(stream);
+        return this.initialize(stream);
     }
 
     /**
@@ -124,7 +123,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KStreamX<K, V> stream(final Pattern topicPattern) {
         final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topicPattern));
-        return initialize(stream);
+        return this.initialize(stream);
     }
 
     /**
@@ -132,7 +131,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KStreamX<K, V> stream(final Pattern topicPattern, final Consumed<K, V> consumed) {
         final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topicPattern, consumed));
-        return initialize(stream);
+        return this.initialize(stream);
     }
 
     /**
@@ -306,7 +305,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KTableX<K, V> table(final String topic) {
         final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic));
-        return initialize(table);
+        return this.initialize(table);
     }
 
     /**
@@ -314,7 +313,7 @@ public class StreamsBuilderX {
      */
     public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed) {
         final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic, consumed));
-        return initialize(table);
+        return this.initialize(table);
     }
 
     /**
@@ -330,7 +329,7 @@ public class StreamsBuilderX {
     public <K, V> KTableX<K, V> table(final String topic,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic, materialized));
-        return initialize(table);
+        return this.initialize(table);
     }
 
     /**
@@ -347,7 +346,7 @@ public class StreamsBuilderX {
     public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
         final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic, consumed, materialized));
-        return initialize(table);
+        return this.initialize(table);
     }
 
     /**
@@ -487,16 +486,16 @@ public class StreamsBuilderX {
     }
 
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
-        final StreamsConfigX streamsConfigX = new StreamsConfigX(new StreamsConfig(this.kafkaProperties));
-        if (streamsConfigX.isLineageEnabled()) {
+        final StreamsBuilderXConfig config = new StreamsBuilderXConfig(this.kafkaProperties);
+        if (config.isLineageEnabled()) {
             return stream.processValues(LineageProcessor::new);
         }
         return stream;
     }
 
     private <K, V> KTableX<K, V> initialize(final KTableX<K, V> table) {
-        final StreamsConfigX streamsConfigX = new StreamsConfigX(new StreamsConfig(this.kafkaProperties));
-        if (streamsConfigX.isLineageEnabled()) {
+        final StreamsBuilderXConfig config = new StreamsBuilderXConfig(this.kafkaProperties);
+        if (config.isLineageEnabled()) {
             return table.transformValues(LineageTransformer::new);
         }
         return table;

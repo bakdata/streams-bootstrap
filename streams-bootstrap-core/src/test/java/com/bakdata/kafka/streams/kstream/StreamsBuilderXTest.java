@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.Preconfigured;
-import com.bakdata.kafka.streams.StreamsConfigX;
+import com.bakdata.kafka.streams.StreamsBuilderXConfig;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
@@ -654,7 +654,7 @@ class StreamsBuilderXTest {
             @Override
             public Map<String, Object> createKafkaProperties() {
                 return Map.of(
-                        StreamsConfigX.LINEAGE_ENABLED_CONFIG, true
+                        StreamsBuilderXConfig.LINEAGE_ENABLED_CONFIG, true
                 );
             }
         };
@@ -724,7 +724,7 @@ class StreamsBuilderXTest {
             @Override
             public Map<String, Object> createKafkaProperties() {
                 return Map.of(
-                        StreamsConfigX.LINEAGE_ENABLED_CONFIG, true
+                        StreamsBuilderXConfig.LINEAGE_ENABLED_CONFIG, true
                 );
             }
         };
