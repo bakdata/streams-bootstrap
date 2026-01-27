@@ -25,9 +25,6 @@
 package com.bakdata.kafka.streams;
 
 import java.util.Map;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.Value;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigDef.Importance;
@@ -37,17 +34,14 @@ import org.apache.kafka.common.config.ConfigDef.Type;
  * Configuration for a {@link com.bakdata.kafka.streams.kstream.StreamsBuilderX}. Specifies how to build a
  * {@link org.apache.kafka.streams.Topology}.
  */
-@Value
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 public class StreamsBuilderXConfig extends AbstractConfig {
 
     private static final String PREFIX = "streams.bootstrap.";
     public static final String LINEAGE_ENABLED_CONFIG = PREFIX + "lineage.enabled";
-    private static final ConfigDef CONFIG_DEF = new ConfigDef()
-            .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC);
     private static final String LINEAGE_ENABLED_DOC =
             "Add headers containing lineage information to each record read from a topic";
+    private static final ConfigDef CONFIG_DEF = new ConfigDef()
+            .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC);
 
     /**
      * Create a new {@code StreamsBuilderXConfig} using the given properties.
