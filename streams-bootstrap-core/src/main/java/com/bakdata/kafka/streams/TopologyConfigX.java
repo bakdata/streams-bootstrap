@@ -34,7 +34,7 @@ import org.apache.kafka.common.config.ConfigDef.Type;
  * Configuration for a {@link com.bakdata.kafka.streams.kstream.StreamsBuilderX}. Specifies how to build a
  * {@link org.apache.kafka.streams.Topology}.
  */
-public class StreamsBuilderXConfig extends AbstractConfig {
+public class TopologyConfigX extends AbstractConfig {
 
     private static final String PREFIX = "streams.bootstrap.";
     public static final String LINEAGE_ENABLED_CONFIG = PREFIX + "lineage.enabled";
@@ -48,7 +48,7 @@ public class StreamsBuilderXConfig extends AbstractConfig {
      *
      * @param properties properties that specify how to build a {@link org.apache.kafka.streams.Topology}
      */
-    public StreamsBuilderXConfig(final Map<String, Object> properties) {
+    public TopologyConfigX(final Map<String, Object> properties) {
         super(CONFIG_DEF, properties);
     }
 

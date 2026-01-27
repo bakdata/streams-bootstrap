@@ -26,8 +26,8 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
 import com.bakdata.kafka.Preconfigured;
-import com.bakdata.kafka.streams.StreamsBuilderXConfig;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.TopologyConfigX;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
 import java.nio.charset.StandardCharsets;
@@ -654,7 +654,7 @@ class StreamsBuilderXTest {
             @Override
             public Map<String, Object> createKafkaProperties() {
                 return Map.of(
-                        StreamsBuilderXConfig.LINEAGE_ENABLED_CONFIG, true
+                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
                 );
             }
         };
@@ -724,7 +724,7 @@ class StreamsBuilderXTest {
             @Override
             public Map<String, Object> createKafkaProperties() {
                 return Map.of(
-                        StreamsBuilderXConfig.LINEAGE_ENABLED_CONFIG, true
+                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
                 );
             }
         };

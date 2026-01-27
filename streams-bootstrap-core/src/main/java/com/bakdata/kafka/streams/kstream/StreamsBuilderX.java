@@ -26,8 +26,8 @@ package com.bakdata.kafka.streams.kstream;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
-import com.bakdata.kafka.streams.StreamsBuilderXConfig;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.TopologyConfigX;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -486,7 +486,7 @@ public class StreamsBuilderX {
     }
 
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
-        final StreamsBuilderXConfig config = new StreamsBuilderXConfig(this.kafkaProperties);
+        final TopologyConfigX config = new TopologyConfigX(this.kafkaProperties);
         if (config.isLineageEnabled()) {
             return stream.processValues(LineageProcessor::new);
         }
@@ -494,7 +494,7 @@ public class StreamsBuilderX {
     }
 
     private <K, V> KTableX<K, V> initialize(final KTableX<K, V> table) {
-        final StreamsBuilderXConfig config = new StreamsBuilderXConfig(this.kafkaProperties);
+        final TopologyConfigX config = new TopologyConfigX(this.kafkaProperties);
         if (config.isLineageEnabled()) {
             return table.transformValues(LineageTransformer::new);
         }
