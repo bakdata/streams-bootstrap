@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,11 @@ public class StreamsConfigX {
     @NonNull
     StreamsConfig streamsConfig;
 
+    private static HostInfo createHostInfo(final String applicationServerConfig) {
+        final String[] hostAndPort = applicationServerConfig.split(":");
+        return new HostInfo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
+    }
+
     /**
      * Get the application id of the underlying {@link StreamsConfig}
      * @return application id
@@ -81,10 +86,5 @@ public class StreamsConfigX {
         final String applicationServerConfig = this.streamsConfig.getString(APPLICATION_SERVER_CONFIG);
         return applicationServerConfig.isEmpty() ? Optional.empty()
                 : Optional.of(createHostInfo(applicationServerConfig));
-    }
-
-    private static HostInfo createHostInfo(final String applicationServerConfig) {
-        final String[] hostAndPort = applicationServerConfig.split(":");
-        return new HostInfo(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
     }
 }
