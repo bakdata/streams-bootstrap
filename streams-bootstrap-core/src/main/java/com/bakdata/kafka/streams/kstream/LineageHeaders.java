@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.streams.kstream;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -66,17 +67,15 @@ public class LineageHeaders {
         if (partition < 0) {
             return this;
         }
-        //TODO serialize more compact as int? But then UI tools usually can't handle it
         return new LineageHeaders(
-                this.headers.add(PARTITION_HEADER, Integer.toString(partition).getBytes(StandardCharsets.UTF_8)));
+                this.headers.add(PARTITION_HEADER, ByteBuffer.allocate(Integer.BYTES).putInt(partition).array()));
     }
 
     LineageHeaders addOffsetHeader(final long offset) {
         if (offset < 0) {
             return this;
         }
-        //TODO serialize more compact as long? But then UI tools usually can't handle it
         return new LineageHeaders(
-                this.headers.add(OFFSET_HEADER, Long.toString(offset).getBytes(StandardCharsets.UTF_8)));
+                this.headers.add(OFFSET_HEADER, ByteBuffer.allocate(Long.BYTES).putLong(offset).array()));
     }
 }

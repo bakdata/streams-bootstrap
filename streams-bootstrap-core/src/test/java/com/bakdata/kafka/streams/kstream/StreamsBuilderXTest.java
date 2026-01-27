@@ -30,6 +30,7 @@ import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.TopologyConfigX;
 import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -675,16 +676,11 @@ class StreamsBuilderXTest {
                                 })
                                 .anySatisfy(header -> {
                                     this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
-                                    this.softly.assertThat(
-                                                    Integer.parseInt(new String(header.value(),
-                                                            StandardCharsets.UTF_8)))
-                                            .isEqualTo(0);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getInt()).isEqualTo(0);
                                 })
                                 .anySatisfy(header -> {
                                     this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
-                                    this.softly.assertThat(
-                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
-                                            .isEqualTo(0L);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getLong()).isEqualTo(0L);
                                 });
                     });
         }
@@ -745,16 +741,11 @@ class StreamsBuilderXTest {
                                 })
                                 .anySatisfy(header -> {
                                     this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
-                                    this.softly.assertThat(
-                                                    Integer.parseInt(new String(header.value(),
-                                                            StandardCharsets.UTF_8)))
-                                            .isEqualTo(0);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getInt()).isEqualTo(0);
                                 })
                                 .anySatisfy(header -> {
                                     this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
-                                    this.softly.assertThat(
-                                                    Long.parseLong(new String(header.value(), StandardCharsets.UTF_8)))
-                                            .isEqualTo(0L);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getLong()).isEqualTo(0L);
                                 });
                     });
         }
