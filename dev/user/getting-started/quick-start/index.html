@@ -483,24 +483,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick start
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -517,86 +499,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#minimal-kafka-streams-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Minimal Kafka Streams Application
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-the-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running the Application
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Running the Application">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#via-command-line-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Via Command Line Interface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#from-the-main-method" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        From the main Method
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -737,62 +639,6 @@
     
   
     Producer concepts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../concepts/consumer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Consumer concepts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../concepts/consumer-producer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Consumer-Producer concepts
   
 
     
@@ -1253,75 +1099,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#minimal-kafka-streams-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Minimal Kafka Streams Application
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-the-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running the Application
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Running the Application">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#via-command-line-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Via Command Line Interface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#from-the-main-method" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        From the main Method
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1340,83 +1117,7 @@
   
 
 
-<h1 id="quick-start">Quick Start</h1>
-<p>This page shows how to add <code>streams-bootstrap</code> to a project and how to create and run a minimal application.</p>
-<h2 id="prerequisites">Prerequisites</h2>
-<ul>
-<li>Java 17</li>
-<li>Apache Kafka cluster (brokers reachable from the application)</li>
-<li>Access to Maven Central</li>
-<li><code>streams-bootstrap-cli</code> dependency (see <a href="../setup/">Setup</a> for Gradle/Maven snippets)</li>
-</ul>
-<h2 id="minimal-kafka-streams-application">Minimal Kafka Streams Application</h2>
-<p>Create a subclass of <code>KafkaStreamsApplication</code> and implement the required methods.</p>
-<pre><code class="language-java">import com.bakdata.kafka.streams.KafkaStreamsApplication;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsTopicConfig;
-import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import java.util.Map;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
-
-public class MyStreamsApplication extends KafkaStreamsApplication&lt;StreamsApp&gt; {
-
-    public static void main(final String[] args) {
-        new MyStreamsApplication().startApplication(args);
-    }
-
-    @Override
-    public StreamsApp createApp() {
-        return new StreamsApp() {
-            @Override
-            public void buildTopology(final StreamsBuilderX builder) {
-                final KStreamX&lt;String, String&gt; input = builder.streamInput();
-
-                // topology definition
-
-                input.toOutputTopic();
-            }
-
-            @Override
-            public String getUniqueAppId(final StreamsTopicConfig topics) {
-                return &quot;streams-bootstrap-app-&quot; + topics.getOutputTopic();
-            }
-
-            @Override
-            public SerdeConfig defaultSerializationConfig() {
-                return new SerdeConfig(StringSerde.class, StringSerde.class);
-            }
-
-            @Override
-            public Map&lt;String, Object&gt; createKafkaProperties() {
-                return Map.of(
-                        // additional Kafka properties
-                );
-            }
-        };
-    }
-}
-</code></pre>
-<h2 id="running-the-application">Running the Application</h2>
-<h3 id="via-command-line-interface">Via Command Line Interface</h3>
-<p>When packaged as a runnable JAR (for example, in a container), the <code>run</code> command is the default entrypoint:</p>
-<pre><code class="language-bash">java -jar my-streams-app.jar \
-    run \
-    --bootstrap-servers kafka:9092 \
-    --input-topics input-topic \
-    --output-topic output-topic \
-    --schema-registry-url http://schema-registry:8081
-</code></pre>
-<p>Additional subcommands such as <code>clean</code> and <code>reset</code> are available for lifecycle management.</p>
-<h3 id="from-the-main-method">From the <code>main</code> Method</h3>
-<p>In the <code>main</code> method, the application subclass starts the framework via:</p>
-<pre><code class="language-java">public static void main(final String[] args) {
-    new MyStreamsApplication().startApplication(args);
-}
-</code></pre>
-<p>This delegates configuration loading, lifecycle handling, and shutdown to <code>streams-bootstrap</code>.</p>
-<hr />
+<h1 id="quick-start">Quick start</h1>
 
 
 

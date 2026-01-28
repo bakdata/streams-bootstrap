@@ -340,24 +340,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    What is streams-bootstrap
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="." class="md-nav__link md-nav__link--active">
         
   
@@ -374,75 +356,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-use-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why use it?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#framework-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Framework Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Framework Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#core-modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Modules
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#external-dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        External Dependencies
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -722,62 +635,6 @@
     
   
     Producer concepts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="user/concepts/consumer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Consumer concepts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="user/concepts/consumer-producer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Consumer-Producer concepts
   
 
     
@@ -1238,64 +1095,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-use-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why use it?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#framework-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Framework Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Framework Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#core-modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Modules
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#external-dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        External Dependencies
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1315,46 +1114,6 @@
 
 
 <h1 id="what-is-streams-bootstrap">What is streams-bootstrap?</h1>
-<p><code>streams-bootstrap</code> is a Java library that standardizes the development and operation of Kafka-based applications (Kafka
-Streams and plain Kafka clients).</p>
-<p>The framework supports Apache Kafka 4.1 and Java 17. Its modules are published to Maven Central for straightforward
-integration into existing projects.</p>
-<h2 id="why-use-it">Why use it?</h2>
-<p>Kafka Streams and the core Kafka clients provide strong primitives for stream processing and messaging, but they do not
-prescribe:</p>
-<ul>
-<li>How to structure a full application around those primitives</li>
-<li>How to configure applications consistently</li>
-<li>How to deploy and operate these services on Kubernetes</li>
-<li>How to perform repeatable reprocessing and cleanup</li>
-<li>How to handle errors and large messages uniformly</li>
-</ul>
-<p><code>streams-bootstrap</code> addresses these aspects by supplying:</p>
-<ol>
-<li><strong>Standardized base classes</strong> for Kafka Streams and client applications.</li>
-<li><strong>A common CLI/configuration contract</strong> for all Kafka applications.</li>
-<li><strong>Helm-based deployment templates</strong> and conventions for Kubernetes.</li>
-<li><strong>Built-in reset/clean workflows</strong> for reprocessing and state management.</li>
-<li><strong>Consistent error-handling</strong> and dead-letter integration.</li>
-<li><strong>Testing infrastructure</strong> for local development and CI environments.</li>
-<li><strong>Optional blob-storage-backed serialization</strong> for large messages.</li>
-</ol>
-<h2 id="framework-architecture">Framework Architecture</h2>
-<p>The framework uses a modular architecture with a clear separation of concerns.</p>
-<h3 id="core-modules">Core Modules</h3>
-<ul>
-<li><code>streams-bootstrap-core</code>: Base classes such as <code>KafkaApplication</code>, <code>Runner</code>, and <code>CleanUpRunner</code></li>
-<li><code>streams-bootstrap-cli</code>: CLI framework based on <code>picocli</code></li>
-<li><code>streams-bootstrap-test</code>: Testing utilities (<code>TestApplicationRunner</code>, <code>KafkaTestClient</code>)</li>
-<li><code>streams-bootstrap-large-messages</code>: Support for handling large Kafka messages</li>
-<li><code>streams-bootstrap-cli-test</code>: Test support for CLI-based applications</li>
-</ul>
-<h3 id="external-dependencies">External Dependencies</h3>
-<ul>
-<li>Apache Kafka: <code>kafka-streams</code>, <code>kafka-clients</code></li>
-<li>Confluent Platform: Schema Registry and Avro SerDes</li>
-<li>Picocli: Command-line parsing and CLI framework</li>
-</ul>
 
 
 
