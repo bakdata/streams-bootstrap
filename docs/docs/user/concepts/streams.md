@@ -97,18 +97,7 @@ Streams applications support flexible topic configuration:
 
 ### Kafka properties
 
-Additional Kafka Streams configuration can be supplied using:
-
-- `--kafka-config <key=value,...>`
-
-The framework applies the following defaults:
-
-```text
-processing.guarantee=exactly_once_v2
-producer.max.in.flight.requests.per.connection=1
-producer.acks=all
-producer.compression.type=gzip
-```
+TODO
 
 ---
 
