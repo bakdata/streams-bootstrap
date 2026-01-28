@@ -35,13 +35,12 @@ application definition and configuration. This is useful for reprocessing input 
 
 When a reset is triggered, the following resources are affected:
 
-| Resource           | Action                                    |
-|--------------------|-------------------------------------------|
-| State stores       | Cleared locally, changelog topics deleted |
-| Internal topics    | Deleted (e.g. repartition topics)         |
-| Consumer offsets   | Reset to earliest for input topics        |
-| Output topics      | Preserved                                 |
-| Application config | Preserved                                 |
+| Resource         | Action                                    |
+|------------------|-------------------------------------------|
+| State stores     | Cleared locally, changelog topics deleted |
+| Internal topics  | Deleted (e.g. repartition topics)         |
+| Consumer offsets | Reset to earliest for input topics        |
+| Output topics    | Preserved                                 |
 
 Triggering a reset via CLI:
 
@@ -65,17 +64,12 @@ After a reset, the application can be started again and will reprocess all input
 
 ### Cleaning an application
 
-The `clean` command removes Kafka-related resources created by the application:
+The `clean` command performs everything that `reset` does and additionally removes the Kafka consumer groups created by
+the application.
 
 ```bash
 java -jar my-streams-app.jar clean
 ```
-
-This includes:
-
-- Consumer groups
-- Internal topics
-- Output topics (unless explicitly preserved)
 
 ---
 
@@ -98,8 +92,6 @@ Streams applications support flexible topic configuration:
 ### Application ID
 
 - `--application-id`: Unique Kafka Streams application ID
-
-If not provided, the framework generates a deterministic application ID.
 
 ---
 
@@ -124,27 +116,11 @@ producer.compression.type=gzip
 
 #### Setup
 
-Custom uncaught exception handling can be provided by overriding the default handler:
-
-```java
-
-@Override
-private StreamsUncaughtExceptionHandler createUncaughtExceptionHandler() {
-    return new MyCustomExceptionHandler();
-}
-```
+TODO
 
 #### Clean up
 
-Applications can observe Kafka Streams state transitions by registering a state listener:
-
-```java
-
-@Override
-private StateListener createStateListener() {
-    return new MyCustomStateListener();
-}
-```
+TODO
 
 ---
 

@@ -9,16 +9,6 @@ testing, and utilities for verifying application behavior and consumer group sta
 
 ## Core Testing Components
 
-### KafkaTest Base Class
-
-`KafkaTest` is an abstract base class that sets up a Kafka environment using TestContainers. It provides:
-
-- Kafka container setup
-- Access to bootstrap servers and Schema Registry
-- Methods for waiting on consumer group states
-- Integration with `TestSchemaRegistry`
-- Creation of `KafkaTestClient` instances
-
 ### KafkaTestClient
 
 `KafkaTestClient` is a fluent test client that simplifies:
@@ -39,36 +29,7 @@ Provides tools to:
 
 ## Unit Testing with `fluent-kafka-streams-tests`
 
-The framework integrates with `fluent-kafka-streams-tests` for unit testing Kafka Streams topologies.
-
-## TestSchemaRegistry
-
-`TestSchemaRegistry` provides built-in support for Schema Registry in tests using a mock implementation. It creates
-isolated Schema Registry instances for testing schema-aware applications.
-
-### Features:
-
-- Random scoped mock URLs to avoid collisions
-- Support for custom mock URLs
-- Configurable schema providers
-- Compatible with Confluent’s `MockSchemaRegistry`
-
-### Example:
-
-```java
-// Random scope
-TestSchemaRegistry registry = new TestSchemaRegistry();
-
-// Custom scope
-TestSchemaRegistry registry = new TestSchemaRegistry("mock://custom-scope");
-
-// Default providers
-SchemaRegistryClient client = this.registry.getSchemaRegistryClient();
-
-// With custom providers
-List<SchemaProvider> providers = List.of(new ProtobufSchemaProvider());
-SchemaRegistryClient client = this.registry.getSchemaRegistryClient(this.providers);
-```
+The framework integrates with `fluent-kafka-streams-tests` for unit testing Kafka Streams topologies.```
 
 ## Integration Testing with TestContainers
 
@@ -116,18 +77,30 @@ stop();
 KafkaTestClient client = newTestClient();
 
 // Create topic with default settings (1 partition, 1 replica)
-client.createTopic("my-topic");
+client.
+
+createTopic("my-topic");
 
 // Create topic with custom settings
-client.createTopic("my-topic",
+client.
+
+createTopic("my-topic",
         KafkaTestClient.defaultTopicSettings()
-        .partitions(3)
-        .replicationFactor(1)
-        .build());
+        .
+
+partitions(3)
+        .
+
+replicationFactor(1)
+        .
+
+build());
 
 // Create topic with config
 Map<String, String> config = Map.of("cleanup.policy", "compact");
-client.createTopic("my-topic",settings, config);
+client.
+
+createTopic("my-topic",settings, config);
 
 // Check if topic exists
 boolean exists = this.client.existsTopic("my-topic");
@@ -137,8 +110,12 @@ boolean exists = this.client.existsTopic("my-topic");
 
 ```java
 client.send()
-        .withKeySerializer(new StringSerializer())
-        .withValueSerializer(new StringSerializer())
+        .
+
+withKeySerializer(new StringSerializer())
+        .
+
+withValueSerializer(new StringSerializer())
 
 to("topic-name",List.of(
         new SimpleProducerRecord<>("key1","value1"),

@@ -22,12 +22,9 @@ The framework ships a set of Helm charts tailored to different application types
 |------------------------|-----------------------------------------------|--------------------------------|
 | `streams-app`          | Deploy Kafka Streams applications             | `Deployment`, `StatefulSet`    |
 | `producer-app`         | Deploy Kafka Producer applications            | `Deployment`, `Job`, `CronJob` |
-| `consumer-app`         | Deploy Kafka Consumer applications            | `Deployment`                   |
-| `consumerproducer-app` | Deploy batch / consumer–producer applications | `Deployment`                   |
+| `consumer-app`         | Deploy Kafka Consumer applications            | `Deployment`, `StatefulSet`    |
+| `consumerproducer-app` | Deploy batch / consumer–producer applications | `Deployment`, `StatefulSet`    |
 | `*-cleanup-job`        | Clean Kafka resources before deployment       | `Job` (Helm hooks)             |
-
-Cleanup charts (for example `streams-app-cleanup-job` and `producer-app-cleanup-job`) remove Kafka topics, consumer
-groups, and Schema Registry subjects associated with a release before a new deployment.
 
 ---
 

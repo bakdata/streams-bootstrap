@@ -16,13 +16,12 @@ to full production stacks with Prometheus Operator.
 
 ### Monitoring Mechanisms
 
-| Mechanism                | Use Case                            | Key Values               |
-|--------------------------|-------------------------------------|--------------------------|
-| JMX remote access        | Direct debugging and inspection     | `jmx.enabled`            |
-| Prometheus JMX exporter  | Production metrics collection       | `prometheus.jmx.enabled` |
-| Liveness probes          | Container health checks             | `livenessProbe`          |
-| Readiness probes         | Traffic readiness / rollout control | `readinessProbe`         |
-| Custom ports and Service | HTTP / metrics endpoints exposure   | `ports`, `service.*`     |
+| Mechanism               | Use Case                            | Key Values               |
+|-------------------------|-------------------------------------|--------------------------|
+| JMX remote access       | Direct debugging and inspection     | `jmx.enabled`            |
+| Prometheus JMX exporter | Production metrics collection       | `prometheus.jmx.enabled` |
+| Liveness probes         | Container health checks             | `livenessProbe`          |
+| Readiness probes        | Traffic readiness / rollout control | `readinessProbe`         |
 
 ### JMX Configuration
 
@@ -54,9 +53,6 @@ When enabled, the chart configures the JVM with flags similar to:
 -Dcom.sun.management.jmxremote.ssl=false
 -Djava.rmi.server.hostname=localhost
 ```
-
-> **Security note**: The default JMX configuration disables authentication and SSL. For production, use
-> port-forwarding or tunnel access instead of exposing JMX externally.
 
 Accessing JMX metrics from a local client:
 
@@ -141,39 +137,12 @@ podAnnotations:
 
 This enables scraping the JMX exporter endpoint exposed on `prometheus.jmx.port`.
 
-#### Service and PodMonitor
+### PodMonitor
 
-To expose metrics via a Service and integrate with Prometheus Operator using a `PodMonitor`:
+For more advanced Prometheus Operator setups, a `PodMonitor` custom resource can be deployed.
 
-```yaml
-service:
-  enabled: true
-  type: ClusterIP
-  labels:
-    monitoring: "true"
-
-ports:
-  - containerPort: 5556
-    name: metrics
-    protocol: TCP
-    servicePort: 5556
-```
-
-Example `PodMonitor`:
-
-```yaml
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: streams-app
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: streams-app
-  podMetricsEndpoints:
-    - port: metrics
-      interval: 30s
-```
+The `streams-bootstrap` repository provides a reference `PodMonitor`
+configuration: [monitoring/pod_monitor.yaml](https://github.com/bakdata/streams-bootstrap/blob/1ff01c2f/monitoring/pod_monitor.yaml)
 
 ### Health Checks
 

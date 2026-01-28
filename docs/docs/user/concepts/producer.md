@@ -68,15 +68,6 @@ public SerializerConfig defaultSerializationConfig() {
 }
 ```
 
-Common serializer combinations include:
-
-| Key Serializer        | Value Serializer         | Use case                   |
-|-----------------------|--------------------------|----------------------------|
-| `StringSerializer`    | `StringSerializer`       | Simple string messages     |
-| `StringSerializer`    | `SpecificAvroSerializer` | Avro with schema evolution |
-| `StringSerializer`    | `GenericAvroSerializer`  | Dynamic Avro schemas       |
-| `ByteArraySerializer` | `ByteArraySerializer`    | Binary data                |
-
 ### Custom Kafka properties
 
 Producer-specific Kafka configuration can be customized by overriding `createKafkaProperties()`:
@@ -95,14 +86,6 @@ public Map<String, Object> createKafkaProperties() {
 ```
 
 These properties are merged with the framework defaults and CLI-provided configuration.
-
-### Schema Registry integration
-
-When the `--schema-registry-url` option is provided:
-
-- Schemas are registered automatically during application startup
-- Schema cleanup is handled as part of the `clean` command
-- Schema evolution is fully supported
 
 ---
 

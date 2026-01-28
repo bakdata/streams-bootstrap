@@ -6,7 +6,6 @@ This page shows how to add `streams-bootstrap` to a project and how to create an
 
 - Java 17
 - Apache Kafka cluster (brokers reachable from the application)
-- Access to Maven Central
 - `streams-bootstrap-cli` dependency (see [Setup](setup.md) for Gradle/Maven snippets)
 
 ## Minimal Kafka Streams Application
@@ -35,9 +34,7 @@ public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.streamInput();
-
                 // topology definition
-
                 input.toOutputTopic();
             }
 
@@ -49,13 +46,6 @@ public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
             @Override
             public SerdeConfig defaultSerializationConfig() {
                 return new SerdeConfig(StringSerde.class, StringSerde.class);
-            }
-
-            @Override
-            public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        // additional Kafka properties
-                );
             }
         };
     }

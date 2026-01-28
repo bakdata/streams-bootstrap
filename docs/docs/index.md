@@ -27,20 +27,15 @@ prescribe:
 6. **Testing infrastructure** for local development and CI environments.
 7. **Optional blob-storage-backed serialization** for large messages.
 
-## Framework Architecture
+## Architecture
 
 The framework uses a modular architecture with a clear separation of concerns.
 
 ### Core Modules
 
-- `streams-bootstrap-core`: Base classes such as `KafkaApplication`, `Runner`, and `CleanUpRunner`
+- `streams-bootstrap-core`: Core abstractions for application lifecycle, execution, and cleanup
 - `streams-bootstrap-cli`: CLI framework based on `picocli`
-- `streams-bootstrap-test`: Testing utilities (`TestApplicationRunner`, `KafkaTestClient`)
+- `streams-bootstrap-test`: Utilities for testing streams-bootstrap applications
 - `streams-bootstrap-large-messages`: Support for handling large Kafka messages
 - `streams-bootstrap-cli-test`: Test support for CLI-based applications
 
-### External Dependencies
-
-- Apache Kafka: `kafka-streams`, `kafka-clients`
-- Confluent Platform: Schema Registry and Avro SerDes
-- Picocli: Command-line parsing and CLI framework

@@ -2,8 +2,11 @@
 
 ## Application types
 
-The **streams-bootstrap** framework uses a three-layer application type hierarchy:
-**App → ConfiguredApp → ExecutableApp**
+In streams-bootstrap, there are three application types:
+
+- **App**
+- **ConfiguredApp**
+- **ExecutableApp**
 
 ---
 
@@ -43,11 +46,6 @@ It can create:
 
 - a **Runner** for running the application
 - a **CleanUpRunner** for cleanup operations
-
-The `KafkaApplication` base class orchestrates the creation of these components through methods such as:
-
-- `createConfiguredApp()`
-- `createExecutableApp()`
 
 ---
 
@@ -107,6 +105,8 @@ The framework provides a built-in mechanism to clean up all resources associated
 
 When the cleanup operation is triggered, the following resources are removed:
 
+**TODO:** extend the table for new consumer apps
+
 | Resource Type       | Description                                               | Streams Apps | Producer Apps |
 |---------------------|-----------------------------------------------------------|--------------|---------------|
 | Output Topics       | The main output topic of the application                  | ✓            | ✓             |
@@ -163,6 +163,14 @@ APP_OUTPUT_TOPIC            →      --output-topic
 Additionally, Kafka-specific environment variables with the `KAFKA_` prefix are automatically added to the Kafka
 configuration.
 
+### Schema Registry integration
+
+When the `--schema-registry-url` option is provided:
+
+- Schemas are registered automatically during application startup
+- Schema cleanup is handled as part of the `clean` command
+- Schema evolution is fully supported
+
 ## Command line interface
 
 The framework provides a unified command-line interface for application configuration.
@@ -178,8 +186,3 @@ The framework provides a unified command-line interface for application configur
 - `--bootstrap-servers`: Kafka bootstrap servers (required)
 - `--schema-registry-url`: URL for Avro serialization
 - `--kafka-config`: Key-value Kafka configuration
-- `--output-topic`: Main output topic
-- `--labeled-output-topics`: Named output topics
-- `--input-topics`: Input topics (for Streams apps)
-- `--input-pattern`: Input topic pattern (for Streams apps)
-- `--application-id`: Unique app ID (for Streams apps)
