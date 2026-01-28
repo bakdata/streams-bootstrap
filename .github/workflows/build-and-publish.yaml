@@ -30,10 +30,10 @@ jobs:
     if: ${{ needs.build-and-publish.result == 'success' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download aggregated Javadoc artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: build-artifact
           path: build-artifact
@@ -56,7 +56,7 @@ jobs:
           fi
 
       - name: Upload extracted Javadoc
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: javadoc
           path: docs/docs/javadoc
@@ -67,15 +67,15 @@ jobs:
     needs: extract-javadoc
     if: ${{ needs.extract-javadoc.result == 'success' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@v4
         with:
           poetry-version: "1.8.2"
 
@@ -93,12 +93,12 @@ jobs:
     permissions:
       contents: write # Explicitly grant write access to allow pushing in this job for dependabot
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Fetch all tags; Required for doc versioning
 
       - name: Download extracted Javadoc
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: javadoc
           path: docs/docs/javadoc
