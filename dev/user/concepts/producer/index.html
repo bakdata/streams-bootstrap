@@ -743,13 +743,41 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#custom-kafka-properties" class="md-nav__link">
+  <a href="#kafka-properties" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Kafka properties
+        Kafka properties
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1361,13 +1389,41 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#custom-kafka-properties" class="md-nav__link">
+  <a href="#kafka-properties" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Kafka properties
+        Kafka properties
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1419,10 +1475,10 @@
 
 
 <h1 id="producer-applications">Producer applications</h1>
-<p>Producer applications are applications that generate data and send it to Kafka topics. They can be used to produce
-messages from various sources, such as databases, files, or real-time events.</p>
-<p>The <code>streams-bootstrap</code> framework provides a structured way to build Kafka producer applications with built-in
-configuration handling, command-line support, and resource lifecycle management.</p>
+<p>Producer applications generate data and send it to Kafka topics. They can be used to produce messages from various
+sources, such as databases, files, or real-time events.</p>
+<p>streams-bootstrap provides a structured way to build producer applications with consistent configuration handling,
+command-line support, and lifecycle management.</p>
 <hr />
 <h2 id="application-lifecycle">Application lifecycle</h2>
 <h3 id="running-an-application">Running an application</h3>
@@ -1433,9 +1489,9 @@ configuration handling, command-line support, and resource lifecycle management.
 <li>Run continuously when implemented as long-lived services</li>
 </ul>
 <p>The execution model is fully controlled by the producer implementation and its runnable logic.</p>
+<hr />
 <h3 id="cleaning-an-application">Cleaning an application</h3>
-<p>Producer applications support a dedicated <code>clean</code> command that removes Kafka-related resources created by the
-application.</p>
+<p>Producer applications support a dedicated <code>clean</code> command.</p>
 <pre><code class="language-bash">java -jar my-producer-app.jar \
   --bootstrap-servers localhost:9092 \
   --output-topic my-topic \
@@ -1447,15 +1503,7 @@ application.</p>
 <li>Delete registered schemas from Schema Registry</li>
 <li>Execute custom cleanup hooks defined by the application</li>
 </ul>
-<p>Applications can register custom cleanup logic by overriding <code>setupCleanUp</code>:</p>
-<pre><code class="language-java">
-@Override
-public void setupCleanUp(final EffectiveAppConfiguration configuration) {
-    configuration.addCleanupHook(() -&gt; {
-        // Custom cleanup logic
-    });
-}
-</code></pre>
+<p>Applications can register custom cleanup logic by overriding <code>setupCleanUp</code>.</p>
 <hr />
 <h2 id="configuration">Configuration</h2>
 <h3 id="serialization-configuration">Serialization configuration</h3>
@@ -1467,7 +1515,7 @@ public SerializerConfig defaultSerializationConfig() {
     return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
 }
 </code></pre>
-<h3 id="custom-kafka-properties">Custom Kafka properties</h3>
+<h3 id="kafka-properties">Kafka properties</h3>
 <p>Producer-specific Kafka configuration can be customized by overriding <code>createKafkaProperties()</code>:</p>
 <pre><code class="language-java">
 @Override
@@ -1480,7 +1528,20 @@ public Map&lt;String, Object&gt; createKafkaProperties() {
     );
 }
 </code></pre>
-<p>These properties are merged with the framework defaults and CLI-provided configuration.</p>
+<p>These properties are merged with defaults and CLI-provided configuration.</p>
+<hr />
+<h3 id="lifecycle-hooks">Lifecycle hooks</h3>
+<h4 id="clean-up">Clean up</h4>
+<p>Custom cleanup logic that is not tied to Kafka topics can be registered via cleanup hooks:</p>
+<pre><code class="language-java">
+@Override
+public void setupCleanUp(final EffectiveAppConfiguration configuration) {
+    configuration.addCleanupHook(() -&gt; {
+        // Custom cleanup logic
+    });
+}
+</code></pre>
+<p>Topic-related cleanup should be implemented using topic hooks.</p>
 <hr />
 <h2 id="command-line-interface">Command line interface</h2>
 <p>Producer applications inherit standard CLI options from <code>KafkaApplication</code>.</p>

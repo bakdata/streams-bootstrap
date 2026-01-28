@@ -1669,7 +1669,8 @@ helm repo update
 <p><strong>StatefulSet</strong></p>
 <ul>
 <li>Used for stateful Kafka Streams applications with local state stores</li>
-<li>Enabled when <code>statefulSet: true</code> and <code>persistence.enabled: true</code></li>
+<li>Enabled when <code>statefulSet: true</code></li>
+<li>Required when <code>persistence.enabled: true</code></li>
 <li>Each pod receives a dedicated <code>PersistentVolumeClaim</code> for RocksDB state</li>
 </ul>
 </li>

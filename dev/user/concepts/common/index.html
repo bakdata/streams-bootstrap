@@ -708,6 +708,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cleaning-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning an application
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1438,6 +1449,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cleaning-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning an application
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1639,31 +1661,59 @@ customization.</p>
 <pre><code class="language-java">  public static void main(final String[] args) {
     new MyStreamsApplication().startApplication(args);
 }
-  ```
-
-### Cleaning an application
-
-The framework provides a built-in mechanism to clean up all resources associated with an application.
-
-When the cleanup operation is triggered, the following resources are removed:
-
-**TODO:** extend the table for new consumer apps
-
-| Resource Type       | Description                                               | Streams Apps | Producer Apps |
-|---------------------|-----------------------------------------------------------|--------------|---------------|
-| Output Topics       | The main output topic of the application                  | ✓            | ✓             |
-| Intermediate Topics | Topics for stream operations like `through()`             | ✓            | N/A           |
-| Internal Topics     | Topics for state stores or repartitioning (Kafka Streams) | ✓            | N/A           |
-| Consumer Groups     | Consumer group metadata                                   | ✓            | N/A           |
-| Schema Registry     | All registered schemas                                    | ✓            | ✓             |
-
-Cleanup can be triggered:
-
-- **Via Command Line**: Helm cleanup jobs
-- **Programmatically**:
-
-```java
-// For streams applications
+</code></pre>
+<h3 id="cleaning-an-application">Cleaning an application</h3>
+<p>The framework provides a built-in mechanism to clean up all resources associated with an application.</p>
+<p>When the cleanup operation is triggered, the following resources are removed:</p>
+<p><strong>TODO:</strong> extend the table for new consumer apps</p>
+<table>
+<thead>
+<tr>
+<th>Resource Type</th>
+<th>Description</th>
+<th>Streams Apps</th>
+<th>Producer Apps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Output Topics</td>
+<td>The main output topic of the application</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Intermediate Topics</td>
+<td>Topics for stream operations like <code>through()</code></td>
+<td>✓</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Internal Topics</td>
+<td>Topics for state stores or repartitioning (Kafka Streams)</td>
+<td>✓</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Consumer Groups</td>
+<td>Consumer group metadata</td>
+<td>✓</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Schema Registry</td>
+<td>All registered schemas</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<p>Cleanup can be triggered:</p>
+<ul>
+<li><strong>Via Command Line</strong>: Helm cleanup jobs</li>
+<li><strong>Programmatically</strong>:</li>
+</ul>
+<pre><code class="language-java">// For streams applications
 try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()){
         cleanUpRunner.
 
