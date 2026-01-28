@@ -20,12 +20,12 @@ prescribe:
 `streams-bootstrap` addresses these aspects by supplying:
 
 1. **Standardized base classes** for Kafka Streams and client applications.
-2. **A common CLI/configuration contract** for all streaming services.
+2. **A common CLI/configuration contract** for all Kafka applications.
 3. **Helm-based deployment templates** and conventions for Kubernetes.
 4. **Built-in reset/clean workflows** for reprocessing and state management.
 5. **Consistent error-handling** and dead-letter integration.
 6. **Testing infrastructure** for local development and CI environments.
-7. **Optional S3-backed serialization** for large messages.
+7. **Optional blob-storage-backed serialization** for large messages.
 
 ## Framework Architecture
 

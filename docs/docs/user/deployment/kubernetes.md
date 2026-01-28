@@ -36,7 +36,7 @@ groups, and Schema Registry subjects associated with a release before a new depl
 The Helm charts are published as a Helm repository:
 
 ```bash
-helm repo add bakdata-common https://bakdata.github.io/streams-bootstrap/
+helm repo add streams-bootstrap https://bakdata.github.io/streams-bootstrap/
 helm repo update
 ```
 
