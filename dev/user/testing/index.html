@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://bakdata.github.io/streams-bootstrap/dev/user/testing/">
       
       
-        <link rel="prev" href="../concepts/producer/">
+        <link rel="prev" href="../concepts/consumer-producer/">
       
       
         <link rel="next" href="../monitoring/">
@@ -640,6 +640,62 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/consumer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/consumer-producer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-Producer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -664,6 +720,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -680,6 +754,214 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-testing-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Testing Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Testing Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kafkatestclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KafkaTestClient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumergroupverifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConsumerGroupVerifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unit-testing-with-fluent-kafka-streams-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unit Testing with fluent-kafka-streams-tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-testing-with-testcontainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing with TestContainers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Testing with TestContainers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-node-kafka-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Node Kafka Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-node-cluster-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Node Cluster Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utilities-for-kafka-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilities for Kafka Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utilities for Kafka Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kafkatestclient-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KafkaTestClient Operations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="KafkaTestClient Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#topic-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-consumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Consumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#administrative-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Administrative Operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consumer-group-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer Group Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1097,6 +1379,203 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-testing-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Testing Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Testing Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kafkatestclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KafkaTestClient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumergroupverifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConsumerGroupVerifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unit-testing-with-fluent-kafka-streams-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unit Testing with fluent-kafka-streams-tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-testing-with-testcontainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing with TestContainers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Testing with TestContainers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-node-kafka-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Node Kafka Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-node-cluster-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Node Cluster Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utilities-for-kafka-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilities for Kafka Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utilities for Kafka Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kafkatestclient-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KafkaTestClient Operations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="KafkaTestClient Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#topic-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-consumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Consumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#administrative-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Administrative Operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consumer-group-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer Group Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1116,6 +1595,129 @@
 
 
 <h1 id="testing">Testing</h1>
+<p>The <code>streams-bootstrap</code> Testing Framework provides a comprehensive set of tools for testing Kafka Streams and Producer
+applications. This framework simplifies both unit and integration testing by providing test abstractions that handle
+Kafka infrastructure setup, Schema Registry integration, and consumer group verification.</p>
+<p>The framework supports testing with real Kafka clusters using TestContainers, mock Schema Registry for schema-aware
+testing, and utilities for verifying application behavior and consumer group states.</p>
+<h2 id="core-testing-components">Core Testing Components</h2>
+<h3 id="kafkatestclient">KafkaTestClient</h3>
+<p><code>KafkaTestClient</code> is a fluent test client that simplifies:</p>
+<ul>
+<li>Producing data</li>
+<li>Consuming records</li>
+<li>Admin operations</li>
+<li>Topic creation and verification</li>
+</ul>
+<h3 id="consumergroupverifier">ConsumerGroupVerifier</h3>
+<p>Provides tools to:</p>
+<ul>
+<li>Check if a group is active or closed</li>
+<li>Get current group state</li>
+<li>Verify processing completion (lag = 0)</li>
+<li>Compute lag manually</li>
+</ul>
+<h2 id="unit-testing-with-fluent-kafka-streams-tests">Unit Testing with <code>fluent-kafka-streams-tests</code></h2>
+<p>The framework integrates with <code>fluent-kafka-streams-tests</code> for unit testing Kafka Streams topologies.```</p>
+<h2 id="integration-testing-with-testcontainers">Integration Testing with TestContainers</h2>
+<p>For integration tests that require a real Kafka environment, the framework provides integration with TestContainers.</p>
+<h3 id="single-node-kafka-testing">Single Node Kafka Testing</h3>
+<p><code>KafkaTest</code> provides a base class for integration tests with a single Kafka broker.</p>
+<h3 id="multi-node-cluster-testing">Multi-Node Cluster Testing</h3>
+<p>For testing with multi-node Kafka clusters, the framework provides <code>ApacheKafkaContainerCluster</code>:</p>
+<p>Example usage:</p>
+<pre><code class="language-java">ApacheKafkaContainerCluster cluster = new ApacheKafkaContainerCluster(&quot;3.4.0&quot;, 3, 2);
+cluster.
+
+start();
+
+String bootstrapServers = this.cluster.getBootstrapServers();
+// Run tests...
+cluster.
+
+stop();
+</code></pre>
+<h3 id="features">Features:</h3>
+<ul>
+<li>Configurable broker count</li>
+<li>Configurable replication factor for internal topics</li>
+<li>Uses KRaft (no ZooKeeper)</li>
+<li>Waits for all brokers to be ready before returning</li>
+</ul>
+<h2 id="utilities-for-kafka-testing">Utilities for Kafka Testing</h2>
+<h3 id="kafkatestclient-operations">KafkaTestClient Operations</h3>
+<p><code>KafkaTestClient</code> provides a fluent API for common Kafka operations in tests:</p>
+<h4 id="topic-management">Topic Management</h4>
+<pre><code class="language-java">KafkaTestClient client = newTestClient();
+
+// Create topic with default settings (1 partition, 1 replica)
+client.
+
+createTopic(&quot;my-topic&quot;);
+
+// Create topic with custom settings
+client.
+
+createTopic(&quot;my-topic&quot;,
+        KafkaTestClient.defaultTopicSettings()
+        .
+
+partitions(3)
+        .
+
+replicationFactor(1)
+        .
+
+build());
+
+// Create topic with config
+Map&lt;String, String&gt; config = Map.of(&quot;cleanup.policy&quot;, &quot;compact&quot;);
+client.
+
+createTopic(&quot;my-topic&quot;,settings, config);
+
+// Check if topic exists
+boolean exists = this.client.existsTopic(&quot;my-topic&quot;);
+</code></pre>
+<h4 id="data-production">Data Production</h4>
+<pre><code class="language-java">client.send()
+        .
+
+withKeySerializer(new StringSerializer())
+        .
+
+withValueSerializer(new StringSerializer())
+
+to(&quot;topic-name&quot;,List.of(
+        new SimpleProducerRecord&lt;&gt;(&quot;key1&quot;,&quot;value1&quot;),
+        new SimpleProducerRecord&lt;&gt;(&quot;key2&quot;,&quot;value2&quot;)
+        ));
+</code></pre>
+<h4 id="data-consumption">Data Consumption</h4>
+<pre><code class="language-java">List&lt;ConsumerRecord&lt;String, String&gt;&gt; records = client.read()
+        .withKeyDeserializer(new StringDeserializer())
+        .withValueDeserializer(new StringDeserializer())
+        .from(&quot;topic-name&quot;, Duration.ofSeconds(10));
+</code></pre>
+<h2 id="administrative-operations">Administrative Operations</h2>
+<p><code>KafkaTestClient</code> provides access to administrative operations through <code>AdminClientX</code>:</p>
+<pre><code class="language-java">try(AdminClientX admin = client.admin()){
+TopicClient topicClient = this.admin.getTopicClient();
+ConsumerGroupClient consumerGroupClient = this.admin.getConsumerGroupClient();
+}
+</code></pre>
+<h2 id="consumer-group-verification">Consumer Group Verification</h2>
+<p>The framework provides utilities for verifying consumer group states:</p>
+<pre><code class="language-java">// Wait for application to become active
+awaitActive(app);
+
+// Wait for completion of processing
+awaitProcessing(app);
+
+// Wait for app to shut down
+awaitClosed(app);
+</code></pre>
+<p>These methods ensure test reliability by validating consumer group behavior via <code>ConsumerGroupVerifier</code>.</p>
 
 
 

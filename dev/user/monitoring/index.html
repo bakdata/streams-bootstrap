@@ -640,6 +640,62 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/consumer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/consumer-producer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-Producer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -692,6 +748,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -708,6 +782,186 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring and Observability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-mechanisms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring Mechanisms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jmx-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JMX Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-jmx-exporter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus JMX Exporter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus JMX Exporter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metric Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pod annotations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#podmonitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PodMonitor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-and-port-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service and Port Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-configuration-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring Configuration Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-specific-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application-Specific Considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1097,6 +1351,175 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring and Observability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-mechanisms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring Mechanisms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jmx-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JMX Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-jmx-exporter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus JMX Exporter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus JMX Exporter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metric Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pod annotations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#podmonitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PodMonitor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-and-port-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service and Port Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-configuration-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring Configuration Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-specific-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application-Specific Considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1116,6 +1539,309 @@
 
 
 <h1 id="monitoring">Monitoring</h1>
+<p>The framework provides features for monitoring your applications.</p>
+<ul>
+<li><strong>JMX Metrics Export</strong>: Applications built with <code>streams-bootstrap</code> can expose JMX (Java Management Extensions)
+  metrics, which provide insights into the performance and health of the Java application and the Kafka clients.</li>
+<li><strong>Prometheus Integration</strong>: The Helm charts are configured to work with Prometheus, a popular open-source monitoring
+  and alerting toolkit. This allows you to scrape the JMX metrics and visualize them in dashboards (e.g., using
+  Grafana).</li>
+</ul>
+<h2 id="monitoring-and-observability">Monitoring and Observability</h2>
+<p>The Helm charts provide integrated monitoring and observability for Kafka applications using a combination of
+JMX, Prometheus, Kubernetes probes, and Services. Monitoring can be tailored from lightweight setups for development
+to full production stacks with Prometheus Operator.</p>
+<h3 id="monitoring-mechanisms">Monitoring Mechanisms</h3>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Use Case</th>
+<th>Key Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JMX remote access</td>
+<td>Direct debugging and inspection</td>
+<td><code>jmx.enabled</code></td>
+</tr>
+<tr>
+<td>Prometheus JMX exporter</td>
+<td>Production metrics collection</td>
+<td><code>prometheus.jmx.enabled</code></td>
+</tr>
+<tr>
+<td>Liveness probes</td>
+<td>Container health checks</td>
+<td><code>livenessProbe</code></td>
+</tr>
+<tr>
+<td>Readiness probes</td>
+<td>Traffic readiness / rollout control</td>
+<td><code>readinessProbe</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="jmx-configuration">JMX Configuration</h3>
+<p>JMX (Java Management Extensions) provides direct access to application metrics and management operations, typically
+used for development and debugging.</p>
+<p>Enable JMX in <code>values.yaml</code>:</p>
+<pre><code class="language-yaml">jmx:
+  enabled: true
+  port: 5555
+  host: localhost
+</code></pre>
+<p>Parameters:</p>
+<ul>
+<li><code>jmx.enabled</code>: Enable JMX port for remote access (default: <code>false</code>).</li>
+<li><code>jmx.port</code>: JMX port number (default: <code>5555</code>).</li>
+<li><code>jmx.host</code>: Host binding for the RMI server (default: <code>localhost</code>).</li>
+</ul>
+<p>When enabled, the chart configures the JVM with flags similar to:</p>
+<pre><code class="language-text">-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=5555
+-Dcom.sun.management.jmxremote.local.only=false
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+-Djava.rmi.server.hostname=localhost
+</code></pre>
+<p>Accessing JMX metrics from a local client:</p>
+<pre><code class="language-bash">kubectl port-forward &lt;pod-name&gt; 5555:5555
+jconsole localhost:5555
+</code></pre>
+<h3 id="prometheus-jmx-exporter">Prometheus JMX Exporter</h3>
+<p>For production monitoring, the Prometheus JMX Exporter runs as a sidecar container that scrapes JMX metrics from the
+application and exposes them in Prometheus format.</p>
+<p>Enable the exporter in <code>values.yaml</code>:</p>
+<pre><code class="language-yaml">prometheus:
+  jmx:
+    enabled: true
+    image: bitnami/jmx-exporter
+    imageTag: 1.1.0
+    imagePullPolicy: Always
+    port: 5556
+    metricRules:
+      - pattern: &quot;.*&quot;
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+</code></pre>
+<p>Key parameters:</p>
+<ul>
+<li><code>prometheus.jmx.enabled</code>: Deploy JMX exporter sidecar (default: <code>false</code>).</li>
+<li><code>prometheus.jmx.image</code>: Container image for the exporter (default: <code>bitnami/jmx-exporter</code>).</li>
+<li><code>prometheus.jmx.imageTag</code>: Exporter image tag (default: <code>1.1.0</code>).</li>
+<li><code>prometheus.jmx.port</code>: HTTP port for metrics endpoint (default: <code>5556</code>).</li>
+<li><code>prometheus.jmx.metricRules</code>: JMX metric selection and mapping rules.</li>
+<li><code>prometheus.jmx.resources</code>: Resource requests/limits for the exporter container.</li>
+</ul>
+<h4 id="metric-rules">Metric Rules</h4>
+<p>The <code>metricRules</code> section configures which JMX beans are exposed and how they are mapped to Prometheus metrics. The
+default configuration uses <code>pattern: ".*"</code> to export all metrics, but production setups should restrict this to
+relevant Kafka Streams/producer/consumer metrics.</p>
+<p>Example rule set:</p>
+<pre><code class="language-yaml">prometheus:
+  jmx:
+    metricRules:
+      - pattern: &quot;kafka.streams&lt;type=(.+), client-id=(.+), (.+)=(.+)&gt;&lt;&gt;(.+):&quot;
+        name: kafka_streams_$1_$5
+        labels:
+          client_id: &quot;$2&quot;
+          $3: &quot;$4&quot;
+      - pattern: &quot;kafka.producer&lt;type=(.+), client-id=(.+)&gt;&lt;&gt;(.+):&quot;
+        name: kafka_producer_$1_$3
+        labels:
+          client_id: &quot;$2&quot;
+</code></pre>
+<p>A ConfigMap containing the JMX exporter configuration is generated automatically by the chart and mounted into the
+sidecar container.</p>
+<h3 id="prometheus-integration">Prometheus Integration</h3>
+<h4 id="pod-annotations">Pod annotations</h4>
+<p>For Prometheus instances that use pod annotations for discovery:</p>
+<pre><code class="language-yaml">podAnnotations:
+  prometheus.io/scrape: &quot;true&quot;
+  prometheus.io/path: &quot;/metrics&quot;
+  prometheus.io/port: &quot;5556&quot;
+</code></pre>
+<p>This enables scraping the JMX exporter endpoint exposed on <code>prometheus.jmx.port</code>.</p>
+<h3 id="podmonitor">PodMonitor</h3>
+<p>For more advanced Prometheus Operator setups, a <code>PodMonitor</code> custom resource can be deployed.</p>
+<p>The <code>streams-bootstrap</code> repository provides a reference <code>PodMonitor</code>
+configuration: <a href="https://github.com/bakdata/streams-bootstrap/blob/1ff01c2f/monitoring/pod_monitor.yaml">monitoring/pod_monitor.yaml</a></p>
+<h3 id="health-checks">Health Checks</h3>
+<p>Kubernetes uses liveness and readiness probes to determine when a pod is healthy and when it is ready to receive
+traffic.</p>
+<p><strong>Liveness probes</strong> restart containers that become unhealthy:</p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+</code></pre>
+<p><strong>Readiness probes</strong> gate traffic until the application is ready:</p>
+<pre><code class="language-yaml">readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3
+</code></pre>
+<p>All standard Kubernetes probe types are supported (<code>httpGet</code>, <code>tcpSocket</code>, <code>exec</code>, and <code>grpc</code> on recent Kubernetes
+versions). Probes are configured under the corresponding <code>livenessProbe</code> and <code>readinessProbe</code> sections in values.</p>
+<h3 id="service-and-port-configuration">Service and Port Configuration</h3>
+<p>Ports and Services control how HTTP APIs and metrics endpoints are exposed:</p>
+<pre><code class="language-yaml">service:
+  enabled: true
+  type: ClusterIP
+
+ports:
+  - containerPort: 8080
+    name: http
+    protocol: TCP
+    servicePort: 80
+  - containerPort: 5556
+    name: metrics
+    protocol: TCP
+    servicePort: 5556
+</code></pre>
+<p>Port mapping reference:</p>
+<ul>
+<li><code>jmx.port</code> → JMX remote port (default <code>5555</code>).</li>
+<li><code>prometheus.jmx.port</code> → JMX exporter metrics port (default <code>5556</code>).</li>
+<li>Additional entries in <code>ports[]</code> → application-specific ports (e.g. HTTP APIs, custom metrics endpoints).</li>
+</ul>
+<h3 id="monitoring-configuration-examples">Monitoring Configuration Examples</h3>
+<p><strong>Full monitoring stack</strong> (JMX exporter, probes, Service, annotations):</p>
+<pre><code class="language-yaml">prometheus:
+  jmx:
+    enabled: true
+    port: 5556
+    metricRules:
+      - pattern: &quot;kafka.streams&lt;type=stream-metrics, client-id=(.+)&gt;&lt;&gt;(.+):&quot;
+        name: kafka_streams_$2
+        labels:
+          client_id: &quot;$1&quot;
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 30
+
+service:
+  enabled: true
+  type: ClusterIP
+
+ports:
+  - containerPort: 8080
+    name: http
+    servicePort: 80
+  - containerPort: 5556
+    name: metrics
+    servicePort: 5556
+
+podAnnotations:
+  prometheus.io/scrape: &quot;true&quot;
+  prometheus.io/path: &quot;/metrics&quot;
+  prometheus.io/port: &quot;5556&quot;
+</code></pre>
+<p><strong>Development/debug configuration with JMX only</strong>:</p>
+<pre><code class="language-yaml">jmx:
+  enabled: true
+  port: 5555
+  host: localhost
+
+prometheus:
+  jmx:
+    enabled: false
+
+livenessProbe:
+  tcpSocket:
+    port: 5555
+  initialDelaySeconds: 30
+  periodSeconds: 30
+</code></pre>
+<p><strong>Minimal production configuration</strong> with annotations and resource limits:</p>
+<pre><code class="language-yaml">prometheus:
+  jmx:
+    enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+
+podAnnotations:
+  prometheus.io/scrape: &quot;true&quot;
+  prometheus.io/port: &quot;5556&quot;
+</code></pre>
+<h3 id="application-specific-considerations">Application-Specific Considerations</h3>
+<p>Kafka Streams applications expose metrics under several JMX domains, including <code>kafka.streams</code>, <code>kafka.producer</code>, and
+<code>kafka.consumer</code>. Commonly monitored metrics include:</p>
+<ul>
+<li><code>kafka.streams.state</code>: Overall application state (running, rebalancing, error).</li>
+<li><code>kafka.streams.commit-latency-avg</code>: Average commit latency.</li>
+<li><code>kafka.consumer.records-lag-max</code>: Maximum records lag per partition.</li>
+<li><code>kafka.producer.record-send-rate</code>: Producer throughput.</li>
+</ul>
+<p>Producer and consumer applications (via <code>producer-app</code> and <code>consumer-app</code> charts) use the same <code>prometheus.jmx</code>
+structure
+but may differ in availability patterns (for example, Jobs vs Deployments).</p>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p><strong>Common issues</strong>:</p>
+<ul>
+<li>No metrics endpoint:<ul>
+<li>Ensure <code>prometheus.jmx.enabled: true</code>.</li>
+</ul>
+</li>
+<li>Connection refused on JMX port:<ul>
+<li>Ensure <code>jmx.enabled: true</code> and the port is exposed.</li>
+</ul>
+</li>
+<li>Empty metrics response:<ul>
+<li>Review <code>metricRules</code> patterns; overly restrictive rules may filter out all metrics.</li>
+</ul>
+</li>
+<li>High exporter CPU usage:<ul>
+<li>Avoid <code>pattern: ".*"</code> in production; use targeted patterns instead.</li>
+</ul>
+</li>
+<li>Pod not ready:<ul>
+<li>Validate liveness/readiness probe configuration and the corresponding application endpoints.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Verifying metrics export</strong>:</p>
+<pre><code class="language-bash">kubectl port-forward &lt;pod-name&gt; 5556:5556
+curl http://localhost:5556/metrics
+</code></pre>
+<p><strong>Debugging JMX connection</strong>:</p>
+<pre><code class="language-bash">kubectl port-forward &lt;pod-name&gt; 5555:5555
+jconsole localhost:5555
+</code></pre>
+<p>If connection fails, verify that JMX is enabled, the port is mapped in <code>ports</code>, and the JVM has been started with the
+correct JMX system properties.</p>
 
 
 

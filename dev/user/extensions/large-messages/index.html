@@ -640,6 +640,62 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/consumer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/consumer-producer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-Producer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -777,6 +833,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large messages
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -793,6 +867,64 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-implement-largemessagestreamsapp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Implement LargeMessageStreamsApp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-register-a-cleanup-hook-manually" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Register a cleanup hook manually
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1099,6 +1231,53 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-implement-largemessagestreamsapp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Implement LargeMessageStreamsApp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-register-a-cleanup-hook-manually" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Register a cleanup hook manually
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1118,6 +1297,52 @@
 
 
 <h1 id="large-messages">Large messages</h1>
+<h2 id="overview">Overview</h2>
+<p>The <strong>Large Messages Extension</strong> adds support for handling messages that exceed Kafka's size limitations by using
+external storage mechanisms with automatic cleanup.
+It integrates with the <em>streams-bootstrap</em> framework to transparently manage:</p>
+<ul>
+<li>large message serialization</li>
+<li>large message deserialization</li>
+<li>blob storage files cleanup</li>
+</ul>
+<p>For more details, see the large messages
+module: <a href="https://github.com/bakdata/streams-bootstrap/tree/master/streams-bootstrap-large-messages">streams-bootstrap-large-messages GitHub repository</a></p>
+<p>There are two supported ways to enable cleanup for large messages:</p>
+<ul>
+<li>Implement <code>LargeMessageStreamsApp</code></li>
+<li>Register a topic cleanup hook manually</li>
+</ul>
+<hr />
+<h3 id="option-1-implement-largemessagestreamsapp">Option 1: Implement <code>LargeMessageStreamsApp</code></h3>
+<p>Use this option for Kafka Streams applications where large message cleanup should always run together with topic
+cleanup.</p>
+<pre><code class="language-java">public final class MyStreamsApp implements LargeMessageStreamsApp {
+
+    @Override
+    public void buildTopology(final StreamsBuilderX builder) {
+        // build topology here
+    }
+}
+</code></pre>
+<h3 id="option-2-register-a-cleanup-hook-manually">Option 2: Register a cleanup hook manually</h3>
+<p>If cleanup should only happen conditionally or requires custom behavior, a topic hook can be registered explicitly.</p>
+<pre><code class="language-java">private final boolean largeMessageCleanupEnabled;
+
+@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
+
+    final StreamsCleanUpConfiguration cleanUp =
+            StreamsApp.super.setupCleanUp(configuration);
+
+    if (this.largeMessageCleanupEnabled) {
+        LargeMessageAppUtils.registerTopicHook(cleanUp, configuration);
+    }
+
+    return cleanUp;
+}
+</code></pre>
 
 
 

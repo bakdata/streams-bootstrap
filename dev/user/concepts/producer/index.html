@@ -14,7 +14,7 @@
         <link rel="prev" href="../streams/">
       
       
-        <link rel="next" href="../../testing/">
+        <link rel="next" href="../consumer/">
       
       
         
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#producer-apps" class="md-skip">
+        <a href="#producer-applications" class="md-skip">
           Skip to content
         </a>
       
@@ -689,6 +689,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Application lifecycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running an application
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning an application
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -699,6 +727,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serialization-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Kafka properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -728,6 +784,62 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../consumer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../consumer-producer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-Producer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1195,6 +1307,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Application lifecycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running an application
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning an application
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1205,6 +1345,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serialization-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Kafka properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1250,17 +1418,82 @@
   
 
 
-<h1 id="producer-apps">Producer apps</h1>
-<p>Producer apps are applications that generate data and send it to a Kafka topic.
-They can be used to produce messages from various sources, such as databases, files, or real-time events.</p>
+<h1 id="producer-applications">Producer applications</h1>
+<p>Producer applications are applications that generate data and send it to Kafka topics. They can be used to produce
+messages from various sources, such as databases, files, or real-time events.</p>
+<p>The <code>streams-bootstrap</code> framework provides a structured way to build Kafka producer applications with built-in
+configuration handling, command-line support, and resource lifecycle management.</p>
+<hr />
 <h2 id="application-lifecycle">Application lifecycle</h2>
+<h3 id="running-an-application">Running an application</h3>
+<p>Producer applications are executed using the <code>ProducerRunner</code>, which runs the producer logic defined by the application.</p>
+<p>Unlike Kafka Streams applications, producer applications typically:</p>
 <ul>
-<li>Running an application</li>
-<li>Cleaning an application</li>
+<li>Run to completion and terminate automatically, or</li>
+<li>Run continuously when implemented as long-lived services</li>
 </ul>
+<p>The execution model is fully controlled by the producer implementation and its runnable logic.</p>
+<h3 id="cleaning-an-application">Cleaning an application</h3>
+<p>Producer applications support a dedicated <code>clean</code> command that removes Kafka-related resources created by the
+application.</p>
+<pre><code class="language-bash">java -jar my-producer-app.jar \
+  --bootstrap-servers localhost:9092 \
+  --output-topic my-topic \
+  clean
+</code></pre>
+<p>The clean process can perform the following operations:</p>
+<ul>
+<li>Delete output topics</li>
+<li>Delete registered schemas from Schema Registry</li>
+<li>Execute custom cleanup hooks defined by the application</li>
+</ul>
+<p>Applications can register custom cleanup logic by overriding <code>setupCleanUp</code>:</p>
+<pre><code class="language-java">
+@Override
+public void setupCleanUp(final EffectiveAppConfiguration configuration) {
+    configuration.addCleanupHook(() -&gt; {
+        // Custom cleanup logic
+    });
+}
+</code></pre>
+<hr />
 <h2 id="configuration">Configuration</h2>
+<h3 id="serialization-configuration">Serialization configuration</h3>
+<p>Producer applications define key and value serialization using the <code>defaultSerializationConfig()</code> method in their
+<code>ProducerApp</code> implementation.</p>
+<pre><code class="language-java">
+@Override
+public SerializerConfig defaultSerializationConfig() {
+    return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
+}
+</code></pre>
+<h3 id="custom-kafka-properties">Custom Kafka properties</h3>
+<p>Producer-specific Kafka configuration can be customized by overriding <code>createKafkaProperties()</code>:</p>
+<pre><code class="language-java">
+@Override
+public Map&lt;String, Object&gt; createKafkaProperties() {
+    return Map.of(
+            ProducerConfig.ACKS_CONFIG, &quot;all&quot;,
+            ProducerConfig.RETRIES_CONFIG, 3,
+            ProducerConfig.BATCH_SIZE_CONFIG, 16384,
+            ProducerConfig.LINGER_MS_CONFIG, 5
+    );
+}
+</code></pre>
+<p>These properties are merged with the framework defaults and CLI-provided configuration.</p>
+<hr />
 <h2 id="command-line-interface">Command line interface</h2>
+<p>Producer applications inherit standard CLI options from <code>KafkaApplication</code>.</p>
+<pre><code class="language-text">--bootstrap-servers         Kafka bootstrap servers (comma-separated)          (Required)
+--bootstrap-server          Alias for --bootstrap-servers                      (Required)
+--schema-registry-url       URL of the Schema Registry                         (Optional)
+--kafka-config              Additional Kafka config (key=value,...)            (Optional)
+--output-topic              Default output topic                               (Optional)
+--labeled-output-topics     Named output topics (label1=topic1,...)            (Optional)
+</code></pre>
+<hr />
 <h2 id="deployment">Deployment</h2>
+<p>TODO</p>
 
 
 
