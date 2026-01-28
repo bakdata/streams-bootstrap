@@ -64,8 +64,8 @@ After a reset, the application can be started again and will reprocess all input
 
 ### Cleaning an application
 
-The `clean` command performs everything that `reset` does and additionally removes the Kafka consumer groups created by
-the application.
+The `clean` command performs everything that `reset` does and additionally removes the Kafka consumer groups and output
+topics created by the application.
 
 ```bash
 java -jar my-streams-app.jar clean

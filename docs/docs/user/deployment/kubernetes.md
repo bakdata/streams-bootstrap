@@ -57,7 +57,8 @@ Streams applications support both stateless and stateful deployment modes:
 
 - **StatefulSet**
     - Used for stateful Kafka Streams applications with local state stores
-    - Enabled when `statefulSet: true` and `persistence.enabled: true`
+    - Enabled when `statefulSet: true`
+    - Required when `persistence.enabled: true`
     - Each pod receives a dedicated `PersistentVolumeClaim` for RocksDB state
 
 This allows choosing between elasticity (Deployment) and stronger data locality guarantees (StatefulSet).

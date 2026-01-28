@@ -97,7 +97,7 @@ Applications built with streams-bootstrap can be started in two primary ways:
   public static void main(final String[] args) {
     new MyStreamsApplication().startApplication(args);
 }
-  ```
+```
 
 ### Cleaning an application
 

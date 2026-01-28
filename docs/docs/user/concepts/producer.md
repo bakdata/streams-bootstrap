@@ -1,10 +1,10 @@
 # Producer applications
 
-Producer applications are applications that generate data and send it to Kafka topics. They can be used to produce
-messages from various sources, such as databases, files, or real-time events.
+Producer applications generate data and send it to Kafka topics. They can be used to produce messages from various
+sources, such as databases, files, or real-time events.
 
-The `streams-bootstrap` framework provides a structured way to build Kafka producer applications with built-in
-configuration handling, command-line support, and resource lifecycle management.
+streams-bootstrap provides a structured way to build producer applications with consistent configuration handling,
+command-line support, and lifecycle management.
 
 ---
 
@@ -21,10 +21,11 @@ Unlike Kafka Streams applications, producer applications typically:
 
 The execution model is fully controlled by the producer implementation and its runnable logic.
 
+---
+
 ### Cleaning an application
 
-Producer applications support a dedicated `clean` command that removes Kafka-related resources created by the
-application.
+Producer applications support a dedicated `clean` command.
 
 ```bash
 java -jar my-producer-app.jar \
@@ -39,17 +40,7 @@ The clean process can perform the following operations:
 - Delete registered schemas from Schema Registry
 - Execute custom cleanup hooks defined by the application
 
-Applications can register custom cleanup logic by overriding `setupCleanUp`:
-
-```java
-
-@Override
-public void setupCleanUp(final EffectiveAppConfiguration configuration) {
-    configuration.addCleanupHook(() -> {
-        // Custom cleanup logic
-    });
-}
-```
+Applications can register custom cleanup logic by overriding `setupCleanUp`.
 
 ---
 
@@ -68,7 +59,7 @@ public SerializerConfig defaultSerializationConfig() {
 }
 ```
 
-### Custom Kafka properties
+### Kafka properties
 
 Producer-specific Kafka configuration can be customized by overriding `createKafkaProperties()`:
 
@@ -85,7 +76,27 @@ public Map<String, Object> createKafkaProperties() {
 }
 ```
 
-These properties are merged with the framework defaults and CLI-provided configuration.
+These properties are merged with defaults and CLI-provided configuration.
+
+---
+
+### Lifecycle hooks
+
+#### Clean up
+
+Custom cleanup logic that is not tied to Kafka topics can be registered via cleanup hooks:
+
+```java
+
+@Override
+public void setupCleanUp(final EffectiveAppConfiguration configuration) {
+    configuration.addCleanupHook(() -> {
+        // Custom cleanup logic
+    });
+}
+```
+
+Topic-related cleanup should be implemented using topic hooks.
 
 ---
 
