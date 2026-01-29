@@ -26,6 +26,8 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.HasCleanHook;
 import com.bakdata.kafka.HasTopicHooks;
+import com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration;
+import com.bakdata.kafka.producer.ProducerCleanUpConfiguration;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.NonNull;
@@ -83,5 +85,31 @@ public class StreamsCleanUpConfiguration
 
     void runTopicDeletionHooks(final String topic) {
         this.topicHooks.forEach(hook -> hook.deleted(topic));
+    }
+
+    /**
+     * Converts this configuration to a {@link ConsumerCleanUpConfiguration}, transferring
+     * registered clean and reset hooks.
+     *
+     * @return {@link ConsumerCleanUpConfiguration} instance
+     */
+    public ConsumerCleanUpConfiguration toConsumerCleanUpConfiguration() {
+        final ConsumerCleanUpConfiguration configuration = new ConsumerCleanUpConfiguration();
+        this.cleanHooks.forEach(configuration::registerCleanHook);
+        this.resetHooks.forEach(configuration::registerResetHook);
+        return configuration;
+    }
+
+    /**
+     * Converts this configuration to a {@link ProducerCleanUpConfiguration}, transferring
+     * registered clean and topic hooks.
+     *
+     * @return {@link ProducerCleanUpConfiguration} instance
+     */
+    public ProducerCleanUpConfiguration toProducerCleanUpConfiguration() {
+        final ProducerCleanUpConfiguration configuration = new ProducerCleanUpConfiguration();
+        this.cleanHooks.forEach(configuration::registerCleanHook);
+        this.topicHooks.forEach(configuration::registerTopicHook);
+        return configuration;
     }
 }

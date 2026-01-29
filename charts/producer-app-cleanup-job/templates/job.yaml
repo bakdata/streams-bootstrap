@@ -1,131 +1,21 @@
-{{- $root := . -}}
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: {{ include "producer-app.fullname" . }}
-  {{- include "producer-app.annotations" . }}
-  labels:
-    {{- include "producer-app.labels" . | nindent 4 }}
-    {{- range $key, $value := .Values.labels }}
-    {{ $key | quote }}: {{ $value | quote }}
-    {{- end }}
+{{- include "kafka-app.cleanup-job" . }}
 spec:
-  ttlSecondsAfterFinished: 30
+{{- include "kafka-app.cleanup-job-spec" . | nindent 2 }}
   template:
     metadata:
-    {{- if .Values.podAnnotations }}
-      annotations:
-      {{- range $key, $value := .Values.podAnnotations }}
-        {{ $key | quote }}: {{ $value | quote }}
-      {{- end }}
-    {{- end }}
-      labels:
-        {{- include "producer-app.selectorLabels" . | nindent 8 }}
-        {{- range $key, $value := .Values.podLabels }}
-        {{ $key }}: {{ $value }}
-        {{- end }}
+{{- include "kafka-app.cleanup-pod-metadata" . | indent 4 }}
     spec:
-      restartPolicy: {{ .Values.restartPolicy }}
-      {{- if .Values.serviceAccountName }}
-      serviceAccountName: {{ .Values.serviceAccountName }}
-      {{- end }}
-      {{- if .Values.tolerations }}
-      tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- tpl (toYaml .) $root | nindent 8 }}
-      {{- end }}
-      {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-{{- toYaml .Values.imagePullSecrets | nindent 8 }}
-      {{- end }}
+{{- include "kafka-app.cleanup-pod-spec" . | indent 4 }}
       containers:
-        - name: "kafka-app"
-          image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
+        {{- include "kafka-app.common-kafka-container" . | nindent 8 }}
           args:
             - clean
           env:
-            - name: ENV_PREFIX
-              value: {{ .Values.configurationEnvPrefix }}_
-            {{- range $key, $value := .Values.kafka.config }}
-            - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "bootstrapServers" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_BOOTSTRAP_SERVERS"
-              value: {{ .Values.kafka.bootstrapServers | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "schemaRegistryUrl" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_SCHEMA_REGISTRY_URL"
-              value: {{ .Values.kafka.schemaRegistryUrl | quote }}
-            {{- end }}
-            {{- if hasKey .Values.kafka "outputTopic" }}
-            - name: "{{ .Values.configurationEnvPrefix }}_OUTPUT_TOPIC"
-              value: {{ .Values.kafka.outputTopic | quote }}
-            {{- end }}
-            {{- if and (hasKey .Values.kafka "labeledOutputTopics") (.Values.kafka.labeledOutputTopics) }}
-            - name: "{{ .Values.configurationEnvPrefix }}_LABELED_OUTPUT_TOPICS"
-              value: "{{- range $key, $value := .Values.kafka.labeledOutputTopics }}{{ $key }}={{ $value }},{{- end }}"
-            {{- end }}
-            {{- range $key, $value := .Values.secrets }}
-            - name: "{{ $key }}"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "producer-app.fullname" . }}
-                  key: "{{ $key }}"
-            {{- end }}
-            {{- range $key, $value := .Values.secretRefs }}
-            - name: "{{ $key }}"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $value.name }}
-                  key: "{{ $value.key }}"
-            {{- end }}
-            {{- range $key, $value := .Values.commandLine }}
-            - name: "{{ $root.Values.configurationEnvPrefix }}_{{ $key }}"
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- range $key, $value := .Values.env }}
-            - name: {{ $key | quote }}
-              value: {{ $value | quote }}
-            {{- end }}
+          {{- include "kafka-app.common-env" . | nindent 12 }}
+          {{- include "kafka-app.output-env" . | indent 12 }}
             - name: JAVA_TOOL_OPTIONS
-              value: '-XX:MaxRAMPercentage={{ printf "%.1f" .Values.javaOptions.maxRAMPercentage }}
-                {{ .Values.javaOptions.others | join " " }}'
+              value: '{{ include "kafka-app.java-tool-options" . }}'
           {{- if or (.Values.files) (.Values.secretFilesRefs) }}
           volumeMounts:
-            {{- range $key, $value := .Values.files }}
-            - name: config
-              mountPath: {{ printf "%s/%s" $value.mountPath $key | quote }}
-              subPath: {{ $key | quote }}
-            {{- end }}
-            {{- range .Values.secretFilesRefs }}
-            - name: {{ .volume }}
-              mountPath: {{ .mountPath }}
-              {{- if .readOnly }}
-              readOnly: true
-              {{- end }}
-              {{- if .subPath}}
-              subPath: {{.subPath }}
-              {{- end }}
-            {{- end }}
+            {{- include "kafka-app.volume-mounts" . | nindent 12 }}
           {{- end }}
-      {{- if or (.Values.files) (.Values.secretFilesRefs) }}
-      volumes:
-        {{- if .Values.files }}
-        - name: config
-          configMap:
-            name: {{ include "producer-app.fullname" . }}
-        {{- end }}
-        {{- range .Values.secretFilesRefs }}
-        - name: {{ .volume }}
-          secret:
-            secretName: {{ .name }}
-        {{- end }}
-      {{- end }}
-  backoffLimit: {{ .Values.backoffLimit }}

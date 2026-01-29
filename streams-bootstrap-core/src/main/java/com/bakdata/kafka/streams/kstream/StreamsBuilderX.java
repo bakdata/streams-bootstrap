@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package com.bakdata.kafka.streams.kstream;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.TopologyConfigX;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -74,14 +75,16 @@ public class StreamsBuilderX {
      * @see StreamsBuilder#stream(String)
      */
     public <K, V> KStreamX<K, V> stream(final String topic) {
-        return this.getContext().wrap(this.streamsBuilder.stream(topic));
+        final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topic));
+        return this.initialize(stream);
     }
 
     /**
      * @see StreamsBuilder#stream(String, Consumed)
      */
     public <K, V> KStreamX<K, V> stream(final String topic, final Consumed<K, V> consumed) {
-        return this.getContext().wrap(this.streamsBuilder.stream(topic, consumed));
+        final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topic, consumed));
+        return this.initialize(stream);
     }
 
     /**
@@ -95,14 +98,16 @@ public class StreamsBuilderX {
      * @see StreamsBuilder#stream(Collection)
      */
     public <K, V> KStreamX<K, V> stream(final Collection<String> topics) {
-        return this.getContext().wrap(this.streamsBuilder.stream(topics));
+        final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topics));
+        return this.initialize(stream);
     }
 
     /**
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> KStreamX<K, V> stream(final Collection<String> topics, final Consumed<K, V> consumed) {
-        return this.getContext().wrap(this.streamsBuilder.stream(topics, consumed));
+        final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topics, consumed));
+        return this.initialize(stream);
     }
 
     /**
@@ -117,14 +122,16 @@ public class StreamsBuilderX {
      * @see StreamsBuilder#stream(Pattern)
      */
     public <K, V> KStreamX<K, V> stream(final Pattern topicPattern) {
-        return this.getContext().wrap(this.streamsBuilder.stream(topicPattern));
+        final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topicPattern));
+        return this.initialize(stream);
     }
 
     /**
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> KStreamX<K, V> stream(final Pattern topicPattern, final Consumed<K, V> consumed) {
-        return this.getContext().wrap(this.streamsBuilder.stream(topicPattern, consumed));
+        final KStreamX<K, V> stream = this.getContext().wrap(this.streamsBuilder.stream(topicPattern, consumed));
+        return this.initialize(stream);
     }
 
     /**
@@ -136,10 +143,11 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
+     *
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInput(final Consumed<K, V> consumed) {
@@ -148,10 +156,11 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
+     *
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInput(final ConsumedX<K, V> consumed) {
@@ -160,9 +169,10 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics()}
-     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
+     *
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics()}
      * @see StreamsBuilder#stream(Collection)
      */
     public <K, V> KStreamX<K, V> streamInput() {
@@ -171,11 +181,12 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     *
      * @param label label of input topics
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInput(final String label, final Consumed<K, V> consumed) {
@@ -184,11 +195,12 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     *
      * @param label label of input topics
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @see StreamsBuilder#stream(Collection, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInput(final String label, final ConsumedX<K, V> consumed) {
@@ -197,10 +209,11 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all {@link StreamsTopicConfig#getInputTopics(String)}
+     *
      * @param label label of input topics
-     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all {@link StreamsTopicConfig#getInputTopics(String)}
      * @see StreamsBuilder#stream(Collection)
      */
     public <K, V> KStreamX<K, V> streamInput(final String label) {
@@ -209,10 +222,11 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     *
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final Consumed<K, V> consumed) {
@@ -221,10 +235,11 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     *
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final ConsumedX<K, V> consumed) {
@@ -233,9 +248,10 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern()}
-     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
+     *
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern()}
      * @see StreamsBuilder#stream(Pattern)
      */
     public <K, V> KStreamX<K, V> streamInputPattern() {
@@ -244,11 +260,12 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     *
      * @param label label of input pattern
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final String label, final Consumed<K, V> consumed) {
@@ -257,11 +274,12 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     *
      * @param label label of input pattern
      * @param consumed define optional parameters for streaming topics
-     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @see StreamsBuilder#stream(Pattern, Consumed)
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final String label,
@@ -271,10 +289,11 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link KStreamX} from all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
+     *
      * @param label label of input pattern
-     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return a {@link KStreamX} for all topics matching {@link StreamsTopicConfig#getInputPattern(String)}
      * @see StreamsBuilder#stream(Pattern)
      */
     public <K, V> KStreamX<K, V> streamInputPattern(final String label) {
@@ -285,14 +304,16 @@ public class StreamsBuilderX {
      * @see StreamsBuilder#table(String)
      */
     public <K, V> KTableX<K, V> table(final String topic) {
-        return this.getContext().wrap(this.streamsBuilder.table(topic));
+        final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic));
+        return this.initialize(table);
     }
 
     /**
      * @see StreamsBuilder#table(String, Consumed)
      */
     public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed) {
-        return this.getContext().wrap(this.streamsBuilder.table(topic, consumed));
+        final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic, consumed));
+        return this.initialize(table);
     }
 
     /**
@@ -307,7 +328,8 @@ public class StreamsBuilderX {
      */
     public <K, V> KTableX<K, V> table(final String topic,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.getContext().wrap(this.streamsBuilder.table(topic, materialized));
+        final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic, materialized));
+        return this.initialize(table);
     }
 
     /**
@@ -323,7 +345,8 @@ public class StreamsBuilderX {
      */
     public <K, V> KTableX<K, V> table(final String topic, final Consumed<K, V> consumed,
             final Materialized<K, V, KeyValueStore<Bytes, byte[]>> materialized) {
-        return this.getContext().wrap(this.streamsBuilder.table(topic, consumed, materialized));
+        final KTableX<K, V> table = this.getContext().wrap(this.streamsBuilder.table(topic, consumed, materialized));
+        return this.initialize(table);
     }
 
     /**
@@ -418,6 +441,7 @@ public class StreamsBuilderX {
     /**
      * Create {@link Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
      * {@link org.apache.kafka.common.serialization.Serializer} using {@link #kafkaProperties}.
+     *
      * @return {@link Configurator}
      */
     public Configurator createConfigurator() {
@@ -426,6 +450,7 @@ public class StreamsBuilderX {
 
     /**
      * Create {@link AppConfiguration} used by this app
+     *
      * @return {@link AppConfiguration}
      */
     public AppConfiguration<StreamsTopicConfig> createConfiguration() {
@@ -434,6 +459,7 @@ public class StreamsBuilderX {
 
     /**
      * Create a {@link StreamsContext} to wrap Kafka Streams interfaces
+     *
      * @return {@link StreamsContext}
      */
     public StreamsContext getContext() {
@@ -442,6 +468,7 @@ public class StreamsBuilderX {
 
     /**
      * Create stores using application context to lazily configures Serdes
+     *
      * @return {@link StoresX}
      */
     public StoresX stores() {
@@ -456,5 +483,21 @@ public class StreamsBuilderX {
      */
     public Topology build() {
         return this.streamsBuilder.build();
+    }
+
+    private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
+        final TopologyConfigX config = new TopologyConfigX(this.kafkaProperties);
+        if (config.isLineageEnabled()) {
+            return stream.processValues(LineageProcessor::new);
+        }
+        return stream;
+    }
+
+    private <K, V> KTableX<K, V> initialize(final KTableX<K, V> table) {
+        final TopologyConfigX config = new TopologyConfigX(this.kafkaProperties);
+        if (config.isLineageEnabled()) {
+            return table.transformValues(LineageTransformer::new);
+        }
+        return table;
     }
 }
