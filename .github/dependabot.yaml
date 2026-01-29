@@ -38,3 +38,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      bakdata:
+        patterns:
+          - "bakdata/ci-templates*"
