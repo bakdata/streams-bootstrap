@@ -17,10 +17,10 @@ jobs:
         uses: bakdata/ci-templates/actions/java-gradle-setup@1.70.2
         with:
           java-distribution: "microsoft"
-          java-version: "11"
+          java-version: "17"
           gradle-version: "wrapper"
           gradle-cache: "true"
-          gradle-cache-read-only: "false"
+          gradle-cache-read-only: "true"
 
       - name: Get version
         id: get-version
