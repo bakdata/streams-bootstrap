@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,13 @@
 
 package com.bakdata.kafka.mixin;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import picocli.CommandLine;
 
 /**
  * Shared CLI options to configure Kafka applications with an error topic.
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class ErrorOptions {
     @CommandLine.Option(names = "--error-topic", description = "Error topic")
     private String errorTopic;
