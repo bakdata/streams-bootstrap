@@ -39,6 +39,6 @@ updates:
     schedule:
       interval: "monthly"
     groups:
-      bakdata:
+      ci-templates:
         patterns:
           - "bakdata/ci-templates*"
