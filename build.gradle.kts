@@ -84,3 +84,7 @@ subprojects {
         }
     }
 }
+
+tasks.named("build") {
+    finalizedBy(tasks.named("javadocJar"))
+}
