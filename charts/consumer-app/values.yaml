@@ -143,8 +143,8 @@ prometheus:
   ## ref: https://github.com/prometheus/jmx_exporter
   jmx:
     enabled: false
-    image: bitnami/jmx-exporter
-    imageTag: 1.1.0
+    image: bitnamilegacy/jmx-exporter
+    imageTag: 1.4.0
     imagePullPolicy: Always
     port: 5556
     metricRules:

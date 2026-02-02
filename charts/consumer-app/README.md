@@ -88,8 +88,8 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 | Parameter                        | Description                                                                                                    | Default                                    |
 |----------------------------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------|
 | `prometheus.jmx.enabled`         | Whether or not to install Prometheus JMX Exporter as a sidecar container and expose JMX metrics to Prometheus. | `false`                                    |
-| `prometheus.jmx.image`           | Docker Image for Prometheus JMX Exporter container.                                                            | `bitnami/jmx-exporter`                     |
-| `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `1.1.0`                                    |
+| `prometheus.jmx.image`           | Docker Image for Prometheus JMX Exporter container.                                                            | `bitnamilegacy/jmx-exporter`               |
+| `prometheus.jmx.imageTag`        | Docker Image Tag for Prometheus JMX Exporter container.                                                        | `1.4.0`                                    |
 | `prometheus.jmx.imagePullPolicy` | Docker Image Pull Policy for Prometheus JMX Exporter container.                                                | `Always`                                   |
 | `prometheus.jmx.port`            | JMX Exporter Port which exposes metrics in Prometheus format for scraping.                                     | `5556`                                     |
 | `prometheus.jmx.metricRules`     | List of JMX metric rules.                                                                                      | `[pattern: ".*"]`                          |
