@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.DeleteConsumerGroupsResult;
 import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
+import org.apache.kafka.clients.admin.GroupListing;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
-import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
+import org.apache.kafka.clients.admin.ListGroupsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
@@ -61,8 +61,8 @@ public final class ConsumerGroupsClient {
      *
      * @return consumer groups
      */
-    public Collection<ConsumerGroupListing> list() {
-        final ListConsumerGroupsResult result = this.adminClient.listConsumerGroups();
+    public Collection<GroupListing> list() {
+        final ListGroupsResult result = this.adminClient.listGroups();
         return this.timeout.get(result.all(), () -> "Failed to list consumer groups");
     }
 
@@ -142,7 +142,7 @@ public final class ConsumerGroupsClient {
          * @return whether a Kafka consumer group with the specified name exists or not
          */
         public boolean exists() {
-            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupsClient.this.list();
+            final Collection<GroupListing> consumerGroups = ConsumerGroupsClient.this.list();
             return consumerGroups.stream()
                     .anyMatch(this::isThisGroup);
         }
@@ -170,7 +170,7 @@ public final class ConsumerGroupsClient {
                     new ConfigResource(Type.GROUP, this.groupName));
         }
 
-        private boolean isThisGroup(final ConsumerGroupListing listing) {
+        private boolean isThisGroup(final GroupListing listing) {
             return listing.groupId().equals(this.groupName);
         }
 
