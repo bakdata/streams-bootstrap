@@ -84,3 +84,8 @@ subprojects {
         }
     }
 }
+
+// Build aggregated Javadoc. Not wired automatically in Gradle 9.3
+tasks.named("build") {
+    finalizedBy(tasks.named("javadocJar"))
+}
