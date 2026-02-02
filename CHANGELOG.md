@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.2.0](https://github.com/bakdata/streams-bootstrap/tree/6.2.0) - 2026-02-02
+### What's changed
+
+* Provide lineage information via headers by @philipp94831 in [#380](https://github.com/bakdata/streams-bootstrap/pull/380)
+
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in [#369](https://github.com/bakdata/streams-bootstrap/pull/369)
+
+* Bump actions/upload-artifact from 4 to 5 by @dependabot[bot] in [#388](https://github.com/bakdata/streams-bootstrap/pull/388)
+
+* Bump actions/download-artifact from 4 to 6 by @dependabot[bot] in [#384](https://github.com/bakdata/streams-bootstrap/pull/384)
+
+* Bump actions/setup-python from 4 to 6 by @dependabot[bot] in [#378](https://github.com/bakdata/streams-bootstrap/pull/378)
+
+* Bump abatilo/actions-poetry from 2 to 4 by @dependabot[bot] in [#360](https://github.com/bakdata/streams-bootstrap/pull/360)
+
+* Add toString and hash code to common CLI options by @philipp94831 in [#393](https://github.com/bakdata/streams-bootstrap/pull/393)
+
+* Group updates for CI templates by @philipp94831 in [#398](https://github.com/bakdata/streams-bootstrap/pull/398)
+
+* Bump the kafka-dependencies group with 2 updates by @dependabot[bot] in [#399](https://github.com/bakdata/streams-bootstrap/pull/399)
+
+* Bump the test-dependencies group with 6 updates by @dependabot[bot] in [#402](https://github.com/bakdata/streams-bootstrap/pull/402)
+
+* Bump org.apache.logging.log4j:log4j-slf4j2-impl from 2.25.1 to 2.25.3 in the log-dependencies group by @dependabot[bot] in [#400](https://github.com/bakdata/streams-bootstrap/pull/400)
+
+* Fix Gradle setup for Helm build by @philipp94831 in [#405](https://github.com/bakdata/streams-bootstrap/pull/405)
+
+* Bump the ci-templates group with 4 updates by @dependabot[bot] in [#401](https://github.com/bakdata/streams-bootstrap/pull/401)
+
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#403](https://github.com/bakdata/streams-bootstrap/pull/403)
+
+* Bump the freefair-plugins group with 2 updates by @dependabot[bot] in [#404](https://github.com/bakdata/streams-bootstrap/pull/404)
+
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#408](https://github.com/bakdata/streams-bootstrap/pull/408)
+
+* Bump the ci-templates group with 4 updates by @dependabot[bot] in [#406](https://github.com/bakdata/streams-bootstrap/pull/406)
+
+* Bump the kafka-dependencies group with 3 updates by @dependabot[bot] in [#407](https://github.com/bakdata/streams-bootstrap/pull/407)
+
+* Upgrade to Gradle 9.3 by @philipp94831 in [#410](https://github.com/bakdata/streams-bootstrap/pull/410)
+
+* Use new consumer group admin APIs by @philipp94831 in [#411](https://github.com/bakdata/streams-bootstrap/pull/411)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/6.1.0...6.2.0
+
 ## [6.1.0](https://github.com/bakdata/streams-bootstrap/tree/6.1.0) - 2026-01-26
 ### What's changed
 
