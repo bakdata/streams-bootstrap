@@ -105,15 +105,13 @@ The framework provides a built-in mechanism to clean up all resources associated
 
 When the cleanup operation is triggered, the following resources are removed:
 
-**TODO:** extend the table for new consumer apps
-
-| Resource Type       | Description                                               | Streams Apps | Producer Apps |
-|---------------------|-----------------------------------------------------------|--------------|---------------|
-| Output Topics       | The main output topic of the application                  | ✓            | ✓             |
-| Intermediate Topics | Topics for stream operations like `through()`             | ✓            | N/A           |
-| Internal Topics     | Topics for state stores or repartitioning (Kafka Streams) | ✓            | N/A           |
-| Consumer Groups     | Consumer group metadata                                   | ✓            | N/A           |
-| Schema Registry     | All registered schemas                                    | ✓            | ✓             |
+| Resource Type       | Description                                               | Streams Apps | Producer Apps | Consumer Apps | Consumer-Producer Apps |
+|---------------------|-----------------------------------------------------------|--------------|---------------|---------------|------------------------|
+| Output Topics       | The main output topic of the application                  | ✓            | ✓             | N/A           | ✓                      |
+| Intermediate Topics | Topics for stream operations like `through()`             | ✓            | N/A           | N/A           | N/A                    |
+| Internal Topics     | Topics for state stores or repartitioning (Kafka Streams) | ✓            | N/A           | N/A           | N/A                    |
+| Consumer Groups     | Consumer group metadata                                   | ✓            | N/A           | ✓             | ✓                      |
+| Schema Registry     | All registered schemas                                    | ✓            | ✓             | ✓             | ✓                      |
 
 Cleanup can be triggered:
 

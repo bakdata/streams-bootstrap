@@ -31,40 +31,6 @@ Provides tools to:
 
 The framework integrates with `fluent-kafka-streams-tests` for unit testing Kafka Streams topologies.```
 
-## Integration Testing with TestContainers
-
-For integration tests that require a real Kafka environment, the framework provides integration with TestContainers.
-
-### Single Node Kafka Testing
-
-`KafkaTest` provides a base class for integration tests with a single Kafka broker.
-
-### Multi-Node Cluster Testing
-
-For testing with multi-node Kafka clusters, the framework provides `ApacheKafkaContainerCluster`:
-
-Example usage:
-
-```java
-ApacheKafkaContainerCluster cluster = new ApacheKafkaContainerCluster("3.4.0", 3, 2);
-cluster.
-
-start();
-
-String bootstrapServers = this.cluster.getBootstrapServers();
-// Run tests...
-cluster.
-
-stop();
-```
-
-### Features:
-
-- Configurable broker count
-- Configurable replication factor for internal topics
-- Uses KRaft (no ZooKeeper)
-- Waits for all brokers to be ready before returning
-
 ## Utilities for Kafka Testing
 
 ### KafkaTestClient Operations
