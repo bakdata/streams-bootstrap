@@ -97,19 +97,105 @@ Streams applications support flexible topic configuration:
 
 ### Kafka properties
 
-TODO
+#### Base configuration
+
+The following Kafka properties are configured by default for Streams
+applications in streams-bootstrap:
+
+- `processing.guarantee = exactly_once_v2`
+- `producer.max.in.flight.requests.per.connection = 1`
+- `producer.acks = all`
+- `producer.compression.type = gzip`
+
+#### Custom Kafka properties
+
+Kafka configuration can be customized by overriding `createKafkaProperties()`:
+
+```java
+@Override
+public Map<String, Object> createKafkaProperties() {
+    return Map.of(
+            StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2,
+            StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4,
+            StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName()
+    );
+}
+```
 
 ---
 
 ### Lifecycle hooks
 
+Streams applications support the following hook types:
+
+- **Cleanup hooks** – for general cleanup logic not tied to Kafka topics
+- **Topic hooks** – for reacting to topic lifecycle events (e.g. deletion)
+- **Reset hooks** – for logic that should run only during an application reset
+- 
 #### Setup
 
 TODO
 
 #### Clean up
 
-TODO
+Use cleanup hooks for logic that is not tied to Kafka topics, such as closing external resources
+or cleaning up temporary state.
+
+```java
+@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration<StreamsTopicConfig> configuration) {
+
+    return StreamsApp.super.setupCleanUp(configuration)
+            .registerCleanHook(() -> {
+                // Custom cleanup logic
+            });
+}
+```
+
+#### Topic hooks
+
+Topic hooks allow Kafka Streams applications to react to Kafka topic lifecycle events, such as topic
+deletion during `clean` or `reset` operations.
+
+```java
+@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration<StreamsTopicConfig> configuration) {
+
+    return StreamsApp.super.setupCleanUp(configuration)
+            .registerTopicHook(new TopicHook() {
+                @Override
+                public void deleted(final String topic) {
+                    // Called when a managed topic is deleted
+                    System.out.println("Deleted topic: " + topic);
+                }
+                @Override
+                public void close() {
+                    // Optional cleanup for the hook itself
+                }
+            });
+}
+```
+##### Reset hooks
+
+Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked during a regular clean.
+
+---
+
+###### Example: reset hook registration (Streams)
+
+```java
+@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration<StreamsTopicConfig> configuration) {
+
+    return StreamsApp.super.setupCleanUp(configuration)
+            .registerResetHook(() -> {
+                // Custom logic executed only during reset
+            });
+}
+```
 
 ---
 

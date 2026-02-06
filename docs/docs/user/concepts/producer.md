@@ -61,14 +61,22 @@ public SerializerConfig defaultSerializationConfig() {
 
 ### Kafka properties
 
-Producer-specific Kafka configuration can be customized by overriding `createKafkaProperties()`:
+#### Base configuration
+
+The following Kafka properties are configured by default for Producer applications in streams-bootstrap:
+
+- `max.in.flight.requests.per.connection = 1`
+- `acks = all`
+- `compression.type = gzip`  
+
+#### Custom Kafka properties
+
+Kafka configuration can be customized by overriding `createKafkaProperties()`:
 
 ```java
-
 @Override
 public Map<String, Object> createKafkaProperties() {
     return Map.of(
-            ProducerConfig.ACKS_CONFIG, "all",
             ProducerConfig.RETRIES_CONFIG, 3,
             ProducerConfig.BATCH_SIZE_CONFIG, 16384,
             ProducerConfig.LINGER_MS_CONFIG, 5
@@ -82,6 +90,11 @@ These properties are merged with defaults and CLI-provided configuration.
 
 ### Lifecycle hooks
 
+Producer applications can register cleanup logic via `setupCleanUp`. This method allows you to attach:
+
+- **Cleanup hooks** – for general cleanup logic not tied to Kafka topics
+- **Topic hooks** – for reacting to topic lifecycle events (e.g. deletion)
+
 #### Clean up
 
 Custom cleanup logic that is not tied to Kafka topics can be registered via cleanup hooks:
@@ -89,16 +102,42 @@ Custom cleanup logic that is not tied to Kafka topics can be registered via clea
 ```java
 
 @Override
-public void setupCleanUp(final EffectiveAppConfiguration configuration) {
-    configuration.addCleanupHook(() -> {
-        // Custom cleanup logic
-    });
+public ProducerCleanUpConfiguration setupCleanUp(
+        final AppConfiguration<ProducerTopicConfig> configuration) {
+
+    return ProducerApp.super.setupCleanUp(configuration)
+            .registerCleanHook(() -> {
+                // Custom cleanup logic
+            });
 }
 ```
 
-Topic-related cleanup should be implemented using topic hooks.
+#### Topic hooks
 
----
+Topic hooks should be used for topic-related cleanup or side effects, such as releasing external
+resources associated with a topic or logging topic deletions:
+
+```java
+@Override
+public ProducerCleanUpConfiguration setupCleanUp(
+        final AppConfiguration<ProducerTopicConfig> configuration) {
+
+    return ProducerApp.super.setupCleanUp(configuration)
+            .registerTopicHook(new TopicHook() {
+
+                @Override
+                public void deleted(final String topic) {
+                    // Called when a managed topic is deleted
+                    System.out.println("Deleted topic: " + topic);
+                }
+
+                @Override
+                public void close() {
+                    // Optional cleanup for the hook itself
+                }
+            });
+}
+```
 
 ## Command line interface
 
