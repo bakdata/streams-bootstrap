@@ -71,7 +71,7 @@ Additional subcommands such as `clean` and `reset` are available for lifecycle m
 
 ### From the `main` Method
 
-In the `main` method, the application subclass starts the framework via:
+In the `main` method, the application subclass starts up via:
 
 ```java
 public static void main(final String[] args) {

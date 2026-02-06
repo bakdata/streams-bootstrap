@@ -1,6 +1,6 @@
 # Monitoring
 
-The framework provides features for monitoring your applications.
+Monitoring features are provided for your applications.
 
 - **JMX Metrics Export**: Applications built with `streams-bootstrap` can expose JMX (Java Management Extensions)
   metrics, which provide insights into the performance and health of the Java application and the Kafka clients.

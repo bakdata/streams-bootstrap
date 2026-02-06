@@ -1,6 +1,6 @@
 # Deployment to Kubernetes
 
-The `streams-bootstrap` framework provides support for deploying applications to Kubernetes using Helm
+`streams-bootstrap` provides support for deploying applications to Kubernetes using Helm
 charts. The charts cover Kafka Streams, producer, consumer, and producer-consumer applications and offer standardized
 solutions for autoscaling, monitoring, and state persistence.
 
@@ -16,7 +16,7 @@ solutions for autoscaling, monitoring, and state persistence.
 
 ## Helm charts
 
-The framework ships a set of Helm charts tailored to different application types:
+A set of Helm charts is shipped, tailored to different application types:
 
 | Chart name             | Purpose                                       | Kubernetes workload types      |
 |------------------------|-----------------------------------------------|--------------------------------|

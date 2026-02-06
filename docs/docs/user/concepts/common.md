@@ -52,7 +52,7 @@ It can create:
 ### Usage Pattern
 
 1. You implement an **App**.
-2. The framework wraps it in a **ConfiguredApp**, applying the configuration.
+2. The system wraps it in a **ConfiguredApp**, applying the configuration.
 3. Runtime configuration is then applied to create an **ExecutableApp**, which can be:
 
 - **run**, or
@@ -64,7 +64,7 @@ It can create:
 
 Applications built with streams-bootstrap follow a defined lifecycle with specific states and transitions.
 
-The framework manages this lifecycle through the KafkaApplication base class and provides several extension points for
+The lifecycle is managed through the KafkaApplication base class and provides several extension points for
 customization.
 
 | Phase          | Description                                                              | Entry Point                                              |
@@ -101,7 +101,7 @@ Applications built with streams-bootstrap can be started in two primary ways:
 
 ### Cleaning an application
 
-The framework provides a built-in mechanism to clean up all resources associated with an application.
+A built-in mechanism is provided to clean up all resources associated with an application.
 
 When the cleanup operation is triggered, the following resources are removed:
 
@@ -135,7 +135,7 @@ clean();
 }
 ```
 
-The framework ensures that cleanup operations are idempotent, meaning they can be safely retried without causing
+Cleanup operations are idempotent, meaning they can be safely retried without causing
 additional issues.
 
 ## Configuration
@@ -149,7 +149,7 @@ Kafka properties are applied in the following order (later values override earli
 5. Serialization config from ProducerApp.defaultSerializationConfig() or StreamsApp.defaultSerializationConfig()
 6. CLI overrides via --kafka-config
 
-The framework automatically parses environment variables with the `APP_ prefix` (configurable via `ENV_PREFIX`).
+Environment variables with the `APP_ prefix` (configurable via `ENV_PREFIX`) are automatically parsed.
 Environment variables are converted to CLI arguments:
 
 ```text
@@ -171,7 +171,7 @@ When the `--schema-registry-url` option is provided:
 
 ## Command line interface
 
-The framework provides a unified command-line interface for application configuration.
+A unified command-line interface is provided for application configuration.
 
 ### CLI Commands
 

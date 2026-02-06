@@ -18,7 +18,7 @@ public static void main(final String[] args) {
 }
 ```
 
-When an application is started, the framework performs the following steps:
+When an application is started, the following steps are performed:
 
 - Parse command-line arguments and environment variables
 - Create a `StreamsApp` instance
@@ -166,7 +166,7 @@ TODO
 
 ## Kafka Streams extensions
 
-The framework provides several extensions that simplify working with Kafka Streams.
+Several extensions are provided that simplify working with Kafka Streams.
 
 ### Simple topic access
 

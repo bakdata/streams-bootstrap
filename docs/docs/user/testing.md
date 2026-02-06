@@ -1,10 +1,10 @@
 # Testing
 
-The `streams-bootstrap` Testing Framework provides a comprehensive set of tools for testing Kafka Streams and Producer
-applications. This framework simplifies both unit and integration testing by providing test abstractions that handle
+The `streams-bootstrap` Testing tools provide a comprehensive set of utilities for testing Kafka Streams and Producer
+applications. These tools simplify both unit and integration testing by providing test abstractions that handle
 Kafka infrastructure setup, Schema Registry integration, and consumer group verification.
 
-The framework supports testing with real Kafka clusters using TestContainers, mock Schema Registry for schema-aware
+Testing is supported with real Kafka clusters using TestContainers, mock Schema Registry for schema-aware
 testing, and utilities for verifying application behavior and consumer group states.
 
 ## Core Testing Components
@@ -29,7 +29,7 @@ Provides tools to:
 
 ## Unit Testing with `fluent-kafka-streams-tests`
 
-The framework integrates with `fluent-kafka-streams-tests` for unit testing Kafka Streams topologies.```
+Integration is provided with `fluent-kafka-streams-tests` for unit testing Kafka Streams topologies.```
 
 ## Utilities for Kafka Testing
 
@@ -111,7 +111,7 @@ ConsumerGroupClient consumerGroupClient = this.admin.getConsumerGroupClient();
 
 ## Consumer Group Verification
 
-The framework provides utilities for verifying consumer group states:
+The tools provide utilities for verifying consumer group states:
 
 ```java
 // Wait for application to become active
