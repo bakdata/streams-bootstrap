@@ -141,16 +141,12 @@ public ProducerCleanUpConfiguration setupCleanUp(
 
 ## Command line interface
 
-Producer applications inherit standard CLI options from `KafkaApplication`.
+Producer applications inherit standard CLI options from `KafkaApplication`. The following CLI options are producer-specific:
 
-```text
---bootstrap-servers         Kafka bootstrap servers (comma-separated)          (Required)
---bootstrap-server          Alias for --bootstrap-servers                      (Required)
---schema-registry-url       URL of the Schema Registry                         (Optional)
---kafka-config              Additional Kafka config (key=value,...)            (Optional)
---output-topic              Default output topic                               (Optional)
---labeled-output-topics     Named output topics (label1=topic1,...)            (Optional)
-```
+| Option                    | Description                                      | Default |
+|---------------------------|--------------------------------------------------|---------|
+| `--output-topic`          | Default output topic                             | -       |
+| `--labeled-output-topics` | Named output topics (`label1=topic1,...`)        | -       |
 
 ---
 

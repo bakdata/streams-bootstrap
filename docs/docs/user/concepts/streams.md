@@ -233,12 +233,10 @@ TODO
 
 ## Command line interface
 
-Streams applications inherit standard CLI options from `KafkaStreamsApplication`.
+Streams applications inherit standard CLI options from `KafkaStreamsApplication`. The following CLI options are streams-app-specific:
 
 | Option                         | Description                               | Default        |
 |--------------------------------|-------------------------------------------|----------------|
-| `--bootstrap-servers`          | Kafka bootstrap servers (comma-separated) | Required       |
-| `--schema-registry-url`        | URL of the Schema Registry                | None           |
 | `--application-id`             | Kafka Streams application ID              | Auto-generated |
 | `--volatile-group-instance-id` | Use volatile group instance ID            | false          |
 

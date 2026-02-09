@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Large Messages Extension** adds support for handling messages that exceed Kafka's size limitations by using
+The Large Messages extension adds support for handling messages that exceed Kafka's size limitations by using
 external storage mechanisms with automatic cleanup.
 It integrates with *streams-bootstrap* to transparently manage:
 

@@ -47,9 +47,9 @@ helm install my-app bakdata-common/streams-app --values my-values.yaml
 
 ## Deployment patterns
 
-### Streams applications (`streams-app`)
+### Streams, consumer and consumer–producer applications
 
-Streams applications support both stateless and stateful deployment modes:
+Streams, consumer and consumer–producer applications support both stateless and stateful deployment modes:
 
 - **Deployment**
     - Used for stateless applications or when state is stored externally
@@ -61,31 +61,27 @@ Streams applications support both stateless and stateful deployment modes:
     - Required when `persistence.enabled: true`
     - Each pod receives a dedicated `PersistentVolumeClaim` for RocksDB state
 
-This allows choosing between elasticity (Deployment) and stronger data locality guarantees (StatefulSet).
-
 ---
 
-### Producer applications (`producer-app`)
+### Producer applications
 
-Producer applications support multiple execution models:
+Producer applications support multiple execution modes depending on workload characteristics:
 
-| Mode       | Use case                            | Resource type        |
-|------------|-------------------------------------|----------------------|
-| Deployment | Long-running or continuous producer | `apps/v1/Deployment` |
-| Job        | One-time run or backfill            | `batch/v1/Job`       |
-| CronJob    | Scheduled periodic execution        | `batch/v1/CronJob`   |
+- **Deployment**
+  - Used for long-running or continuous producers
+  - Enabled when `deployment: true`
+  - Supports horizontal scaling via `replicaCount`
 
----
+- **Job**
+  - Used for one-time runs or backfills
+  - Default when `deployment: false` and no `schedule` is provided
+  - Supports `restartPolicy`, `backoffLimit`, and `ttlSecondsAfterFinished`
 
-### Consumer and consumer–producer applications
+- **CronJob**
+  - Used for scheduled, periodic execution
+  - Enabled when a cron expression is provided via `schedule`
+  - Supports `suspend`, `successfulJobsHistoryLimit`, and `failedJobsHistoryLimit`
 
-- **`consumer-app`**
-    - Deployed as a `Deployment`
-    - Uses Kafka consumer groups for parallel consumption
-
-- **`consumerproducer-app`**
-    - Deployed as a `Deployment`
-    - Typically used for batch-style read–process–write workloads
 
 ---
 
@@ -104,22 +100,7 @@ This ensures a clean starting point for reprocessing or redeployment scenarios.
 ---
 
 ## Configuration structure
-
-All charts share a common configuration structure, with chart-specific extensions:
-
-| Section                 | Purpose                                   | Examples                          |
-|-------------------------|-------------------------------------------|-----------------------------------|
-| `image`, `imageTag`     | Container image configuration             | `streamsApp`, `latest`            |
-| `kafka.*`               | Kafka connection and topic configuration  | `bootstrapServers`, `inputTopics` |
-| `commandLine.*`         | CLI arguments passed to the application   | `MY_PARAM: "value"`               |
-| `env.*`                 | Additional environment variables          | `MY_ENV: foo`                     |
-| `secrets.*`             | Inline secret values                      | Tokens, passwords                 |
-| `secretRefs.*`          | References to existing `Secret` objects   | External credentials              |
-| `resources.*`           | CPU and memory requests/limits            | `requests.cpu: 200m`              |
-| `autoscaling.*`         | KEDA autoscaling configuration            | `lagThreshold`, `minReplicas`     |
-| `persistence.*`         | Streams state-store persistence           | `enabled: true`, `size: 1Gi`      |
-| `jmx.*`, `prometheus.*` | JMX exporter and Prometheus configuration | `jmx.enabled: true`               |
-| `statefulSet`           | Toggle `StatefulSet` vs `Deployment`      | `true` / `false`                  |
+TODO
 
 ---
 
