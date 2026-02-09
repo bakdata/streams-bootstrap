@@ -1596,7 +1596,7 @@ It can create:</p>
 <h3 id="usage-pattern">Usage Pattern</h3>
 <ol>
 <li>You implement an <strong>App</strong>.</li>
-<li>The framework wraps it in a <strong>ConfiguredApp</strong>, applying the configuration.</li>
+<li>The system wraps it in a <strong>ConfiguredApp</strong>, applying the configuration.</li>
 <li>
 <p>Runtime configuration is then applied to create an <strong>ExecutableApp</strong>, which can be:</p>
 </li>
@@ -1608,7 +1608,7 @@ It can create:</p>
 <hr />
 <h2 id="application-lifecycle">Application lifecycle</h2>
 <p>Applications built with streams-bootstrap follow a defined lifecycle with specific states and transitions.</p>
-<p>The framework manages this lifecycle through the KafkaApplication base class and provides several extension points for
+<p>The lifecycle is managed through the KafkaApplication base class and provides several extension points for
 customization.</p>
 <table>
 <thead>
@@ -1663,9 +1663,8 @@ customization.</p>
 }
 </code></pre>
 <h3 id="cleaning-an-application">Cleaning an application</h3>
-<p>The framework provides a built-in mechanism to clean up all resources associated with an application.</p>
+<p>A built-in mechanism is provided to clean up all resources associated with an application.</p>
 <p>When the cleanup operation is triggered, the following resources are removed:</p>
-<p><strong>TODO:</strong> extend the table for new consumer apps</p>
 <table>
 <thead>
 <tr>
@@ -1673,6 +1672,8 @@ customization.</p>
 <th>Description</th>
 <th>Streams Apps</th>
 <th>Producer Apps</th>
+<th>Consumer Apps</th>
+<th>Consumer-Producer Apps</th>
 </tr>
 </thead>
 <tbody>
@@ -1681,11 +1682,15 @@ customization.</p>
 <td>The main output topic of the application</td>
 <td>✓</td>
 <td>✓</td>
+<td>N/A</td>
+<td>✓</td>
 </tr>
 <tr>
 <td>Intermediate Topics</td>
 <td>Topics for stream operations like <code>through()</code></td>
 <td>✓</td>
+<td>N/A</td>
+<td>N/A</td>
 <td>N/A</td>
 </tr>
 <tr>
@@ -1693,16 +1698,22 @@ customization.</p>
 <td>Topics for state stores or repartitioning (Kafka Streams)</td>
 <td>✓</td>
 <td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
 </tr>
 <tr>
 <td>Consumer Groups</td>
 <td>Consumer group metadata</td>
 <td>✓</td>
 <td>N/A</td>
+<td>✓</td>
+<td>✓</td>
 </tr>
 <tr>
 <td>Schema Registry</td>
 <td>All registered schemas</td>
+<td>✓</td>
+<td>✓</td>
 <td>✓</td>
 <td>✓</td>
 </tr>
@@ -1728,7 +1739,7 @@ CleanUpRunner cleanUpRunner = producerApp.createCleanUpRunner()){
 clean();
 }
 </code></pre>
-<p>The framework ensures that cleanup operations are idempotent, meaning they can be safely retried without causing
+<p>Cleanup operations are idempotent, meaning they can be safely retried without causing
 additional issues.</p>
 <h2 id="configuration">Configuration</h2>
 <p>Kafka properties are applied in the following order (later values override earlier ones):</p>
@@ -1740,7 +1751,7 @@ additional issues.</p>
 <li>Serialization config from ProducerApp.defaultSerializationConfig() or StreamsApp.defaultSerializationConfig()</li>
 <li>CLI overrides via --kafka-config</li>
 </ol>
-<p>The framework automatically parses environment variables with the <code>APP_ prefix</code> (configurable via <code>ENV_PREFIX</code>).
+<p>Environment variables with the <code>APP_ prefix</code> (configurable via <code>ENV_PREFIX</code>) are automatically parsed.
 Environment variables are converted to CLI arguments:</p>
 <pre><code class="language-text">APP_BOOTSTRAP_SERVERS       →      --bootstrap-servers
 APP_SCHEMA_REGISTRY_URL     →      --schema-registry-url
@@ -1756,7 +1767,7 @@ configuration.</p>
 <li>Schema evolution is fully supported</li>
 </ul>
 <h2 id="command-line-interface">Command line interface</h2>
-<p>The framework provides a unified command-line interface for application configuration.</p>
+<p>A unified command-line interface is provided for application configuration.</p>
 <h3 id="cli-commands">CLI Commands</h3>
 <ul>
 <li><code>run</code>: Run the application</li>

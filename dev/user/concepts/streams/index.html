@@ -745,6 +745,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Kafka properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Kafka properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -778,6 +806,51 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topic-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Topic hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reset-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reset hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-reset-hook-registration-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: reset hook registration (Streams)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1574,6 +1647,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Kafka properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Kafka properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1607,6 +1708,51 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topic-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Topic hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reset-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset hooks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reset hooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-reset-hook-registration-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: reset hook registration (Streams)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1796,7 +1942,7 @@ Streams apps can also produce new messages to other topics based on the processe
     new MyStreamsApplication().startApplication(args);
 }
 </code></pre>
-<p>When an application is started, the framework performs the following steps:</p>
+<p>When an application is started, the following steps are performed:</p>
 <ul>
 <li>Parse command-line arguments and environment variables</li>
 <li>Create a <code>StreamsApp</code> instance</li>
@@ -1872,13 +2018,85 @@ topics created by the application.</p>
 </ul>
 <hr />
 <h3 id="kafka-properties">Kafka properties</h3>
-<p>TODO</p>
+<h4 id="base-configuration">Base configuration</h4>
+<p>The following Kafka properties are configured by default for Streams
+applications in streams-bootstrap:</p>
+<ul>
+<li><code>processing.guarantee = exactly_once_v2</code></li>
+<li><code>producer.max.in.flight.requests.per.connection = 1</code></li>
+<li><code>producer.acks = all</code></li>
+<li><code>producer.compression.type = gzip</code></li>
+</ul>
+<h4 id="custom-kafka-properties">Custom Kafka properties</h4>
+<p>Kafka configuration can be customized by overriding <code>createKafkaProperties()</code>:</p>
+<pre><code class="language-java">@Override
+public Map&lt;String, Object&gt; createKafkaProperties() {
+    return Map.of(
+            StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2,
+            StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4,
+            StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName()
+    );
+}
+</code></pre>
 <hr />
 <h3 id="lifecycle-hooks">Lifecycle hooks</h3>
+<p>Streams applications support the following hook types:</p>
+<ul>
+<li><strong>Cleanup hooks</strong> – for general cleanup logic not tied to Kafka topics</li>
+<li><strong>Topic hooks</strong> – for reacting to topic lifecycle events (e.g. deletion)</li>
+<li><strong>Reset hooks</strong> – for logic that should run only during an application reset</li>
+<li></li>
+</ul>
 <h4 id="setup">Setup</h4>
 <p>TODO</p>
 <h4 id="clean-up">Clean up</h4>
-<p>TODO</p>
+<p>Use cleanup hooks for logic that is not tied to Kafka topics, such as closing external resources
+or cleaning up temporary state.</p>
+<pre><code class="language-java">@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
+
+    return StreamsApp.super.setupCleanUp(configuration)
+            .registerCleanHook(() -&gt; {
+                // Custom cleanup logic
+            });
+}
+</code></pre>
+<h4 id="topic-hooks">Topic hooks</h4>
+<p>Topic hooks allow Kafka Streams applications to react to Kafka topic lifecycle events, such as topic
+deletion during <code>clean</code> or <code>reset</code> operations.</p>
+<pre><code class="language-java">@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
+
+    return StreamsApp.super.setupCleanUp(configuration)
+            .registerTopicHook(new TopicHook() {
+                @Override
+                public void deleted(final String topic) {
+                    // Called when a managed topic is deleted
+                    System.out.println(&quot;Deleted topic: &quot; + topic);
+                }
+                @Override
+                public void close() {
+                    // Optional cleanup for the hook itself
+                }
+            });
+}
+</code></pre>
+<h5 id="reset-hooks">Reset hooks</h5>
+<p>Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked during a regular clean.</p>
+<hr />
+<h6 id="example-reset-hook-registration-streams">Example: reset hook registration (Streams)</h6>
+<pre><code class="language-java">@Override
+public StreamsCleanUpConfiguration setupCleanUp(
+        final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
+
+    return StreamsApp.super.setupCleanUp(configuration)
+            .registerResetHook(() -&gt; {
+                // Custom logic executed only during reset
+            });
+}
+</code></pre>
 <hr />
 <h3 id="execution-options">Execution options</h3>
 <h4 id="on-start">On start</h4>
@@ -1899,7 +2117,7 @@ private void onStreamsStart(final RunningStreams runningStreams) {
 <p>TODO</p>
 <hr />
 <h2 id="command-line-interface">Command line interface</h2>
-<p>Streams applications inherit standard CLI options from <code>KafkaStreamsApplication</code>.</p>
+<p>Streams applications inherit standard CLI options from <code>KafkaStreamsApplication</code>. The following CLI options are streams-app-specific:</p>
 <table>
 <thead>
 <tr>
@@ -1909,16 +2127,6 @@ private void onStreamsStart(final RunningStreams runningStreams) {
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>--bootstrap-servers</code></td>
-<td>Kafka bootstrap servers (comma-separated)</td>
-<td>Required</td>
-</tr>
-<tr>
-<td><code>--schema-registry-url</code></td>
-<td>URL of the Schema Registry</td>
-<td>None</td>
-</tr>
 <tr>
 <td><code>--application-id</code></td>
 <td>Kafka Streams application ID</td>
@@ -1936,7 +2144,7 @@ private void onStreamsStart(final RunningStreams runningStreams) {
 <p>TODO</p>
 <hr />
 <h2 id="kafka-streams-extensions">Kafka Streams extensions</h2>
-<p>The framework provides several extensions that simplify working with Kafka Streams.</p>
+<p>Several extensions are provided that simplify working with Kafka Streams.</p>
 <h3 id="simple-topic-access">Simple topic access</h3>
 <p>TODO</p>
 <h3 id="error-handling">Error handling</h3>

@@ -751,6 +751,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Kafka properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Kafka properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -770,6 +798,17 @@
     <span class="md-ellipsis">
       
         Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topic-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic hooks
       
     </span>
   </a>
@@ -1397,6 +1436,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Kafka properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Kafka properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1416,6 +1483,17 @@
     <span class="md-ellipsis">
       
         Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topic-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Topic hooks
       
     </span>
   </a>
@@ -1516,12 +1594,18 @@ public SerializerConfig defaultSerializationConfig() {
 }
 </code></pre>
 <h3 id="kafka-properties">Kafka properties</h3>
-<p>Producer-specific Kafka configuration can be customized by overriding <code>createKafkaProperties()</code>:</p>
-<pre><code class="language-java">
-@Override
+<h4 id="base-configuration">Base configuration</h4>
+<p>The following Kafka properties are configured by default for Producer applications in streams-bootstrap:</p>
+<ul>
+<li><code>max.in.flight.requests.per.connection = 1</code></li>
+<li><code>acks = all</code></li>
+<li><code>compression.type = gzip</code>  </li>
+</ul>
+<h4 id="custom-kafka-properties">Custom Kafka properties</h4>
+<p>Kafka configuration can be customized by overriding <code>createKafkaProperties()</code>:</p>
+<pre><code class="language-java">@Override
 public Map&lt;String, Object&gt; createKafkaProperties() {
     return Map.of(
-            ProducerConfig.ACKS_CONFIG, &quot;all&quot;,
             ProducerConfig.RETRIES_CONFIG, 3,
             ProducerConfig.BATCH_SIZE_CONFIG, 16384,
             ProducerConfig.LINGER_MS_CONFIG, 5
@@ -1531,27 +1615,70 @@ public Map&lt;String, Object&gt; createKafkaProperties() {
 <p>These properties are merged with defaults and CLI-provided configuration.</p>
 <hr />
 <h3 id="lifecycle-hooks">Lifecycle hooks</h3>
+<p>Producer applications can register cleanup logic via <code>setupCleanUp</code>. This method allows you to attach:</p>
+<ul>
+<li><strong>Cleanup hooks</strong> – for general cleanup logic not tied to Kafka topics</li>
+<li><strong>Topic hooks</strong> – for reacting to topic lifecycle events (e.g. deletion)</li>
+</ul>
 <h4 id="clean-up">Clean up</h4>
 <p>Custom cleanup logic that is not tied to Kafka topics can be registered via cleanup hooks:</p>
 <pre><code class="language-java">
 @Override
-public void setupCleanUp(final EffectiveAppConfiguration configuration) {
-    configuration.addCleanupHook(() -&gt; {
-        // Custom cleanup logic
-    });
+public ProducerCleanUpConfiguration setupCleanUp(
+        final AppConfiguration&lt;ProducerTopicConfig&gt; configuration) {
+
+    return ProducerApp.super.setupCleanUp(configuration)
+            .registerCleanHook(() -&gt; {
+                // Custom cleanup logic
+            });
 }
 </code></pre>
-<p>Topic-related cleanup should be implemented using topic hooks.</p>
-<hr />
-<h2 id="command-line-interface">Command line interface</h2>
-<p>Producer applications inherit standard CLI options from <code>KafkaApplication</code>.</p>
-<pre><code class="language-text">--bootstrap-servers         Kafka bootstrap servers (comma-separated)          (Required)
---bootstrap-server          Alias for --bootstrap-servers                      (Required)
---schema-registry-url       URL of the Schema Registry                         (Optional)
---kafka-config              Additional Kafka config (key=value,...)            (Optional)
---output-topic              Default output topic                               (Optional)
---labeled-output-topics     Named output topics (label1=topic1,...)            (Optional)
+<h4 id="topic-hooks">Topic hooks</h4>
+<p>Topic hooks should be used for topic-related cleanup or side effects, such as releasing external
+resources associated with a topic or logging topic deletions:</p>
+<pre><code class="language-java">@Override
+public ProducerCleanUpConfiguration setupCleanUp(
+        final AppConfiguration&lt;ProducerTopicConfig&gt; configuration) {
+
+    return ProducerApp.super.setupCleanUp(configuration)
+            .registerTopicHook(new TopicHook() {
+
+                @Override
+                public void deleted(final String topic) {
+                    // Called when a managed topic is deleted
+                    System.out.println(&quot;Deleted topic: &quot; + topic);
+                }
+
+                @Override
+                public void close() {
+                    // Optional cleanup for the hook itself
+                }
+            });
+}
 </code></pre>
+<h2 id="command-line-interface">Command line interface</h2>
+<p>Producer applications inherit standard CLI options from <code>KafkaApplication</code>. The following CLI options are producer-specific:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--output-topic</code></td>
+<td>Default output topic</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>--labeled-output-topics</code></td>
+<td>Named output topics (<code>label1=topic1,...</code>)</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="deployment">Deployment</h2>
 <p>TODO</p>

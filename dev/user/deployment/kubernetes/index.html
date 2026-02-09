@@ -1048,10 +1048,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#streams-applications-streams-app" class="md-nav__link">
+  <a href="#streams-consumer-and-consumerproducer-applications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Streams applications (streams-app)
+        Streams, consumer and consumer–producer applications
       
     </span>
   </a>
@@ -1059,21 +1059,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#producer-applications-producer-app" class="md-nav__link">
+  <a href="#producer-applications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Producer applications (producer-app)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#consumer-and-consumerproducer-applications" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consumer and consumer–producer applications
+        Producer applications
       
     </span>
   </a>
@@ -1432,10 +1421,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#streams-applications-streams-app" class="md-nav__link">
+  <a href="#streams-consumer-and-consumerproducer-applications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Streams applications (streams-app)
+        Streams, consumer and consumer–producer applications
       
     </span>
   </a>
@@ -1443,21 +1432,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#producer-applications-producer-app" class="md-nav__link">
+  <a href="#producer-applications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Producer applications (producer-app)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#consumer-and-consumerproducer-applications" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consumer and consumer–producer applications
+        Producer applications
       
     </span>
   </a>
@@ -1595,7 +1573,7 @@
 
 
 <h1 id="deployment-to-kubernetes">Deployment to Kubernetes</h1>
-<p>The <code>streams-bootstrap</code> framework provides support for deploying applications to Kubernetes using Helm
+<p><code>streams-bootstrap</code> provides support for deploying applications to Kubernetes using Helm
 charts. The charts cover Kafka Streams, producer, consumer, and producer-consumer applications and offer standardized
 solutions for autoscaling, monitoring, and state persistence.</p>
 <hr />
@@ -1607,7 +1585,7 @@ solutions for autoscaling, monitoring, and state persistence.</p>
 </ul>
 <hr />
 <h2 id="helm-charts">Helm charts</h2>
-<p>The framework ships a set of Helm charts tailored to different application types:</p>
+<p>A set of Helm charts is shipped, tailored to different application types:</p>
 <table>
 <thead>
 <tr>
@@ -1655,8 +1633,8 @@ helm repo update
 </code></pre>
 <hr />
 <h2 id="deployment-patterns">Deployment patterns</h2>
-<h3 id="streams-applications-streams-app">Streams applications (<code>streams-app</code>)</h3>
-<p>Streams applications support both stateless and stateful deployment modes:</p>
+<h3 id="streams-consumer-and-consumerproducer-applications">Streams, consumer and consumer–producer applications</h3>
+<p>Streams, consumer and consumer–producer applications support both stateless and stateful deployment modes:</p>
 <ul>
 <li>
 <p><strong>Deployment</strong></p>
@@ -1675,53 +1653,30 @@ helm repo update
 </ul>
 </li>
 </ul>
-<p>This allows choosing between elasticity (Deployment) and stronger data locality guarantees (StatefulSet).</p>
 <hr />
-<h3 id="producer-applications-producer-app">Producer applications (<code>producer-app</code>)</h3>
-<p>Producer applications support multiple execution models:</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Use case</th>
-<th>Resource type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Deployment</td>
-<td>Long-running or continuous producer</td>
-<td><code>apps/v1/Deployment</code></td>
-</tr>
-<tr>
-<td>Job</td>
-<td>One-time run or backfill</td>
-<td><code>batch/v1/Job</code></td>
-</tr>
-<tr>
-<td>CronJob</td>
-<td>Scheduled periodic execution</td>
-<td><code>batch/v1/CronJob</code></td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h3 id="consumer-and-consumerproducer-applications">Consumer and consumer–producer applications</h3>
+<h3 id="producer-applications">Producer applications</h3>
+<p>Producer applications support multiple execution modes depending on workload characteristics:</p>
 <ul>
+<li><strong>Deployment</strong></li>
+<li>Used for long-running or continuous producers</li>
+<li>Enabled when <code>deployment: true</code></li>
 <li>
-<p><strong><code>consumer-app</code></strong></p>
-<ul>
-<li>Deployed as a <code>Deployment</code></li>
-<li>Uses Kafka consumer groups for parallel consumption</li>
-</ul>
+<p>Supports horizontal scaling via <code>replicaCount</code></p>
 </li>
 <li>
-<p><strong><code>consumerproducer-app</code></strong></p>
-<ul>
-<li>Deployed as a <code>Deployment</code></li>
-<li>Typically used for batch-style read–process–write workloads</li>
-</ul>
+<p><strong>Job</strong></p>
 </li>
+<li>Used for one-time runs or backfills</li>
+<li>Default when <code>deployment: false</code> and no <code>schedule</code> is provided</li>
+<li>
+<p>Supports <code>restartPolicy</code>, <code>backoffLimit</code>, and <code>ttlSecondsAfterFinished</code></p>
+</li>
+<li>
+<p><strong>CronJob</strong></p>
+</li>
+<li>Used for scheduled, periodic execution</li>
+<li>Enabled when a cron expression is provided via <code>schedule</code></li>
+<li>Supports <code>suspend</code>, <code>successfulJobsHistoryLimit</code>, and <code>failedJobsHistoryLimit</code></li>
 </ul>
 <hr />
 <h3 id="cleanup-jobs">Cleanup jobs</h3>
@@ -1738,73 +1693,7 @@ helm repo update
 <p>This ensures a clean starting point for reprocessing or redeployment scenarios.</p>
 <hr />
 <h2 id="configuration-structure">Configuration structure</h2>
-<p>All charts share a common configuration structure, with chart-specific extensions:</p>
-<table>
-<thead>
-<tr>
-<th>Section</th>
-<th>Purpose</th>
-<th>Examples</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>image</code>, <code>imageTag</code></td>
-<td>Container image configuration</td>
-<td><code>streamsApp</code>, <code>latest</code></td>
-</tr>
-<tr>
-<td><code>kafka.*</code></td>
-<td>Kafka connection and topic configuration</td>
-<td><code>bootstrapServers</code>, <code>inputTopics</code></td>
-</tr>
-<tr>
-<td><code>commandLine.*</code></td>
-<td>CLI arguments passed to the application</td>
-<td><code>MY_PARAM: "value"</code></td>
-</tr>
-<tr>
-<td><code>env.*</code></td>
-<td>Additional environment variables</td>
-<td><code>MY_ENV: foo</code></td>
-</tr>
-<tr>
-<td><code>secrets.*</code></td>
-<td>Inline secret values</td>
-<td>Tokens, passwords</td>
-</tr>
-<tr>
-<td><code>secretRefs.*</code></td>
-<td>References to existing <code>Secret</code> objects</td>
-<td>External credentials</td>
-</tr>
-<tr>
-<td><code>resources.*</code></td>
-<td>CPU and memory requests/limits</td>
-<td><code>requests.cpu: 200m</code></td>
-</tr>
-<tr>
-<td><code>autoscaling.*</code></td>
-<td>KEDA autoscaling configuration</td>
-<td><code>lagThreshold</code>, <code>minReplicas</code></td>
-</tr>
-<tr>
-<td><code>persistence.*</code></td>
-<td>Streams state-store persistence</td>
-<td><code>enabled: true</code>, <code>size: 1Gi</code></td>
-</tr>
-<tr>
-<td><code>jmx.*</code>, <code>prometheus.*</code></td>
-<td>JMX exporter and Prometheus configuration</td>
-<td><code>jmx.enabled: true</code></td>
-</tr>
-<tr>
-<td><code>statefulSet</code></td>
-<td>Toggle <code>StatefulSet</code> vs <code>Deployment</code></td>
-<td><code>true</code> / <code>false</code></td>
-</tr>
-</tbody>
-</table>
+<p>TODO</p>
 <hr />
 <h2 id="environment-variable-mapping">Environment variable mapping</h2>
 <p>Helm values are translated into environment variables using a configurable prefix:</p>
