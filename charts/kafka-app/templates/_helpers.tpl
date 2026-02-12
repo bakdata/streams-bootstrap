@@ -88,6 +88,9 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- $root := . -}}
 - name: ENV_PREFIX
   value: {{ .Values.configurationEnvPrefix }}_
+{{ if .Values.envValueFrom }}
+{{ toYaml .Values.envValueFrom }}
+{{- end }}
 {{- range $key, $value := .Values.kafka.config }}
 - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
   value: {{ $value | quote }}
