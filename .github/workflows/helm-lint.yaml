@@ -2,6 +2,10 @@ name: Helm lint
 
 on:
   push:
+    tags: [ "**" ]
+    branches:
+      - master
+  pull_request:
 
 jobs:
   helm-lint:
