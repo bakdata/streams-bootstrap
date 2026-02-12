@@ -15,4 +15,4 @@ jobs:
         uses: bakdata/ci-templates/actions/helm-lint@1.72.2
         with:
           lint-config-path: ".github/lint-config.yaml"
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.head_ref || github.ref_name }}
