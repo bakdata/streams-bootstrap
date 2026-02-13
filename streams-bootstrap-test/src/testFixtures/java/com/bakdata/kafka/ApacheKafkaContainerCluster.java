@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,10 +52,10 @@ public class ApacheKafkaContainerCluster implements Startable {
     private final Collection<KafkaContainer> brokers;
 
     public ApacheKafkaContainerCluster(final String version, final int brokersNum, final int internalTopicsRf) {
-        if (brokersNum < 0) {
+        if (brokersNum <= 0) {
             throw new IllegalArgumentException("brokersNum '" + brokersNum + "' must be greater than 0");
         }
-        if (internalTopicsRf < 0 || internalTopicsRf > brokersNum) {
+        if (internalTopicsRf <= 0 || internalTopicsRf > brokersNum) {
             throw new IllegalArgumentException(
                     "internalTopicsRf '" + internalTopicsRf + "' must be less than brokersNum and greater than 0"
             );
@@ -124,7 +124,7 @@ public class ApacheKafkaContainerCluster implements Startable {
 
     @Override
     public void stop() {
-        this.brokers.stream().parallel().forEach(GenericContainer::stop);
+        this.brokers.parallelStream().forEach(GenericContainer::stop);
 
         this.network.close();
     }
