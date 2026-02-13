@@ -1,7 +1,7 @@
 [versions]
 junit = "6.0.2"
 mockito = "5.21.0"
-testcontainers = "1.21.4"
+testcontainers = "2.0.3"
 kafkaUtils = "1.3.1"
 
 [libraries]
@@ -31,8 +31,8 @@ junit-systemExit = { group = "com.ginsberg", name = "junit5-system-exit", versio
 assertj = { group = "org.assertj", name = "assertj-core", version = "3.27.7" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
-testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
-testcontainers-kafka = { group = "org.testcontainers", name = "kafka", version.ref = "testcontainers" }
+testcontainers-junit = { group = "org.testcontainers", name = "testcontainers-junit-jupiter", version.ref = "testcontainers" }
+testcontainers-kafka = { group = "org.testcontainers", name = "testcontainers-kafka", version.ref = "testcontainers" }
 fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.5.1" }
 log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.25.3" }
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
