@@ -2,13 +2,16 @@ name: Helm lint
 
 on:
   push:
+    tags: [ "**" ]
+    branches:
+      - master
+  pull_request:
 
 jobs:
   helm-lint:
     runs-on: ubuntu-22.04
     steps:
       - name: Lint Helm chart
-        uses: bakdata/ci-templates/actions/helm-lint@1.72.2
+        uses: bakdata/ci-templates/actions/helm-lint@1.74.0
         with:
           lint-config-path: ".github/lint-config.yaml"
-          ref: ${{ github.ref_name }}
