@@ -28,6 +28,7 @@ import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
 import java.util.Map;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -115,9 +116,10 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
         }
 
         private Iterable<String> getAllOutputTopics() {
+            final Optional<String> errorTopic = Optional.ofNullable(ProducerCleanUpRunner.this.topics.getErrorTopic());
             return Seq.of(ProducerCleanUpRunner.this.topics.getOutputTopic())
-                    .concat(ProducerCleanUpRunner.this.topics.getLabeledOutputTopics().values());
+                    .concat(ProducerCleanUpRunner.this.topics.getLabeledOutputTopics().values())
+                    .append(errorTopic);
         }
     }
-
 }
