@@ -35,10 +35,9 @@ env: {}
 
 # Downward API values
 envValueFrom: {}
-#  - name: NODE_NAME
-#    valueFrom:
-#      fieldRef:
-#        fieldPath: spec.nodeName
+#  NODE_NAME:
+#    fieldRef:
+#      fieldPath: spec.nodeName
 
 secrets: {}
 #  MY_SECRET: fo-bar
