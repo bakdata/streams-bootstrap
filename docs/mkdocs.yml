@@ -21,5 +21,24 @@ plugins:
 markdown_extensions:
   - attr_list
 nav:
-  - Index: index.md
+  - User guide:
+      - What is streams-bootstrap: index.md
+      - Changelog: user/changelog.md
+      - Getting Started:
+          - Setup: user/getting-started/setup.md
+          - Quick start: user/getting-started/quick-start.md
+      - Concepts:
+          - Common concepts: user/concepts/common.md
+          - Streams concepts: user/concepts/streams.md
+          - Producer concepts: user/concepts/producer.md
+      - Testing: user/testing.md
+      - Monitoring: user/monitoring.md
+      - Extensions:
+          - Large messages: user/extensions/large-messages.md
+      - Deployment:
+          - Local deployment: user/deployment/local.md
+          - Kubernetes: user/deployment/kubernetes.md
+      - Examples:
+          - Word count: user/examples/word-count.md
+          - Interactive queries: user/examples/interactive-queries.md
   - Javadoc: javadoc/index.html
