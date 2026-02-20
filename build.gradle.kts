@@ -11,12 +11,6 @@ plugins {
 allprojects {
     group = "com.bakdata.kafka"
 
-    repositories {
-        mavenCentral()
-        maven(url = "https://packages.confluent.io/maven/")
-        maven(url = "https://central.sonatype.com/repository/maven-snapshots")
-    }
-
     dependencies {
         subprojects {
             plugins.withId("java") {
