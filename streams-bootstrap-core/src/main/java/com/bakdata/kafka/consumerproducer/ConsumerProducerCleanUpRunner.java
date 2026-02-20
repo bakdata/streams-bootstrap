@@ -47,9 +47,10 @@ import lombok.extern.slf4j.Slf4j;
 public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
     private final @NonNull ConsumerCleanUpRunner consumerCleanUpRunner;
     private final @NonNull ProducerCleanUpRunner producerCleanUpRunner;
+    private final @NonNull ErrorTopicCleanUpRunner errorTopicCleanUpRunner;
 
     /**
-     * Create a new {@code ConsumerProducerCleanUpRunner} with default {@link ConsumerCleanUpConfiguration}
+     * Create a new {@code ConsumerProducerCleanUpRunner} with default {@link StreamsCleanUpConfiguration}
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
@@ -68,33 +69,40 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId group id of the consumer
      * @param configuration configuration for hooks that are called when running {@link #clean()}
-     * @return {@code ConsumerCleanUpRunner}
+     * @return {@code ConsumerProducerCleanUpRunner}
      */
     public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId,
             @NonNull final StreamsCleanUpConfiguration configuration) {
         final ConsumerTopicConfig consumerTopicConfig = topics.toConsumerTopicConfig();
-        final ProducerTopicConfig producerTopicConfig = topics.toProducerTopicConfig();
         final ConsumerCleanUpConfiguration consumerConfig = configuration.toConsumerCleanUpConfiguration();
-        final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
         final ConsumerCleanUpRunner consumerCleanUpRunner =
                 ConsumerCleanUpRunner.create(consumerTopicConfig, kafkaProperties, groupId, consumerConfig);
+
+        final ProducerTopicConfig producerTopicConfig = topics.toProducerTopicConfig();
+        final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
         final ProducerCleanUpRunner producerCleanUpRunner =
                 ProducerCleanUpRunner.create(producerTopicConfig, kafkaProperties, producerConfig);
-        return new ConsumerProducerCleanUpRunner(consumerCleanUpRunner, producerCleanUpRunner);
+
+        final ErrorTopicCleanUpRunner errorTopicCleanUpRunner =
+                ErrorTopicCleanUpRunner.create(topics.getErrorTopic(), kafkaProperties);
+
+        return new ConsumerProducerCleanUpRunner(consumerCleanUpRunner, producerCleanUpRunner, errorTopicCleanUpRunner);
     }
 
     @Override
     public void close() {
         this.consumerCleanUpRunner.close();
         this.producerCleanUpRunner.close();
+        this.errorTopicCleanUpRunner.close();
     }
 
     @Override
     public void clean() {
         this.consumerCleanUpRunner.clean();
         this.producerCleanUpRunner.clean();
+        this.errorTopicCleanUpRunner.clean();
     }
 
     /**
