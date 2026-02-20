@@ -83,7 +83,6 @@ public class ConsumerProducerTopicConfig {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())
                 .labeledOutputTopics(this.getLabeledOutputTopics())
-                .errorTopic(this.getErrorTopic())
                 .build();
     }
 }

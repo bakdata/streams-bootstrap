@@ -205,7 +205,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             try (final AdminClientX admin = testClient.admin()) {
                 final TopicsClient topicClient = admin.topics();
                 this.softly.assertThat(topicClient.topic(app.getTopics().getErrorTopic()).exists())
-                        .as("Output topic is deleted")
+                        .as("Error topic is deleted")
                         .isFalse();
             }
         }

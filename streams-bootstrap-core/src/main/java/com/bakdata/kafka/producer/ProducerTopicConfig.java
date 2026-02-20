@@ -47,7 +47,6 @@ public class ProducerTopicConfig {
     @Builder.Default
     @NonNull
     Map<String, String> labeledOutputTopics = emptyMap();
-    String errorTopic;
 
     /**
      * Get output topic for a specified label
