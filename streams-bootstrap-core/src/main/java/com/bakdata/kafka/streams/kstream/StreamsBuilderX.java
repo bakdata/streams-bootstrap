@@ -483,7 +483,7 @@ public class StreamsBuilderX {
      * @see StreamsBuilder#build()
      */
     public Topology build() {
-        return this.streamsBuilder.build();
+        return this.build(this.kafkaProperties);
     }
 
     /**
