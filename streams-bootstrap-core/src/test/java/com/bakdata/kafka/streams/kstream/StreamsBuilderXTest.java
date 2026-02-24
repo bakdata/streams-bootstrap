@@ -40,7 +40,6 @@ import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsConfigX;
 import com.bakdata.kafka.streams.StreamsRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.TopologyConfigX;
@@ -850,9 +849,8 @@ class StreamsBuilderXTest {
                         });
                 try (final AdminClientX admin = testClient.admin()) {
                     final TopicsClient topics = admin.topics();
-                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topics.topic(appId + "-left-changelog").exists()).isFalse();
-                    this.softly.assertThat(topics.topic(appId + "-right-changelog").exists()).isFalse();
+                    this.softly.assertThat(topics.list())
+                            .noneSatisfy(topic -> this.softly.assertThat(topic).endsWith("-changelog"));
                 }
             }
         }

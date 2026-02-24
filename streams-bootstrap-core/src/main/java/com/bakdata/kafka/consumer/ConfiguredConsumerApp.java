@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
+import org.apache.kafka.common.IsolationLevel;
 
 /**
  * A {@link ConsumerApp} with a corresponding {@link ConsumerAppConfiguration}
@@ -45,9 +47,9 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
-        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        kafkaConfig.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.type().toString());
+        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        kafkaConfig.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString());
 
         return kafkaConfig;
     }
