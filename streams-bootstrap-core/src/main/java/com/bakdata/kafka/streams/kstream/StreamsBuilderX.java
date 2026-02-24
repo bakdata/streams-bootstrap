@@ -36,6 +36,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -477,10 +478,11 @@ public class StreamsBuilderX {
     }
 
     /**
-     * Returns the {@link Topology} that represents the specified processing logic.
+     * Returns the {@link Topology} that represents the specified processing logic. Kafka properties are
+     * automatically passed to {@link StreamsBuilder#build(Properties)}.
      *
      * @return the {@link Topology} that represents the specified processing logic
-     * @see StreamsBuilder#build()
+     * @see #build(Map)
      */
     public Topology build() {
         return this.build(this.kafkaProperties);
@@ -494,8 +496,7 @@ public class StreamsBuilderX {
      * @see StreamsBuilder#build(Properties)
      */
     public Topology build(final Map<String, Object> properties) {
-        final Properties props = new Properties();
-        props.putAll(properties);
+        final Properties props = Utils.mkObjectProperties(properties);
         return this.streamsBuilder.build(props);
     }
 
