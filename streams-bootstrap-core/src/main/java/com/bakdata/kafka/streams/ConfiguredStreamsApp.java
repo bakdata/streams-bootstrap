@@ -160,7 +160,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     public Topology createTopology(final Map<String, Object> kafkaProperties) {
         final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
         this.app.buildTopology(streamsBuilder);
-        return streamsBuilder.build(kafkaProperties);
+        return streamsBuilder.build();
     }
 
     @Override

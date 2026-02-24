@@ -36,6 +36,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -491,13 +492,14 @@ public class StreamsBuilderX {
     }
 
     /**
-     * Returns the {@link Topology} that represents the specified processing logic.
+     * Returns the {@link Topology} that represents the specified processing logic. Kafka properties are
+     * automatically passed to {@link StreamsBuilder#build(Properties)}.
      *
      * @return the {@link Topology} that represents the specified processing logic
-     * @see StreamsBuilder#build()
+     * @see #build(Map)
      */
     public Topology build() {
-        return this.streamsBuilder.build();
+        return this.build(this.kafkaProperties);
     }
 
     /**
@@ -505,23 +507,11 @@ public class StreamsBuilderX {
      *
      * @param properties the properties used for building possibly optimized topology
      * @return the {@link Topology} that represents the specified processing logic
-     * @see #build(Properties)
-     */
-    public Topology build(final Map<String, Object> properties) {
-        final Properties props = new Properties();
-        props.putAll(properties);
-        return this.build(props);
-    }
-
-    /**
-     * Returns the {@link Topology} that represents the specified processing logic.
-     *
-     * @param properties the {@link Properties} used for building possibly optimized topology
-     * @return the {@link Topology} that represents the specified processing logic
      * @see StreamsBuilder#build(Properties)
      */
-    public Topology build(final Properties properties) {
-        return this.streamsBuilder.build(properties);
+    public Topology build(final Map<String, Object> properties) {
+        final Properties props = Utils.mkObjectProperties(properties);
+        return this.streamsBuilder.build(props);
     }
 
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
