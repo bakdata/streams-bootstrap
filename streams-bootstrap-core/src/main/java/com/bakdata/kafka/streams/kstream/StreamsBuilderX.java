@@ -30,6 +30,7 @@ import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.TopologyConfigX;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -483,6 +484,30 @@ public class StreamsBuilderX {
      */
     public Topology build() {
         return this.streamsBuilder.build();
+    }
+
+    /**
+     * Returns the {@link Topology} that represents the specified processing logic.
+     *
+     * @param properties the properties used for building possibly optimized topology
+     * @return the {@link Topology} that represents the specified processing logic
+     * @see #build(Properties)
+     */
+    public Topology build(final Map<String, Object> properties) {
+        final Properties props = new Properties();
+        props.putAll(properties);
+        return this.build(props);
+    }
+
+    /**
+     * Returns the {@link Topology} that represents the specified processing logic.
+     *
+     * @param properties the {@link Properties} used for building possibly optimized topology
+     * @return the {@link Topology} that represents the specified processing logic
+     * @see StreamsBuilder#build(Properties)
+     */
+    public Topology build(final Properties properties) {
+        return this.streamsBuilder.build(properties);
     }
 
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
