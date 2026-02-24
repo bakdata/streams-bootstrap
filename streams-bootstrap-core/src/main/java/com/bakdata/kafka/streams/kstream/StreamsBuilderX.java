@@ -491,23 +491,12 @@ public class StreamsBuilderX {
      *
      * @param properties the properties used for building possibly optimized topology
      * @return the {@link Topology} that represents the specified processing logic
-     * @see #build(Properties)
+     * @see StreamsBuilder#build(Properties)
      */
     public Topology build(final Map<String, Object> properties) {
         final Properties props = new Properties();
         props.putAll(properties);
-        return this.build(props);
-    }
-
-    /**
-     * Returns the {@link Topology} that represents the specified processing logic.
-     *
-     * @param properties the {@link Properties} used for building possibly optimized topology
-     * @return the {@link Topology} that represents the specified processing logic
-     * @see StreamsBuilder#build(Properties)
-     */
-    public Topology build(final Properties properties) {
-        return this.streamsBuilder.build(properties);
+        return this.streamsBuilder.build(props);
     }
 
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
