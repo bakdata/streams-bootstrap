@@ -37,7 +37,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyConfig;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -69,7 +71,19 @@ public class StreamsBuilderX {
      * @param kafkaProperties kafka properties
      */
     public StreamsBuilderX(final StreamsTopicConfig topics, final Map<String, Object> kafkaProperties) {
-        this(new StreamsBuilder(), topics, kafkaProperties);
+        this(topics, kafkaProperties, new TopologyConfig(new StreamsConfig(kafkaProperties)));
+    }
+
+    /**
+     * Create a new {@code StreamsBuilderX}. A new internal {@link StreamsBuilder} is created automatically
+     *
+     * @param topics topic configuration
+     * @param kafkaProperties kafka properties
+     * @param topologyConfig topology config
+     */
+    public StreamsBuilderX(final StreamsTopicConfig topics, final Map<String, Object> kafkaProperties,
+            final TopologyConfig topologyConfig) {
+        this(new StreamsBuilder(topologyConfig), topics, kafkaProperties);
     }
 
     /**

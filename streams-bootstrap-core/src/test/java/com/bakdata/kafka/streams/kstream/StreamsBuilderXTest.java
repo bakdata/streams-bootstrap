@@ -57,6 +57,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.TopologyException;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -855,6 +856,31 @@ class StreamsBuilderXTest {
                 }
             }
         }
+    }
+
+    @Test
+    void shouldUseTopologyConfig() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KTableX<String, Long> counted = grouped.count();
+                counted.toStream().to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true
+                );
+            }
+        };
+        this.softly.assertThatThrownBy(app::startApp)
+                .isInstanceOf(TopologyException.class)
+                .hasMessageStartingWith("Invalid topology:")
+                .hasMessageContaining("Following changelog topic(s) has not been named")
+                .hasMessageContaining("Following state store(s) has not been named");
     }
 
 }
