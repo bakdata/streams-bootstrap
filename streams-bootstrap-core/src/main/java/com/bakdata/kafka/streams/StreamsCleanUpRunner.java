@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2026 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,6 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -128,7 +127,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
     static File createTemporaryPropertiesFile(final String appId, final Map<String, Object> config) {
         // Writing properties requires Map<String, String>
-        final Properties parsedProperties = Utils.mkObjectProperties(config);
+        final Properties parsedProperties = toStringBasedProperties(config);
         try {
             final File tempFile = File.createTempFile(appId + "-reset", "temp");
             try (final FileOutputStream out = new FileOutputStream(tempFile)) {
@@ -138,6 +137,12 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         } catch (final IOException e) {
             throw new CleanUpException("Could not run StreamsResetter", e);
         }
+    }
+
+    static Properties toStringBasedProperties(final Map<String, Object> config) {
+        final Properties parsedProperties = new Properties();
+        config.forEach((key, value) -> parsedProperties.setProperty(key, value.toString()));
+        return parsedProperties;
     }
 
     private static Collection<String> filterExistingTopics(final Collection<String> topics,
