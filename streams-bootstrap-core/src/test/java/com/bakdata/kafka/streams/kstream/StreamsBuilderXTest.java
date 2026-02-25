@@ -47,6 +47,7 @@ import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -740,9 +741,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
-                );
+                final Map<String, Object> kafkaProperties = new HashMap<>(super.createKafkaProperties());
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                return kafkaProperties;
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {

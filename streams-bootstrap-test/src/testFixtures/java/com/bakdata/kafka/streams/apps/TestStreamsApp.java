@@ -24,30 +24,16 @@
 
 package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.TestRecord;
-import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsAppConfiguration;
-import com.bakdata.kafka.streams.kstream.KStreamX;
-import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Serdes.StringSerde;
+import com.bakdata.kafka.streams.StreamsApp;
+import java.util.Map;
+import org.apache.kafka.streams.StreamsConfig;
 
-@NoArgsConstructor
-public class MirrorValueWithAvro implements TestStreamsApp {
-    @Override
-    public void buildTopology(final StreamsBuilderX builder) {
-        final KStreamX<String, TestRecord> input = builder.streamInput();
-        input.toOutputTopic();
-    }
+public interface TestStreamsApp extends StreamsApp {
 
     @Override
-    public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-        return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
-    }
-
-    @Override
-    public SerdeConfig defaultSerializationConfig() {
-        return new SerdeConfig(StringSerde.class, SpecificAvroSerde.class);
+    default Map<String, Object> createKafkaProperties() {
+        return Map.of(
+                StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, false
+        );
     }
 }
