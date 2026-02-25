@@ -25,6 +25,7 @@
 package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.streams.StreamsApp;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.streams.StreamsConfig;
 
@@ -32,8 +33,8 @@ public interface TestStreamsApp extends StreamsApp {
 
     @Override
     default Map<String, Object> createKafkaProperties() {
-        return Map.of(
-                StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, false
-        );
+        final Map<String, Object> kafkaProperties = new HashMap<>();
+        kafkaProperties.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, false);
+        return kafkaProperties;
     }
 }

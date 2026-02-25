@@ -47,7 +47,6 @@ import com.bakdata.kafka.streams.apps.DoubleApp;
 import com.bakdata.kafka.streams.apps.StringApp;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -676,7 +675,7 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                final Map<String, Object> kafkaProperties = new HashMap<>(super.createKafkaProperties());
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
                 kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
                 return kafkaProperties;
             }
@@ -741,7 +740,7 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                final Map<String, Object> kafkaProperties = new HashMap<>(super.createKafkaProperties());
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
                 kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
                 return kafkaProperties;
             }
@@ -810,7 +809,7 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                final Map<String, Object> kafkaProperties = new HashMap<>(super.createKafkaProperties());
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
                 kafkaProperties.put(StreamsConfig.TOPOLOGY_OPTIMIZATION_CONFIG, StreamsConfig.OPTIMIZE);
                 return kafkaProperties;
             }
@@ -870,7 +869,7 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                final Map<String, Object> kafkaProperties = new HashMap<>(super.createKafkaProperties());
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
                 kafkaProperties.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
                 return kafkaProperties;
             }
