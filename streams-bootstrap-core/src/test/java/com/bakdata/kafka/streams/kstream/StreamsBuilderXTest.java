@@ -40,7 +40,6 @@ import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.ExecutableStreamsApp;
 import com.bakdata.kafka.streams.StreamsApp;
-import com.bakdata.kafka.streams.StreamsConfigX;
 import com.bakdata.kafka.streams.StreamsRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.TopologyConfigX;
@@ -57,6 +56,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.TopologyException;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -849,12 +849,36 @@ class StreamsBuilderXTest {
                         });
                 try (final AdminClientX admin = testClient.admin()) {
                     final TopicsClient topics = admin.topics();
-                    final String appId = new StreamsConfigX(executableApp.getConfig()).getAppId();
-                    this.softly.assertThat(topics.topic(appId + "-left-changelog").exists()).isFalse();
-                    this.softly.assertThat(topics.topic(appId + "-right-changelog").exists()).isFalse();
+                    this.softly.assertThat(topics.list())
+                            .noneSatisfy(topic -> this.softly.assertThat(topic).endsWith("-changelog"));
                 }
             }
         }
+    }
+
+    @Test
+    void shouldUseTopologyConfig() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KTableX<String, Long> counted = grouped.count();
+                counted.toStream().to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true
+                );
+            }
+        };
+        this.softly.assertThatThrownBy(app::startApp)
+                .isInstanceOf(TopologyException.class)
+                .hasMessageStartingWith("Invalid topology:")
+                .hasMessageContaining("Following changelog topic(s) has not been named")
+                .hasMessageContaining("Following state store(s) has not been named");
     }
 
 }
