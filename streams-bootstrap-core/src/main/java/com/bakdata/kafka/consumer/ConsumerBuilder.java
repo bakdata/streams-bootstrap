@@ -69,6 +69,8 @@ public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<
         return new KafkaConsumer<>(this.kafkaProperties, keyDeserializer, valueDeserializer);
     }
 
+    // TODO:
+
     /**
      * Create {@code Configurator} to configure {@link Serde} and {@link Deserializer} using {@link #kafkaProperties}.
      *
