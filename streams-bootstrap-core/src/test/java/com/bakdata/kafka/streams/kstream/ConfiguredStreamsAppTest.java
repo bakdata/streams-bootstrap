@@ -227,23 +227,13 @@ class ConfiguredStreamsAppTest {
 
     @Test
     void shouldEnsureInternalResourceNamingByDefault() {
-        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new StreamsApp() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new TestApplication() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
-                final KStreamX<String, String> input = builder.stream("input");
-                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KStreamX<String, Long> input = builder.stream("input");
+                final KGroupedStreamX<String, Long> grouped = input.groupByKey();
                 final KTableX<String, Long> counted = grouped.count();
                 counted.toStream().to("output");
-            }
-
-            @Override
-            public SerdeConfig defaultSerializationConfig() {
-                return new SerdeConfig(StringSerde.class, StringSerde.class);
-            }
-
-            @Override
-            public String getUniqueAppId(final StreamsAppConfiguration configuration) {
-                return "foo";
             }
         }, new StreamsAppConfiguration(emptyTopicConfig()));
         final Map<String, Object> kafkaProperties =
