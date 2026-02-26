@@ -54,4 +54,9 @@ public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProd
 
         log.info("ConsumerProducer was shut down gracefully");
     }
+
+    @Override
+    public void wakeup() {
+        this.consumerRunnable.wakeup();
+    }
 }

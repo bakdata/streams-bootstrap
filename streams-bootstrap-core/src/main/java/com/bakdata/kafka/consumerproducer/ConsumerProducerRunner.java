@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.errors.WakeupException;
 
 /**
  * Runs a Kafka Consumer and Producer application
@@ -53,6 +54,7 @@ public class ConsumerProducerRunner implements Runner {
             log.info("ConsumerProducer is not running or already stopping");
             return;
         }
+        this.runnable.wakeup();
         try {
             this.shutdownLatch.await();
         } catch (final InterruptedException e) {
@@ -68,12 +70,17 @@ public class ConsumerProducerRunner implements Runner {
             throw new ConsumerProducerApplicationException("ConsumerProducer already running");
         }
         // Run Kafka application until it shuts down
-        while (this.running.get()) {
-            this.runnable.run(this.executionOptions.getPollTimeout());
+        try {
+            while (this.running.get()) {
+                this.runnable.run(this.executionOptions.getPollTimeout());
+            }
+        } catch (final WakeupException e) {
+            log.info("Got woken up", e);
+        } finally {
+            final CloseOptions closeOptions =
+                    this.executionOptions.toConsumerExecutionOptions().createCloseOptions(this.config);
+            this.runnable.close(closeOptions);
+            this.shutdownLatch.countDown();
         }
-        final CloseOptions closeOptions =
-                this.executionOptions.toConsumerExecutionOptions().createCloseOptions(this.config);
-        this.runnable.close(closeOptions);
-        this.shutdownLatch.countDown();
     }
 }

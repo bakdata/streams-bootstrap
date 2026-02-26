@@ -65,4 +65,9 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
         log.info("Gracefully shutting down the consumer");
         this.consumer.close(closeOptions);
     }
+
+    @Override
+    public void wakeup() {
+        this.consumer.wakeup();
+    }
 }

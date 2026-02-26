@@ -59,7 +59,7 @@ public final class ConsumerProducerExecutionOptions {
      */
     @Builder.Default
     @Getter
-    private final Duration pollTimeout = Duration.ofSeconds(1L);
+    private final Duration pollTimeout = Duration.ofMillis(100L);
 
     ConsumerExecutionOptions toConsumerExecutionOptions() {
         return ConsumerExecutionOptions.builder()

@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.errors.WakeupException;
 
 /**
  * Runs a Kafka Consumer application
@@ -53,7 +54,7 @@ public class ConsumerRunner implements Runner {
             log.info("Consumer is not running or already stopping");
             return;
         }
-        //TODO wakeup?
+        this.runnable.wakeup();
         try {
             log.info("Awaiting shutdown");
             this.shutdownLatch.await();
@@ -71,15 +72,19 @@ public class ConsumerRunner implements Runner {
             throw new ConsumerApplicationException("Consumer already running");
         }
         // Run Kafka consumer until it shuts down
-        while (this.running.get()) {
-            log.info("Poll loop");
-            this.runnable.run(this.executionOptions.getPollTimeout());
-            log.info("Poll done");
+        try {
+            while (this.running.get()) {
+                log.info("Poll loop");
+                this.runnable.run(this.executionOptions.getPollTimeout());
+                log.info("Poll done");
+            }
+        } catch (final WakeupException e) {
+            log.info("Got woken up", e);
+        } finally {
+            final CloseOptions closeOptions = this.executionOptions.createCloseOptions(this.config);
+            this.runnable.close(closeOptions);
+            log.info("Shutting down");
+            this.shutdownLatch.countDown();
         }
-        //TODO catch wakeup?
-        final CloseOptions closeOptions = this.executionOptions.createCloseOptions(this.config);
-        this.runnable.close(closeOptions);
-        log.info("Shutting down");
-        this.shutdownLatch.countDown();
     }
 }

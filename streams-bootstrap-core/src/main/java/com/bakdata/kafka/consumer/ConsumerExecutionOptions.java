@@ -59,7 +59,7 @@ public class ConsumerExecutionOptions {
      */
     @Builder.Default
     @Getter
-    private final Duration pollTimeout = Duration.ofSeconds(1L);
+    private final Duration pollTimeout = Duration.ofMillis(100L);
 
     //TODO reuse close options in StreamsExecutionOptions
     private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {

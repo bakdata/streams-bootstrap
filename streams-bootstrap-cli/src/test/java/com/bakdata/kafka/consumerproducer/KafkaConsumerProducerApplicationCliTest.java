@@ -202,6 +202,11 @@ class KafkaConsumerProducerApplicationCliTest {
                             public void close(final CloseOptions closeOptions) {
 
                             }
+
+                            @Override
+                            public void wakeup() {
+
+                            }
                         };
                     }
 
@@ -242,6 +247,11 @@ class KafkaConsumerProducerApplicationCliTest {
 
                                     @Override
                                     public void close(final CloseOptions closeOptions) {
+
+                                    }
+
+                                    @Override
+                                    public void wakeup() {
 
                                     }
                                 };
@@ -296,6 +306,11 @@ class KafkaConsumerProducerApplicationCliTest {
 
                                     @Override
                                     public void close(final CloseOptions closeOptions) {
+
+                                    }
+
+                                    @Override
+                                    public void wakeup() {
 
                                     }
                                 };

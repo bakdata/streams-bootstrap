@@ -39,4 +39,6 @@ public interface ConsumerRunnable {
 
     //TODO javadoc
     void close(CloseOptions closeOptions);
+
+    void wakeup();
 }
