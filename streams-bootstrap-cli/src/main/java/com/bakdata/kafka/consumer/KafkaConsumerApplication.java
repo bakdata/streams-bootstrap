@@ -96,7 +96,7 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     public final Optional<ConsumerExecutionOptions> createExecutionOptions() {
         final ConsumerExecutionOptions executionOptions = ConsumerExecutionOptions.builder()
                 .closeExecutionOptions(CloseExecutionOptions.builder()
-                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                        .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
                         .build())
                 .pollTimeout(this.getPollTimeout())
                 .build();

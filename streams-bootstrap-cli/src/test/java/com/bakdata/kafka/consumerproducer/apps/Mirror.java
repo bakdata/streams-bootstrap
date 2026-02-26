@@ -56,7 +56,7 @@ public class Mirror implements ConsumerProducerApp {
     }
 
     @Override
-    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
         return this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
     }
 

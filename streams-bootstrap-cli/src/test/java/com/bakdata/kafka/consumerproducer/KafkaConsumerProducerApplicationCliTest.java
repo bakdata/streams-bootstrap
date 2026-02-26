@@ -66,7 +66,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -98,7 +98,7 @@ class KafkaConsumerProducerApplicationCliTest {
             }
 
             @Override
-            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                 throw new UnsupportedOperationException();
             }
 
@@ -126,7 +126,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -162,7 +162,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -211,7 +211,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         return "my-id";
                     }
 
@@ -258,7 +258,7 @@ class KafkaConsumerProducerApplicationCliTest {
                             }
 
                             @Override
-                            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                                 return "app";
                             }
 
@@ -317,7 +317,7 @@ class KafkaConsumerProducerApplicationCliTest {
                             }
 
                             @Override
-                            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                                 return "app";
                             }
 
@@ -363,7 +363,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -393,7 +393,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 

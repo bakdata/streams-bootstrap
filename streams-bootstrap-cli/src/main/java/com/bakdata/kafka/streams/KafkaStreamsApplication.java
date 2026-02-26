@@ -118,7 +118,7 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     public final Optional<StreamsExecutionOptions> createExecutionOptions() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
                 .closeExecutionOptions(CloseExecutionOptions.builder()
-                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                        .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
                         .build())
                 .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
                 .stateListener(this::createStateListener)

@@ -41,7 +41,6 @@ public class ConsumerOptions {
             description = "Unique identifier for the Kafka Consumer applications, used as 'group.id'.")
     private String groupId;
     @Option(names = {"--poll-timeout"},
-            description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.",
-            defaultValue = "PT0.1S")
+            description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.")
     private Duration pollTimeout = Duration.ofMillis(100);
 }

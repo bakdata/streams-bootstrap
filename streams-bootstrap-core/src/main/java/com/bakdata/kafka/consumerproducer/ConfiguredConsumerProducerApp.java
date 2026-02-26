@@ -94,7 +94,7 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>
         config.putAll(ConfiguredConsumerApp.createBaseConfig());
         final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration, config);
         return propertiesFactory.createKafkaProperties(Map.of(
-                CommonClientConfigs.GROUP_ID_CONFIG, this.getUniqueAppId()
+                CommonClientConfigs.GROUP_ID_CONFIG, this.getUniqueGroupId()
         ));
     }
 
@@ -104,16 +104,17 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>
      * @return unique group identifier
      * @throws IllegalArgumentException if unique group identifier of {@link ConsumerProducerApp} is different from
      * provided group identifier in {@link ConsumerProducerAppConfiguration}
-     * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
+     * @see ConsumerProducerApp#getUniqueGroupId(ConsumerProducerAppConfiguration)
      */
-    public String getUniqueAppId() {
-        final String uniqueAppId =
-                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Group ID cannot be null");
-        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
+    public String getUniqueGroupId() {
+        final String uniqueGroupId =
+                Objects.requireNonNull(this.app.getUniqueGroupId(this.configuration), "Group ID cannot be null");
+        if (this.configuration.getUniqueGroupId().map(configuredId -> !uniqueGroupId.equals(configuredId))
+                .orElse(false)) {
             throw new IllegalArgumentException(
-                    "Provided group ID does not match ConsumerProducerApp#getUniqueAppId()");
+                    "Provided group ID does not match ConsumerProducerApp#getUniqueGroupId()");
         }
-        return uniqueAppId;
+        return uniqueGroupId;
     }
 
     /**
@@ -129,7 +130,7 @@ public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>
                 .producerProperties(properties)
                 .app(this.app)
                 .topics(this.getTopics())
-                .groupId(this.getUniqueAppId())
+                .groupId(this.getUniqueGroupId())
                 .build();
     }
 
