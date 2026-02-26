@@ -25,9 +25,12 @@
 package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.Runner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
@@ -39,22 +42,44 @@ public class ConsumerRunner implements Runner {
 
     private final @NonNull ConsumerRunnable runnable;
     private final @NonNull ConsumerConfig config;
+    private final ConsumerExecutionOptions executionOptions;
+    private final CountDownLatch shutdownLatch = new CountDownLatch(1);
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
     @Override
     public void close() {
         log.info("Closing consumer");
-        this.runnable.close();
+        if (!this.running.compareAndSet(true, false)) {
+            log.info("Consumer is not running or already stopping");
+            return;
+        }
+        //TODO wakeup?
+        try {
+            log.info("Awaiting shutdown");
+            this.shutdownLatch.await();
+            log.info("Shutdown successful");
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ConsumerApplicationException("Error awaiting consumer shutdown", e); //FIXME
+        }
     }
 
     @Override
     public void run() {
-        this.runConsumer();
-        //TODO await?
-    }
-
-    private void runConsumer() {
         log.info("Starting Kafka Consumer");
+        if (!this.running.compareAndSet(false, true)) {
+            throw new ConsumerApplicationException("Consumer already running");
+        }
         // Run Kafka consumer until it shuts down
-        this.runnable.run(this.config);
+        while (this.running.get()) {
+            log.info("Poll loop");
+            this.runnable.run(this.executionOptions.getPollTimeout());
+            log.info("Poll done");
+        }
+        //TODO catch wakeup?
+        final CloseOptions closeOptions = this.executionOptions.createCloseOptions(this.config);
+        this.runnable.close(closeOptions);
+        log.info("Shutting down");
+        this.shutdownLatch.countDown();
     }
 }

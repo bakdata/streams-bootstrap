@@ -24,22 +24,19 @@
 
 package com.bakdata.kafka.consumerproducer;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import java.time.Duration;
+import org.apache.kafka.clients.consumer.CloseOptions;
 
 /**
  * Produce or consume messages to or from Kafka
  */
-public interface ConsumerProducerRunnable extends AutoCloseable {
+public interface ConsumerProducerRunnable {
 
     /**
      * Produce or Consume messages from Kafka
-     *
-     * @param consumerConfig configuration for the consumer
      */
-    void run(ConsumerConfig consumerConfig);
+    void run(Duration pollTimeout);
 
-    @Override
-    default void close() {
-        // do nothing by default
-    }
+    //TODO javadoc
+    void close(CloseOptions closeOptions);
 }

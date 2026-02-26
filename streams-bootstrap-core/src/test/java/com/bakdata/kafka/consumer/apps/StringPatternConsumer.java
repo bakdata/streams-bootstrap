@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ public class StringPatternConsumer implements ConsumerApp {
         builder.subscribeToAllTopics(consumer);
         final java.util.function.Consumer<ConsumerRecords<String, String>> recordProcessor =
                 records -> records.forEach(this.consumedRecords::add);
-        this.consumerRunnable = builder.createDefaultConsumerRunnable(consumer, recordProcessor);
+        this.consumerRunnable = ConsumerBuilder.createDefaultConsumerRunnable(consumer, recordProcessor);
         return this.consumerRunnable;
     }
 

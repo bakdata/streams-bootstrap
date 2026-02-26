@@ -87,8 +87,8 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
                 consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
         final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder),
-                this.getConsumerConfig());
+        return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder), this.getConsumerConfig(),
+                options);
     }
 
     @Override

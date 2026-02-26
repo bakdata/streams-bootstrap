@@ -25,6 +25,7 @@
 package com.bakdata.kafka.consumerproducer.apps;
 
 import com.bakdata.kafka.TestRecord;
+import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.consumer.ConsumerRunnable;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
 import com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration;
@@ -57,7 +58,7 @@ public class MirrorValueWithAvroConsumerProducer implements ConsumerProducerApp 
         final Consumer<String, TestRecord> consumer = builder.getConsumerBuilder().createConsumer();
         builder.getConsumerBuilder().subscribeToAllTopics(consumer);
         final Producer<String, TestRecord> producer = builder.getProducerBuilder().createProducer();
-        final ConsumerRunnable consumerRunnable = builder.getConsumerBuilder().createDefaultConsumerRunnable(consumer,
+        final ConsumerRunnable consumerRunnable = ConsumerBuilder.createDefaultConsumerRunnable(consumer,
                 records -> records.forEach(
                         consumerRecord ->
                                 producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),

@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka.consumerproducer;
 
 /**
- * Exception thrown if running consumer application was unsuccessful
+ * Exception thrown if running consumer producer application was unsuccessful
  */
-public class ConsumerApplicationException extends RuntimeException {
-    public ConsumerApplicationException(final String message) {
+public class ConsumerProducerApplicationException extends RuntimeException {
+    public ConsumerProducerApplicationException(final String message) {
         super(message);
     }
 
-    public ConsumerApplicationException(final String message, final Throwable cause) {
+    public ConsumerProducerApplicationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

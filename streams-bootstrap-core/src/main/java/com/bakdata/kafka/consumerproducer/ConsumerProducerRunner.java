@@ -25,9 +25,12 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.Runner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
@@ -38,23 +41,39 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 public class ConsumerProducerRunner implements Runner {
 
     private final @NonNull ConsumerProducerRunnable runnable;
-    private final @NonNull ConsumerConfig consumerConfig;
+    private final @NonNull ConsumerConfig config;
+    private final ConsumerProducerExecutionOptions executionOptions;
+    private final CountDownLatch shutdownLatch = new CountDownLatch(1);
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
     @Override
     public void close() {
         log.info("Closing consumer and producer");
-        this.runnable.close();
+        if (!this.running.compareAndSet(true, false)) {
+            log.info("ConsumerProducer is not running or already stopping");
+            return;
+        }
+        try {
+            this.shutdownLatch.await();
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ConsumerProducerApplicationException("Error awaiting ConsumerProducer shutdown", e);
+        }
     }
 
     @Override
     public void run() {
-        this.runConsumerProducer();
-        //TODO await?
-    }
-
-    private void runConsumerProducer() {
         log.info("Starting Kafka ConsumerProducer");
+        if (!this.running.compareAndSet(false, true)) {
+            throw new ConsumerProducerApplicationException("ConsumerProducer already running");
+        }
         // Run Kafka application until it shuts down
-        this.runnable.run(this.consumerConfig);
+        while (this.running.get()) {
+            this.runnable.run(this.executionOptions.getPollTimeout());
+        }
+        final CloseOptions closeOptions =
+                this.executionOptions.toConsumerExecutionOptions().createCloseOptions(this.config);
+        this.runnable.close(closeOptions);
+        this.shutdownLatch.countDown();
     }
 }

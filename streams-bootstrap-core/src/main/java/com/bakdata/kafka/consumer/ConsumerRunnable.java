@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,19 @@
 
 package com.bakdata.kafka.consumer;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import java.time.Duration;
+import org.apache.kafka.clients.consumer.CloseOptions;
 
 /**
  * Consume messages from Kafka
  */
-public interface ConsumerRunnable extends AutoCloseable {
+public interface ConsumerRunnable {
 
     /**
      * Consume messages from Kafka
-     *
-     * @param consumerConfig configuration for the consumer
      */
-    void run(ConsumerConfig consumerConfig);
+    void run(Duration pollTimeout);
 
-    @Override
-    default void close() {
-        // do nothing by default
-    }
+    //TODO javadoc
+    void close(CloseOptions closeOptions);
 }

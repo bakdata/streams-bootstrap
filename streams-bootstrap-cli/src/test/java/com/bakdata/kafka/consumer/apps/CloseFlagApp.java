@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ public class CloseFlagApp extends KafkaConsumerApplication<ConsumerApp> {
         return new ConsumerApp() {
             @Override
             public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
-                return builder.createDefaultConsumerRunnable(builder.createConsumer(), records -> {});
+                return ConsumerBuilder.createDefaultConsumerRunnable(builder.createConsumer(), records -> {});
             }
 
             @Override

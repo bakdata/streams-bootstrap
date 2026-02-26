@@ -25,43 +25,32 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.time.Duration;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.producer.Producer;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
-//TODO check
+//TODO javadoc
 public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
 
     private final Producer<KOut, VOut> producer;
-    @Getter
     private final ConsumerRunnable consumerRunnable;
 
     @Override
-    public void run(final ConsumerConfig consumerConfig) {
-        this.consumerRunnable.run(consumerConfig);
+    public void run(final Duration pollTimeout) {
+        this.consumerRunnable.run(pollTimeout);
     }
 
     @Override
-    public void close() {
-        try {
-            log.debug("Closing consumer runnable");
-            this.consumerRunnable.close();
-        } catch (final RuntimeException e) {
-            //TODO why catch?
-            log.warn("Error closing consumer runnable", e);
-        }
+    public void close(final CloseOptions closeOptions) {
+        log.debug("Closing consumer runnable");
+        this.consumerRunnable.close(closeOptions);
 
-        try {
-            log.debug("Closing producer");
-            this.producer.close();
-        } catch (final RuntimeException e) {
-            //TODO why catch?
-            log.warn("Error closing producer", e);
-        }
+        log.debug("Closing producer");
+        this.producer.close();
 
         log.info("ConsumerProducer was shut down gracefully");
     }

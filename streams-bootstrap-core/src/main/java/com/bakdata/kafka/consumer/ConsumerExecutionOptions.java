@@ -59,14 +59,15 @@ public class ConsumerExecutionOptions {
      */
     @Builder.Default
     @Getter
-    private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
+    private final Duration pollTimeout = Duration.ofSeconds(1L);
 
     //TODO reuse close options in StreamsExecutionOptions
     private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
         return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
-    CloseOptions createCloseOptions(final ConsumerConfig config) {
+    //TODO javadoc
+    public CloseOptions createCloseOptions(final ConsumerConfig config) {
         final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
         final GroupMembershipOperation operation =
                 leaveGroup ? GroupMembershipOperation.LEAVE_GROUP : GroupMembershipOperation.DEFAULT;

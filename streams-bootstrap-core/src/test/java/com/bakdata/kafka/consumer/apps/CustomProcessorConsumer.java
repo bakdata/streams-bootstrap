@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ public class CustomProcessorConsumer implements ConsumerApp {
     public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
         final Consumer<String, String> consumer = builder.createConsumer();
         builder.subscribeToAllTopics(consumer);
-        return builder.createDefaultConsumerRunnable(consumer, this.recordProcessor);
+        return ConsumerBuilder.createDefaultConsumerRunnable(consumer, this.recordProcessor);
     }
 
     @Override

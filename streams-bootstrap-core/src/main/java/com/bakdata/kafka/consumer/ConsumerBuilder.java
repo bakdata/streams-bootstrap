@@ -132,8 +132,8 @@ public class ConsumerBuilder {
      * @param recordProcessor {@link java.util.function.Consumer} to process {@link ConsumerRecords}
      * @return A new {@link DefaultConsumerRunnable} instance
      */
-    public <K, V> DefaultConsumerRunnable<K, V> createDefaultConsumerRunnable(final Consumer<K, V> consumer,
+    public static <K, V> DefaultConsumerRunnable<K, V> createDefaultConsumerRunnable(final Consumer<K, V> consumer,
             final java.util.function.Consumer<ConsumerRecords<K, V>> recordProcessor) {
-        return new DefaultConsumerRunnable<>(consumer, this.executionOptions, recordProcessor);
+        return new DefaultConsumerRunnable<>(consumer, recordProcessor);
     }
 }
