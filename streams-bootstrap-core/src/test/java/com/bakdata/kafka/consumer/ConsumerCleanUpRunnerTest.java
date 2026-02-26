@@ -31,13 +31,13 @@ import static com.bakdata.kafka.consumer.TestHelper.reset;
 import static com.bakdata.kafka.consumer.TestHelper.run;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
-import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
+import com.bakdata.kafka.admin.KafkaAdminException;
 import com.bakdata.kafka.consumer.apps.StringConsumer;
 import com.bakdata.kafka.consumer.apps.StringPatternConsumer;
 import java.time.Duration;
@@ -232,7 +232,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
-                    .isInstanceOf(CleanUpException.class)
+                    .isInstanceOf(KafkaAdminException.class)
                     .hasMessageContaining("Error resetting consumer group %s, consumer group is not empty",
                             app.getUniqueGroupId());
         }
