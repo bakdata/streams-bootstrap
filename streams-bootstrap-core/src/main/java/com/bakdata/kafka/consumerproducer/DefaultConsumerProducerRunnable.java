@@ -45,21 +45,11 @@ public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProd
 
     @Override
     public void close() {
-        try {
-            log.debug("Closing consumer runnable");
-            this.consumerRunnable.close();
-        } catch (final RuntimeException e) {
-            //TODO why catch?
-            log.warn("Error closing consumer runnable", e);
-        }
+        log.debug("Closing consumer runnable");
+        this.consumerRunnable.close();
 
-        try {
-            log.debug("Closing producer");
-            this.producer.close();
-        } catch (final RuntimeException e) {
-            //TODO why catch?
-            log.warn("Error closing producer", e);
-        }
+        log.debug("Closing producer");
+        this.producer.close();
 
         log.info("ConsumerProducer was shut down gracefully");
     }
