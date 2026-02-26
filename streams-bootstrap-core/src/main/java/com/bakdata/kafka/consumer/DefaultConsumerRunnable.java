@@ -80,9 +80,6 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
             }
         } catch (final WakeupException exception) {
             log.info("Consumer poll loop waking up for shutdown", exception);
-        } catch (final RuntimeException exception) {
-            // ensure latch count down for proper close
-            log.error("RuntimeException while running consumer loop", exception);
         } finally {
             log.info("Closing consumer");
             final CloseOptions closeOptions = this.executionOptions.createCloseOptions(consumerConfig);
