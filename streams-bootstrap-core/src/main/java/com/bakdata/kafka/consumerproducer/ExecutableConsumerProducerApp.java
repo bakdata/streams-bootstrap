@@ -80,7 +80,7 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     @Override
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
         final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics.toConsumerTopicConfig(),
-                this.consumerProperties, options.toConsumerExecutionOptions());
+                this.consumerProperties, options.getConsumerExecutionOptions());
         final ProducerBuilder producerBuilder = new ProducerBuilder(this.topics.toProducerTopicConfig(),
                 this.producerProperties);
         final ConsumerProducerBuilder

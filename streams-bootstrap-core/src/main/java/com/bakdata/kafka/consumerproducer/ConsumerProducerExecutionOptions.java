@@ -24,33 +24,23 @@
 
 package com.bakdata.kafka.consumerproducer;
 
-import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
-import java.time.Duration;
+import com.bakdata.kafka.producer.ProducerExecutionOptions;
 import lombok.Builder;
 import lombok.Getter;
-import org.apache.kafka.clients.consumer.Consumer;
 
 /**
  * Options to run a Kafka ConsumerProducer app
  */
 @Builder
+@Getter
 public final class ConsumerProducerExecutionOptions {
 
     @Builder.Default
-    private final CloseExecutionOptions closeExecutionOptions = CloseExecutionOptions.builder().build();
+    private final ConsumerExecutionOptions consumerExecutionOptions = ConsumerExecutionOptions.builder()
+            .build();
 
-    /**
-     * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
-     */
     @Builder.Default
-    @Getter
-    private final Duration pollTimeout = Duration.ofMillis(100L);
-
-    ConsumerExecutionOptions toConsumerExecutionOptions() {
-        return ConsumerExecutionOptions.builder()
-                .closeExecutionOptions(this.closeExecutionOptions)
-                .pollTimeout(this.pollTimeout)
-                .build();
-    }
+    private final ProducerExecutionOptions producerExecutionOptions = ProducerExecutionOptions.builder()
+            .build();
 }

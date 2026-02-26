@@ -26,10 +26,12 @@ package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
 import com.bakdata.kafka.mixin.OutputOptions;
+import com.bakdata.kafka.producer.ProducerExecutionOptions;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -109,10 +111,14 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     @Override
     public final Optional<ConsumerProducerExecutionOptions> createExecutionOptions() {
         final ConsumerProducerExecutionOptions executionOptions = ConsumerProducerExecutionOptions.builder()
-                .closeExecutionOptions(CloseExecutionOptions.builder()
-                        .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                .consumerExecutionOptions(ConsumerExecutionOptions.builder()
+                        .closeExecutionOptions(CloseExecutionOptions.builder()
+                                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                                .build())
+                        .pollTimeout(this.getPollTimeout())
                         .build())
-                .pollTimeout(this.getPollTimeout())
+                .producerExecutionOptions(ProducerExecutionOptions.builder()
+                        .build())
                 .build();
         return Optional.of(executionOptions);
     }
