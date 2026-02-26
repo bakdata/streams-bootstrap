@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,14 +60,14 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    static ConfiguredConsumerApp<ConsumerApp> createStringApplication() {
+    static ConfiguredConsumerApp<StringConsumer> createStringApplication() {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build();
         return new ConfiguredConsumerApp<>(new StringConsumer(), new ConsumerAppConfiguration(topics));
     }
 
-    static ConfiguredConsumerApp<ConsumerApp> createStringPatternApplication() {
+    static ConfiguredConsumerApp<StringPatternConsumer> createStringPatternApplication() {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputPattern(Pattern.compile(".*_topic"))
                 .build();
@@ -82,8 +82,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldDeleteConsumerGroup() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -102,7 +102,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             run(executableApp);
             assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
@@ -131,8 +131,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldNotThrowAnErrorIfConsumerGroupDoesNotExist() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -151,7 +151,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             run(executableApp);
             assertContent(this.softly, stringConsumer.getConsumedRecords(), expectedValues,
@@ -179,8 +179,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldReprocessAlreadySeenRecords() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -193,7 +193,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("blub", "blub")
                     ));
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             run(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
@@ -212,8 +212,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldNotThrowExceptionOnMissingInputTopic() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
         }
@@ -221,8 +221,9 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldThrowExceptionOnResetterError() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -238,8 +239,8 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldReprocessAlreadySeenRecordsWithPattern() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringPatternApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerApp<StringPatternConsumer> app = createStringPatternApplication();
+                final ExecutableConsumerApp<StringPatternConsumer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final String topic = "input_topic";
             final KafkaTestClient testClient = this.newTestClient();
@@ -253,7 +254,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
                             new SimpleProducerRecord<>("blub", "blub")
                     ));
 
-            final StringPatternConsumer stringConsumer = (StringPatternConsumer) app.app();
+            final StringPatternConsumer stringConsumer = app.getApp();
 
             run(executableApp);
             this.assertSize(stringConsumer.getConsumedRecords(), 3);
@@ -272,8 +273,9 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldNotThrowExceptionOnResetIfConsumerGroupNotExists() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig())) {
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig())) {
             // The app is not run so the consumer group is never created
             this.softly.assertThatCode(() -> reset(executableApp)).doesNotThrowAnyException();
         }

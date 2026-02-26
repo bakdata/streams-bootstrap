@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,6 +46,7 @@ import org.apache.kafka.common.errors.WakeupException;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
+//TODO check
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
     @Getter
@@ -84,6 +85,7 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
         } catch (final WakeupException exception) {
             log.info("Consumer poll loop waking up for shutdown", exception);
         } catch (final RuntimeException exception) {
+            //TODO why catch?
             log.error("RuntimeException while running consumer loop", exception);
         } finally {
             log.info("Closing consumer");

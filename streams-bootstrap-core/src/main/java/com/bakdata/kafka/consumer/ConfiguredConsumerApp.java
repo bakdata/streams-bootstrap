@@ -31,7 +31,9 @@ import com.bakdata.kafka.RuntimeConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
 import org.apache.kafka.common.IsolationLevel;
@@ -41,9 +43,13 @@ import org.apache.kafka.common.IsolationLevel;
  *
  * @param <T> type of {@link ConsumerApp}
  */
-public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
-                                                           @NonNull ConsumerAppConfiguration configuration)
-        implements ConfiguredApp<ExecutableConsumerApp<T>> {
+@RequiredArgsConstructor
+public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredApp<ExecutableConsumerApp<T>> {
+    @Getter
+    private final @NonNull T app;
+    private final @NonNull ConsumerAppConfiguration configuration;
+
+    //TODO javadoc
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
@@ -96,8 +102,8 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      * Get unique group identifier of {@link ConsumerApp}
      *
      * @return unique group identifier
-     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from
-     * provided group identifier in {@link ConsumerAppConfiguration}
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from provided
+     * group identifier in {@link ConsumerAppConfiguration}
      * @see ConsumerApp#getUniqueGroupId(ConsumerAppConfiguration)
      */
     public String getUniqueGroupId() {
@@ -111,9 +117,9 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     }
 
     /**
-     * Create an {@code ExecutableConsumerApp} using the provided {@link RuntimeConfiguration}
+     * Create an {@link ExecutableConsumerApp} using the provided {@link RuntimeConfiguration}
      *
-     * @return {@code ExecutableConsumerApp}
+     * @return {@link ExecutableConsumerApp}
      */
     @Override
     public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {

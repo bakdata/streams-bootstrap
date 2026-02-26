@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +37,12 @@ public interface ConsumerApp extends App<ConsumerTopicConfig, ConsumerCleanUpCon
      * Create a runnable that consumes Kafka messages
      *
      * @param builder provides all runtime application configurations
-     * @return {@code ConsumerRunnable}
+     * @return {@link ConsumerRunnable}
      */
     ConsumerRunnable buildRunnable(ConsumerBuilder builder);
 
     /**
-     * @return {@code ConsumerCleanUpConfiguration}
+     * @return {@link ConsumerCleanUpConfiguration}
      * @see ConsumerCleanUpRunner
      */
     @Override

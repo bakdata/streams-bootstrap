@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,7 @@ public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProd
             log.debug("Closing consumer runnable");
             this.consumerRunnable.close();
         } catch (final RuntimeException e) {
+            //TODO why catch?
             log.warn("Error closing consumer runnable", e);
         }
 
@@ -58,6 +59,7 @@ public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProd
             log.debug("Closing producer");
             this.producer.close();
         } catch (final RuntimeException e) {
+            //TODO why catch?
             log.warn("Error closing producer", e);
         }
 

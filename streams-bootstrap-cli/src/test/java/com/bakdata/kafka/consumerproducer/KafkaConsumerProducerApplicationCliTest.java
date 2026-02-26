@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -265,7 +265,7 @@ class KafkaConsumerProducerApplicationCliTest {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
                                 return (consumerConfig, producerConfig) -> {
-                                    try (final Producer<String, String> producer = builder.producerBuilder()
+                                    try (final Producer<String, String> producer = builder.getProducerBuilder()
                                             .createProducer()) {
                                         final ProducerRecord<String, String> producerRecord =
                                                 new ProducerRecord<>(output, "foo", "bar");

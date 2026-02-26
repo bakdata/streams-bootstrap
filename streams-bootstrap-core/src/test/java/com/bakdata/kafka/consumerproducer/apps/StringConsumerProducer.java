@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,13 +51,13 @@ public class StringConsumerProducer implements ConsumerProducerApp {
 
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-        final Producer<String, String> producer = builder.producerBuilder().createProducer();
-        final Consumer<String, String> consumer = builder.consumerBuilder().createConsumer();
-        builder.consumerBuilder().subscribeToAllTopics(consumer);
+        final Producer<String, String> producer = builder.getProducerBuilder().createProducer();
+        final Consumer<String, String> consumer = builder.getConsumerBuilder().createConsumer();
+        builder.getConsumerBuilder().subscribeToAllTopics(consumer);
         final ConsumerRunnable
-                consumerRunnable = builder.consumerBuilder().createDefaultConsumerRunnable(consumer, records ->
+                consumerRunnable = builder.getConsumerBuilder().createDefaultConsumerRunnable(consumer, records ->
                 records.forEach(consumerRecord ->
-                        producer.send(new ProducerRecord<>(builder.topics().getOutputTopic(),
+                        producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
                                 consumerRecord.key(), consumerRecord.value()))));
         return new DefaultConsumerProducerRunnable<>(producer, consumerRunnable);
     }

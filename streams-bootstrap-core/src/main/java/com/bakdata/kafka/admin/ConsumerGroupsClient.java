@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,11 @@ import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
 import org.apache.kafka.clients.admin.GroupListing;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.admin.ListGroupsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
+import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.GroupState;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
@@ -158,6 +163,40 @@ public final class ConsumerGroupsClient {
                     // do nothing
                 }
             }
+        }
+
+        /**
+         * Reset consumer group offset.
+         *
+         * @param offsetSpec specification where offsets should be reset to
+         */
+        public void reset(final OffsetSpec offsetSpec) {
+            final Optional<ConsumerGroupDescription> groupDescription = this.describe();
+            if (groupDescription.isEmpty()) {
+                return;
+            }
+            if (groupDescription.get().groupState() != GroupState.EMPTY) {
+                throw new KafkaAdminException(
+                        "Error resetting consumer group %s, consumer group is not empty".formatted(this.groupName));
+            }
+
+            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = this.listOffsets();
+
+            final Map<TopicPartition, OffsetSpec> request = groupOffsets.keySet().stream()
+                    .collect(Collectors.toMap(tp -> tp, tp -> offsetSpec));
+            final KafkaFuture<Map<TopicPartition, ListOffsetsResultInfo>> offsetsFuture =
+                    ConsumerGroupsClient.this.adminClient.listOffsets(request).all();
+            final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> offsets =
+                    ConsumerGroupsClient.this.timeout.get(offsetsFuture,
+                            () -> "Error resetting consumer group %s, could not find offsets for spec %s".formatted(
+                                    this.groupName, offsetSpec));
+
+            final Map<TopicPartition, OffsetAndMetadata> resetOffsets = offsets.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new OffsetAndMetadata(e.getValue().offset())));
+            final KafkaFuture<Void> alterOffsetResult =
+                    ConsumerGroupsClient.this.adminClient.alterConsumerGroupOffsets(this.groupName, resetOffsets).all();
+            ConsumerGroupsClient.this.timeout.get(alterOffsetResult,
+                    () -> "Error resetting consumer group %s, could not alter offsets".formatted(this.groupName));
         }
 
         /**

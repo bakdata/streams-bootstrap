@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,6 +46,15 @@ public class SerializerDeserializerConfig implements SerializationConfig {
     private final @NonNull SerializerConfig serializerConfig;
     private final @NonNull DeserializerConfig deserializerConfig;
 
+    //TODO javadoc
+    public SerializerDeserializerConfig(final @NonNull Class<? extends Serializer> keySerializer,
+            final @NonNull Class<? extends Serializer> valueSerializer,
+            final @NonNull Class<? extends Deserializer> keyDeserializer,
+            final @NonNull Class<? extends Deserializer> valueDeserializer) {
+        this.serializerConfig = new SerializerConfig(keySerializer, valueSerializer);
+        this.deserializerConfig = new DeserializerConfig(keyDeserializer, valueDeserializer);
+    }
+
     @Override
     public Map<String, Object> createProperties() {
         return Stream.concat(Stream.of(this.serializerConfig.createProperties()),
@@ -54,15 +63,7 @@ public class SerializerDeserializerConfig implements SerializationConfig {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
-                        (v1, v2) -> v2
+                        (v1, v2) -> v2 // v1 and v2 should always be different
                 ));
-    }
-
-    public SerializerDeserializerConfig(final @NonNull Class<? extends Serializer> keySerializer,
-            final @NonNull Class<? extends Serializer> valueSerializer,
-            final @NonNull Class<? extends Deserializer> keyDeserializer,
-            final @NonNull Class<? extends Deserializer> valueDeserializer) {
-        this.serializerConfig = new SerializerConfig(keySerializer, valueSerializer);
-        this.deserializerConfig = new DeserializerConfig(keyDeserializer, valueDeserializer);
     }
 }

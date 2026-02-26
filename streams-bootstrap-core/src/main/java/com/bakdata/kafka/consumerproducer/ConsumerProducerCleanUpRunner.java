@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId group id of the consumer
      * @param configuration configuration for hooks that are called when running {@link #clean()}
-     * @return {@code ConsumerCleanUpRunner}
+     * @return {@code ConsumerProducerCleanUpRunner}
      */
     public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
@@ -79,7 +79,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
         final ConsumerCleanUpConfiguration consumerConfig = configuration.toConsumerCleanUpConfiguration();
         final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
         final ConsumerCleanUpRunner consumerCleanUpRunner =
-                ConsumerCleanUpRunner.create(consumerTopicConfig, kafkaProperties, groupId, consumerConfig);
+                ConsumerCleanUpRunner.create(kafkaProperties, groupId, consumerConfig);
         final ProducerCleanUpRunner producerCleanUpRunner =
                 ProducerCleanUpRunner.create(producerTopicConfig, kafkaProperties, producerConfig);
         return new ConsumerProducerCleanUpRunner(consumerCleanUpRunner, producerCleanUpRunner);

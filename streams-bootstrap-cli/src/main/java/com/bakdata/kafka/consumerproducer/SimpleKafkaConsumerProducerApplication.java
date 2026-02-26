@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * {@code KafkaConsumerProducerApplication} without any additional configuration options.
+ * {@link KafkaConsumerProducerApplication} without any additional configuration options.
  *
  * @param <T> type of {@link ConsumerProducerApp} created by this application
  */

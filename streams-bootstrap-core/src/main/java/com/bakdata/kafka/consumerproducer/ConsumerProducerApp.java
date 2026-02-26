@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, St
      * Create a runnable that consumes and produces Kafka messages
      *
      * @param builder provides all runtime application configurations
-     * @return {@code ConsumerProducerRunnable}
+     * @return {@link ConsumerProducerRunnable}
      */
     ConsumerProducerRunnable buildRunnable(ConsumerProducerBuilder builder);
 
@@ -52,13 +52,14 @@ public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, St
      * @param configuration provides runtime configuration
      * @return unique group identifier
      */
+    //TODO rename to group Id? It is inconsistent with the CLI param
     default String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
         return configuration.getUniqueAppId()
                 .orElseThrow(() -> new IllegalArgumentException("Please provide a group ID"));
     }
 
     /**
-     * @return {@code StreamsCleanUpConfiguration}
+     * @return {@link StreamsCleanUpConfiguration}
      * @see StreamsCleanUpRunner
      */
     @Override

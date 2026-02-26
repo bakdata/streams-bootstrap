@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,5 +31,9 @@ public class KafkaAdminException extends RuntimeException {
 
     KafkaAdminException(final String message, final Throwable cause) {
         super(message, cause);
+    }
+
+    KafkaAdminException(final String message) {
+        super(message);
     }
 }

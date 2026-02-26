@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,10 +94,9 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     }
 
     /**
-     * Clear all state stores and consumer group offsets associated with the Kafka ConsumerProducer application.
+     * Reset consumer group offsets associated with the Kafka ConsumerProducer application.
      */
-    @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
-            + "Kafka ConsumerProducer application.")
+    @Command(description = "Reset consumer group offsets associated with the Kafka ConsumerProducer application.")
     public void reset() {
         this.prepareClean();
         try (final CleanableApp<ConsumerProducerCleanUpRunner> app = this.createCleanableApp()) {

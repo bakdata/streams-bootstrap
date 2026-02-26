@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,7 @@ public class ConsumerExecutionOptions {
     @Getter
     private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
+    //TODO reuse close options in StreamsExecutionOptions
     private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
         return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }

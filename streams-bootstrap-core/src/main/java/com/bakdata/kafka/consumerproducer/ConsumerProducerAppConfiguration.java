@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public class ConsumerProducerAppConfiguration {
     private final String uniqueAppId;
 
     /**
-     * Create a new {@code ConsumerAppConfiguration} with no provided {@link #uniqueAppId}
+     * Create a new {@code ConsumerProducerAppConfiguration} with no provided {@link #uniqueAppId}
      *
      * @param topics topics to use for app
      */

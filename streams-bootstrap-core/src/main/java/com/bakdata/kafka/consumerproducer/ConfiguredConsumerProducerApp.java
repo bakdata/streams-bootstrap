@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,9 @@ import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.producer.ConfiguredProducerApp;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -42,9 +44,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
  *
  * @param <T> type of {@link ConsumerProducerApp}
  */
-public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
-        @NonNull T app, @NonNull ConsumerProducerAppConfiguration configuration)
+@RequiredArgsConstructor
+public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>
         implements ConfiguredApp<ExecutableConsumerProducerApp<T>> {
+    @Getter
+    private final @NonNull T app;
+    private final @NonNull ConsumerProducerAppConfiguration configuration;
 
     /**
      * <p>This method creates the configuration to run a {@link ConsumerProducerApp}.</p>
@@ -97,8 +102,8 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
      * Get unique group identifier of {@link ConsumerProducerApp}
      *
      * @return unique group identifier
-     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerProducerApp} is different
-     * from provided group identifier in {@link ConsumerProducerAppConfiguration}
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerProducerApp} is different from
+     * provided group identifier in {@link ConsumerProducerAppConfiguration}
      * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
      */
     public String getUniqueAppId() {
@@ -112,9 +117,9 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
     }
 
     /**
-     * Create an {@code ExecutableConsumerProducerApp} using the provided {@link RuntimeConfiguration}
+     * Create an {@link ExecutableConsumerProducerApp} using the provided {@link RuntimeConfiguration}
      *
-     * @return {@code ExecutableConsumerProducerApp}
+     * @return {@link ExecutableConsumerProducerApp}
      */
     @Override
     public ExecutableConsumerProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
