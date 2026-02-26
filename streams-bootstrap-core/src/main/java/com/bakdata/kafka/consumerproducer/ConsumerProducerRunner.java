@@ -29,7 +29,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
  * Runs a Kafka Consumer and Producer application
@@ -40,8 +39,6 @@ public class ConsumerProducerRunner implements Runner {
 
     private final @NonNull ConsumerProducerRunnable runnable;
     private final @NonNull ConsumerConfig consumerConfig;
-    private final @NonNull ProducerConfig producerConfig;
-    private final @NonNull ConsumerProducerExecutionOptions executionOptions;
 
     @Override
     public void close() {
@@ -57,14 +54,7 @@ public class ConsumerProducerRunner implements Runner {
 
     private void runConsumerProducer() {
         log.info("Starting Kafka ConsumerProducer");
-        final RunningConsumerProducer runningConsumer = RunningConsumerProducer.builder()
-                .consumerProducerRunnable(this.runnable)
-                .consumerConfig(this.consumerConfig)
-                .producerConfig(this.producerConfig)
-                .build();
-        log.debug("Calling start hook");
-        this.executionOptions.onStart(runningConsumer);
         // Run Kafka application until it shuts down
-        this.runnable.run(this.consumerConfig, this.producerConfig); //TODO call before onStart
+        this.runnable.run(this.consumerConfig);
     }
 }

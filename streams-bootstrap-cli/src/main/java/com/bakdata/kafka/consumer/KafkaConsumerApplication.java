@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -102,7 +101,6 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     public final Optional<ConsumerExecutionOptions> createExecutionOptions() {
         final ConsumerExecutionOptions executionOptions = ConsumerExecutionOptions.builder()
                 .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
-                .onStart(this::onConsumerStart)
                 .pollTimeout(this.getPollTimeout())
                 .build();
         return Optional.of(executionOptions);
@@ -127,14 +125,5 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Override
     public ConsumerAppConfiguration createConfiguration(final ConsumerTopicConfig topics) {
         return new ConsumerAppConfiguration(topics, this.getGroupId());
-    }
-
-    /**
-     * Called after starting Kafka Consumer
-     *
-     * @param runningConsumer running {@link ConsumerRunnable} instance along with its {@link ConsumerConfig}
-     */
-    protected void onConsumerStart(final RunningConsumer runningConsumer) {
-        // do nothing by default
     }
 }

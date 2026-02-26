@@ -39,7 +39,6 @@ public class ConsumerRunner implements Runner {
 
     private final @NonNull ConsumerRunnable runnable;
     private final @NonNull ConsumerConfig config;
-    private final @NonNull ConsumerExecutionOptions executionOptions;
 
     @Override
     public void close() {
@@ -55,13 +54,7 @@ public class ConsumerRunner implements Runner {
 
     private void runConsumer() {
         log.info("Starting Kafka Consumer");
-        final RunningConsumer runningConsumer = RunningConsumer.builder()
-                .consumerRunnable(this.runnable)
-                .config(this.config)
-                .build();
-        log.debug("Calling start hook");
-        this.executionOptions.onStart(runningConsumer);
         // Run Kafka consumer until it shuts down
-        this.runnable.run(this.config); //TODO call before onStart
+        this.runnable.run(this.config);
     }
 }

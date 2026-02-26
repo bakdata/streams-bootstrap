@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import java.time.Duration;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -39,12 +38,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
  */
 @Builder
 public final class ConsumerProducerExecutionOptions {
-
-    /**
-     * Hook that is called after the {@link ConsumerProducerRunnable} is started
-     */
-    @Builder.Default
-    private final @NonNull java.util.function.Consumer<RunningConsumerProducer> onStart = runningConsumerProducer -> {};
 
     /**
      * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
@@ -67,10 +60,6 @@ public final class ConsumerProducerExecutionOptions {
     @Builder.Default
     @Getter
     private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
-
-    void onStart(final RunningConsumerProducer runningConsumerProducer) {
-        this.onStart.accept(runningConsumerProducer);
-    }
 
     ConsumerExecutionOptions toConsumerExecutionOptions() {
         return ConsumerExecutionOptions.builder()

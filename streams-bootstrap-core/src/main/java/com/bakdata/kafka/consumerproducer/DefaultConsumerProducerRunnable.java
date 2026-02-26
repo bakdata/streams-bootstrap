@@ -30,7 +30,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 @AllArgsConstructor
 @Slf4j
@@ -42,7 +41,7 @@ public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProd
     private final ConsumerRunnable consumerRunnable;
 
     @Override
-    public void run(final ConsumerConfig consumerConfig, final ProducerConfig producerConfig) {
+    public void run(final ConsumerConfig consumerConfig) {
         this.consumerRunnable.run(consumerConfig);
     }
 

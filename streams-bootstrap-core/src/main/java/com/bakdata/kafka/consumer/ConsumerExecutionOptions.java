@@ -28,7 +28,6 @@ import java.time.Duration;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -39,12 +38,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
  */
 @Builder
 public class ConsumerExecutionOptions {
-
-    /**
-     * Hook that is called after the {@link ConsumerRunnable} is started
-     */
-    @Builder.Default
-    private final @NonNull java.util.function.Consumer<RunningConsumer> onStart = runningConsumer -> {};
 
     /**
      * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
@@ -83,9 +76,5 @@ public class ConsumerExecutionOptions {
     boolean shouldLeaveGroup(final Map<String, Object> originals) {
         final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
         return staticMembershipDisabled || this.volatileGroupInstanceId;
-    }
-
-    void onStart(final RunningConsumer runningConsumer) {
-        this.onStart.accept(runningConsumer);
     }
 }
