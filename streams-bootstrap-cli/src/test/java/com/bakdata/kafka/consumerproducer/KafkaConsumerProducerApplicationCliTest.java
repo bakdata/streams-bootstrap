@@ -191,7 +191,7 @@ class KafkaConsumerProducerApplicationCliTest {
                 return new ConsumerProducerApp() {
                     @Override
                     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                        return (consumerConfig) -> {};
+                        return consumerConfig -> {};
                     }
 
                     @Override
@@ -223,7 +223,7 @@ class KafkaConsumerProducerApplicationCliTest {
                         () -> new ConsumerProducerApp() {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                                return (consumerConfig) -> {
+                                return consumerConfig -> {
                                     throw new RuntimeException("Error building runnable");
                                 };
                             }
@@ -264,7 +264,7 @@ class KafkaConsumerProducerApplicationCliTest {
                         () -> new ConsumerProducerApp() {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                                return (consumerConfig) -> {
+                                return consumerConfig -> {
                                     try (final Producer<String, String> producer = builder.getProducerBuilder()
                                             .createProducer()) {
                                         final ProducerRecord<String, String> producerRecord =
