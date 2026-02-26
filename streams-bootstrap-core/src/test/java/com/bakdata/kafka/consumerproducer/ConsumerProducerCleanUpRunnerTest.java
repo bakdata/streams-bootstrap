@@ -402,7 +402,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
                     .isInstanceOf(KafkaAdminException.class)
-                    .hasMessageContaining("Error resetting consumer group %s, consumer group is not empty",
+                    .hasMessageContaining("Failed to reset offsets for consumer group %s: consumer group is not empty",
                             app.getUniqueAppId());
         }
     }

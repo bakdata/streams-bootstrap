@@ -63,7 +63,7 @@ public class SerializerDeserializerConfig implements SerializationConfig {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
-                        (v1, v2) -> v2 // v1 and v2 should always be different
+                        (v1, v2) -> v2 // v1 and v2 are always different
                 ));
     }
 }

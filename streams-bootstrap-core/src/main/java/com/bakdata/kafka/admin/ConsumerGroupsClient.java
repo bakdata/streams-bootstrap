@@ -177,7 +177,8 @@ public final class ConsumerGroupsClient {
             }
             if (groupDescription.get().groupState() != GroupState.EMPTY) {
                 throw new KafkaAdminException(
-                        "Error resetting consumer group %s, consumer group is not empty".formatted(this.groupName));
+                        "Failed to reset offsets for consumer group %s: consumer group is not empty".formatted(
+                                this.groupName));
             }
 
             final Map<TopicPartition, OffsetAndMetadata> groupOffsets = this.listOffsets();
@@ -188,7 +189,7 @@ public final class ConsumerGroupsClient {
                     ConsumerGroupsClient.this.adminClient.listOffsets(request).all();
             final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> offsets =
                     ConsumerGroupsClient.this.timeout.get(offsetsFuture,
-                            () -> "Error resetting consumer group %s, could not find offsets for spec %s".formatted(
+                            () -> "Failed to reset offsets for consumer group %s: could not find offsets for spec %s".formatted(
                                     this.groupName, offsetSpec));
 
             final Map<TopicPartition, OffsetAndMetadata> resetOffsets = offsets.entrySet().stream()
@@ -196,7 +197,8 @@ public final class ConsumerGroupsClient {
             final KafkaFuture<Void> alterOffsetResult =
                     ConsumerGroupsClient.this.adminClient.alterConsumerGroupOffsets(this.groupName, resetOffsets).all();
             ConsumerGroupsClient.this.timeout.get(alterOffsetResult,
-                    () -> "Error resetting consumer group %s, could not alter offsets".formatted(this.groupName));
+                    () -> "Failed to reset offsets for consumer group %s: could not alter offsets".formatted(
+                            this.groupName));
         }
 
         /**
