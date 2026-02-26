@@ -24,14 +24,12 @@
 
 package com.bakdata.kafka.consumerproducer;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import java.time.Duration;
 import lombok.Builder;
 import lombok.Getter;
-import org.apache.kafka.clients.consumer.CloseOptions;
-import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
  * Options to run a Kafka ConsumerProducer app
@@ -39,20 +37,8 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 @Builder
 public final class ConsumerProducerExecutionOptions {
 
-    /**
-     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
-     * {@link Consumer#close(CloseOptions)} is called with
-     * {@link CloseOptions#groupMembershipOperation(GroupMembershipOperation)} set to
-     * {@link GroupMembershipOperation#REMAIN_IN_GROUP}
-     */
     @Builder.Default
-    private final boolean volatileGroupInstanceId = true;
-
-    /**
-     * Defines {@link CloseOptions#timeout(Duration)} when calling {@link Consumer#close(CloseOptions)}
-     */
-    @Builder.Default
-    private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
+    private final CloseExecutionOptions closeExecutionOptions = CloseExecutionOptions.builder().build();
 
     /**
      * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
@@ -63,9 +49,8 @@ public final class ConsumerProducerExecutionOptions {
 
     ConsumerExecutionOptions toConsumerExecutionOptions() {
         return ConsumerExecutionOptions.builder()
-                .volatileGroupInstanceId(this.volatileGroupInstanceId)
+                .closeExecutionOptions(this.closeExecutionOptions)
                 .pollTimeout(this.pollTimeout)
-                .closeTimeout(this.closeTimeout)
                 .build();
     }
 }
