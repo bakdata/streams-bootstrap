@@ -38,7 +38,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
-import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -192,22 +191,7 @@ class KafkaConsumerProducerApplicationCliTest {
                 return new ConsumerProducerApp() {
                     @Override
                     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                        return new ConsumerProducerRunnable() {
-                            @Override
-                            public void run(final Duration pollTimeout) {
-
-                            }
-
-                            @Override
-                            public void close(final CloseOptions closeOptions) {
-
-                            }
-
-                            @Override
-                            public void wakeup() {
-
-                            }
-                        };
+                        return pollTimeout -> {};
                     }
 
                     @Override
@@ -239,21 +223,8 @@ class KafkaConsumerProducerApplicationCliTest {
                         () -> new ConsumerProducerApp() {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                                return new ConsumerProducerRunnable() {
-                                    @Override
-                                    public void run(final Duration pollTimeout) {
+                                return pollTimeout -> {
                                     throw new RuntimeException("Error building runnable");
-                                    }
-
-                                    @Override
-                                    public void close(final CloseOptions closeOptions) {
-
-                                    }
-
-                                    @Override
-                                    public void wakeup() {
-
-                                    }
                                 };
                             }
 
@@ -293,25 +264,12 @@ class KafkaConsumerProducerApplicationCliTest {
                         () -> new ConsumerProducerApp() {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                                return new ConsumerProducerRunnable() {
-                                    @Override
-                                    public void run(final Duration pollTimeout) {
+                                return pollTimeout -> {
                                     try (final Producer<String, String> producer = builder.getProducerBuilder()
                                             .createProducer()) {
                                         final ProducerRecord<String, String> producerRecord =
                                                 new ProducerRecord<>(output, "foo", "bar");
                                         producer.send(producerRecord);
-                                    }
-                                    }
-
-                                    @Override
-                                    public void close(final CloseOptions closeOptions) {
-
-                                    }
-
-                                    @Override
-                                    public void wakeup() {
-
                                     }
                                 };
                             }

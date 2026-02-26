@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,11 @@
 package com.bakdata.kafka.producer;
 
 import com.bakdata.kafka.Runner;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.Producer;
 
 /**
  * Runs a Kafka Producer application
@@ -37,10 +39,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ProducerRunner implements Runner {
 
     private final @NonNull ProducerRunnable runnable;
+    private final @NonNull ConcurrentLinkedDeque<Producer<?, ?>> producers;
 
     @Override
     public void close() {
         log.info("Closing producer");
+        this.producers.forEach(Producer::close);
         this.runnable.close();
     }
 

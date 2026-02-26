@@ -27,6 +27,7 @@ package com.bakdata.kafka.consumer;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -51,6 +52,8 @@ public class ConsumerBuilder {
     Map<String, Object> kafkaProperties;
     @NonNull
     ConsumerExecutionOptions executionOptions;
+    //TODO hide access
+    ConcurrentLinkedDeque<Consumer<?, ?>> consumers = new ConcurrentLinkedDeque<>();
 
     /**
      * Create a new {@link Consumer} using {@link #kafkaProperties}
@@ -61,7 +64,9 @@ public class ConsumerBuilder {
      * @see KafkaConsumer#KafkaConsumer(Map)
      */
     public <K, V> Consumer<K, V> createConsumer() {
-        return new KafkaConsumer<>(this.kafkaProperties);
+        final Consumer<K, V> consumer = new KafkaConsumer<>(this.kafkaProperties);
+        this.consumers.add(consumer);
+        return consumer;
     }
 
     /**
@@ -76,7 +81,10 @@ public class ConsumerBuilder {
      */
     public <K, V> Consumer<K, V> createConsumer(final Deserializer<K> keyDeserializer,
             final Deserializer<V> valueDeserializer) {
-        return new KafkaConsumer<>(this.kafkaProperties, keyDeserializer, valueDeserializer);
+        final Consumer<K, V> consumer =
+                new KafkaConsumer<>(this.kafkaProperties, keyDeserializer, valueDeserializer);
+        this.consumers.add(consumer);
+        return consumer;
     }
 
     /**

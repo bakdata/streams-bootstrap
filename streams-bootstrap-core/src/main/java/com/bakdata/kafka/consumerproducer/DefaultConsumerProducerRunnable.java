@@ -28,15 +28,12 @@ import com.bakdata.kafka.consumer.ConsumerRunnable;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.CloseOptions;
-import org.apache.kafka.clients.producer.Producer;
 
 @RequiredArgsConstructor
 @Slf4j
 //TODO javadoc
-public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
+public class DefaultConsumerProducerRunnable implements ConsumerProducerRunnable {
 
-    private final Producer<KOut, VOut> producer;
     private final ConsumerRunnable consumerRunnable;
 
     @Override
@@ -45,18 +42,8 @@ public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProd
     }
 
     @Override
-    public void close(final CloseOptions closeOptions) {
+    public void close() {
         log.debug("Closing consumer runnable");
-        this.consumerRunnable.close(closeOptions);
-
-        log.debug("Closing producer");
-        this.producer.close();
-
-        log.info("ConsumerProducer was shut down gracefully");
-    }
-
-    @Override
-    public void wakeup() {
-        this.consumerRunnable.wakeup();
+        this.consumerRunnable.close();
     }
 }

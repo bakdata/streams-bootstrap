@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +37,9 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public class AvroKeyProducer implements ProducerApp {
     @Override
     public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
-        return () -> {
-            try (final Producer<TestRecord, String> producer = builder.createProducer()) {
-                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
-                        TestRecord.newBuilder().setContent("key").build(), "value"));
-            }
-        };
+        final Producer<TestRecord, String> producer = builder.createProducer();
+        return () -> producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
+                TestRecord.newBuilder().setContent("key").build(), "value"));
     }
 
     @Override

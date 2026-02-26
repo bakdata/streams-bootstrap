@@ -25,20 +25,20 @@
 package com.bakdata.kafka.consumer;
 
 import java.time.Duration;
-import org.apache.kafka.clients.consumer.CloseOptions;
 
 /**
  * Consume messages from Kafka
  */
-public interface ConsumerRunnable {
+@FunctionalInterface
+public interface ConsumerRunnable extends AutoCloseable {
 
     /**
      * Consume messages from Kafka
      */
     void run(Duration pollTimeout);
 
-    //TODO javadoc
-    void close(CloseOptions closeOptions);
-
-    void wakeup();
+    @Override
+    default void close() {
+        // do nothing by default
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package com.bakdata.kafka.producer;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -47,6 +48,8 @@ public class ProducerBuilder {
     ProducerTopicConfig topics;
     @NonNull
     Map<String, Object> kafkaProperties;
+    //TODO hide access
+    ConcurrentLinkedDeque<Producer<?, ?>> producers = new ConcurrentLinkedDeque<>();
 
     /**
      * Create a new {@link Producer} using {@link #kafkaProperties}
@@ -56,7 +59,9 @@ public class ProducerBuilder {
      * @see KafkaProducer#KafkaProducer(Map)
      */
     public <K, V> Producer<K, V> createProducer() {
-        return new KafkaProducer<>(this.kafkaProperties);
+        final Producer<K, V> producer = new KafkaProducer<>(this.kafkaProperties);
+        this.producers.add(producer);
+        return producer;
     }
 
     /**
@@ -70,7 +75,9 @@ public class ProducerBuilder {
      */
     public <K, V> Producer<K, V> createProducer(final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer) {
-        return new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
+        final Producer<K, V> producer = new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
+        this.producers.add(producer);
+        return producer;
     }
 
     /**

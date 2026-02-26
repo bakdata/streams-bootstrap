@@ -56,7 +56,7 @@ public class SimpleConsumerProducerApp implements ConsumerProducerApp {
                 records.forEach(consumerRecord ->
                         producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
                                 consumerRecord.key(), consumerRecord.value()))));
-        return new DefaultConsumerProducerRunnable<>(producer, consumerRunnable);
+        return new DefaultConsumerProducerRunnable(consumerRunnable);
     }
 
     @Override

@@ -27,7 +27,6 @@ package com.bakdata.kafka.consumer;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
@@ -58,16 +57,5 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
             this.recordProcessor.accept(consumerRecords);
             this.consumer.commitSync();
         }
-    }
-
-    @Override
-    public void close(final CloseOptions closeOptions) {
-        log.info("Gracefully shutting down the consumer");
-        this.consumer.close(closeOptions);
-    }
-
-    @Override
-    public void wakeup() {
-        this.consumer.wakeup();
     }
 }

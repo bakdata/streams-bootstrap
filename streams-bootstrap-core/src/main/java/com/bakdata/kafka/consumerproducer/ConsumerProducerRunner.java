@@ -25,13 +25,16 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.Runner;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.errors.WakeupException;
 
 /**
@@ -43,7 +46,9 @@ public class ConsumerProducerRunner implements Runner {
 
     private final @NonNull ConsumerProducerRunnable runnable;
     private final @NonNull ConsumerConfig config;
-    private final ConsumerProducerExecutionOptions executionOptions;
+    private final @NonNull ConsumerProducerExecutionOptions executionOptions;
+    private final @NonNull ConcurrentLinkedDeque<Consumer<?, ?>> consumers;
+    private final @NonNull ConcurrentLinkedDeque<Producer<?, ?>> producers;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -54,13 +59,15 @@ public class ConsumerProducerRunner implements Runner {
             log.info("ConsumerProducer is not running or already stopping");
             return;
         }
-        this.runnable.wakeup();
+        this.consumers.forEach(Consumer::wakeup);
         try {
             this.shutdownLatch.await();
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ConsumerProducerApplicationException("Error awaiting ConsumerProducer shutdown", e);
         }
+        this.producers.forEach(Producer::close);
+        this.runnable.close();
     }
 
     @Override
@@ -79,7 +86,7 @@ public class ConsumerProducerRunner implements Runner {
         } finally {
             final CloseOptions closeOptions =
                     this.executionOptions.toConsumerExecutionOptions().createCloseOptions(this.config);
-            this.runnable.close(closeOptions);
+            this.consumers.forEach(consumer -> consumer.close(closeOptions));
             this.shutdownLatch.countDown();
         }
     }

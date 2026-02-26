@@ -76,7 +76,7 @@ class ConsumerCleanUpRunnerTest extends KafkaTest {
 
     private void assertSize(final Collection<ConsumerRecord<String, String>> records, final int expectedMessageCount) {
         Awaitility.await()
-                .atMost(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> this.softly.assertThat(records).hasSize(expectedMessageCount));
     }
 

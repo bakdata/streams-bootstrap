@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,11 +43,10 @@ class KafkaProducerApplicationRunTest extends KafkaTest {
         try (final KafkaProducerApplication<?> app = new SimpleKafkaProducerApplication<>(() -> new ProducerApp() {
             @Override
             public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+                final Producer<String, String> producer = builder.createProducer();
                 return () -> {
-                    try (final Producer<String, String> producer = builder.createProducer()) {
-                        final String testRecord = "bar";
-                        producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", testRecord));
-                    }
+                    final String testRecord = "bar";
+                    producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(), "foo", testRecord));
                 };
             }
 

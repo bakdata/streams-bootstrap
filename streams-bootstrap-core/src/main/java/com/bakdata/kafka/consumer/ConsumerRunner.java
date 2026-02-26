@@ -25,12 +25,14 @@
 package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.Runner;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.errors.WakeupException;
 
@@ -43,7 +45,8 @@ public class ConsumerRunner implements Runner {
 
     private final @NonNull ConsumerRunnable runnable;
     private final @NonNull ConsumerConfig config;
-    private final ConsumerExecutionOptions executionOptions;
+    private final @NonNull ConsumerExecutionOptions executionOptions;
+    private final @NonNull ConcurrentLinkedDeque<Consumer<?, ?>> consumers;
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -54,7 +57,7 @@ public class ConsumerRunner implements Runner {
             log.info("Consumer is not running or already stopping");
             return;
         }
-        this.runnable.wakeup();
+        this.consumers.forEach(Consumer::wakeup);
         try {
             log.info("Awaiting shutdown");
             this.shutdownLatch.await();
@@ -63,6 +66,7 @@ public class ConsumerRunner implements Runner {
             Thread.currentThread().interrupt();
             throw new ConsumerApplicationException("Error awaiting consumer shutdown", e); //FIXME
         }
+        this.runnable.close();
     }
 
     @Override
@@ -82,7 +86,7 @@ public class ConsumerRunner implements Runner {
             log.info("Got woken up", e);
         } finally {
             final CloseOptions closeOptions = this.executionOptions.createCloseOptions(this.config);
-            this.runnable.close(closeOptions);
+            this.consumers.forEach(consumer -> consumer.close(closeOptions));
             log.info("Shutting down");
             this.shutdownLatch.countDown();
         }

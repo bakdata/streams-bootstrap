@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,12 @@ package com.bakdata.kafka.producer;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.Producer;
 
 /**
  * A {@link ProducerApp} with a corresponding {@link ProducerTopicConfig} and Kafka configuration
@@ -69,7 +71,9 @@ public class ExecutableProducerApp<T extends ProducerApp>
         final ProducerBuilder producerBuilder = new ProducerBuilder(this.topics, this.kafkaProperties);
         final AppConfiguration<ProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ProducerRunner(this.app.buildRunnable(producerBuilder));
+        final ProducerRunnable runnable = this.app.buildRunnable(producerBuilder);
+        final ConcurrentLinkedDeque<Producer<?, ?>> producers = producerBuilder.getProducers();
+        return new ProducerRunner(runnable, producers);
     }
 
     @Override

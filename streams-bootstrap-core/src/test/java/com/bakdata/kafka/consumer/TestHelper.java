@@ -37,17 +37,17 @@ import java.util.List;
 import lombok.experimental.UtilityClass;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.streams.KeyValue;
-import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.Java6StandardSoftAssertionsProvider;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 @UtilityClass
 public class TestHelper {
 
-    public static void assertContent(final SoftAssertions softly,
-            final Collection<ConsumerRecord<String, String>> consumedRecords,
+    public static void assertContent(final Java6StandardSoftAssertionsProvider softly,
+            final Collection<? extends ConsumerRecord<String, String>> consumedRecords,
             final Iterable<? extends KeyValue<String, String>> expectedValues, final String description) {
         Awaitility.await()
-                .atMost(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> {
                     final List<KeyValue<String, String>> consumedKeyValues = consumedRecords
                             .stream()

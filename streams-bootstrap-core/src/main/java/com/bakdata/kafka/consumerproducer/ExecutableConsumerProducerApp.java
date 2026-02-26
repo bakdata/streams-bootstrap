@@ -30,11 +30,14 @@ import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.producer.ProducerBuilder;
 import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
@@ -87,8 +90,11 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
                 consumerProducerBuilder = new ConsumerProducerBuilder(this.topics, consumerBuilder, producerBuilder);
         final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder), this.getConsumerConfig(),
-                options);
+        final ConsumerProducerRunnable runnable = this.app.buildRunnable(consumerProducerBuilder);
+        final ConcurrentLinkedDeque<Consumer<?, ?>> consumers = consumerBuilder.getConsumers();
+        final ConcurrentLinkedDeque<Producer<?, ?>> producers = producerBuilder.getProducers();
+        //TODO builder
+        return new ConsumerProducerRunner(runnable, this.getConsumerConfig(), options, consumers, producers);
     }
 
     @Override

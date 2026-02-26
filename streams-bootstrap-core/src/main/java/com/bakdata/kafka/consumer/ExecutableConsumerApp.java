@@ -27,10 +27,12 @@ package com.bakdata.kafka.consumer;
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
@@ -74,7 +76,9 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
         final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics, this.kafkaProperties, options);
         final AppConfiguration<ConsumerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder), this.getConfig(), options);
+        final ConsumerRunnable runnable = this.app.buildRunnable(consumerBuilder);
+        final ConcurrentLinkedDeque<Consumer<?, ?>> consumers = consumerBuilder.getConsumers();
+        return new ConsumerRunner(runnable, this.getConfig(), options, consumers);
     }
 
     @Override
