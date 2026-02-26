@@ -26,6 +26,7 @@ package com.bakdata.kafka.consumer;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
@@ -42,7 +43,7 @@ import org.apache.kafka.common.errors.WakeupException;
  * @param <K> type of keys
  * @param <V> type of values
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
