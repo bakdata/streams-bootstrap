@@ -46,15 +46,14 @@ public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, St
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
      * state encapsulation. Could be set to: className-outputTopic.
      * <p>
-     * User may provide a unique group identifier via {@link ConsumerProducerAppConfiguration#getUniqueAppId()}.
+     * User may provide a unique group identifier via {@link ConsumerProducerAppConfiguration#getUniqueGroupId()}.
      * If that is the case, the returned group ID should match the provided one.
      *
      * @param configuration provides runtime configuration
      * @return unique group identifier
      */
-    //TODO rename to group Id? It is inconsistent with the CLI param
-    default String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
-        return configuration.getUniqueAppId()
+    default String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
+        return configuration.getUniqueGroupId()
                 .orElseThrow(() -> new IllegalArgumentException("Please provide a group ID"));
     }
 

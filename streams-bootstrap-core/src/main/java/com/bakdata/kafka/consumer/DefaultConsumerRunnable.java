@@ -26,8 +26,6 @@ package com.bakdata.kafka.consumer;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
@@ -44,12 +42,10 @@ import org.apache.kafka.common.errors.WakeupException;
  * @param <K> type of keys
  * @param <V> type of values
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 @Slf4j
-//TODO check
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
-    @Getter
     private final Consumer<K, V> consumer;
     private final ConsumerExecutionOptions executionOptions;
     /**
@@ -85,7 +81,7 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
         } catch (final WakeupException exception) {
             log.info("Consumer poll loop waking up for shutdown", exception);
         } catch (final RuntimeException exception) {
-            //TODO why catch?
+            // ensure latch count down for proper close
             log.error("RuntimeException while running consumer loop", exception);
         } finally {
             log.info("Closing consumer");

@@ -72,7 +72,7 @@ public class CloseFlagApp extends KafkaConsumerProducerApplication<ConsumerProdu
             }
 
             @Override
-            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                 return CloseFlagApp.this.getClass().getSimpleName() + "-" + configuration.getTopics().getOutputTopic();
             }
 

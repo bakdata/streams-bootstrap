@@ -66,7 +66,7 @@ public class MirrorKeyWithAvroConsumerProducer implements ConsumerProducerApp {
     }
 
     @Override
-    public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
+    public String getUniqueGroupId(final ConsumerProducerAppConfiguration topics) {
         return "app-id";
     }
 }

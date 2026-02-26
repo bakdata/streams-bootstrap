@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.consumerproducer;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.ErrorOptions;
@@ -107,7 +108,13 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public final Optional<ConsumerProducerExecutionOptions> createExecutionOptions() {
-        return Optional.empty();
+        final ConsumerProducerExecutionOptions executionOptions = ConsumerProducerExecutionOptions.builder()
+                .closeExecutionOptions(CloseExecutionOptions.builder()
+                        .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                        .build())
+                .pollTimeout(this.getPollTimeout())
+                .build();
+        return Optional.of(executionOptions);
     }
 
     @Override

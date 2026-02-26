@@ -52,9 +52,9 @@ public class ConsumerProducerAppConfiguration {
      * Get the provided unique group ID. If user did not provide a unique group ID, this will return empty.
      *
      * @return provided unique group ID
-     * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
+     * @see ConsumerProducerApp#getUniqueGroupId(ConsumerProducerAppConfiguration)
      */
-    public Optional<String> getUniqueAppId() {
+    public Optional<String> getUniqueGroupId() {
         return Optional.ofNullable(this.uniqueAppId);
     }
 }

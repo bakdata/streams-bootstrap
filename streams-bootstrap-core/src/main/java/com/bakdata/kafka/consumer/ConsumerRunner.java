@@ -48,11 +48,6 @@ public class ConsumerRunner implements Runner {
 
     @Override
     public void run() {
-        this.runConsumer();
-        //TODO await?
-    }
-
-    private void runConsumer() {
         log.info("Starting Kafka Consumer");
         // Run Kafka consumer until it shuts down
         this.runnable.run(this.config);

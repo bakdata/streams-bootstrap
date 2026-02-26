@@ -24,8 +24,10 @@
 
 package com.bakdata.kafka.mixin;
 
+import java.time.Duration;
 import lombok.Data;
 import picocli.CommandLine;
+import picocli.CommandLine.Option;
 
 /**
  * Shared CLI options to configure Kafka Consumer applications.
@@ -38,4 +40,7 @@ public class ConsumerOptions {
     @CommandLine.Option(names = "--group-id",
             description = "Unique identifier for the Kafka Consumer applications, used as 'group.id'.")
     private String groupId;
+    @Option(names = {"--poll-timeout"},
+            description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.")
+    private Duration pollTimeout = Duration.ofMillis(100);
 }

@@ -25,19 +25,17 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
-//TODO check
+//TODO javadoc
 public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
 
     private final Producer<KOut, VOut> producer;
-    @Getter
     private final ConsumerRunnable consumerRunnable;
 
     @Override

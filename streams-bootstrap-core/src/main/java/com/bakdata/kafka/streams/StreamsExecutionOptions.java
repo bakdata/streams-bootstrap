@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,12 @@
 
 package com.bakdata.kafka.streams;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import java.time.Duration;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.NonNull;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.CloseOptions;
 import org.apache.kafka.streams.KafkaStreams.StateListener;
@@ -58,30 +57,18 @@ public class StreamsExecutionOptions {
     @Builder.Default
     private final @NonNull Supplier<StreamsUncaughtExceptionHandler> uncaughtExceptionHandler =
             DefaultStreamsUncaughtExceptionHandler::new;
-    /**
-     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
-     * {@link KafkaStreams#close(CloseOptions)} is called with {@link CloseOptions#leaveGroup(boolean)} disabled
-     */
+    //TODO javadoc
     @Builder.Default
-    private final boolean volatileGroupInstanceId = true;
+    private final CloseExecutionOptions closeExecutionOptions = CloseExecutionOptions.builder()
+            .build();
     /**
      * Defines {@link CloseOptions#timeout(Duration)} when calling {@link KafkaStreams#close(CloseOptions)}
      */
     @Builder.Default
     private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
 
-    private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
-        return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
-    }
-
     CloseOptions createCloseOptions(final StreamsConfig config) {
-        final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
-        return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
-    }
-
-    boolean shouldLeaveGroup(final Map<String, Object> originals) {
-        final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
-        return staticMembershipDisabled || this.volatileGroupInstanceId;
+        return this.closeExecutionOptions.createCloseOptions(config);
     }
 
     void onStart(final RunningStreams runningStreams) {

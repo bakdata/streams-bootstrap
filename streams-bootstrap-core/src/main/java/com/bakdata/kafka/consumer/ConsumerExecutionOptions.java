@@ -24,12 +24,11 @@
 
 package com.bakdata.kafka.consumer;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import java.time.Duration;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.kafka.clients.consumer.CloseOptions;
-import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
@@ -39,42 +38,19 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 @Builder
 public class ConsumerExecutionOptions {
 
-    /**
-     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
-     * {@link Consumer#close(CloseOptions)} is called with
-     * {@link CloseOptions#groupMembershipOperation(GroupMembershipOperation)} set to
-     * {@link GroupMembershipOperation#REMAIN_IN_GROUP}
-     */
+    //TODO javadoc
     @Builder.Default
-    private final boolean volatileGroupInstanceId = true;
-
-    /**
-     * Defines {@link CloseOptions#timeout(Duration)} when calling {@link Consumer#close(CloseOptions)}
-     */
-    @Builder.Default
-    private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
+    private final CloseExecutionOptions closeExecutionOptions = CloseExecutionOptions.builder().build();
 
     /**
      * Defines the timeout duration for the {@link Consumer#poll(Duration)} call
      */
     @Builder.Default
     @Getter
-    private final Duration pollTimeout = Duration.ofMillis(Long.MAX_VALUE);
+    private final Duration pollTimeout = Duration.ofMillis(100L);
 
-    //TODO reuse close options in StreamsExecutionOptions
-    private static boolean isStaticMembershipDisabled(final Map<String, Object> originals) {
-        return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
-    }
-
-    CloseOptions createCloseOptions(final ConsumerConfig config) {
-        final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
-        final GroupMembershipOperation operation =
-                leaveGroup ? GroupMembershipOperation.LEAVE_GROUP : GroupMembershipOperation.DEFAULT;
-        return CloseOptions.groupMembershipOperation(operation).withTimeout(this.closeTimeout);
-    }
-
-    boolean shouldLeaveGroup(final Map<String, Object> originals) {
-        final boolean staticMembershipDisabled = isStaticMembershipDisabled(originals);
-        return staticMembershipDisabled || this.volatileGroupInstanceId;
+    //TODO javadoc
+    public CloseOptions createCloseOptions(final ConsumerConfig config) {
+        return this.closeExecutionOptions.createCloseOptions(config);
     }
 }
