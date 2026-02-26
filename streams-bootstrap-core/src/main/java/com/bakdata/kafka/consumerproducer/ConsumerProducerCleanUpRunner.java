@@ -27,7 +27,6 @@ package com.bakdata.kafka.consumerproducer;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration;
 import com.bakdata.kafka.consumer.ConsumerCleanUpRunner;
-import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.producer.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.producer.ProducerCleanUpRunner;
 import com.bakdata.kafka.producer.ProducerTopicConfig;
@@ -74,7 +73,6 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId,
             @NonNull final StreamsCleanUpConfiguration configuration) {
-        final ConsumerTopicConfig consumerTopicConfig = topics.toConsumerTopicConfig();
         final ProducerTopicConfig producerTopicConfig = topics.toProducerTopicConfig();
         final ConsumerCleanUpConfiguration consumerConfig = configuration.toConsumerCleanUpConfiguration();
         final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
