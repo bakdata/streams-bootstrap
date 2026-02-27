@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,6 @@ import com.bakdata.kafka.consumerproducer.apps.MirrorKeyWithAvroConsumerProducer
 import com.bakdata.kafka.consumerproducer.apps.MirrorValueWithAvroConsumerProducer;
 import com.bakdata.kafka.consumerproducer.apps.StringConsumerProducer;
 import com.bakdata.kafka.consumerproducer.apps.StringPatternConsumerProducer;
-import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
@@ -127,10 +126,12 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
         return app.withRuntimeConfiguration(runtimeConfiguration);
     }
 
+    // TODO: More tests with cleanHook, resetHook
+    //  Verify called / not called on clean and reset
     private ConfiguredConsumerProducerApp<ConsumerProducerApp> createCleanUpHookApplication() {
         return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer() {
             @Override
-            public StreamsCleanUpConfiguration setupCleanUp(
+            public ConsumerProducerCleanUpConfiguration setupCleanUp(
                     final AppConfiguration<ConsumerProducerTopicConfig> configuration) {
                 return super.setupCleanUp(configuration)
                         .registerTopicHook(ConsumerProducerCleanUpRunnerTest.this.topicHook);
@@ -409,6 +410,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                         this.createConfig())) {
             clean(executableApp);
             verify(this.topicHook).deleted(app.getTopics().getOutputTopic());
+            verify(this.topicHook).deleted(app.getTopics().getErrorTopic());
             verify(this.topicHook).close();
             verifyNoMoreInteractions(this.topicHook);
         }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -114,8 +114,18 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
 
     @RequiredArgsConstructor
     private class Task {
-
         private final @NonNull AdminClientX adminClient;
+
+        private static <T> T runAdminFuture(final KafkaFuture<T> action, final String errorMessage) {
+            try {
+                return action.get();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new CleanUpException(errorMessage, e);
+            } catch (final ExecutionException e) {
+                throw new CleanUpException(errorMessage, e);
+            }
+        }
 
         private void reset() {
             final ConsumerGroupClient groupClient = this.adminClient.consumerGroups()
@@ -144,17 +154,6 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
                             .all(), "Error resetting application, could not alter consumer group offsets");
 
             ConsumerCleanUpRunner.this.cleanHooks.runResetHooks();
-        }
-
-        private static <T> T runAdminFuture(final KafkaFuture<T> action, final String errorMessage) {
-            try {
-                return action.get();
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new CleanUpException(errorMessage, e);
-            } catch (final ExecutionException e) {
-                throw new CleanUpException(errorMessage, e);
-            }
         }
 
         private void clean() {
