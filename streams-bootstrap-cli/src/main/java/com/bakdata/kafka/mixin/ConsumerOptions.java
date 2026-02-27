@@ -42,5 +42,5 @@ public class ConsumerOptions {
     private String groupId;
     @Option(names = {"--poll-timeout"},
             description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.")
-    private Duration pollTimeout = Duration.ofMillis(100L);
+    private Duration pollTimeout = Duration.ofSeconds(10L);
 }

@@ -49,7 +49,7 @@ public class ConsumerExecutionOptions {
      */
     @Builder.Default
     @Getter
-    private final Duration pollTimeout = Duration.ofMillis(100L);
+    private final Duration pollTimeout = Duration.ofSeconds(10L);
 
     CloseOptions createCloseOptions(final ConsumerConfig config) {
         return this.closeExecutionOptions.createCloseOptions(config);
