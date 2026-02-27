@@ -189,8 +189,8 @@ public final class ConsumerGroupsClient {
                     ConsumerGroupsClient.this.adminClient.listOffsets(request).all();
             final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> offsets =
                     ConsumerGroupsClient.this.timeout.get(offsetsFuture,
-                            () -> "Failed to reset offsets for consumer group %s: could not find offsets for spec %s".formatted(
-                                    this.groupName, offsetSpec));
+                            () -> "Failed to reset offsets for consumer group %s: could not find offsets for spec %s"
+                                    .formatted(this.groupName, offsetSpec));
 
             final Map<TopicPartition, OffsetAndMetadata> resetOffsets = offsets.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> new OffsetAndMetadata(e.getValue().offset())));
