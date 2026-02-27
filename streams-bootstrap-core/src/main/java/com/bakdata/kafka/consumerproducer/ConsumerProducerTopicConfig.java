@@ -70,7 +70,11 @@ public class ConsumerProducerTopicConfig {
     Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
 
-    //TODO javadoc
+    /**
+     * Convert this config to a {@link ConsumerTopicConfig} for the consumer part of the app.
+     *
+     * @return {@link ConsumerTopicConfig}
+     */
     public ConsumerTopicConfig toConsumerTopicConfig() {
         return ConsumerTopicConfig.builder()
                 .inputTopics(this.getInputTopics())
@@ -80,7 +84,10 @@ public class ConsumerProducerTopicConfig {
                 .build();
     }
 
-    //TODO javadoc
+    /**
+     * Convert this config to a {@link ProducerTopicConfig} for the producer part of the app.
+     * @return {@link ProducerTopicConfig}
+     */
     public ProducerTopicConfig toProducerTopicConfig() {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())

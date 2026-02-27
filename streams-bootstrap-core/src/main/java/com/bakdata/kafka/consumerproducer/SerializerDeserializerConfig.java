@@ -37,7 +37,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 
 /**
- * Defines how to (de)serialize the data in a Kafka consumer or producer
+ * Defines how to (de-)serialize the data in a Kafka consumer or producer
  */
 @RequiredArgsConstructor
 @With
@@ -46,7 +46,14 @@ public class SerializerDeserializerConfig implements SerializationConfig {
     private final @NonNull SerializerConfig serializerConfig;
     private final @NonNull DeserializerConfig deserializerConfig;
 
-    //TODO javadoc
+    /**
+     * Create a new {@code SerializerDeserializerConfig}
+     *
+     * @param keySerializer serializer for keys
+     * @param valueSerializer serializer for values
+     * @param keyDeserializer deserializer for keys
+     * @param valueDeserializer deserializer for values
+     */
     public SerializerDeserializerConfig(final @NonNull Class<? extends Serializer> keySerializer,
             final @NonNull Class<? extends Serializer> valueSerializer,
             final @NonNull Class<? extends Deserializer> keyDeserializer,

@@ -36,10 +36,16 @@ import lombok.Getter;
 @Getter
 public final class ConsumerProducerExecutionOptions {
 
+    /**
+     * Defines the execution options for the consumer part of the app.
+     */
     @Builder.Default
     private final ConsumerExecutionOptions consumerExecutionOptions = ConsumerExecutionOptions.builder()
             .build();
 
+    /**
+     * Defines the execution options for the producer part of the app.
+     */
     @Builder.Default
     private final ProducerExecutionOptions producerExecutionOptions = ProducerExecutionOptions.builder()
             .build();

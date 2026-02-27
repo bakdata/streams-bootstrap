@@ -30,9 +30,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 
+
+/**
+ * Creates a {@link ConsumerProducerRunnable} using the provided {@link ConsumerRunnable} and {@link Producer}.
+ *
+ * @param <KOut> type of keys produced by this runnable
+ * @param <VOut> type of values produced by this runnable
+ */
 @RequiredArgsConstructor
 @Slf4j
-//TODO javadoc
 public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
 
     private final Producer<KOut, VOut> producer;

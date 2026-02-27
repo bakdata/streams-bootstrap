@@ -48,7 +48,16 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull ProducerAppConfiguration configuration;
 
-    //TODO javadoc
+    /**
+     * Base configuration for all producer apps which includes
+     * <pre>
+     * max.in.flight.requests.per.connection=1
+     * acks=all
+     * compression.type=gzip
+     * </pre>
+     *
+     * @return base configuration
+     */
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 

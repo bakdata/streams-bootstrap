@@ -57,7 +57,9 @@ public class StreamsExecutionOptions {
     @Builder.Default
     private final @NonNull Supplier<StreamsUncaughtExceptionHandler> uncaughtExceptionHandler =
             DefaultStreamsUncaughtExceptionHandler::new;
-    //TODO javadoc
+    /**
+     * Defines the behavior when closing a Kafka Streams app using {@link KafkaStreams#close(CloseOptions)}.
+     */
     @Builder.Default
     private final CloseExecutionOptions closeExecutionOptions = CloseExecutionOptions.builder()
             .build();

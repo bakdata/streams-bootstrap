@@ -38,7 +38,9 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 @Builder
 public class ConsumerExecutionOptions {
 
-    //TODO javadoc
+    /**
+     * Defines the behavior when closing a consumer
+     */
     @Builder.Default
     private final CloseExecutionOptions closeExecutionOptions = CloseExecutionOptions.builder().build();
 
@@ -49,8 +51,7 @@ public class ConsumerExecutionOptions {
     @Getter
     private final Duration pollTimeout = Duration.ofMillis(100L);
 
-    //TODO javadoc
-    public CloseOptions createCloseOptions(final ConsumerConfig config) {
+    CloseOptions createCloseOptions(final ConsumerConfig config) {
         return this.closeExecutionOptions.createCloseOptions(config);
     }
 }

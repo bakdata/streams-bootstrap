@@ -24,31 +24,30 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.streams.StreamsRunner;
 import java.time.Duration;
 import java.util.Map;
 import lombok.Builder;
 import org.apache.kafka.clients.consumer.CloseOptions.GroupMembershipOperation;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KafkaStreams.CloseOptions;
 import org.apache.kafka.streams.StreamsConfig;
 
-//FIXME javadoc
-
 /**
- * Options to run a Kafka Streams app using {@link StreamsRunner}
+ * Options to configure closing behavior of Kafka apps
  */
 @Builder
 public class CloseExecutionOptions {
     /**
      * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
-     * {@link KafkaStreams#close(CloseOptions)} is called with {@link CloseOptions#leaveGroup(boolean)} disabled
+     * {@link CloseOptions#leaveGroup(boolean)} is disabled and
+     * {@link org.apache.kafka.clients.consumer.CloseOptions#withGroupMembershipOperation(GroupMembershipOperation)} is
+     * set to {@link GroupMembershipOperation#DEFAULT}.
      */
     @Builder.Default
     private final boolean volatileGroupInstanceId = true;
     /**
-     * Defines {@link CloseOptions#timeout(Duration)} when calling {@link KafkaStreams#close(CloseOptions)}
+     * Defines {@link CloseOptions#timeout(Duration)} and
+     * {@link org.apache.kafka.clients.consumer.CloseOptions#withTimeout(Duration)}
      */
     @Builder.Default
     private final Duration closeTimeout = Duration.ofMillis(Long.MAX_VALUE);
@@ -57,12 +56,26 @@ public class CloseExecutionOptions {
         return originals.get(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG) == null;
     }
 
-    //TODO javadoc
+    /**
+     * Create {@link CloseOptions} for {@link org.apache.kafka.streams.KafkaStreams}
+     *
+     * @param config streams config
+     * @return {@link CloseOptions}
+     * @see org.apache.kafka.streams.KafkaStreams#close(CloseOptions)
+     */
     public CloseOptions createCloseOptions(final StreamsConfig config) {
         final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
         return new CloseOptions().leaveGroup(leaveGroup).timeout(this.closeTimeout);
     }
 
+    /**
+     * Create {@link org.apache.kafka.clients.consumer.CloseOptions} for
+     * {@link org.apache.kafka.clients.consumer.Consumer}
+     *
+     * @param config consumer config
+     * @return {@link org.apache.kafka.clients.consumer.CloseOptions}
+     * @see org.apache.kafka.clients.consumer.Consumer#close(org.apache.kafka.clients.consumer.CloseOptions)
+     */
     public org.apache.kafka.clients.consumer.CloseOptions createCloseOptions(final ConsumerConfig config) {
         final boolean leaveGroup = this.shouldLeaveGroup(config.originals());
         final GroupMembershipOperation operation =

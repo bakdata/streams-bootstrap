@@ -49,7 +49,16 @@ public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull ConsumerAppConfiguration configuration;
 
-    //TODO javadoc
+    /**
+     * Base configuration for all consumer apps which includes
+     * <pre>
+     * auto.offset.reset=earliest
+     * enable.auto.commit=false
+     * isolation.level=read_committed
+     * </pre>
+     *
+     * @return base configuration
+     */
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
@@ -65,10 +74,10 @@ public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredA
      * Configuration is created in the following order
      * <ul>
      *     <li>
-     *         Offset management:
      * <pre>
      * auto.offset.reset=earliest
      * enable.auto.commit=false
+     * isolation.level=read_committed
      * </pre>
      *     </li>
      *     <li>
