@@ -675,9 +675,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
-                );
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                return kafkaProperties;
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -740,9 +740,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
-                );
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                return kafkaProperties;
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -809,9 +809,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        StreamsConfig.TOPOLOGY_OPTIMIZATION_CONFIG, StreamsConfig.OPTIMIZE
-                );
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(StreamsConfig.TOPOLOGY_OPTIMIZATION_CONFIG, StreamsConfig.OPTIMIZE);
+                return kafkaProperties;
             }
         };
         try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
@@ -869,9 +869,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true
-                );
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
+                return kafkaProperties;
             }
         };
         this.softly.assertThatThrownBy(app::startApp)
