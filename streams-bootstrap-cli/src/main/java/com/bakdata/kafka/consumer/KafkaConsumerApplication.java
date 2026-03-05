@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,10 @@
 
 package com.bakdata.kafka.consumer;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.InputOptions;
-import java.time.Duration;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +35,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
-import picocli.CommandLine.Option;
 
 
 /**
@@ -72,10 +70,6 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Mixin
     @Delegate
     private ConsumerOptions consumerOptions = new ConsumerOptions();
-    @Option(names = {"--poll-timeout"},
-            description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.",
-            defaultValue = "PT0.1S")
-    private Duration pollTimeout = Duration.ofMillis(100);
 
     /**
      * Reset the Kafka Consumer application. Additionally, delete the consumer group.
@@ -101,8 +95,9 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Override
     public final Optional<ConsumerExecutionOptions> createExecutionOptions() {
         final ConsumerExecutionOptions executionOptions = ConsumerExecutionOptions.builder()
-                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
-                .onStart(this::onConsumerStart)
+                .closeExecutionOptions(CloseExecutionOptions.builder()
+                        .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                        .build())
                 .pollTimeout(this.getPollTimeout())
                 .build();
         return Optional.of(executionOptions);
@@ -127,14 +122,5 @@ public abstract class KafkaConsumerApplication<T extends ConsumerApp> extends
     @Override
     public ConsumerAppConfiguration createConfiguration(final ConsumerTopicConfig topics) {
         return new ConsumerAppConfiguration(topics, this.getGroupId());
-    }
-
-    /**
-     * Called after starting Kafka Consumer
-     *
-     * @param runningConsumer running {@link ConsumerRunnable} instance along with its {@link ConsumerConfig}
-     */
-    protected void onConsumerStart(final RunningConsumer runningConsumer) {
-        // do nothing by default
     }
 }

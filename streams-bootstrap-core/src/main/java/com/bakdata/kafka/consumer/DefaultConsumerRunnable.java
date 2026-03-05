@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package com.bakdata.kafka.consumer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CloseOptions;
@@ -44,11 +43,10 @@ import org.apache.kafka.common.errors.WakeupException;
  * @param <K> type of keys
  * @param <V> type of values
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
 
-    @Getter
     private final Consumer<K, V> consumer;
     private final ConsumerExecutionOptions executionOptions;
     /**
@@ -83,8 +81,6 @@ public class DefaultConsumerRunnable<K, V> implements ConsumerRunnable {
             }
         } catch (final WakeupException exception) {
             log.info("Consumer poll loop waking up for shutdown", exception);
-        } catch (final RuntimeException exception) {
-            log.error("RuntimeException while running consumer loop", exception);
         } finally {
             log.info("Closing consumer");
             final CloseOptions closeOptions = this.executionOptions.createCloseOptions(consumerConfig);

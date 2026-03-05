@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,19 +54,19 @@ public class MirrorValueWithAvroConsumerProducer implements ConsumerProducerApp 
 
     @Override
     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-        final Consumer<String, TestRecord> consumer = builder.consumerBuilder().createConsumer();
-        builder.consumerBuilder().subscribeToAllTopics(consumer);
-        final Producer<String, TestRecord> producer = builder.producerBuilder().createProducer();
-        final ConsumerRunnable consumerRunnable = builder.consumerBuilder().createDefaultConsumerRunnable(consumer,
+        final Consumer<String, TestRecord> consumer = builder.getConsumerBuilder().createConsumer();
+        builder.getConsumerBuilder().subscribeToAllTopics(consumer);
+        final Producer<String, TestRecord> producer = builder.getProducerBuilder().createProducer();
+        final ConsumerRunnable consumerRunnable = builder.getConsumerBuilder().createDefaultConsumerRunnable(consumer,
                 records -> records.forEach(
                         consumerRecord ->
-                                producer.send(new ProducerRecord<>(builder.topics().getOutputTopic(),
+                                producer.send(new ProducerRecord<>(builder.getTopics().getOutputTopic(),
                                         consumerRecord.key(), consumerRecord.value()))));
         return new DefaultConsumerProducerRunnable<>(producer, consumerRunnable);
     }
 
     @Override
-    public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
+    public String getUniqueGroupId(final ConsumerProducerAppConfiguration topics) {
         return "app-id";
     }
 }

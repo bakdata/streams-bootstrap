@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 package com.bakdata.kafka.consumer;
 
 /**
- * Exception thrown if running conumser application was unsuccessful
+ * Exception thrown if running consumer application was unsuccessful
  */
 public class ConsumerApplicationException extends RuntimeException {
     public ConsumerApplicationException(final String message) {
