@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package com.bakdata.kafka.consumerproducer;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration;
 import com.bakdata.kafka.consumer.ConsumerCleanUpRunner;
-import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import com.bakdata.kafka.producer.ProducerCleanUpConfiguration;
 import com.bakdata.kafka.producer.ProducerCleanUpRunner;
 import com.bakdata.kafka.producer.ProducerTopicConfig;
@@ -68,18 +67,17 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId group id of the consumer
      * @param configuration configuration for hooks that are called when running {@link #clean()}
-     * @return {@code ConsumerCleanUpRunner}
+     * @return {@code ConsumerProducerCleanUpRunner}
      */
     public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId,
             @NonNull final StreamsCleanUpConfiguration configuration) {
-        final ConsumerTopicConfig consumerTopicConfig = topics.toConsumerTopicConfig();
         final ProducerTopicConfig producerTopicConfig = topics.toProducerTopicConfig();
         final ConsumerCleanUpConfiguration consumerConfig = configuration.toConsumerCleanUpConfiguration();
         final ProducerCleanUpConfiguration producerConfig = configuration.toProducerCleanUpConfiguration();
         final ConsumerCleanUpRunner consumerCleanUpRunner =
-                ConsumerCleanUpRunner.create(consumerTopicConfig, kafkaProperties, groupId, consumerConfig);
+                ConsumerCleanUpRunner.create(kafkaProperties, groupId, consumerConfig);
         final ProducerCleanUpRunner producerCleanUpRunner =
                 ProducerCleanUpRunner.create(producerTopicConfig, kafkaProperties, producerConfig);
         return new ConsumerProducerCleanUpRunner(consumerCleanUpRunner, producerCleanUpRunner);

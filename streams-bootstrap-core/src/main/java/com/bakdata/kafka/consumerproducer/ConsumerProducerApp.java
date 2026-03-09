@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, St
      * Create a runnable that consumes and produces Kafka messages
      *
      * @param builder provides all runtime application configurations
-     * @return {@code ConsumerProducerRunnable}
+     * @return {@link ConsumerProducerRunnable}
      */
     ConsumerProducerRunnable buildRunnable(ConsumerProducerBuilder builder);
 
@@ -46,19 +46,19 @@ public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, St
      * This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
      * state encapsulation. Could be set to: className-outputTopic.
      * <p>
-     * User may provide a unique group identifier via {@link ConsumerProducerAppConfiguration#getUniqueAppId()}.
+     * User may provide a unique group identifier via {@link ConsumerProducerAppConfiguration#getUniqueGroupId()}.
      * If that is the case, the returned group ID should match the provided one.
      *
      * @param configuration provides runtime configuration
      * @return unique group identifier
      */
-    default String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
-        return configuration.getUniqueAppId()
+    default String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
+        return configuration.getUniqueGroupId()
                 .orElseThrow(() -> new IllegalArgumentException("Please provide a group ID"));
     }
 
     /**
-     * @return {@code StreamsCleanUpConfiguration}
+     * @return {@link StreamsCleanUpConfiguration}
      * @see StreamsCleanUpRunner
      */
     @Override

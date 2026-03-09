@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,14 @@
 
 package com.bakdata.kafka.consumerproducer;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.consumer.ConsumerExecutionOptions;
 import com.bakdata.kafka.mixin.ConsumerOptions;
 import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
 import com.bakdata.kafka.mixin.OutputOptions;
+import com.bakdata.kafka.producer.ProducerExecutionOptions;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -94,10 +97,9 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
     }
 
     /**
-     * Clear all state stores and consumer group offsets associated with the Kafka ConsumerProducer application.
+     * Reset consumer group offsets associated with the Kafka ConsumerProducer application.
      */
-    @Command(description = "Clear all state stores, consumer group offsets, and internal topics associated with the "
-            + "Kafka ConsumerProducer application.")
+    @Command(description = "Reset consumer group offsets associated with the Kafka ConsumerProducer application.")
     public void reset() {
         this.prepareClean();
         try (final CleanableApp<ConsumerProducerCleanUpRunner> app = this.createCleanableApp()) {
@@ -108,7 +110,17 @@ public abstract class KafkaConsumerProducerApplication<T extends ConsumerProduce
 
     @Override
     public final Optional<ConsumerProducerExecutionOptions> createExecutionOptions() {
-        return Optional.empty();
+        final ConsumerProducerExecutionOptions executionOptions = ConsumerProducerExecutionOptions.builder()
+                .consumerExecutionOptions(ConsumerExecutionOptions.builder()
+                        .closeExecutionOptions(CloseExecutionOptions.builder()
+                                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                                .build())
+                        .pollTimeout(this.getPollTimeout())
+                        .build())
+                .producerExecutionOptions(ProducerExecutionOptions.builder()
+                        .build())
+                .build();
+        return Optional.of(executionOptions);
     }
 
     @Override

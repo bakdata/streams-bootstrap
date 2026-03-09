@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
 import java.util.Map;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -39,15 +41,23 @@ import org.apache.kafka.common.serialization.Serde;
  *
  * @see ConsumerApp#buildRunnable(ConsumerBuilder)
  */
-public record ConsumerBuilder(@NonNull ConsumerTopicConfig topics, @NonNull Map<String, Object> kafkaProperties,
-                              @NonNull ConsumerExecutionOptions executionOptions) {
+@RequiredArgsConstructor
+@Value
+public class ConsumerBuilder {
+
+    @NonNull
+    ConsumerTopicConfig topics;
+    @NonNull
+    Map<String, Object> kafkaProperties;
+    @NonNull
+    ConsumerExecutionOptions executionOptions;
 
     /**
-     * Create a new {@code Consumer} using {@link #kafkaProperties}
+     * Create a new {@link Consumer} using {@link #kafkaProperties}
      *
      * @param <K> type of keys
      * @param <V> type of values
-     * @return {@code Consumer}
+     * @return {@link Consumer}
      * @see KafkaConsumer#KafkaConsumer(Map)
      */
     public <K, V> Consumer<K, V> createConsumer() {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,6 +70,11 @@ public class ConsumerProducerTopicConfig {
     Map<String, String> labeledOutputTopics = emptyMap();
     String errorTopic;
 
+    /**
+     * Convert this config to a {@link ConsumerTopicConfig} for the consumer part of the app.
+     *
+     * @return {@link ConsumerTopicConfig}
+     */
     public ConsumerTopicConfig toConsumerTopicConfig() {
         return ConsumerTopicConfig.builder()
                 .inputTopics(this.getInputTopics())
@@ -79,6 +84,10 @@ public class ConsumerProducerTopicConfig {
                 .build();
     }
 
+    /**
+     * Convert this config to a {@link ProducerTopicConfig} for the producer part of the app.
+     * @return {@link ProducerTopicConfig}
+     */
     public ProducerTopicConfig toProducerTopicConfig() {
         return ProducerTopicConfig.builder()
                 .outputTopic(this.getOutputTopic())
