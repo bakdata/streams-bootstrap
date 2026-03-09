@@ -38,7 +38,7 @@ import org.apache.kafka.streams.StreamsConfig;
 @Builder
 public class CloseExecutionOptions {
     /**
-     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If it is configured and non-volatile,
+     * Defines if {@link ConsumerConfig#GROUP_INSTANCE_ID_CONFIG} is volatile. If set to false,
      * {@link CloseOptions#leaveGroup(boolean)} is disabled and
      * {@link org.apache.kafka.clients.consumer.CloseOptions#withGroupMembershipOperation(GroupMembershipOperation)} is
      * set to {@link GroupMembershipOperation#DEFAULT}.
