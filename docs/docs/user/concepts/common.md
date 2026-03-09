@@ -12,7 +12,7 @@ In streams-bootstrap, there are three application types:
 
 ### App
 
-The **App** represents your application logic implementation. Each application type has its own `App` interface:
+The **App** represents your application logic. Each application type has its own `App` interface:
 
 - **StreamsApp** – for Kafka Streams applications
 - **ProducerApp** – for producer applications
