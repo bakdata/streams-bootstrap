@@ -76,6 +76,11 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>KOut</code> - type of keys produced by this runnable</dd>
+<dd><code>VOut</code> - type of values produced by this runnable</dd>
+</dl>
+<dl class="notes">
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer">ConsumerProducerRunnable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
@@ -83,6 +88,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DefaultConsumerProducerRunnable&lt;KOut,<wbr>VOut&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer">ConsumerProducerRunnable</a></span></div>
+<div class="block">Creates a <a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerRunnable</code></a> using the provided <a href="../consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerRunnable</code></a> and <code>Producer</code>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -114,13 +120,9 @@ implements <a href="ConsumerProducerRunnable.html" title="interface in com.bakda
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer">ConsumerRunnable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConsumerRunnable()" class="member-name-link">getConsumerRunnable</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#run(org.apache.kafka.clients.consumer.ConsumerConfig,org.apache.kafka.clients.producer.ProducerConfig)" class="member-name-link">run</a><wbr>(org.apache.kafka.clients.consumer.ConsumerConfig&nbsp;consumerConfig,
- org.apache.kafka.clients.producer.ProducerConfig&nbsp;producerConfig)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#run(org.apache.kafka.clients.consumer.ConsumerConfig)" class="member-name-link">run</a><wbr>(org.apache.kafka.clients.consumer.ConsumerConfig&nbsp;consumerConfig)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Produce or Consume messages from Kafka</div>
 </div>
 </div>
@@ -156,18 +158,16 @@ implements <a href="ConsumerProducerRunnable.html" title="interface in com.bakda
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="run(org.apache.kafka.clients.consumer.ConsumerConfig,org.apache.kafka.clients.producer.ProducerConfig)">
+<section class="detail" id="run(org.apache.kafka.clients.consumer.ConsumerConfig)">
 <h3>run</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(org.apache.kafka.clients.consumer.ConsumerConfig&nbsp;consumerConfig,
- org.apache.kafka.clients.producer.ProducerConfig&nbsp;producerConfig)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="ConsumerProducerRunnable.html#run(org.apache.kafka.clients.consumer.ConsumerConfig,org.apache.kafka.clients.producer.ProducerConfig)">ConsumerProducerRunnable</a></code></span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(org.apache.kafka.clients.consumer.ConsumerConfig&nbsp;consumerConfig)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="ConsumerProducerRunnable.html#run(org.apache.kafka.clients.consumer.ConsumerConfig)">ConsumerProducerRunnable</a></code></span></div>
 <div class="block">Produce or Consume messages from Kafka</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="ConsumerProducerRunnable.html#run(org.apache.kafka.clients.consumer.ConsumerConfig,org.apache.kafka.clients.producer.ProducerConfig)">run</a></code>&nbsp;in interface&nbsp;<code><a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer">ConsumerProducerRunnable</a></code></dd>
+<dd><code><a href="ConsumerProducerRunnable.html#run(org.apache.kafka.clients.consumer.ConsumerConfig)">run</a></code>&nbsp;in interface&nbsp;<code><a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer">ConsumerProducerRunnable</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>consumerConfig</code> - configuration for the consumer</dd>
-<dd><code>producerConfig</code> - configuration for the producer</dd>
 </dl>
 </section>
 </li>
@@ -181,12 +181,6 @@ implements <a href="ConsumerProducerRunnable.html" title="interface in com.bakda
 <dt>Specified by:</dt>
 <dd><code><a href="ConsumerProducerRunnable.html#close()">close</a></code>&nbsp;in interface&nbsp;<code><a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer">ConsumerProducerRunnable</a></code></dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getConsumerRunnable()">
-<h3>getConsumerRunnable</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../consumer/ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer">ConsumerRunnable</a></span>&nbsp;<span class="element-name">getConsumerRunnable</span>()</div>
 </section>
 </li>
 </ul>

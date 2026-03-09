@@ -100,32 +100,32 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#build()" class="member-name-link">build</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeTimeout(java.time.Duration)" class="member-name-link">closeTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;closeTimeout)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeExecutionOptions(com.bakdata.kafka.CloseExecutionOptions)" class="member-name-link">closeExecutionOptions</a><wbr>(<a href="../CloseExecutionOptions.html" title="class in com.bakdata.kafka">CloseExecutionOptions</a>&nbsp;closeExecutionOptions)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Defines the behavior when closing a Kafka Streams app using <code>KafkaStreams.close(CloseOptions)</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeTimeout(java.time.Duration)" class="member-name-link">closeTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;closeTimeout)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Defines <code>KafkaStreams.CloseOptions.timeout(Duration)</code> when calling <code>KafkaStreams.close(CloseOptions)</code></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onStart(java.util.function.Consumer)" class="member-name-link">onStart</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="RunningStreams.html" title="class in com.bakdata.kafka.streams">RunningStreams</a>&gt;&nbsp;onStart)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onStart(java.util.function.Consumer)" class="member-name-link">onStart</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="RunningStreams.html" title="class in com.bakdata.kafka.streams">RunningStreams</a>&gt;&nbsp;onStart)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Hook that is called after calling <code>KafkaStreams.start()</code></div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stateListener(java.util.function.Supplier)" class="member-name-link">stateListener</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;org.apache.kafka.streams.KafkaStreams.StateListener&gt;&nbsp;stateListener)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stateListener(java.util.function.Supplier)" class="member-name-link">stateListener</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;org.apache.kafka.streams.KafkaStreams.StateListener&gt;&nbsp;stateListener)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Configures <code>KafkaStreams.setStateListener(StateListener)</code></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#uncaughtExceptionHandler(java.util.function.Supplier)" class="member-name-link">uncaughtExceptionHandler</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler&gt;&nbsp;uncaughtExceptionHandler)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Configures <code>KafkaStreams.setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)</code></div>
-</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#volatileGroupInstanceId(boolean)" class="member-name-link">volatileGroupInstanceId</a><wbr>(boolean&nbsp;volatileGroupInstanceId)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#uncaughtExceptionHandler(java.util.function.Supplier)" class="member-name-link">uncaughtExceptionHandler</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler&gt;&nbsp;uncaughtExceptionHandler)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Defines if <code>ConsumerConfig.GROUP_INSTANCE_ID_CONFIG</code> is volatile.</div>
+<div class="block">Configures <code>KafkaStreams.setUncaughtExceptionHandler(StreamsUncaughtExceptionHandler)</code></div>
 </div>
 </div>
 </div>
@@ -181,11 +181,10 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="volatileGroupInstanceId(boolean)">
-<h3>volatileGroupInstanceId</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></span>&nbsp;<span class="element-name">volatileGroupInstanceId</span><wbr><span class="parameters">(boolean&nbsp;volatileGroupInstanceId)</span></div>
-<div class="block">Defines if <code>ConsumerConfig.GROUP_INSTANCE_ID_CONFIG</code> is volatile. If it is configured and non-volatile,
- <code>KafkaStreams.close(CloseOptions)</code> is called with <code>KafkaStreams.CloseOptions.leaveGroup(boolean)</code> disabled</div>
+<section class="detail" id="closeExecutionOptions(com.bakdata.kafka.CloseExecutionOptions)">
+<h3>closeExecutionOptions</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a></span>&nbsp;<span class="element-name">closeExecutionOptions</span><wbr><span class="parameters">(<a href="../CloseExecutionOptions.html" title="class in com.bakdata.kafka">CloseExecutionOptions</a>&nbsp;closeExecutionOptions)</span></div>
+<div class="block">Defines the behavior when closing a Kafka Streams app using <code>KafkaStreams.close(CloseOptions)</code>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd><code>this</code>.</dd>

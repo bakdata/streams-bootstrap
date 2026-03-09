@@ -105,7 +105,7 @@ extends <a href="../App.html" title="interface in com.bakdata.kafka">App</a>&lt;
 <div class="block">Configure default serialization behavior</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getUniqueAppId(com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration)" class="member-name-link">getUniqueAppId</a><wbr>(<a href="ConsumerProducerAppConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerAppConfiguration</a>&nbsp;configuration)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getUniqueGroupId(com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration)" class="member-name-link">getUniqueGroupId</a><wbr>(<a href="ConsumerProducerAppConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerAppConfiguration</a>&nbsp;configuration)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
  state encapsulation.</div>
@@ -141,18 +141,18 @@ extends <a href="../App.html" title="interface in com.bakdata.kafka">App</a>&lt;
 <dt>Parameters:</dt>
 <dd><code>builder</code> - provides all runtime application configurations</dd>
 <dt>Returns:</dt>
-<dd><code>ConsumerProducerRunnable</code></dd>
+<dd><a href="ConsumerProducerRunnable.html" title="interface in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerRunnable</code></a></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="getUniqueAppId(com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration)">
-<h3>getUniqueAppId</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getUniqueAppId</span><wbr><span class="parameters">(<a href="ConsumerProducerAppConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerAppConfiguration</a>&nbsp;configuration)</span></div>
+<section class="detail" id="getUniqueGroupId(com.bakdata.kafka.consumerproducer.ConsumerProducerAppConfiguration)">
+<h3>getUniqueGroupId</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getUniqueGroupId</span><wbr><span class="parameters">(<a href="ConsumerProducerAppConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerAppConfiguration</a>&nbsp;configuration)</span></div>
 <div class="block">This must be set to a unique value for every application interacting with your Kafka cluster to ensure internal
  state encapsulation. Could be set to: className-outputTopic.
  <p>
- User may provide a unique group identifier via <a href="ConsumerProducerAppConfiguration.html#getUniqueAppId()"><code>ConsumerProducerAppConfiguration.getUniqueAppId()</code></a>.
+ User may provide a unique group identifier via <a href="ConsumerProducerAppConfiguration.html#getUniqueGroupId()"><code>ConsumerProducerAppConfiguration.getUniqueGroupId()</code></a>.
  If that is the case, the returned group ID should match the provided one.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -174,7 +174,7 @@ extends <a href="../App.html" title="interface in com.bakdata.kafka">App</a>&lt;
 <dt>Parameters:</dt>
 <dd><code>configuration</code> - provides all runtime application configurations</dd>
 <dt>Returns:</dt>
-<dd><code>StreamsCleanUpConfiguration</code></dd>
+<dd><a href="../streams/StreamsCleanUpConfiguration.html" title="class in com.bakdata.kafka.streams"><code>StreamsCleanUpConfiguration</code></a></dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">

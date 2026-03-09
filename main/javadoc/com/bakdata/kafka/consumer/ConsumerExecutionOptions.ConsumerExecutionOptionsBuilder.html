@@ -100,28 +100,18 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#build()" class="member-name-link">build</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeTimeout(java.time.Duration)" class="member-name-link">closeTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;closeTimeout)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeExecutionOptions(com.bakdata.kafka.CloseExecutionOptions)" class="member-name-link">closeExecutionOptions</a><wbr>(<a href="../CloseExecutionOptions.html" title="class in com.bakdata.kafka">CloseExecutionOptions</a>&nbsp;closeExecutionOptions)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Defines <code>CloseOptions.timeout(Duration)</code> when calling <code>Consumer.close(CloseOptions)</code></div>
+<div class="block">Defines the behavior when closing a consumer</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onStart(java.util.function.Consumer)" class="member-name-link">onStart</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="RunningConsumer.html" title="class in com.bakdata.kafka.consumer">RunningConsumer</a>&gt;&nbsp;onStart)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pollTimeout(java.time.Duration)" class="member-name-link">pollTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;pollTimeout)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Hook that is called after the <a href="ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerRunnable</code></a> is started</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pollTimeout(java.time.Duration)" class="member-name-link">pollTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;pollTimeout)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Defines the timeout duration for the <code>Consumer.poll(Duration)</code> call</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#volatileGroupInstanceId(boolean)" class="member-name-link">volatileGroupInstanceId</a><wbr>(boolean&nbsp;volatileGroupInstanceId)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Defines if <code>ConsumerConfig.GROUP_INSTANCE_ID_CONFIG</code> is volatile.</div>
-</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -140,36 +130,10 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="onStart(java.util.function.Consumer)">
-<h3>onStart</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></span>&nbsp;<span class="element-name">onStart</span><wbr><span class="parameters">(@NonNull
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="RunningConsumer.html" title="class in com.bakdata.kafka.consumer">RunningConsumer</a>&gt;&nbsp;onStart)</span></div>
-<div class="block">Hook that is called after the <a href="ConsumerRunnable.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerRunnable</code></a> is started</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd><code>this</code>.</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="volatileGroupInstanceId(boolean)">
-<h3>volatileGroupInstanceId</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></span>&nbsp;<span class="element-name">volatileGroupInstanceId</span><wbr><span class="parameters">(boolean&nbsp;volatileGroupInstanceId)</span></div>
-<div class="block">Defines if <code>ConsumerConfig.GROUP_INSTANCE_ID_CONFIG</code> is volatile. If it is configured and non-volatile,
- <code>Consumer.close(CloseOptions)</code> is called with
- <code>CloseOptions.groupMembershipOperation(GroupMembershipOperation)</code> set to
- <code>CloseOptions.GroupMembershipOperation.REMAIN_IN_GROUP</code></div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd><code>this</code>.</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="closeTimeout(java.time.Duration)">
-<h3>closeTimeout</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></span>&nbsp;<span class="element-name">closeTimeout</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;closeTimeout)</span></div>
-<div class="block">Defines <code>CloseOptions.timeout(Duration)</code> when calling <code>Consumer.close(CloseOptions)</code></div>
+<section class="detail" id="closeExecutionOptions(com.bakdata.kafka.CloseExecutionOptions)">
+<h3>closeExecutionOptions</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions.ConsumerExecutionOptionsBuilder</a></span>&nbsp;<span class="element-name">closeExecutionOptions</span><wbr><span class="parameters">(<a href="../CloseExecutionOptions.html" title="class in com.bakdata.kafka">CloseExecutionOptions</a>&nbsp;closeExecutionOptions)</span></div>
+<div class="block">Defines the behavior when closing a consumer</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd><code>this</code>.</dd>

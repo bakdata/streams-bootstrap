@@ -107,15 +107,13 @@ implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ConsumerCleanUpRunner.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(com.bakdata.kafka.consumer.ConsumerTopicConfig,java.util.Map,java.lang.String)" class="member-name-link">create</a><wbr>(@NonNull <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a>&nbsp;topics,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kafkaProperties,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.Map,java.lang.String)" class="member-name-link">create</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kafkaProperties,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;groupId)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a new <code>ConsumerCleanUpRunner</code> with default <a href="ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerCleanUpConfiguration</code></a></div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ConsumerCleanUpRunner.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(com.bakdata.kafka.consumer.ConsumerTopicConfig,java.util.Map,java.lang.String,com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration)" class="member-name-link">create</a><wbr>(@NonNull <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a>&nbsp;topics,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kafkaProperties,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.Map,java.lang.String,com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration)" class="member-name-link">create</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kafkaProperties,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;groupId,
  @NonNull <a href="ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpConfiguration</a>&nbsp;configuration)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
@@ -144,18 +142,15 @@ implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="create(com.bakdata.kafka.consumer.ConsumerTopicConfig,java.util.Map,java.lang.String)">
+<section class="detail" id="create(java.util.Map,java.lang.String)">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ConsumerCleanUpRunner.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(@NonNull
- @NonNull <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a>&nbsp;topics,
- @NonNull
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kafkaProperties,
  @NonNull
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;groupId)</span></div>
 <div class="block">Create a new <code>ConsumerCleanUpRunner</code> with default <a href="ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerCleanUpConfiguration</code></a></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>topics</code> - topic configuration</dd>
 <dd><code>kafkaProperties</code> - configuration to connect to Kafka admin tools</dd>
 <dd><code>groupId</code> - consumer group id to clean up</dd>
 <dt>Returns:</dt>
@@ -164,11 +159,9 @@ implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka
 </section>
 </li>
 <li>
-<section class="detail" id="create(com.bakdata.kafka.consumer.ConsumerTopicConfig,java.util.Map,java.lang.String,com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration)">
+<section class="detail" id="create(java.util.Map,java.lang.String,com.bakdata.kafka.consumer.ConsumerCleanUpConfiguration)">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ConsumerCleanUpRunner.html" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(@NonNull
- @NonNull <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a>&nbsp;topics,
- @NonNull
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kafkaProperties,
  @NonNull
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;groupId,
@@ -177,7 +170,6 @@ implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka
 <div class="block">Create a new <code>ConsumerCleanUpRunner</code></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>topics</code> - topic configuration</dd>
 <dd><code>kafkaProperties</code> - configuration to connect to Kafka admin tools</dd>
 <dd><code>groupId</code> - consumer group id to clean up</dd>
 <dd><code>configuration</code> - configuration for hooks that are called when running <a href="#clean()"><code>clean()</code></a></dd>
