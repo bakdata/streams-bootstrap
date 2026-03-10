@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,7 @@ import org.apache.kafka.common.serialization.Serdes.ByteArraySerde;
 import org.apache.kafka.common.serialization.Serdes.LongSerde;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.TopologyException;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
@@ -222,6 +223,24 @@ class ConfiguredStreamsAppTest {
             }
         }, new StreamsAppConfiguration(emptyTopicConfig(), "foo"));
         assertThat(configuredApp.getUniqueAppId()).isEqualTo("foo");
+    }
+
+    @Test
+    void shouldEnsureInternalResourceNamingByDefault() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp = new ConfiguredStreamsApp<>(new TestApplication() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, Long> input = builder.stream("input");
+                final KGroupedStreamX<String, Long> grouped = input.groupByKey();
+                final KTableX<String, Long> counted = grouped.count();
+                counted.toStream().to("output");
+            }
+        }, new StreamsAppConfiguration(emptyTopicConfig()));
+        final Map<String, Object> kafkaProperties =
+                configuredApp.getKafkaProperties(RuntimeConfiguration.create("localhost:9092"));
+        assertThatThrownBy(() -> configuredApp.createTopology(kafkaProperties))
+                .isInstanceOf(TopologyException.class)
+                .hasMessageStartingWith("Invalid topology:");
     }
 
     @RequiredArgsConstructor

@@ -96,7 +96,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
         }
     }
 
-    static ConfiguredConsumerProducerApp<ConsumerProducerApp> createStringConsumerProducer() {
+    static ConfiguredConsumerProducerApp<StringConsumerProducer> createStringConsumerProducer() {
         return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer(),
                 new ConsumerProducerAppConfiguration(TOPIC_CONFIG));
     }
@@ -120,8 +120,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                 new ConsumerProducerAppConfiguration(topics));
     }
 
-    static ExecutableConsumerProducerApp<ConsumerProducerApp> createExecutableApp(
-            final ConfiguredConsumerProducerApp<ConsumerProducerApp> app,
+    static <T extends ConsumerProducerApp> ExecutableConsumerProducerApp<T> createExecutableApp(
+            final ConfiguredConsumerProducerApp<T> app,
             final RuntimeConfiguration runtimeConfiguration) {
         return app.withRuntimeConfiguration(runtimeConfiguration);
     }
@@ -141,8 +141,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldDeleteTopic() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -180,8 +180,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldDeleteErrorTopic() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -215,8 +215,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldDeleteConsumerGroup() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -235,7 +235,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumerProducer stringConsumer = (StringConsumerProducer) app.app();
+            final StringConsumerProducer stringConsumer = app.getApp();
 
             run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
@@ -243,7 +243,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
-                        adminClient.consumerGroups().group(app.getUniqueAppId());
+                        adminClient.consumerGroups().group(app.getUniqueGroupId());
                 this.softly.assertThat(consumerGroupClient.exists())
                         .as("Consumer group exists")
                         .isTrue();
@@ -255,7 +255,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupClient consumerGroupClient =
-                        adminClient.consumerGroups().group(app.getUniqueAppId());
+                        adminClient.consumerGroups().group(app.getUniqueGroupId());
                 this.softly.assertThat(consumerGroupClient.exists())
                         .as("Consumer group is deleted")
                         .isFalse();
@@ -265,8 +265,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldNotThrowAnErrorIfConsumerGroupDoesNotExist() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());
@@ -291,7 +291,7 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupsClient groups = adminClient.consumerGroups();
-                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
+                this.softly.assertThat(groups.group(app.getUniqueGroupId()).exists())
                         .as("Consumer group exists")
                         .isTrue();
             }
@@ -300,8 +300,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX adminClient = testClient.admin()) {
                 final ConsumerGroupsClient groups = adminClient.consumerGroups();
-                groups.group(app.getUniqueAppId()).delete();
-                this.softly.assertThat(groups.group(app.getUniqueAppId()).exists())
+                groups.group(app.getUniqueGroupId()).delete();
+                this.softly.assertThat(groups.group(app.getUniqueGroupId()).exists())
                         .as("Consumer group is deleted")
                         .isFalse();
             }
@@ -418,8 +418,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldNotThrowExceptionOnMissingInputTopic() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
         }
@@ -427,8 +427,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldThrowExceptionOnResetterError() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig());
                 final ConsumerProducerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
@@ -438,6 +438,11 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
+                    // TODO:
+                    // .isInstanceOf(KafkaAdminException.class)
+                    // .hasMessageContaining("Failed to reset offsets for consumer group %s: consumer group is not
+                    // empty",
+                    //         app.getUniqueGroupId());
                     .isInstanceOf(CleanUpException.class)
                     .hasMessageContaining("Error resetting application, consumer group is not empty");
         }
@@ -445,8 +450,8 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
     @Test
     void shouldReprocessAlreadySeenRecords() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig())) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getOutputTopic());

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.bakdata.kafka.streams.apps;
 
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.SerdeConfig;
-import com.bakdata.kafka.streams.StreamsApp;
 import com.bakdata.kafka.streams.StreamsAppConfiguration;
 import com.bakdata.kafka.streams.kstream.KStreamX;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
@@ -35,7 +34,7 @@ import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 @NoArgsConstructor
-public class MirrorKeyWithAvro implements StreamsApp {
+public class MirrorKeyWithAvro implements TestStreamsApp {
     @Override
     public void buildTopology(final StreamsBuilderX builder) {
         final KStreamX<TestRecord, String> input = builder.streamInput();

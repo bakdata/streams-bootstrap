@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumer;
+package com.bakdata.kafka;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,18 +31,18 @@ import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.junit.jupiter.api.Test;
 
-class ConsumerExecutionOptionsTest {
+class CloseExecutionOptionsTest {
 
     @Test
     void shouldLeaveGroup() {
-        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+        final CloseExecutionOptions options = CloseExecutionOptions.builder()
                 .build();
         assertThat(options.shouldLeaveGroup(emptyMap())).isTrue();
     }
 
     @Test
     void shouldNotLeaveGroup() {
-        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+        final CloseExecutionOptions options = CloseExecutionOptions.builder()
                 .volatileGroupInstanceId(false)
                 .build();
         assertThat(options.shouldLeaveGroup(Map.of(
@@ -52,7 +52,7 @@ class ConsumerExecutionOptionsTest {
 
     @Test
     void shouldLeaveGroupWithVolatileGroupId() {
-        final ConsumerExecutionOptions options = ConsumerExecutionOptions.builder()
+        final CloseExecutionOptions options = CloseExecutionOptions.builder()
                 .volatileGroupInstanceId(true)
                 .build();
         assertThat(options.shouldLeaveGroup(Map.of(

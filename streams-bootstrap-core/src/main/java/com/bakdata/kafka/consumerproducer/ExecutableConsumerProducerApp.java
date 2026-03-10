@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,9 +53,9 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     private final @NonNull String groupId;
 
     /**
-     * Create {@code ConsumerProducerCleanUpRunner} in order to clean application
+     * Create {@link ConsumerProducerCleanUpRunner} in order to clean application
      *
-     * @return {@code ConsumerProducerCleanUpRunner}
+     * @return {@link ConsumerProducerCleanUpRunner}
      */
     @Override
     public ConsumerProducerCleanUpRunner createCleanUpRunner() {
@@ -66,9 +66,9 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     }
 
     /**
-     * Create {@code ConsumerProducerRunner} in order to run application
+     * Create {@link ConsumerProducerRunner} in order to run application
      *
-     * @return {@code ConsumerProducerRunner}
+     * @return {@link ConsumerProducerRunner}
      */
     @Override
     public ConsumerProducerRunner createRunner() {
@@ -79,7 +79,7 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     @Override
     public ConsumerProducerRunner createRunner(final ConsumerProducerExecutionOptions options) {
         final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics.toConsumerTopicConfig(),
-                this.consumerProperties, options.toConsumerExecutionOptions());
+                this.consumerProperties, options.getConsumerExecutionOptions());
         final ProducerBuilder producerBuilder = new ProducerBuilder(this.topics.toProducerTopicConfig(),
                 this.producerProperties);
         final ConsumerProducerBuilder
@@ -87,9 +87,7 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
         final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
         return new ConsumerProducerRunner(this.app.buildRunnable(consumerProducerBuilder),
-                this.getConsumerConfig(),
-                this.getProducerConfig(),
-                options);
+                this.getConsumerConfig());
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,14 +57,14 @@ class DefaultConsumerRunnableTest extends KafkaTest {
     @InjectSoftAssertions
     private SoftAssertions softly;
 
-    static ConfiguredConsumerApp<ConsumerApp> createStringApplication() {
+    static ConfiguredConsumerApp<StringConsumer> createStringApplication() {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputTopics(List.of("input"))
                 .build();
         return createStringApplication(new ConsumerAppConfiguration(topics));
     }
 
-    static ConfiguredConsumerApp<ConsumerApp> createStringApplication(final ConsumerAppConfiguration configuration) {
+    static ConfiguredConsumerApp<StringConsumer> createStringApplication(final ConsumerAppConfiguration configuration) {
         return new ConfiguredConsumerApp<>(new StringConsumer(), configuration);
     }
 
@@ -79,8 +79,9 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
     @Test
     void shouldRunProcessAndShutdownGracefully() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -98,7 +99,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                             new KeyValue<>("blub", "blub")
                     );
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             runAsync(runner);
             awaitActive(executableApp);
@@ -109,8 +110,9 @@ class DefaultConsumerRunnableTest extends KafkaTest {
 
     @Test
     void shouldCommitOffsets() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic(app.getTopics().getInputTopics().get(0));
@@ -203,9 +205,10 @@ class DefaultConsumerRunnableTest extends KafkaTest {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .inputPattern(Pattern.compile("inp.*"))
                 .build();
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication(
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication(
                 new ConsumerAppConfiguration(topics));
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic("input");
@@ -217,7 +220,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                     ));
             final List<KeyValue<String, String>> expectedValues = List.of(new KeyValue<>("blub", "blub"));
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             runAsync(runner);
             awaitActive(executableApp);
@@ -231,9 +234,10 @@ class DefaultConsumerRunnableTest extends KafkaTest {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .labeledInputPatterns(Map.of("LABEL", Pattern.compile("inp.*")))
                 .build();
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication(
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication(
                 new ConsumerAppConfiguration(topics));
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic("input");
@@ -245,7 +249,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                     ));
             final List<KeyValue<String, String>> expectedValues = List.of(new KeyValue<>("blub", "blub"));
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             runAsync(runner);
             awaitActive(executableApp);
@@ -259,9 +263,10 @@ class DefaultConsumerRunnableTest extends KafkaTest {
         final ConsumerTopicConfig topics = ConsumerTopicConfig.builder()
                 .labeledInputTopics(Map.of("LABEL", List.of("input")))
                 .build();
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication(
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication(
                 new ConsumerAppConfiguration(topics));
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();
             testClient.createTopic("input");
@@ -273,7 +278,7 @@ class DefaultConsumerRunnableTest extends KafkaTest {
                     ));
             final List<KeyValue<String, String>> expectedValues = List.of(new KeyValue<>("blub", "blub"));
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             runAsync(runner);
             awaitActive(executableApp);

@@ -30,13 +30,17 @@ import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.TopologyConfigX;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyConfig;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -68,7 +72,19 @@ public class StreamsBuilderX {
      * @param kafkaProperties kafka properties
      */
     public StreamsBuilderX(final StreamsTopicConfig topics, final Map<String, Object> kafkaProperties) {
-        this(new StreamsBuilder(), topics, kafkaProperties);
+        this(topics, kafkaProperties, new TopologyConfig(new StreamsConfig(kafkaProperties)));
+    }
+
+    /**
+     * Create a new {@code StreamsBuilderX}. A new internal {@link StreamsBuilder} is created automatically
+     *
+     * @param topics topic configuration
+     * @param kafkaProperties kafka properties
+     * @param topologyConfig topology config
+     */
+    public StreamsBuilderX(final StreamsTopicConfig topics, final Map<String, Object> kafkaProperties,
+            final TopologyConfig topologyConfig) {
+        this(new StreamsBuilder(topologyConfig), topics, kafkaProperties);
     }
 
     /**
@@ -476,13 +492,26 @@ public class StreamsBuilderX {
     }
 
     /**
-     * Returns the {@link Topology} that represents the specified processing logic.
+     * Returns the {@link Topology} that represents the specified processing logic. Kafka properties are
+     * automatically passed to {@link StreamsBuilder#build(Properties)}.
      *
      * @return the {@link Topology} that represents the specified processing logic
-     * @see StreamsBuilder#build()
+     * @see #build(Map)
      */
     public Topology build() {
-        return this.streamsBuilder.build();
+        return this.build(this.kafkaProperties);
+    }
+
+    /**
+     * Returns the {@link Topology} that represents the specified processing logic.
+     *
+     * @param properties the properties used for building possibly optimized topology
+     * @return the {@link Topology} that represents the specified processing logic
+     * @see StreamsBuilder#build(Properties)
+     */
+    public Topology build(final Map<String, Object> properties) {
+        final Properties props = Utils.mkObjectProperties(properties);
+        return this.streamsBuilder.build(props);
     }
 
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
