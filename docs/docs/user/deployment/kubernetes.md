@@ -24,7 +24,7 @@ A set of Helm charts is shipped, tailored to different application types:
 | `producer-app`         | Deploy Kafka Producer applications            | `Deployment`, `Job`, `CronJob` |
 | `consumer-app`         | Deploy Kafka Consumer applications            | `Deployment`, `StatefulSet`    |
 | `consumerproducer-app` | Deploy batch / consumer–producer applications | `Deployment`, `StatefulSet`    |
-| `*-cleanup-job`        | Clean Kafka resources before deployment       | `Job` (Helm hooks)             |
+| `*-cleanup-job`        | Clean Kafka resources before deployment       | `Job`                          |
 
 ---
 
@@ -59,7 +59,7 @@ Streams, consumer and consumer–producer applications support both stateless an
     - Used for stateful Kafka Streams applications with local state stores
     - Enabled when `statefulSet: true`
     - Required when `persistence.enabled: true`
-    - Each pod receives a dedicated `PersistentVolumeClaim` for RocksDB state
+    - If persistence is enabled each pod receives a dedicated `PersistentVolumeClaim` for RocksDB state
 
 ---
 
@@ -68,73 +68,25 @@ Streams, consumer and consumer–producer applications support both stateless an
 Producer applications support multiple execution modes depending on workload characteristics:
 
 - **Deployment**
-  - Used for long-running or continuous producers
-  - Enabled when `deployment: true`
-  - Supports horizontal scaling via `replicaCount`
+    - Used for long-running or continuous producers
+    - Enabled when `deployment: true`
+    - Supports horizontal scaling via `replicaCount`
 
 - **Job**
-  - Used for one-time runs or backfills
-  - Default when `deployment: false` and no `schedule` is provided
-  - Supports `restartPolicy`, `backoffLimit`, and `ttlSecondsAfterFinished`
+    - Used for one-time runs or backfills
+    - Default when `deployment: false` and no `schedule` is provided
+    - Supports `restartPolicy`, `backoffLimit`, and `ttlSecondsAfterFinished`
 
 - **CronJob**
-  - Used for scheduled, periodic execution
-  - Enabled when a cron expression is provided via `schedule`
-  - Supports `suspend`, `successfulJobsHistoryLimit`, and `failedJobsHistoryLimit`
-
-
----
-
-### Cleanup jobs
-
-Cleanup charts are executed as Helm hook Jobs:
-
-- Run as `pre-install` or `pre-upgrade` hooks
-- Remove:
-    - Kafka topics
-    - Consumer groups
-    - Schema Registry subjects
-
-This ensures a clean starting point for reprocessing or redeployment scenarios.
+    - Used for scheduled, periodic execution
+    - Enabled when a cron expression is provided via `schedule`
+    - Supports everything a job supports and `suspend`, `successfulJobsHistoryLimit`, and `failedJobsHistoryLimit`
 
 ---
 
 ## Configuration structure
+
 TODO
-
----
-
-## Environment variable mapping
-
-Helm values are translated into environment variables using a configurable prefix:
-
-```yaml
-configurationEnvPrefix: "APP"
-
-commandLine:
-  MY_PARAM: "value"
-kafka:
-  inputTopics: [ "input" ]
-  outputTopic: "output"
-```
-
-This results in:
-
-- `APP_MY_PARAM=value`
-- `APP_INPUT_TOPICS=input`
-- `APP_OUTPUT_TOPIC=output`
-
-Kafka client configuration uses the `KAFKA_` prefix:
-
-```yaml
-kafka:
-  config:
-    max.poll.records: 500
-```
-
-Becomes:
-
-- `KAFKA_MAX_POLL_RECORDS=500`
 
 ---
 
@@ -159,13 +111,8 @@ When enabled, the chart creates a KEDA `ScaledObject` and omits a fixed `replica
 
 ### Scaling behavior
 
-KEDA computes the desired number of replicas as:
-
-```
-desiredReplicas = ceil(totalLag / lagThreshold)
-```
-
-subject to `minReplicas` and `maxReplicas`.
+For details on the scaling behavior, please refer to
+the [official KEDA documentation for the Kafka scaler](https://keda.sh/docs/scalers/apache-kafka/).
 
 ### Integration with persistence
 
@@ -190,7 +137,7 @@ Collected metrics include consumer lag, processing rates, and RocksDB statistics
 
 ## Persistence
 
-Persistence is configured via the `persistence.*` section (Streams applications only):
+Persistence is configured via the `persistence.*` section (for Streams, Consumer and Consumer-Producer applications):
 
 ```yaml
 persistence:

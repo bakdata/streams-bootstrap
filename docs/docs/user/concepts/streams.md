@@ -10,21 +10,7 @@ Streams apps can also produce new messages to other topics based on the processe
 
 ### Running an application
 
-Kafka Streams applications are started via the `KafkaStreamsApplication` entry point:
-
-```java
-public static void main(final String[] args) {
-    new MyStreamsApplication().startApplication(args);
-}
-```
-
-When an application is started, the following steps are performed:
-
-- Parse command-line arguments and environment variables
-- Create a `StreamsApp` instance
-- Wrap it in a `ConfiguredStreamsApp`
-- Convert it into an `ExecutableStreamsApp`
-- Start execution using the `StreamsRunner`
+Kafka Streams applications are started via the `KafkaStreamsApplication` entry point.
 
 ---
 
@@ -112,12 +98,14 @@ applications in streams-bootstrap:
 Kafka configuration can be customized by overriding `createKafkaProperties()`:
 
 ```java
+
 @Override
 public Map<String, Object> createKafkaProperties() {
     return Map.of(
             StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2,
             StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4,
-            StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName()
+            StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
+            LogAndContinueExceptionHandler.class.getName()
     );
 }
 ```
@@ -131,7 +119,7 @@ Streams applications support the following hook types:
 - **Cleanup hooks** – for general cleanup logic not tied to Kafka topics
 - **Topic hooks** – for reacting to topic lifecycle events (e.g. deletion)
 - **Reset hooks** – for logic that should run only during an application reset
-- 
+
 #### Setup
 
 TODO
@@ -142,6 +130,7 @@ Use cleanup hooks for logic that is not tied to Kafka topics, such as closing ex
 or cleaning up temporary state.
 
 ```java
+
 @Override
 public StreamsCleanUpConfiguration setupCleanUp(
         final AppConfiguration<StreamsTopicConfig> configuration) {
@@ -159,6 +148,7 @@ Topic hooks allow Kafka Streams applications to react to Kafka topic lifecycle e
 deletion during `clean` or `reset` operations.
 
 ```java
+
 @Override
 public StreamsCleanUpConfiguration setupCleanUp(
         final AppConfiguration<StreamsTopicConfig> configuration) {
@@ -170,6 +160,7 @@ public StreamsCleanUpConfiguration setupCleanUp(
                     // Called when a managed topic is deleted
                     System.out.println("Deleted topic: " + topic);
                 }
+
                 @Override
                 public void close() {
                     // Optional cleanup for the hook itself
@@ -177,15 +168,18 @@ public StreamsCleanUpConfiguration setupCleanUp(
             });
 }
 ```
+
 ##### Reset hooks
 
-Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked during a regular clean.
+Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked
+during a regular clean.
 
 ---
 
 ###### Example: reset hook registration (Streams)
 
 ```java
+
 @Override
 public StreamsCleanUpConfiguration setupCleanUp(
         final AppConfiguration<StreamsTopicConfig> configuration) {
@@ -203,19 +197,42 @@ public StreamsCleanUpConfiguration setupCleanUp(
 
 #### On start
 
-Custom logic can be executed once Kafka Streams has fully started:
+The `onStreamsStart` method is a lifecycle hook that gets called after Kafka Streams has successfully started. This hook
+receives a `RunningStreams` parameter that provides access to the running Kafka Streams instance and its configuration.
+
+```java
+
+@Override
+private Closeable onStreamsStart(final RunningStreams runningStreams) {
+    // Custom startup logic
+    // Return a Closeable to be executed on shutdown
+    return () -> {};
+}
+```
+
+##### Application server
+
+A common use case for the `onStreamsStart` hook is to start an embedded application server (e.g., for REST APIs,
+GraphQL, gRPC).
 
 ```java
 
 @Override
 private void onStreamsStart(final RunningStreams runningStreams) {
-    // Custom startup logic
+// Access the application server configuration  
+    final Optional<HostInfo> applicationServer = runningStreams.getConfig().getApplicationServer();
+
+    applicationServer.ifPresent(hostInfo -> {
+        final String host = hostInfo.host();
+        final int port = hostInfo.port();
+
+        // Start your application server (e.g., REST API, GraphQL, etc.)  
+        log.info("Starting application server on {}:{}", host, port);
+        // startRestServer(host, port);  
+        // startGrpcServer(host, port);  
+    });
 }
 ```
-
-#### Application server
-
-TODO
 
 #### State listener
 
@@ -233,12 +250,13 @@ TODO
 
 ## Command line interface
 
-Streams applications inherit standard CLI options from `KafkaStreamsApplication`. The following CLI options are streams-app-specific:
+Streams applications inherit standard CLI options from `KafkaStreamsApplication`. The following CLI options are
+streams-app-specific:
 
-| Option                         | Description                               | Default        |
-|--------------------------------|-------------------------------------------|----------------|
-| `--application-id`             | Kafka Streams application ID              | Auto-generated |
-| `--volatile-group-instance-id` | Use volatile group instance ID            | false          |
+| Option                         | Description                    | Default        |
+|--------------------------------|--------------------------------|----------------|
+| `--application-id`             | Kafka Streams application ID   | Auto-generated |
+| `--volatile-group-instance-id` | Use volatile group instance ID | false          |
 
 ---
 

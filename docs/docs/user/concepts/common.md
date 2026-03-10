@@ -27,8 +27,10 @@ You implement the appropriate interface to define your application's behavior.
 
 A **ConfiguredApp** pairs an `App` with its configuration. Examples include:
 
-- `ConfiguredConsumerApp<T extends ConsumerApp>`
+- `ConfiguredStreamsApp<T extends StreamsApp>`
 - `ConfiguredProducerApp<T extends ProducerApp>`
+- `ConfiguredConsumerApp<T extends ConsumerApp>`
+- `ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>`
 
 This layer handles Kafka property creation, combining:
 
@@ -90,12 +92,22 @@ Applications built with streams-bootstrap can be started in two primary ways:
       --schema-registry-url http://schema-registry:8081
   ```
 
-- **Programmatically**: The application subclass calls `startApplication(args)` on startup. Example for a Kafka Streams
-  application:
+- **Programmatically**: You can create a `Runner` from an `ExecutableApp` to run it directly.
 
 ```java
-  public static void main(final String[] args) {
-    new MyStreamsApplication().startApplication(args);
+// For streams applications
+try(StreamsRunner runner = streamsApp.createRunner()){
+        runner.
+
+run();
+}
+
+// For producer applications
+        try(
+Runner runner = producerApp.createRunner()){
+        runner.
+
+run();
 }
 ```
 
@@ -107,15 +119,22 @@ When the cleanup operation is triggered, the following resources are removed:
 
 | Resource Type       | Description                                               | Streams Apps | Producer Apps | Consumer Apps | Consumer-Producer Apps |
 |---------------------|-----------------------------------------------------------|--------------|---------------|---------------|------------------------|
-| Output Topics       | The main output topic of the application                  | ✓            | ✓             | N/A           | ✓                      |
-| Intermediate Topics | Topics for stream operations like `through()`             | ✓            | N/A           | N/A           | N/A                    |
+| Output Topics       | Topics the application produces to                        | ✓            | ✓             | N/A           | ✓                      |
+| Intermediate Topics | Topics the applications produces to and consumes from     | ✓            | N/A           | N/A           | N/A                    |
 | Internal Topics     | Topics for state stores or repartitioning (Kafka Streams) | ✓            | N/A           | N/A           | N/A                    |
 | Consumer Groups     | Consumer group metadata                                   | ✓            | N/A           | ✓             | ✓                      |
 | Schema Registry     | All registered schemas                                    | ✓            | ✓             | ✓             | ✓                      |
 
 Cleanup can be triggered:
 
-- **Via Command Line**: Helm cleanup jobs
+- **Via Command Line**: When packaged as a runnable JAR, the `clean` command can be used.
+
+  ```bash
+  java -jar example-app.jar \
+      clean \
+      --bootstrap-servers kafka:9092 \
+      --output-topic output-topic
+  ```
 - **Programmatically**:
 
 ```java
@@ -144,10 +163,10 @@ Kafka properties are applied in the following order (later values override earli
 
 1. Base configuration
 2. App config from .createKafkaProperties()
-3. Environment variables (`KAFKA_`)
+3. Kafka-specific environment variables with the `KAFKA_` prefix
 4. Runtime args (--bootstrap-servers, etc.)
-5. Serialization config from ProducerApp.defaultSerializationConfig() or StreamsApp.defaultSerializationConfig()
-6. CLI overrides via --kafka-config
+5. Serialization config
+6. Group ID configuration
 
 Environment variables with the `APP_ prefix` (configurable via `ENV_PREFIX`) are automatically parsed.
 Environment variables are converted to CLI arguments:
@@ -158,29 +177,9 @@ APP_SCHEMA_REGISTRY_URL     →      --schema-registry-url
 APP_OUTPUT_TOPIC            →      --output-topic
 ```
 
-Additionally, Kafka-specific environment variables with the `KAFKA_` prefix are automatically added to the Kafka
-configuration.
-
-### Schema Registry integration
-
-When the `--schema-registry-url` option is provided:
-
-- Schemas are registered automatically during application startup
-- Schema cleanup is handled as part of the `clean` command
-- Schema evolution is fully supported
-
-## Command line interface
-
-A unified command-line interface is provided for application configuration.
-
-### CLI Commands
-
-- `run`: Run the application
-- `clean`: Delete topics and consumer groups
-- `reset`: Reset internal state and offsets (for Streams apps)
-
 ### Common CLI Configuration Options
 
 - `--bootstrap-servers`: Kafka bootstrap servers (required)
-- `--schema-registry-url`: URL for Avro serialization
+- `--schema-registry-url`: URL for the Schema Registry. When this option is provided schema cleanup is handled as part
+  of the `clean` command
 - `--kafka-config`: Key-value Kafka configuration
