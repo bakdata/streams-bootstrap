@@ -788,17 +788,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#clean-up" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -818,8 +807,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Topic hooks">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#reset-hooks" class="md-nav__link">
@@ -829,28 +817,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Reset hooks">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-reset-hook-registration-streams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example: reset hook registration (Streams)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1696,17 +1662,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#clean-up" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1726,8 +1681,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Topic hooks">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#reset-hooks" class="md-nav__link">
@@ -1737,28 +1691,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Reset hooks">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-reset-hook-registration-streams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example: reset hook registration (Streams)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -2048,8 +1980,6 @@ public Map&lt;String, Object&gt; createKafkaProperties() {
 <li><strong>Topic hooks</strong> – for reacting to topic lifecycle events (e.g. deletion)</li>
 <li><strong>Reset hooks</strong> – for logic that should run only during an application reset</li>
 </ul>
-<h4 id="setup">Setup</h4>
-<p>TODO</p>
 <h4 id="clean-up">Clean up</h4>
 <p>Use cleanup hooks for logic that is not tied to Kafka topics, such as closing external resources
 or cleaning up temporary state.</p>
@@ -2087,11 +2017,9 @@ public StreamsCleanUpConfiguration setupCleanUp(
             });
 }
 </code></pre>
-<h5 id="reset-hooks">Reset hooks</h5>
+<h4 id="reset-hooks">Reset hooks</h4>
 <p>Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked
 during a regular clean.</p>
-<hr />
-<h6 id="example-reset-hook-registration-streams">Example: reset hook registration (Streams)</h6>
 <pre><code class="language-java">
 @Override
 public StreamsCleanUpConfiguration setupCleanUp(
