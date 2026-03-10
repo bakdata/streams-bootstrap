@@ -40,7 +40,7 @@ helm repo update
 A Streams application can then be installed with:
 
 ```bash
-helm install my-app bakdata-common/streams-app --values my-values.yaml
+helm install my-app streams-bootstrap/streams-app --values my-values.yaml
 ```
 
 ---
@@ -52,8 +52,8 @@ helm install my-app bakdata-common/streams-app --values my-values.yaml
 Streams, consumer and consumer–producer applications support both stateless and stateful deployment modes:
 
 - **Deployment**
-    - Used for stateless applications or when state is stored externally
-    - Enabled when `statefulSet: false` or `persistence.enabled: false`
+    - Used for stateless applications or when state is small and can be restored easily
+    - Enabled when `statefulSet: false`
 
 - **StatefulSet**
     - Used for stateful Kafka Streams applications with local state stores
