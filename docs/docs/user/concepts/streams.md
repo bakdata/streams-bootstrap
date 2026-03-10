@@ -203,10 +203,8 @@ receives a `RunningStreams` parameter that provides access to the running Kafka 
 ```java
 
 @Override
-private Closeable onStreamsStart(final RunningStreams runningStreams) {
+private void onStreamsStart(final RunningStreams runningStreams) {
     // Custom startup logic
-    // Return a Closeable to be executed on shutdown
-    return () -> {};
 }
 ```
 
