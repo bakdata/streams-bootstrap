@@ -1069,17 +1069,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#cleanup-jobs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cleanup jobs
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1090,17 +1079,6 @@
     <span class="md-ellipsis">
       
         Configuration structure
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#environment-variable-mapping" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Environment variable mapping
       
     </span>
   </a>
@@ -1442,17 +1420,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#cleanup-jobs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cleanup jobs
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1463,17 +1430,6 @@
     <span class="md-ellipsis">
       
         Configuration structure
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#environment-variable-mapping" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Environment variable mapping
       
     </span>
   </a>
@@ -1618,7 +1574,7 @@ solutions for autoscaling, monitoring, and state persistence.</p>
 <tr>
 <td><code>*-cleanup-job</code></td>
 <td>Clean Kafka resources before deployment</td>
-<td><code>Job</code> (Helm hooks)</td>
+<td><code>Job</code></td>
 </tr>
 </tbody>
 </table>
@@ -1649,7 +1605,7 @@ helm repo update
 <li>Used for stateful Kafka Streams applications with local state stores</li>
 <li>Enabled when <code>statefulSet: true</code></li>
 <li>Required when <code>persistence.enabled: true</code></li>
-<li>Each pod receives a dedicated <code>PersistentVolumeClaim</code> for RocksDB state</li>
+<li>If persistence is enabled each pod receives a dedicated <code>PersistentVolumeClaim</code> for RocksDB state</li>
 </ul>
 </li>
 </ul>
@@ -1657,69 +1613,34 @@ helm repo update
 <h3 id="producer-applications">Producer applications</h3>
 <p>Producer applications support multiple execution modes depending on workload characteristics:</p>
 <ul>
-<li><strong>Deployment</strong></li>
+<li>
+<p><strong>Deployment</strong></p>
+<ul>
 <li>Used for long-running or continuous producers</li>
 <li>Enabled when <code>deployment: true</code></li>
-<li>
-<p>Supports horizontal scaling via <code>replicaCount</code></p>
+<li>Supports horizontal scaling via <code>replicaCount</code></li>
+</ul>
 </li>
 <li>
 <p><strong>Job</strong></p>
-</li>
+<ul>
 <li>Used for one-time runs or backfills</li>
 <li>Default when <code>deployment: false</code> and no <code>schedule</code> is provided</li>
-<li>
-<p>Supports <code>restartPolicy</code>, <code>backoffLimit</code>, and <code>ttlSecondsAfterFinished</code></p>
+<li>Supports <code>restartPolicy</code>, <code>backoffLimit</code>, and <code>ttlSecondsAfterFinished</code></li>
+</ul>
 </li>
 <li>
 <p><strong>CronJob</strong></p>
-</li>
+<ul>
 <li>Used for scheduled, periodic execution</li>
 <li>Enabled when a cron expression is provided via <code>schedule</code></li>
-<li>Supports <code>suspend</code>, <code>successfulJobsHistoryLimit</code>, and <code>failedJobsHistoryLimit</code></li>
-</ul>
-<hr />
-<h3 id="cleanup-jobs">Cleanup jobs</h3>
-<p>Cleanup charts are executed as Helm hook Jobs:</p>
-<ul>
-<li>Run as <code>pre-install</code> or <code>pre-upgrade</code> hooks</li>
-<li>Remove:<ul>
-<li>Kafka topics</li>
-<li>Consumer groups</li>
-<li>Schema Registry subjects</li>
+<li>Supports everything a job supports and <code>suspend</code>, <code>successfulJobsHistoryLimit</code>, and <code>failedJobsHistoryLimit</code></li>
 </ul>
 </li>
 </ul>
-<p>This ensures a clean starting point for reprocessing or redeployment scenarios.</p>
 <hr />
 <h2 id="configuration-structure">Configuration structure</h2>
 <p>TODO</p>
-<hr />
-<h2 id="environment-variable-mapping">Environment variable mapping</h2>
-<p>Helm values are translated into environment variables using a configurable prefix:</p>
-<pre><code class="language-yaml">configurationEnvPrefix: &quot;APP&quot;
-
-commandLine:
-  MY_PARAM: &quot;value&quot;
-kafka:
-  inputTopics: [ &quot;input&quot; ]
-  outputTopic: &quot;output&quot;
-</code></pre>
-<p>This results in:</p>
-<ul>
-<li><code>APP_MY_PARAM=value</code></li>
-<li><code>APP_INPUT_TOPICS=input</code></li>
-<li><code>APP_OUTPUT_TOPIC=output</code></li>
-</ul>
-<p>Kafka client configuration uses the <code>KAFKA_</code> prefix:</p>
-<pre><code class="language-yaml">kafka:
-  config:
-    max.poll.records: 500
-</code></pre>
-<p>Becomes:</p>
-<ul>
-<li><code>KAFKA_MAX_POLL_RECORDS=500</code></li>
-</ul>
 <hr />
 <h2 id="autoscaling">Autoscaling</h2>
 <p>Autoscaling is implemented using Kubernetes Event-Driven Autoscaling (KEDA). When enabled, KEDA monitors Kafka consumer
@@ -1734,10 +1655,8 @@ lag and adjusts the number of replicas accordingly.</p>
 </code></pre>
 <p>When enabled, the chart creates a KEDA <code>ScaledObject</code> and omits a fixed <code>replicaCount</code> from the workload specification.</p>
 <h3 id="scaling-behavior">Scaling behavior</h3>
-<p>KEDA computes the desired number of replicas as:</p>
-<pre><code>desiredReplicas = ceil(totalLag / lagThreshold)
-</code></pre>
-<p>subject to <code>minReplicas</code> and <code>maxReplicas</code>.</p>
+<p>For details on the scaling behavior, please refer to
+the <a href="https://keda.sh/docs/scalers/apache-kafka/">official KEDA documentation for the Kafka scaler</a>.</p>
 <h3 id="integration-with-persistence">Integration with persistence</h3>
 <p>When persistence is enabled for Streams applications, autoscaling targets a <code>StatefulSet</code>. Each replica receives its own
 <code>PersistentVolumeClaim</code>.</p>
@@ -1755,7 +1674,7 @@ lag and adjusts the number of replicas accordingly.</p>
 <p>Collected metrics include consumer lag, processing rates, and RocksDB statistics.</p>
 <hr />
 <h2 id="persistence">Persistence</h2>
-<p>Persistence is configured via the <code>persistence.*</code> section (Streams applications only):</p>
+<p>Persistence is configured via the <code>persistence.*</code> section (for Streams, Consumer and Consumer-Producer applications):</p>
 <pre><code class="language-yaml">persistence:
   enabled: true
   size: 1Gi

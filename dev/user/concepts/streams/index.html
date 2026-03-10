@@ -880,7 +880,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="On start">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#application-server" class="md-nav__link">
@@ -890,6 +891,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1782,7 +1788,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="On start">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#application-server" class="md-nav__link">
@@ -1792,6 +1799,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1937,19 +1949,7 @@ Streams apps can also produce new messages to other topics based on the processe
 <hr />
 <h2 id="application-lifecycle">Application lifecycle</h2>
 <h3 id="running-an-application">Running an application</h3>
-<p>Kafka Streams applications are started via the <code>KafkaStreamsApplication</code> entry point:</p>
-<pre><code class="language-java">public static void main(final String[] args) {
-    new MyStreamsApplication().startApplication(args);
-}
-</code></pre>
-<p>When an application is started, the following steps are performed:</p>
-<ul>
-<li>Parse command-line arguments and environment variables</li>
-<li>Create a <code>StreamsApp</code> instance</li>
-<li>Wrap it in a <code>ConfiguredStreamsApp</code></li>
-<li>Convert it into an <code>ExecutableStreamsApp</code></li>
-<li>Start execution using the <code>StreamsRunner</code></li>
-</ul>
+<p>Kafka Streams applications are started via the <code>KafkaStreamsApplication</code> entry point.</p>
 <hr />
 <h3 id="resetting-an-application">Resetting an application</h3>
 <p>Streams applications support a dedicated <code>reset</code> operation that clears processing state while preserving the
@@ -2029,12 +2029,14 @@ applications in streams-bootstrap:</p>
 </ul>
 <h4 id="custom-kafka-properties">Custom Kafka properties</h4>
 <p>Kafka configuration can be customized by overriding <code>createKafkaProperties()</code>:</p>
-<pre><code class="language-java">@Override
+<pre><code class="language-java">
+@Override
 public Map&lt;String, Object&gt; createKafkaProperties() {
     return Map.of(
             StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2,
             StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4,
-            StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName()
+            StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
+            LogAndContinueExceptionHandler.class.getName()
     );
 }
 </code></pre>
@@ -2045,14 +2047,14 @@ public Map&lt;String, Object&gt; createKafkaProperties() {
 <li><strong>Cleanup hooks</strong> – for general cleanup logic not tied to Kafka topics</li>
 <li><strong>Topic hooks</strong> – for reacting to topic lifecycle events (e.g. deletion)</li>
 <li><strong>Reset hooks</strong> – for logic that should run only during an application reset</li>
-<li></li>
 </ul>
 <h4 id="setup">Setup</h4>
 <p>TODO</p>
 <h4 id="clean-up">Clean up</h4>
 <p>Use cleanup hooks for logic that is not tied to Kafka topics, such as closing external resources
 or cleaning up temporary state.</p>
-<pre><code class="language-java">@Override
+<pre><code class="language-java">
+@Override
 public StreamsCleanUpConfiguration setupCleanUp(
         final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
 
@@ -2065,7 +2067,8 @@ public StreamsCleanUpConfiguration setupCleanUp(
 <h4 id="topic-hooks">Topic hooks</h4>
 <p>Topic hooks allow Kafka Streams applications to react to Kafka topic lifecycle events, such as topic
 deletion during <code>clean</code> or <code>reset</code> operations.</p>
-<pre><code class="language-java">@Override
+<pre><code class="language-java">
+@Override
 public StreamsCleanUpConfiguration setupCleanUp(
         final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
 
@@ -2076,6 +2079,7 @@ public StreamsCleanUpConfiguration setupCleanUp(
                     // Called when a managed topic is deleted
                     System.out.println(&quot;Deleted topic: &quot; + topic);
                 }
+
                 @Override
                 public void close() {
                     // Optional cleanup for the hook itself
@@ -2084,10 +2088,12 @@ public StreamsCleanUpConfiguration setupCleanUp(
 }
 </code></pre>
 <h5 id="reset-hooks">Reset hooks</h5>
-<p>Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked during a regular clean.</p>
+<p>Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked
+during a regular clean.</p>
 <hr />
 <h6 id="example-reset-hook-registration-streams">Example: reset hook registration (Streams)</h6>
-<pre><code class="language-java">@Override
+<pre><code class="language-java">
+@Override
 public StreamsCleanUpConfiguration setupCleanUp(
         final AppConfiguration&lt;StreamsTopicConfig&gt; configuration) {
 
@@ -2100,15 +2106,34 @@ public StreamsCleanUpConfiguration setupCleanUp(
 <hr />
 <h3 id="execution-options">Execution options</h3>
 <h4 id="on-start">On start</h4>
-<p>Custom logic can be executed once Kafka Streams has fully started:</p>
+<p>The <code>onStreamsStart</code> method is a lifecycle hook that gets called after Kafka Streams has successfully started. This hook
+receives a <code>RunningStreams</code> parameter that provides access to the running Kafka Streams instance and its configuration.</p>
 <pre><code class="language-java">
 @Override
 private void onStreamsStart(final RunningStreams runningStreams) {
     // Custom startup logic
 }
 </code></pre>
-<h4 id="application-server">Application server</h4>
-<p>TODO</p>
+<h5 id="application-server">Application server</h5>
+<p>A common use case for the <code>onStreamsStart</code> hook is to start an embedded application server (e.g., for REST APIs,
+GraphQL, gRPC).</p>
+<pre><code class="language-java">
+@Override
+private void onStreamsStart(final RunningStreams runningStreams) {
+// Access the application server configuration  
+    final Optional&lt;HostInfo&gt; applicationServer = runningStreams.getConfig().getApplicationServer();
+
+    applicationServer.ifPresent(hostInfo -&gt; {
+        final String host = hostInfo.host();
+        final int port = hostInfo.port();
+
+        // Start your application server
+        log.info(&quot;Starting application server on {}:{}&quot;, host, port);
+        // startRestServer(host, port);  
+        // startGrpcServer(host, port);  
+    });
+}
+</code></pre>
 <h4 id="state-listener">State listener</h4>
 <p>TODO</p>
 <h4 id="uncaught-exception-handler">Uncaught exception handler</h4>
@@ -2117,7 +2142,8 @@ private void onStreamsStart(final RunningStreams runningStreams) {
 <p>TODO</p>
 <hr />
 <h2 id="command-line-interface">Command line interface</h2>
-<p>Streams applications inherit standard CLI options from <code>KafkaStreamsApplication</code>. The following CLI options are streams-app-specific:</p>
+<p>Streams applications inherit standard CLI options from <code>KafkaStreamsApplication</code>. The following CLI options are
+streams-app-specific:</p>
 <table>
 <thead>
 <tr>

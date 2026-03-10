@@ -737,45 +737,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#schema-registry-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Schema Registry integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#command-line-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command line interface
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Command line interface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cli-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI Commands
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#common-cli-configuration-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1478,45 +1439,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#schema-registry-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Schema Registry integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#command-line-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command line interface
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Command line interface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cli-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI Commands
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#common-cli-configuration-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1574,8 +1496,10 @@
 <h3 id="configuredapp">ConfiguredApp</h3>
 <p>A <strong>ConfiguredApp</strong> pairs an <code>App</code> with its configuration. Examples include:</p>
 <ul>
-<li><code>ConfiguredConsumerApp&lt;T extends ConsumerApp&gt;</code></li>
+<li><code>ConfiguredStreamsApp&lt;T extends StreamsApp&gt;</code></li>
 <li><code>ConfiguredProducerApp&lt;T extends ProducerApp&gt;</code></li>
+<li><code>ConfiguredConsumerApp&lt;T extends ConsumerApp&gt;</code></li>
+<li><code>ConfiguredConsumerProducerApp&lt;T extends ConsumerProducerApp&gt;</code></li>
 </ul>
 <p>This layer handles Kafka property creation, combining:</p>
 <ul>
@@ -1655,11 +1579,21 @@ customization.</p>
       --output-topic output-topic \
       --schema-registry-url http://schema-registry:8081</code></p>
 <ul>
-<li><strong>Programmatically</strong>: The application subclass calls <code>startApplication(args)</code> on startup. Example for a Kafka Streams
-  application:</li>
+<li><strong>Programmatically</strong>: You can create a <code>Runner</code> from an <code>ExecutableApp</code> to run it directly.</li>
 </ul>
-<pre><code class="language-java">  public static void main(final String[] args) {
-    new MyStreamsApplication().startApplication(args);
+<pre><code class="language-java">// For streams applications
+try(StreamsRunner runner = streamsApp.createRunner()){
+        runner.
+
+run();
+}
+
+// For producer applications
+        try(
+Runner runner = producerApp.createRunner()){
+        runner.
+
+run();
 }
 </code></pre>
 <h3 id="cleaning-an-application">Cleaning an application</h3>
@@ -1679,7 +1613,7 @@ customization.</p>
 <tbody>
 <tr>
 <td>Output Topics</td>
-<td>The main output topic of the application</td>
+<td>Topics the application produces to</td>
 <td>✓</td>
 <td>✓</td>
 <td>N/A</td>
@@ -1687,7 +1621,7 @@ customization.</p>
 </tr>
 <tr>
 <td>Intermediate Topics</td>
-<td>Topics for stream operations like <code>through()</code></td>
+<td>Topics the applications produces to and consumes from</td>
 <td>✓</td>
 <td>N/A</td>
 <td>N/A</td>
@@ -1721,9 +1655,14 @@ customization.</p>
 </table>
 <p>Cleanup can be triggered:</p>
 <ul>
-<li><strong>Via Command Line</strong>: Helm cleanup jobs</li>
-<li><strong>Programmatically</strong>:</li>
+<li><strong>Via Command Line</strong>: When packaged as a runnable JAR, the <code>clean</code> command can be used.</li>
 </ul>
+<p><code>bash
+  java -jar example-app.jar \
+      clean \
+      --bootstrap-servers kafka:9092 \
+      --output-topic output-topic</code>
+- <strong>Programmatically</strong>:</p>
 <pre><code class="language-java">// For streams applications
 try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()){
         cleanUpRunner.
@@ -1746,10 +1685,10 @@ additional issues.</p>
 <ol>
 <li>Base configuration</li>
 <li>App config from .createKafkaProperties()</li>
-<li>Environment variables (<code>KAFKA_</code>)</li>
+<li>Kafka-specific environment variables with the <code>KAFKA_</code> prefix</li>
 <li>Runtime args (--bootstrap-servers, etc.)</li>
-<li>Serialization config from ProducerApp.defaultSerializationConfig() or StreamsApp.defaultSerializationConfig()</li>
-<li>CLI overrides via --kafka-config</li>
+<li>Serialization config</li>
+<li>Group ID configuration</li>
 </ol>
 <p>Environment variables with the <code>APP_ prefix</code> (configurable via <code>ENV_PREFIX</code>) are automatically parsed.
 Environment variables are converted to CLI arguments:</p>
@@ -1757,27 +1696,11 @@ Environment variables are converted to CLI arguments:</p>
 APP_SCHEMA_REGISTRY_URL     →      --schema-registry-url
 APP_OUTPUT_TOPIC            →      --output-topic
 </code></pre>
-<p>Additionally, Kafka-specific environment variables with the <code>KAFKA_</code> prefix are automatically added to the Kafka
-configuration.</p>
-<h3 id="schema-registry-integration">Schema Registry integration</h3>
-<p>When the <code>--schema-registry-url</code> option is provided:</p>
-<ul>
-<li>Schemas are registered automatically during application startup</li>
-<li>Schema cleanup is handled as part of the <code>clean</code> command</li>
-<li>Schema evolution is fully supported</li>
-</ul>
-<h2 id="command-line-interface">Command line interface</h2>
-<p>A unified command-line interface is provided for application configuration.</p>
-<h3 id="cli-commands">CLI Commands</h3>
-<ul>
-<li><code>run</code>: Run the application</li>
-<li><code>clean</code>: Delete topics and consumer groups</li>
-<li><code>reset</code>: Reset internal state and offsets (for Streams apps)</li>
-</ul>
 <h3 id="common-cli-configuration-options">Common CLI Configuration Options</h3>
 <ul>
 <li><code>--bootstrap-servers</code>: Kafka bootstrap servers (required)</li>
-<li><code>--schema-registry-url</code>: URL for Avro serialization</li>
+<li><code>--schema-registry-url</code>: URL for the Schema Registry. When this option is provided schema cleanup is handled as part
+  of the <code>clean</code> command</li>
 <li><code>--kafka-config</code>: Key-value Kafka configuration</li>
 </ul>
 
