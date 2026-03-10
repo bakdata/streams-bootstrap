@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.bakdata.kafka.AppConfiguration;
-import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
@@ -44,6 +43,7 @@ import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
+import com.bakdata.kafka.admin.KafkaAdminException;
 import com.bakdata.kafka.admin.TopicsClient;
 import com.bakdata.kafka.consumerproducer.apps.MirrorKeyWithAvroConsumerProducer;
 import com.bakdata.kafka.consumerproducer.apps.MirrorValueWithAvroConsumerProducer;
@@ -438,13 +438,9 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
             awaitActive(executableApp);
             // should throw exception because consumer group is still active
             this.softly.assertThatThrownBy(() -> reset(executableApp))
-                    // TODO:
-                    // .isInstanceOf(KafkaAdminException.class)
-                    // .hasMessageContaining("Failed to reset offsets for consumer group %s: consumer group is not
-                    // empty",
-                    //         app.getUniqueGroupId());
-                    .isInstanceOf(CleanUpException.class)
-                    .hasMessageContaining("Error resetting application, consumer group is not empty");
+                    .isInstanceOf(KafkaAdminException.class)
+                    .hasMessageContaining("Failed to reset offsets for consumer group %s: consumer group is not empty",
+                            app.getUniqueGroupId());
         }
     }
 

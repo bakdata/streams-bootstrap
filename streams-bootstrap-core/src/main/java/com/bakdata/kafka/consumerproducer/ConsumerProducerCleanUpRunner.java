@@ -24,7 +24,6 @@
 
 package com.bakdata.kafka.consumerproducer;
 
-import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
@@ -32,19 +31,11 @@ import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.ConsumerGroupDescription;
-import org.apache.kafka.clients.admin.ListOffsetsResult;
 import org.apache.kafka.clients.admin.OffsetSpec;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.GroupState;
-import org.apache.kafka.common.KafkaFuture;
-import org.apache.kafka.common.TopicPartition;
 import org.jooq.lambda.Seq;
 
 /**
@@ -123,17 +114,6 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
     private class Task {
         private final @NonNull AdminClientX adminClient;
 
-        private static <T> T runAdminFuture(final KafkaFuture<T> action, final String errorMessage) {
-            try {
-                return action.get();
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new CleanUpException(errorMessage, e);
-            } catch (final ExecutionException e) {
-                throw new CleanUpException(errorMessage, e);
-            }
-        }
-
         private void clean() {
             this.deleteConsumerGroup();
             this.deleteTopics();
@@ -143,29 +123,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
         private void reset() {
             final ConsumerGroupClient groupClient = this.adminClient.consumerGroups()
                     .group(ConsumerProducerCleanUpRunner.this.groupId);
-            final Optional<ConsumerGroupDescription> groupDescription = groupClient.describe();
-            if (groupDescription.isEmpty()) {
-                return;
-            }
-            if (groupDescription.get().groupState() != GroupState.EMPTY) {
-                throw new CleanUpException("Error resetting application, consumer group is not empty");
-            }
-
-            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = groupClient.listOffsets();
-
-            final Map<TopicPartition, OffsetSpec> request = groupOffsets.keySet().stream()
-                    .collect(Collectors.toMap(tp -> tp, tp -> OffsetSpec.earliest()));
-            final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> earliestOffsets =
-                    runAdminFuture(this.adminClient.admin().listOffsets(request).all(),
-                            "Error resetting application, beginning consumer group offset could not be found");
-
-            final Map<TopicPartition, OffsetAndMetadata> resetOffsets = earliestOffsets.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey,
-                            e -> new OffsetAndMetadata(e.getValue().offset())));
-            runAdminFuture(
-                    this.adminClient.admin()
-                            .alterConsumerGroupOffsets(ConsumerProducerCleanUpRunner.this.groupId, resetOffsets)
-                            .all(), "Error resetting application, could not alter consumer group offsets");
+            groupClient.reset(OffsetSpec.earliest());
 
             ConsumerProducerCleanUpRunner.this.cleanHooks.runResetHooks();
         }
