@@ -46,18 +46,12 @@ Applications can register custom cleanup logic by overriding `setupCleanUp`.
 
 ## Configuration
 
-### Serialization configuration
+### Topics
 
-Producer applications define key and value serialization using the `defaultSerializationConfig()` method in their
-`ProducerApp` implementation.
+Producer applications support output topic configuration:
 
-```java
-
-@Override
-public SerializerConfig defaultSerializationConfig() {
-    return new SerializerConfig(StringSerializer.class, SpecificAvroSerializer.class);
-}
-```
+- `--output-topic`: Default output topic for produced messages
+- `--labeled-output-topics`: Named output topics with different message types
 
 ### Kafka properties
 
@@ -67,13 +61,14 @@ The following Kafka properties are configured by default for Producer applicatio
 
 - `max.in.flight.requests.per.connection = 1`
 - `acks = all`
-- `compression.type = gzip`  
+- `compression.type = gzip`
 
 #### Custom Kafka properties
 
 Kafka configuration can be customized by overriding `createKafkaProperties()`:
 
 ```java
+
 @Override
 public Map<String, Object> createKafkaProperties() {
     return Map.of(
@@ -83,8 +78,6 @@ public Map<String, Object> createKafkaProperties() {
     );
 }
 ```
-
-These properties are merged with defaults and CLI-provided configuration.
 
 ---
 
@@ -118,6 +111,7 @@ Topic hooks should be used for topic-related cleanup or side effects, such as re
 resources associated with a topic or logging topic deletions:
 
 ```java
+
 @Override
 public ProducerCleanUpConfiguration setupCleanUp(
         final AppConfiguration<ProducerTopicConfig> configuration) {
@@ -141,12 +135,13 @@ public ProducerCleanUpConfiguration setupCleanUp(
 
 ## Command line interface
 
-Producer applications inherit standard CLI options from `KafkaApplication`. The following CLI options are producer-specific:
+Producer applications inherit standard CLI options from `KafkaApplication`. The following CLI options are
+producer-specific:
 
-| Option                    | Description                                      | Default |
-|---------------------------|--------------------------------------------------|---------|
-| `--output-topic`          | Default output topic                             | -       |
-| `--labeled-output-topics` | Named output topics (`label1=topic1,...`)        | -       |
+| Option                    | Description                               | Default |
+|---------------------------|-------------------------------------------|---------|
+| `--output-topic`          | Default output topic                      | -       |
+| `--labeled-output-topics` | Named output topics (`label1=topic1,...`) | -       |
 
 ---
 

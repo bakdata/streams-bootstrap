@@ -120,10 +120,6 @@ Streams applications support the following hook types:
 - **Topic hooks** – for reacting to topic lifecycle events (e.g. deletion)
 - **Reset hooks** – for logic that should run only during an application reset
 
-#### Setup
-
-TODO
-
 #### Clean up
 
 Use cleanup hooks for logic that is not tied to Kafka topics, such as closing external resources
@@ -169,14 +165,10 @@ public StreamsCleanUpConfiguration setupCleanUp(
 }
 ```
 
-##### Reset hooks
+#### Reset hooks
 
 Reset hooks allow Kafka Streams applications to execute custom logic only during a reset operation. They are not invoked
 during a regular clean.
-
----
-
-###### Example: reset hook registration (Streams)
 
 ```java
 
