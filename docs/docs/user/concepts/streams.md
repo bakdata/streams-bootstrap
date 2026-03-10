@@ -224,7 +224,7 @@ private void onStreamsStart(final RunningStreams runningStreams) {
         final String host = hostInfo.host();
         final int port = hostInfo.port();
 
-        // Start your application server (e.g., REST API, GraphQL, etc.)  
+        // Start your application server
         log.info("Starting application server on {}:{}", host, port);
         // startRestServer(host, port);  
         // startGrpcServer(host, port);  
