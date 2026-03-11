@@ -102,7 +102,6 @@ Kafka configuration can be customized by overriding `createKafkaProperties()`:
 @Override
 public Map<String, Object> createKafkaProperties() {
     return Map.of(
-            StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2,
             StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4,
             StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
             LogAndContinueExceptionHandler.class.getName()
@@ -159,7 +158,7 @@ public StreamsCleanUpConfiguration setupCleanUp(
 
                 @Override
                 public void close() {
-                    // Optional cleanup for the hook itself
+                    // Optional closing of connections/resources
                 }
             });
 }
@@ -243,9 +242,9 @@ TODO
 Streams applications inherit standard CLI options from `KafkaStreamsApplication`. The following CLI options are
 streams-app-specific:
 
-| Option                         | Description                    | Default        |
-|--------------------------------|--------------------------------|----------------|
-| `--application-id`             | Kafka Streams application ID   | Auto-generated |
+| Option                         | Description                                                                                   | Default        |
+|--------------------------------|-----------------------------------------------------------------------------------------------|----------------|
+| `--application-id`             | Kafka Streams application ID                                                                  | Auto-generated |
 | `--volatile-group-instance-id` | Use volatile group instance ID. This changes shutdown behavior of the Kafka Streams instance. | false          |
 
 ---

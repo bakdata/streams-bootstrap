@@ -127,7 +127,7 @@ public ProducerCleanUpConfiguration setupCleanUp(
 
                 @Override
                 public void close() {
-                    // Optional cleanup for the hook itself
+                    // Optional closing of connections/resources
                 }
             });
 }

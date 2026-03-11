@@ -123,7 +123,6 @@ When the cleanup operation is triggered, the following resources are removed:
 | Intermediate Topics | Topics the applications produces to and consumes from     | ✓            | N/A           | N/A           | N/A                    |
 | Internal Topics     | Topics for state stores or repartitioning (Kafka Streams) | ✓            | N/A           | N/A           | N/A                    |
 | Consumer Groups     | Consumer group metadata                                   | ✓            | N/A           | ✓             | ✓                      |
-| Schema Registry     | All registered schemas                                    | ✓            | ✓             | ✓             | ✓                      |
 
 Cleanup can be triggered:
 
