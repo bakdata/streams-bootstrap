@@ -99,6 +99,7 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
 
     @RequiredArgsConstructor
     private class Task {
+
         private final @NonNull AdminClientX adminClient;
 
         private void reset() {

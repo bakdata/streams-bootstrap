@@ -474,6 +474,16 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
         }
     }
 
+    @Test
+    void shouldNotThrowExceptionOnResetIfConsumerGroupNotExists() {
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
+                        this.createConfig())) {
+            // The app is not run so the consumer group is never created
+            this.softly.assertThatCode(() -> reset(executableApp)).doesNotThrowAnyException();
+        }
+    }
+
     private List<KeyValue<String, String>> readOutputTopic(final String outputTopic) {
         final List<ConsumerRecord<String, String>> records = this.newTestClient().read()
                 .withKeyDeserializer(new StringDeserializer())
