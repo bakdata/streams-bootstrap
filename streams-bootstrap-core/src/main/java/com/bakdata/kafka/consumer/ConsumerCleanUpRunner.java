@@ -35,7 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.OffsetSpec;
 
 /**
- * Clean up all topics specified by a {@link ConsumerTopicConfig}
+ * Runner to {@link #clean()} or {@link #reset()} a {@link ConsumerApp}
+ *
+ * {@link #clean()} deletes the consumer group specified in the constructor. {@link #reset()} resets the consumer group
+ * to the earliest offset. Both methods also run hooks registered in a {@link ConsumerCleanUpConfiguration}.
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

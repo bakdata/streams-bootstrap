@@ -29,6 +29,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 /**
  * Produce or consume messages to or from Kafka
  */
+@FunctionalInterface
 public interface ConsumerProducerRunnable extends AutoCloseable {
 
     /**

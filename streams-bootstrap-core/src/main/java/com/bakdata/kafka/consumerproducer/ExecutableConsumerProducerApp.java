@@ -28,14 +28,12 @@ import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.ExecutableApp;
 import com.bakdata.kafka.consumer.ConsumerBuilder;
 import com.bakdata.kafka.producer.ProducerBuilder;
-import com.bakdata.kafka.streams.StreamsCleanUpConfiguration;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
  * A {@link ConsumerProducerApp} with a corresponding {@link ConsumerProducerTopicConfig} and Kafka configuration
@@ -61,9 +59,9 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
     @Override
     public ConsumerProducerCleanUpRunner createCleanUpRunner() {
         final AppConfiguration<ConsumerProducerTopicConfig> configuration = this.createConfiguration();
-        final StreamsCleanUpConfiguration streamsCleanUpConfiguration = this.app.setupCleanUp(configuration);
+        final ConsumerProducerCleanUpConfiguration cleanUpConfiguration = this.app.setupCleanUp(configuration);
         return ConsumerProducerCleanUpRunner.create(this.topics, this.consumerProperties, this.groupId,
-                streamsCleanUpConfiguration);
+                cleanUpConfiguration);
     }
 
     /**
@@ -98,10 +96,6 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
 
     public ConsumerConfig getConsumerConfig() {
         return new ConsumerConfig(this.consumerProperties);
-    }
-
-    public ProducerConfig getProducerConfig() {
-        return new ProducerConfig(this.producerProperties);
     }
 
     private AppConfiguration<ConsumerProducerTopicConfig> createConfiguration() {

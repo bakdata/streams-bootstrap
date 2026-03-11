@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams;
-
+package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.HasCleanHook;
 import com.bakdata.kafka.HasTopicHooks;
@@ -32,40 +31,45 @@ import java.util.Collection;
 import lombok.NonNull;
 
 /**
- * Provides configuration options for {@link StreamsCleanUpRunner}
+ * Provides configuration options for {@link ConsumerProducerCleanUpRunner}
  */
-public class StreamsCleanUpConfiguration
-        implements HasTopicHooks<StreamsCleanUpConfiguration>, HasCleanHook<StreamsCleanUpConfiguration>,
-        AutoCloseable {
+public class ConsumerProducerCleanUpConfiguration implements HasTopicHooks<ConsumerProducerCleanUpConfiguration>,
+        HasCleanHook<ConsumerProducerCleanUpConfiguration>, AutoCloseable {
     private final @NonNull Collection<TopicHook> topicHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> cleanHooks = new ArrayList<>();
     private final @NonNull Collection<Runnable> resetHooks = new ArrayList<>();
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
+     *
+     * @param hook the hook to execute
+     * @return self for chaining
      */
     @Override
-    public StreamsCleanUpConfiguration registerTopicHook(final TopicHook hook) {
+    public ConsumerProducerCleanUpConfiguration registerTopicHook(final TopicHook hook) {
         this.topicHooks.add(hook);
         return this;
     }
 
     /**
-     * Register a hook that is executed after {@link StreamsCleanUpRunner#clean()} has finished
+     * Register a hook that is executed after {@link ConsumerProducerCleanUpRunner#clean()} has finished
+     *
+     * @param hook the runnable to execute
+     * @return self for chaining
      */
     @Override
-    public StreamsCleanUpConfiguration registerCleanHook(final Runnable hook) {
+    public ConsumerProducerCleanUpConfiguration registerCleanHook(final Runnable hook) {
         this.cleanHooks.add(hook);
         return this;
     }
 
     /**
-     * Register a hook that is executed after {@link StreamsCleanUpRunner#reset()} has finished
+     * Register a hook that is executed after {@link ConsumerProducerCleanUpRunner#reset()} has finished
      *
      * @param hook the runnable to execute
      * @return self for chaining
      */
-    public StreamsCleanUpConfiguration registerResetHook(final Runnable hook) {
+    public ConsumerProducerCleanUpConfiguration registerResetHook(final Runnable hook) {
         this.resetHooks.add(hook);
         return this;
     }
@@ -75,15 +79,15 @@ public class StreamsCleanUpConfiguration
         this.topicHooks.forEach(TopicHook::close);
     }
 
+    void runTopicDeletionHooks(final String topic) {
+        this.topicHooks.forEach(hook -> hook.deleted(topic));
+    }
+
     void runCleanHooks() {
         this.cleanHooks.forEach(Runnable::run);
     }
 
     void runResetHooks() {
         this.resetHooks.forEach(Runnable::run);
-    }
-
-    void runTopicDeletionHooks(final String topic) {
-        this.topicHooks.forEach(hook -> hook.deleted(topic));
     }
 }

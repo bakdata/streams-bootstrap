@@ -44,7 +44,6 @@ import lombok.Value;
 @Value
 @EqualsAndHashCode
 public class ConsumerProducerTopicConfig {
-
     @Builder.Default
     @NonNull
     List<String> inputTopics = emptyList();
@@ -54,6 +53,7 @@ public class ConsumerProducerTopicConfig {
     @Builder.Default
     @NonNull
     Map<String, List<String>> labeledInputTopics = emptyMap();
+
     Pattern inputPattern;
     /**
      * Input patterns that are identified by a label
@@ -61,6 +61,7 @@ public class ConsumerProducerTopicConfig {
     @Builder.Default
     @NonNull
     Map<String, Pattern> labeledInputPatterns = emptyMap();
+
     String outputTopic;
     /**
      * Output topics that are identified by a label
@@ -68,6 +69,7 @@ public class ConsumerProducerTopicConfig {
     @Builder.Default
     @NonNull
     Map<String, String> labeledOutputTopics = emptyMap();
+
     String errorTopic;
 
     /**
