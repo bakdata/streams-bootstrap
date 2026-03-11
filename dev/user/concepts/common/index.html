@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -1505,8 +1505,8 @@
 <ul>
 <li>base configuration</li>
 <li>app-specific configuration</li>
-<li>environment variables</li>
-<li>runtime configuration</li>
+<li>user configuration</li>
+<li>runtime configuration, e.g., brokers and schema registry</li>
 </ul>
 <hr />
 <h3 id="executableapp">ExecutableApp</h3>
@@ -1686,7 +1686,7 @@ additional issues.</p>
 <li>Base configuration</li>
 <li>App config from .createKafkaProperties()</li>
 <li>Kafka-specific environment variables with the <code>KAFKA_</code> prefix</li>
-<li>Runtime args (--bootstrap-servers, etc.)</li>
+<li>Runtime args (<code>--bootstrap-servers</code>, <code>--schema-registry</code>, <code>--kafka-config</code>)</li>
 <li>Serialization config</li>
 <li>Group ID configuration</li>
 </ol>

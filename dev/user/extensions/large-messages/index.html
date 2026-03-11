@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -1336,8 +1336,8 @@ public StreamsCleanUpConfiguration setupCleanUp(
     final StreamsCleanUpConfiguration cleanUp =
             StreamsApp.super.setupCleanUp(configuration);
 
-    if (this.largeMessageCleanupEnabled) {
-        LargeMessageAppUtils.registerTopicHook(cleanUp, configuration);
+    if (this.largeMessageEnabled) {
+        return LargeMessageAppUtils.registerTopicHook(cleanUp, configuration);
     }
 
     return cleanUp;
