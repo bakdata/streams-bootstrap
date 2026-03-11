@@ -50,7 +50,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
     private final @NonNull ConsumerProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull String groupId;
-    private final @NonNull ConsumerProducerCleanUpConfiguration cleanHooks;
+    private final @NonNull ConsumerProducerCleanUpConfiguration cleanUpConfig;
 
     /**
      * Create a new {@link ConsumerProducerCleanUpRunner} with default {@link ConsumerProducerCleanUpConfiguration}
@@ -86,7 +86,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
 
     @Override
     public void close() {
-        this.cleanHooks.close();
+        this.cleanUpConfig.close();
     }
 
     @Override
@@ -118,7 +118,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
         private void clean() {
             this.deleteConsumerGroup();
             this.deleteTopics();
-            ConsumerProducerCleanUpRunner.this.cleanHooks.runCleanHooks();
+            ConsumerProducerCleanUpRunner.this.cleanUpConfig.runCleanHooks();
         }
 
         private void reset() {
@@ -126,7 +126,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
                     .group(ConsumerProducerCleanUpRunner.this.groupId);
             groupClient.reset(OffsetSpec.earliest());
 
-            ConsumerProducerCleanUpRunner.this.cleanHooks.runResetHooks();
+            ConsumerProducerCleanUpRunner.this.cleanUpConfig.runResetHooks();
         }
 
         private void deleteConsumerGroup() {
@@ -141,7 +141,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
         private void deleteTopic(final String topic) {
             this.adminClient.topics()
                     .topic(topic).deleteIfExists();
-            ConsumerProducerCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
+            ConsumerProducerCleanUpRunner.this.cleanUpConfig.runTopicDeletionHooks(topic);
         }
 
         private Iterable<String> getAllOutputTopics() {
