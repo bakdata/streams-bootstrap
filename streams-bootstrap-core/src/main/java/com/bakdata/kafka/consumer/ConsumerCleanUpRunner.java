@@ -45,7 +45,7 @@ import org.apache.kafka.clients.admin.OffsetSpec;
 public final class ConsumerCleanUpRunner implements CleanUpRunner {
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull String groupId;
-    private final @NonNull ConsumerCleanUpConfiguration cleanHooks;
+    private final @NonNull ConsumerCleanUpConfiguration cleanUpConfig;
 
     /**
      * Create a new {@code ConsumerCleanUpRunner} with default {@link ConsumerCleanUpConfiguration}
@@ -110,12 +110,12 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
                     .group(ConsumerCleanUpRunner.this.groupId);
             groupClient.reset(OffsetSpec.earliest());
 
-            ConsumerCleanUpRunner.this.cleanHooks.runResetHooks();
+            ConsumerCleanUpRunner.this.cleanUpConfig.runResetHooks();
         }
 
         private void clean() {
             this.deleteConsumerGroup();
-            ConsumerCleanUpRunner.this.cleanHooks.runCleanHooks();
+            ConsumerCleanUpRunner.this.cleanUpConfig.runCleanHooks();
         }
 
         private void deleteConsumerGroup() {

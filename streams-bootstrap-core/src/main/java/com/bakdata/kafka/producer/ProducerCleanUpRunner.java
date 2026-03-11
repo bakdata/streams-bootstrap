@@ -46,7 +46,7 @@ import org.jooq.lambda.Seq;
 public final class ProducerCleanUpRunner implements CleanUpRunner {
     private final @NonNull ProducerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
-    private final @NonNull ProducerCleanUpConfiguration cleanHooks;
+    private final @NonNull ProducerCleanUpConfiguration cleanUpConfig;
 
     /**
      * Create a new {@code ProducerCleanUpRunner} with default {@link ProducerCleanUpConfiguration}
@@ -78,7 +78,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
 
     @Override
     public void close() {
-        this.cleanHooks.close();
+        this.cleanUpConfig.close();
     }
 
     /**
@@ -103,7 +103,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
 
         private void clean() {
             this.deleteTopics();
-            ProducerCleanUpRunner.this.cleanHooks.runCleanHooks();
+            ProducerCleanUpRunner.this.cleanUpConfig.runCleanHooks();
         }
 
         private void deleteTopics() {
@@ -114,7 +114,7 @@ public final class ProducerCleanUpRunner implements CleanUpRunner {
         private void deleteTopic(final String topic) {
             this.adminClient.topics()
                     .topic(topic).deleteIfExists();
-            ProducerCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
+            ProducerCleanUpRunner.this.cleanUpConfig.runTopicDeletionHooks(topic);
         }
 
         private Iterable<String> getAllOutputTopics() {
