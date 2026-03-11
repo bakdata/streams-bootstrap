@@ -1661,15 +1661,15 @@ the <a href="https://keda.sh/docs/scalers/apache-kafka/">official KEDA documenta
 <p>When persistence is enabled for Streams applications, autoscaling targets a <code>StatefulSet</code>. Each replica receives its own
 <code>PersistentVolumeClaim</code>.</p>
 <blockquote>
-<p><strong>Note:</strong> Scale-down operations remove pods and their PVCs. Backup and recovery strategies should be considered.</p>
+<p><strong>Note:</strong> Scale-down operations remove pods. Backup and recovery strategies should be considered.</p>
 </blockquote>
 <hr />
 <h2 id="monitoring">Monitoring</h2>
 <p>Monitoring is based on JMX metrics and Prometheus scraping:</p>
 <ul>
-<li><code>jmx.enabled: true</code> enables Kafka client and Streams metrics</li>
-<li><code>prometheus.jmx.enabled: true</code> adds a Prometheus JMX exporter sidecar</li>
-<li>Metrics are exposed on a dedicated <code>/metrics</code> endpoint</li>
+<li><code>jmx.enabled: true</code> exposes the JMX port in Kubernetes, allowing users to debug applications</li>
+<li><code>prometheus.jmx.enabled: true</code> adds a Prometheus JMX exporter sidecar that exposes metrics on a dedicated <code>/metrics</code>
+  endpoint</li>
 </ul>
 <p>Collected metrics include consumer lag, processing rates, and RocksDB statistics.</p>
 <hr />

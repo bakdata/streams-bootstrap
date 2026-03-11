@@ -1965,7 +1965,6 @@ applications in streams-bootstrap:</p>
 @Override
 public Map&lt;String, Object&gt; createKafkaProperties() {
     return Map.of(
-            StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2,
             StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4,
             StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
             LogAndContinueExceptionHandler.class.getName()
@@ -2012,7 +2011,7 @@ public StreamsCleanUpConfiguration setupCleanUp(
 
                 @Override
                 public void close() {
-                    // Optional cleanup for the hook itself
+                    // Optional closing of connections/resources
                 }
             });
 }
