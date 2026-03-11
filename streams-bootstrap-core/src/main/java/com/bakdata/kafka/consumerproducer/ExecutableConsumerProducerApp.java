@@ -34,7 +34,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
  * A {@link ConsumerProducerApp} with a corresponding {@link ConsumerProducerTopicConfig} and Kafka configuration
@@ -97,10 +96,6 @@ public class ExecutableConsumerProducerApp<T extends ConsumerProducerApp>
 
     public ConsumerConfig getConsumerConfig() {
         return new ConsumerConfig(this.consumerProperties);
-    }
-
-    public ProducerConfig getProducerConfig() {
-        return new ProducerConfig(this.producerProperties);
     }
 
     private AppConfiguration<ConsumerProducerTopicConfig> createConfiguration() {
