@@ -246,7 +246,7 @@ streams-app-specific:
 | Option                         | Description                    | Default        |
 |--------------------------------|--------------------------------|----------------|
 | `--application-id`             | Kafka Streams application ID   | Auto-generated |
-| `--volatile-group-instance-id` | Use volatile group instance ID | false          |
+| `--volatile-group-instance-id` | Use volatile group instance ID. This changes shutdown behavior of the Kafka Streams instance. | false          |
 
 ---
 

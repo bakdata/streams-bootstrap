@@ -36,8 +36,8 @@ This layer handles Kafka property creation, combining:
 
 - base configuration
 - app-specific configuration
-- environment variables
-- runtime configuration
+- user configuration
+- runtime configuration, e.g., brokers and schema registry
 
 ---
 
@@ -164,7 +164,7 @@ Kafka properties are applied in the following order (later values override earli
 1. Base configuration
 2. App config from .createKafkaProperties()
 3. Kafka-specific environment variables with the `KAFKA_` prefix
-4. Runtime args (--bootstrap-servers, etc.)
+4. Runtime args (`--bootstrap-servers`, `--schema-registry`, `--kafka-config`)
 5. Serialization config
 6. Group ID configuration
 

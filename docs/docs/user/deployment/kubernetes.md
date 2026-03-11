@@ -68,7 +68,7 @@ Streams, consumer and consumer–producer applications support both stateless an
 Producer applications support multiple execution modes depending on workload characteristics:
 
 - **Deployment**
-    - Used for long-running or continuous producers
+    - Used for continuous producers
     - Enabled when `deployment: true`
     - Supports horizontal scaling via `replicaCount`
 

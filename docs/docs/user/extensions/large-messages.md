@@ -49,8 +49,8 @@ public StreamsCleanUpConfiguration setupCleanUp(
     final StreamsCleanUpConfiguration cleanUp =
             StreamsApp.super.setupCleanUp(configuration);
 
-    if (this.largeMessageCleanupEnabled) {
-        LargeMessageAppUtils.registerTopicHook(cleanUp, configuration);
+    if (this.largeMessageEnabled) {
+        return LargeMessageAppUtils.registerTopicHook(cleanUp, configuration);
     }
 
     return cleanUp;
