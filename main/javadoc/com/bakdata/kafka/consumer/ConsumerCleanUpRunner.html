@@ -83,7 +83,10 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">ConsumerCleanUpRunner</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka">CleanUpRunner</a></span></div>
-<div class="block">Clean up all topics specified by a <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerTopicConfig</code></a></div>
+<div class="block">Runner to <a href="#clean()"><code>clean()</code></a> or <a href="#reset()"><code>reset()</code></a> a <a href="ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a>
+
+ <a href="#clean()"><code>clean()</code></a> deletes the consumer group specified in the constructor. <a href="#reset()"><code>reset()</code></a> resets the consumer group
+ to the earliest offset. Both methods also run hooks registered in a <a href="ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerCleanUpConfiguration</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

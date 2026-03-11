@@ -332,8 +332,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html#clean()" class="member-name-link">clean()</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpRunner</a></dt>
 <dd>
-<div class="block">Clean up your Streams app by resetting the app and deleting the output topics
- and consumer group.</div>
+<div class="block">Clean up your Streams app by resetting the app and deleting the output topics and consumer group.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/TestApplicationRunner.html#clean(com.bakdata.kafka.KafkaApplication)" class="member-name-link">clean(KafkaApplication&lt;?, ?, ?, ?, ?, ?, ?, ?&gt;)</a> - Method in class com.bakdata.kafka.<a href="com/bakdata/kafka/TestApplicationRunner.html" title="class in com.bakdata.kafka">TestApplicationRunner</a></dt>
 <dd>
@@ -380,6 +379,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/bakdata/kafka/consumer/ExecutableConsumerApp.html#close()" class="member-name-link">close()</a> - Method in class com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ExecutableConsumerApp.html" title="class in com.bakdata.kafka.consumer">ExecutableConsumerApp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConfiguredConsumerProducerApp.html#close()" class="member-name-link">close()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConfiguredConsumerProducerApp.html" title="class in com.bakdata.kafka.consumerproducer">ConfiguredConsumerProducerApp</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html#close()" class="member-name-link">close()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#close()" class="member-name-link">close()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpRunner</a></dt>
 <dd>&nbsp;</dd>
@@ -565,7 +566,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html" class="type-name-link" title="class in com.bakdata.kafka.consumer">ConsumerCleanUpRunner</a> - Class in <a href="com/bakdata/kafka/consumer/package-summary.html">com.bakdata.kafka.consumer</a></dt>
 <dd>
-<div class="block">Clean up all topics specified by a <a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerTopicConfig</code></a></div>
+<div class="block">Runner to <a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html#clean()"><code>ConsumerCleanUpRunner.clean()</code></a> or <a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html#reset()"><code>ConsumerCleanUpRunner.reset()</code></a> a <a href="com/bakdata/kafka/consumer/ConsumerApp.html" title="interface in com.bakdata.kafka.consumer"><code>ConsumerApp</code></a>
+
+ <a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html#clean()"><code>ConsumerCleanUpRunner.clean()</code></a> deletes the consumer group specified in the constructor.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.ConsumerProducerExecutionOptionsBuilder.html#consumerExecutionOptions(com.bakdata.kafka.consumer.ConsumerExecutionOptions)" class="member-name-link">consumerExecutionOptions(ConsumerExecutionOptions)</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.ConsumerProducerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerExecutionOptions.ConsumerProducerExecutionOptionsBuilder</a></dt>
 <dd>
@@ -621,9 +624,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerBuilder.html#%3Cinit%3E(com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig,com.bakdata.kafka.consumer.ConsumerBuilder,com.bakdata.kafka.producer.ProducerBuilder)" class="member-name-link">ConsumerProducerBuilder(ConsumerProducerTopicConfig, ConsumerBuilder, ProducerBuilder)</a> - Constructor for class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerBuilder.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" class="type-name-link" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpConfiguration</a> - Class in <a href="com/bakdata/kafka/consumerproducer/package-summary.html">com.bakdata.kafka.consumerproducer</a></dt>
+<dd>
+<div class="block">Provides configuration options for <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerCleanUpRunner</code></a></div>
+</dd>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html#%3Cinit%3E()" class="member-name-link">ConsumerProducerCleanUpConfiguration()</a> - Constructor for class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" class="type-name-link" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpRunner</a> - Class in <a href="com/bakdata/kafka/consumerproducer/package-summary.html">com.bakdata.kafka.consumerproducer</a></dt>
 <dd>
-<div class="block">Delete all output topics specified by a <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerTopicConfig.html" title="class in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerTopicConfig</code></a></div>
+<div class="block">Runner to <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#clean()"><code>ConsumerProducerCleanUpRunner.clean()</code></a> or <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#reset()"><code>ConsumerProducerCleanUpRunner.reset()</code></a> a <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerApp.html" title="interface in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerApp</code></a>
+
+ <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#clean()"><code>ConsumerProducerCleanUpRunner.clean()</code></a> deletes all output topics specified by a <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerTopicConfig.html" title="class in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerTopicConfig</code></a> and the consumer group
+ specified in the constructor.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.html" class="type-name-link" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerExecutionOptions</a> - Class in <a href="com/bakdata/kafka/consumerproducer/package-summary.html">com.bakdata.kafka.consumerproducer</a></dt>
 <dd>
@@ -715,11 +727,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#create(com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig,java.util.Map,java.lang.String)" class="member-name-link">create(ConsumerProducerTopicConfig, Map&lt;String, Object&gt;, String)</a> - Static method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpRunner</a></dt>
 <dd>
-<div class="block">Create a new <code>ConsumerProducerCleanUpRunner</code> with default <a href="com/bakdata/kafka/consumer/ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerCleanUpConfiguration</code></a></div>
+<div class="block">Create a new <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerCleanUpRunner</code></a> with default <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerCleanUpConfiguration</code></a></div>
 </dd>
-<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#create(com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig,java.util.Map,java.lang.String,com.bakdata.kafka.streams.StreamsCleanUpConfiguration)" class="member-name-link">create(ConsumerProducerTopicConfig, Map&lt;String, Object&gt;, String, StreamsCleanUpConfiguration)</a> - Static method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpRunner</a></dt>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#create(com.bakdata.kafka.consumerproducer.ConsumerProducerTopicConfig,java.util.Map,java.lang.String,com.bakdata.kafka.consumerproducer.ConsumerProducerCleanUpConfiguration)" class="member-name-link">create(ConsumerProducerTopicConfig, Map&lt;String, Object&gt;, String, ConsumerProducerCleanUpConfiguration)</a> - Static method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpRunner</a></dt>
 <dd>
-<div class="block">Create a new <code>ConsumerProducerCleanUpRunner</code></div>
+<div class="block">Create a new <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html" title="class in com.bakdata.kafka.consumerproducer"><code>ConsumerProducerCleanUpRunner</code></a></div>
 </dd>
 <dt><a href="com/bakdata/kafka/producer/ProducerCleanUpRunner.html#create(com.bakdata.kafka.producer.ProducerTopicConfig,java.util.Map)" class="member-name-link">create(ProducerTopicConfig, Map&lt;String, Object&gt;)</a> - Static method in class com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerCleanUpRunner.html" title="class in com.bakdata.kafka.producer">ProducerCleanUpRunner</a></dt>
 <dd>
@@ -1673,8 +1685,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerBuilder.html#getProducerBuilder()" class="member-name-link">getProducerBuilder()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerBuilder.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerBuilder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/bakdata/kafka/consumerproducer/ExecutableConsumerProducerApp.html#getProducerConfig()" class="member-name-link">getProducerConfig()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ExecutableConsumerProducerApp.html" title="class in com.bakdata.kafka.consumerproducer">ExecutableConsumerProducerApp</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.html#getProducerExecutionOptions()" class="member-name-link">getProducerExecutionOptions()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerExecutionOptions</a></dt>
 <dd>
 <div class="block">Defines the execution options for the producer part of the app.</div>
@@ -2595,7 +2605,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/producer/ProducerCleanUpRunner.html" class="type-name-link" title="class in com.bakdata.kafka.producer">ProducerCleanUpRunner</a> - Class in <a href="com/bakdata/kafka/producer/package-summary.html">com.bakdata.kafka.producer</a></dt>
 <dd>
-<div class="block">Delete all output topics specified by a <a href="com/bakdata/kafka/producer/ProducerTopicConfig.html" title="class in com.bakdata.kafka.producer"><code>ProducerTopicConfig</code></a></div>
+<div class="block">Runner to <a href="com/bakdata/kafka/producer/ProducerCleanUpRunner.html#clean()"><code>ProducerCleanUpRunner.clean()</code></a> a <a href="com/bakdata/kafka/producer/ProducerApp.html" title="interface in com.bakdata.kafka.producer"><code>ProducerApp</code></a>
+
+ <a href="com/bakdata/kafka/producer/ProducerCleanUpRunner.html#clean()"><code>ProducerCleanUpRunner.clean()</code></a> deletes all output topics specified by a <a href="com/bakdata/kafka/producer/ProducerTopicConfig.html" title="class in com.bakdata.kafka.producer"><code>ProducerTopicConfig</code></a> and runs hooks registered in a
+ <a href="com/bakdata/kafka/producer/ProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.producer"><code>ProducerCleanUpConfiguration</code></a>.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.ConsumerProducerExecutionOptionsBuilder.html#producerExecutionOptions(com.bakdata.kafka.producer.ProducerExecutionOptions)" class="member-name-link">producerExecutionOptions(ProducerExecutionOptions)</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerExecutionOptions.ConsumerProducerExecutionOptionsBuilder.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerExecutionOptions.ConsumerProducerExecutionOptionsBuilder</a></dt>
 <dd>
@@ -2682,6 +2695,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Register an action that is executed after <a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html#clean()"><code>ConsumerCleanUpRunner.clean()</code></a> has finished</div>
 </dd>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html#registerCleanHook(java.lang.Runnable)" class="member-name-link">registerCleanHook(Runnable)</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpConfiguration</a></dt>
+<dd>
+<div class="block">Register a hook that is executed after <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#clean()"><code>ConsumerProducerCleanUpRunner.clean()</code></a> has finished</div>
+</dd>
 <dt><a href="com/bakdata/kafka/HasCleanHook.html#registerCleanHook(java.lang.Runnable)" class="member-name-link">registerCleanHook(Runnable)</a> - Method in interface com.bakdata.kafka.<a href="com/bakdata/kafka/HasCleanHook.html" title="interface in com.bakdata.kafka">HasCleanHook</a></dt>
 <dd>
 <div class="block">Register a hook that is invoked when cleaning apps</div>
@@ -2698,9 +2715,17 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Register a hook that is executed after <a href="com/bakdata/kafka/consumer/ConsumerCleanUpRunner.html#reset()"><code>ConsumerCleanUpRunner.reset()</code></a> has finished</div>
 </dd>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html#registerResetHook(java.lang.Runnable)" class="member-name-link">registerResetHook(Runnable)</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpConfiguration</a></dt>
+<dd>
+<div class="block">Register a hook that is executed after <a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpRunner.html#reset()"><code>ConsumerProducerCleanUpRunner.reset()</code></a> has finished</div>
+</dd>
 <dt><a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html#registerResetHook(java.lang.Runnable)" class="member-name-link">registerResetHook(Runnable)</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpConfiguration</a></dt>
 <dd>
 <div class="block">Register a hook that is executed after <a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html#reset()"><code>StreamsCleanUpRunner.reset()</code></a> has finished</div>
+</dd>
+<dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html#registerTopicHook(com.bakdata.kafka.HasTopicHooks.TopicHook)" class="member-name-link">registerTopicHook(HasTopicHooks.TopicHook)</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerCleanUpConfiguration</a></dt>
+<dd>
+<div class="block">Register a hook that is executed whenever a topic has been deleted by the cleanup runner.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/HasTopicHooks.html#registerTopicHook(com.bakdata.kafka.HasTopicHooks.TopicHook)" class="member-name-link">registerTopicHook(HasTopicHooks.TopicHook)</a> - Method in interface com.bakdata.kafka.<a href="com/bakdata/kafka/HasTopicHooks.html" title="interface in com.bakdata.kafka">HasTopicHooks</a></dt>
 <dd>
@@ -3363,11 +3388,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/kstream/KStreamX.html#to(org.apache.kafka.streams.processor.TopicNameExtractor,com.bakdata.kafka.streams.kstream.ProducedX)" class="member-name-link">to(TopicNameExtractor&lt;K, V&gt;, ProducedX&lt;K, V&gt;)</a> - Method in interface com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/KStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">KStreamX</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html#toConsumerCleanUpConfiguration()" class="member-name-link">toConsumerCleanUpConfiguration()</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpConfiguration</a></dt>
-<dd>
-<div class="block">Converts this configuration to a <a href="com/bakdata/kafka/consumer/ConsumerCleanUpConfiguration.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerCleanUpConfiguration</code></a>, transferring
- registered clean and reset hooks.</div>
-</dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerTopicConfig.html#toConsumerTopicConfig()" class="member-name-link">toConsumerTopicConfig()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerTopicConfig.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerTopicConfig</a></dt>
 <dd>
 <div class="block">Convert this config to a <a href="com/bakdata/kafka/consumer/ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerTopicConfig</code></a> for the consumer part of the app.</div>
@@ -3443,11 +3463,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/bakdata/kafka/streams/TopologyConfigX.html#%3Cinit%3E(java.util.Map)" class="member-name-link">TopologyConfigX(Map&lt;String, Object&gt;)</a> - Constructor for class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/TopologyConfigX.html" title="class in com.bakdata.kafka.streams">TopologyConfigX</a></dt>
 <dd>
 <div class="block">Create a new <code>StreamsBuilderXConfig</code> using the given properties.</div>
-</dd>
-<dt><a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html#toProducerCleanUpConfiguration()" class="member-name-link">toProducerCleanUpConfiguration()</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsCleanUpConfiguration.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpConfiguration</a></dt>
-<dd>
-<div class="block">Converts this configuration to a <a href="com/bakdata/kafka/producer/ProducerCleanUpConfiguration.html" title="class in com.bakdata.kafka.producer"><code>ProducerCleanUpConfiguration</code></a>, transferring
- registered clean and topic hooks.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/ConsumerProducerTopicConfig.html#toProducerTopicConfig()" class="member-name-link">toProducerTopicConfig()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/ConsumerProducerTopicConfig.html" title="class in com.bakdata.kafka.consumerproducer">ConsumerProducerTopicConfig</a></dt>
 <dd>
