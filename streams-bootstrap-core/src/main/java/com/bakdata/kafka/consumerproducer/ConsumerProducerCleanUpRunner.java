@@ -28,7 +28,6 @@ import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
-import com.bakdata.kafka.consumer.ConsumerTopicConfig;
 import java.util.Map;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -39,9 +38,11 @@ import org.apache.kafka.clients.admin.OffsetSpec;
 import org.jooq.lambda.Seq;
 
 /**
- * TODO:
- * Clean up all topics specified by a {@link ConsumerTopicConfig}
- * Delete all output topics specified by a {@link ConsumerProducerTopicConfig}
+ * Runner to {@link #clean()} or {@link #reset()} a {@link ConsumerProducerApp}
+ *
+ * {@link #clean()} deletes all output topics specified by a {@link ConsumerProducerTopicConfig} and the consumer group
+ * specified in the constructor. {@link #reset()} resets the consumer group to the earliest offset. Both methods also
+ * run hooks registered in a {@link ConsumerProducerCleanUpConfiguration}.
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,12 +53,12 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
     private final @NonNull ConsumerProducerCleanUpConfiguration cleanHooks;
 
     /**
-     * Create a new {@code ConsumerProducerCleanUpRunner} with default {@link ConsumerProducerCleanUpConfiguration}
+     * Create a new {@link ConsumerProducerCleanUpRunner} with default {@link ConsumerProducerCleanUpConfiguration}
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId consumer group id to clean up
-     * @return {@code ConsumerProducerCleanUpRunner}
+     * @return {@link ConsumerProducerCleanUpRunner}
      */
     public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,
@@ -66,13 +67,13 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
     }
 
     /**
-     * Create a new {@code ConsumerProducerCleanUpRunner}
+     * Create a new {@link ConsumerProducerCleanUpRunner}
      *
      * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId consumer group id to clean up
-     * @param configuration configuration for hooks that are called when running {@link #clean()}
-     * @return {@code ConsumerProducerCleanUpRunner}
+     * @param configuration configuration for hooks that are called during clean up and reset
+     * @return {@link ConsumerProducerCleanUpRunner}
      */
     public static ConsumerProducerCleanUpRunner create(@NonNull final ConsumerProducerTopicConfig topics,
             @NonNull final Map<String, Object> kafkaProperties,

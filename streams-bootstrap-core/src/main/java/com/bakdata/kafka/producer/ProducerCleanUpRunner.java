@@ -36,7 +36,10 @@ import org.jooq.lambda.Seq;
 
 
 /**
- * Delete all output topics specified by a {@link ProducerTopicConfig}
+ * Runner to {@link #clean()} a {@link ProducerApp}
+ *
+ * {@link #clean()} deletes all output topics specified by a {@link ProducerTopicConfig} and runs hooks registered in a
+ * {@link ProducerCleanUpConfiguration}.
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

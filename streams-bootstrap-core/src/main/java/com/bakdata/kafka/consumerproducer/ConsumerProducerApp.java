@@ -56,6 +56,7 @@ public interface ConsumerProducerApp extends App<ConsumerProducerTopicConfig, Co
     }
 
     /**
+     * @param configuration provides runtime configuration
      * @return {@link ConsumerProducerCleanUpConfiguration}
      * @see ConsumerProducerCleanUpRunner
      */

@@ -41,6 +41,9 @@ public class ConsumerProducerCleanUpConfiguration implements HasTopicHooks<Consu
 
     /**
      * Register a hook that is executed whenever a topic has been deleted by the cleanup runner.
+     *
+     * @param hook the hook to execute
+     * @return self for chaining
      */
     @Override
     public ConsumerProducerCleanUpConfiguration registerTopicHook(final TopicHook hook) {
@@ -50,6 +53,9 @@ public class ConsumerProducerCleanUpConfiguration implements HasTopicHooks<Consu
 
     /**
      * Register a hook that is executed after {@link ConsumerProducerCleanUpRunner#clean()} has finished
+     *
+     * @param hook the runnable to execute
+     * @return self for chaining
      */
     @Override
     public ConsumerProducerCleanUpConfiguration registerCleanHook(final Runnable hook) {
@@ -60,7 +66,7 @@ public class ConsumerProducerCleanUpConfiguration implements HasTopicHooks<Consu
     /**
      * Register a hook that is executed after {@link ConsumerProducerCleanUpRunner#reset()} has finished
      *
-     * @param hook factory to create hook from
+     * @param hook the runnable to execute
      * @return self for chaining
      */
     public ConsumerProducerCleanUpConfiguration registerResetHook(final Runnable hook) {

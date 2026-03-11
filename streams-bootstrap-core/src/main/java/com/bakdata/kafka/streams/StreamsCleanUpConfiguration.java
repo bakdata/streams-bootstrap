@@ -62,7 +62,7 @@ public class StreamsCleanUpConfiguration
     /**
      * Register a hook that is executed after {@link StreamsCleanUpRunner#reset()} has finished
      *
-     * @param hook factory to create hook from
+     * @param hook the runnable to execute
      * @return self for chaining
      */
     public StreamsCleanUpConfiguration registerResetHook(final Runnable hook) {
