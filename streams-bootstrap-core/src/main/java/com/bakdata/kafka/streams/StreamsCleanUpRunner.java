@@ -59,7 +59,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     private final TopologyInformation topologyInformation;
     private final Topology topology;
     private final @NonNull StreamsConfigX config;
-    private final @NonNull StreamsCleanUpConfiguration cleanHooks;
+    private final @NonNull StreamsCleanUpConfiguration cleanUpConfig;
 
     /**
      * Create a new {@code StreamsCleanUpRunner} with default {@link StreamsCleanUpConfiguration}
@@ -160,12 +160,12 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
 
     @Override
     public void close() {
-        this.cleanHooks.close();
+        this.cleanUpConfig.close();
     }
 
     /**
-     * Clean up your Streams app by resetting the app and deleting the output topics
-     * and consumer group.
+     * Clean up your Streams app by resetting the app and deleting the output topics and consumer group.
+     *
      * @see #reset()
      */
     @Override
@@ -216,7 +216,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
             try (final KafkaStreams kafkaStreams = this.createStreams()) {
                 kafkaStreams.cleanUp();
             }
-            StreamsCleanUpRunner.this.cleanHooks.runResetHooks();
+            StreamsCleanUpRunner.this.cleanUpConfig.runResetHooks();
         }
 
         private KafkaStreams createStreams() {
@@ -233,7 +233,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private void clean(final Collection<String> allTopics) {
             this.deleteOutputTopics(allTopics);
             this.deleteConsumerGroup();
-            StreamsCleanUpRunner.this.cleanHooks.runCleanHooks();
+            StreamsCleanUpRunner.this.cleanUpConfig.runCleanHooks();
         }
 
         private void deleteIntermediateTopics(final Collection<String> allTopics) {
@@ -248,13 +248,13 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void resetInternalTopic(final String topic) {
-            StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
+            StreamsCleanUpRunner.this.cleanUpConfig.runTopicDeletionHooks(topic);
         }
 
         private void deleteTopic(final String topic) {
             this.adminClient.topics()
                     .topic(topic).deleteIfExists();
-            StreamsCleanUpRunner.this.cleanHooks.runTopicDeletionHooks(topic);
+            StreamsCleanUpRunner.this.cleanUpConfig.runTopicDeletionHooks(topic);
         }
 
         private void deleteConsumerGroup() {
