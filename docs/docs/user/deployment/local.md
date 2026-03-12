@@ -9,26 +9,24 @@ Here is an example of how to run a producer application programmatically. This i
 testing.
 
 ```java
-ProducerApp producerApp = new ProducerApp() {
-
-    @Override
-    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
-        return () -> {
-            try (final Producer<Object, Object> producer = builder.createProducer()) {
-                // Producer logic
+try (final KafkaProducerApplication<?> app =
+        new SimpleKafkaProducerApplication<>(() -> new ProducerApp() {
+            
+            @Override
+            public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+                return () -> {
+                    try (final Producer<Object, Object> producer = builder.createProducer()) {
+                        // Producer logic
+                    }
+                };
             }
-        };
-    }
 
-    @Override
-    public SerializerConfig defaultSerializationConfig() {
-        return new SerializerConfig(StringSerializer.class, StringSerializer.class);
-    }
-};
+            @Override
+            public SerializerConfig defaultSerializationConfig() {
+                return new SerializerConfig(StringSerializer.class, StringSerializer.class);
+            }
+        })) {
 
-try (final KafkaProducerApplication<?> app = 
-        new SimpleKafkaProducerApplication<>(() -> producerApp)) {
-    
     app.setBootstrapServers("localhost:9092");
     app.setOutputTopic("output-topic");
     app.run();
