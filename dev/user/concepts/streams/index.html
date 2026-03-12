@@ -1917,10 +1917,8 @@ application definition and configuration. This is useful for reprocessing input 
 <pre><code class="language-bash">java -jar my-streams-app.jar reset
 </code></pre>
 <p>Triggering a reset programmatically:</p>
-<pre><code class="language-java">try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()){
-        cleanUpRunner.
-
-reset();
+<pre><code class="language-java">try (StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()) {
+    cleanUpRunner.reset();
 }
 </code></pre>
 <p>After a reset, the application can be started again and will reprocess all input data.</p>

@@ -1660,9 +1660,6 @@ the <a href="https://keda.sh/docs/scalers/apache-kafka/">official KEDA documenta
 <h3 id="integration-with-persistence">Integration with persistence</h3>
 <p>When persistence is enabled for Streams applications, autoscaling targets a <code>StatefulSet</code>. Each replica receives its own
 <code>PersistentVolumeClaim</code>.</p>
-<blockquote>
-<p><strong>Note:</strong> Scale-down operations remove pods. Backup and recovery strategies should be considered.</p>
-</blockquote>
 <hr />
 <h2 id="monitoring">Monitoring</h2>
 <p>Monitoring is based on JMX metrics and Prometheus scraping:</p>

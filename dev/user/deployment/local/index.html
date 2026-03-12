@@ -1268,32 +1268,29 @@ code.</p>
 <h3 id="programmatic-local-execution">Programmatic Local Execution</h3>
 <p>Here is an example of how to run a producer application programmatically. This is useful for simple applications or for
 testing.</p>
-<pre><code class="language-java">try(final KafkaProducerApplication&lt;?&gt; app = new SimpleKafkaProducerApplication&lt;&gt;(() -&gt;
-        new ProducerApp() {
-            @Override
-            public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
-                return () -&gt; {
-                    try (final Producer&lt;Object, Object&gt; producer = builder.createProducer()) {
-                        // Producer logic
-                    }
-                };
+<pre><code class="language-java">ProducerApp producerApp = new ProducerApp() {
+
+    @Override
+    public ProducerRunnable buildRunnable(final ProducerBuilder builder) {
+        return () -&gt; {
+            try (final Producer&lt;Object, Object&gt; producer = builder.createProducer()) {
+                // Producer logic
             }
+        };
+    }
 
-            @Override
-            public SerializerConfig defaultSerializationConfig() {
-                return new SerializerConfig(StringSerializer.class, StringSerializer.class);
-            }
-        }
-)){
-        app.
+    @Override
+    public SerializerConfig defaultSerializationConfig() {
+        return new SerializerConfig(StringSerializer.class, StringSerializer.class);
+    }
+};
 
-setBootstrapServers(&quot;localhost:9092&quot;);
-    app.
+try (final KafkaProducerApplication&lt;?&gt; app = 
+        new SimpleKafkaProducerApplication&lt;&gt;(() -&gt; producerApp)) {
 
-setOutputTopic(&quot;output-topic&quot;);
-    app.
-
-run();
+    app.setBootstrapServers(&quot;localhost:9092&quot;);
+    app.setOutputTopic(&quot;output-topic&quot;);
+    app.run();
 }
 </code></pre>
 <h3 id="command-line-execution">Command Line Execution</h3>
