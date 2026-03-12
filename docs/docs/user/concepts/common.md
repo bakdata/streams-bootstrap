@@ -96,18 +96,13 @@ Applications built with streams-bootstrap can be started in two primary ways:
 
 ```java
 // For streams applications
-try(StreamsRunner runner = streamsApp.createRunner()){
-        runner.
-
-run();
+try (StreamsRunner runner = streamsApp.createRunner()) {
+     runner.run();
 }
 
 // For producer applications
-        try(
-Runner runner = producerApp.createRunner()){
-        runner.
-
-run();
+try (Runner runner = producerApp.createRunner()) {
+    runner.run();
 }
 ```
 

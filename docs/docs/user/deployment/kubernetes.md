@@ -119,8 +119,6 @@ the [official KEDA documentation for the Kafka scaler](https://keda.sh/docs/scal
 When persistence is enabled for Streams applications, autoscaling targets a `StatefulSet`. Each replica receives its own
 `PersistentVolumeClaim`.
 
-> **Note:** Scale-down operations remove pods. Backup and recovery strategies should be considered.
-
 ---
 
 ## Monitoring

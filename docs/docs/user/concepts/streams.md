@@ -37,10 +37,8 @@ java -jar my-streams-app.jar reset
 Triggering a reset programmatically:
 
 ```java
-try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()){
-        cleanUpRunner.
-
-reset();
+try (StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()) {
+    cleanUpRunner.reset();
 }
 ```
 
