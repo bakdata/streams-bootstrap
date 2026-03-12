@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -141,7 +141,7 @@ class ConfiguredConsumerAppTest {
     }
 
     @Test
-    void shouldThrowIfAppIdIsInconsistent() {
+    void shouldThrowIfGroupIdIsInconsistent() {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp = new ConfiguredConsumerApp<>(new ConsumerApp() {
             @Override
             public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
@@ -164,7 +164,7 @@ class ConfiguredConsumerAppTest {
     }
 
     @Test
-    void shouldThrowIfAppIdIsNull() {
+    void shouldThrowIfGroupIdIsNull() {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp = new ConfiguredConsumerApp<>(new ConsumerApp() {
             @Override
             public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
@@ -187,7 +187,7 @@ class ConfiguredConsumerAppTest {
     }
 
     @Test
-    void shouldReturnConfiguredAppId() {
+    void shouldReturnConfiguredGroupId() {
         final ConfiguredConsumerApp<ConsumerApp> configuredApp = new ConfiguredConsumerApp<>(new ConsumerApp() {
             @Override
             public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
