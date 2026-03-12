@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,9 @@ import com.bakdata.kafka.consumer.ConfiguredConsumerApp;
 import com.bakdata.kafka.producer.ConfiguredProducerApp;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -42,9 +44,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
  *
  * @param <T> type of {@link ConsumerProducerApp}
  */
-public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
-        @NonNull T app, @NonNull ConsumerProducerAppConfiguration configuration)
+@RequiredArgsConstructor
+public class ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>
         implements ConfiguredApp<ExecutableConsumerProducerApp<T>> {
+    @Getter
+    private final @NonNull T app;
+    private final @NonNull ConsumerProducerAppConfiguration configuration;
 
     /**
      * <p>This method creates the configuration to run a {@link ConsumerProducerApp}.</p>
@@ -89,7 +94,7 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
         config.putAll(ConfiguredConsumerApp.createBaseConfig());
         final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration, config);
         return propertiesFactory.createKafkaProperties(Map.of(
-                CommonClientConfigs.GROUP_ID_CONFIG, this.getUniqueAppId()
+                CommonClientConfigs.GROUP_ID_CONFIG, this.getUniqueGroupId()
         ));
     }
 
@@ -97,24 +102,25 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
      * Get unique group identifier of {@link ConsumerProducerApp}
      *
      * @return unique group identifier
-     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerProducerApp} is different
-     * from provided group identifier in {@link ConsumerProducerAppConfiguration}
-     * @see ConsumerProducerApp#getUniqueAppId(ConsumerProducerAppConfiguration)
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerProducerApp} is different from
+     * provided group identifier in {@link ConsumerProducerAppConfiguration}
+     * @see ConsumerProducerApp#getUniqueGroupId(ConsumerProducerAppConfiguration)
      */
-    public String getUniqueAppId() {
-        final String uniqueAppId =
-                Objects.requireNonNull(this.app.getUniqueAppId(this.configuration), "Group ID cannot be null");
-        if (this.configuration.getUniqueAppId().map(configuredId -> !uniqueAppId.equals(configuredId)).orElse(false)) {
+    public String getUniqueGroupId() {
+        final String uniqueGroupId =
+                Objects.requireNonNull(this.app.getUniqueGroupId(this.configuration), "Group ID cannot be null");
+        if (this.configuration.getUniqueGroupId().map(configuredId -> !uniqueGroupId.equals(configuredId))
+                .orElse(false)) {
             throw new IllegalArgumentException(
-                    "Provided group ID does not match ConsumerProducerApp#getUniqueAppId()");
+                    "Provided group ID does not match ConsumerProducerApp#getUniqueGroupId()");
         }
-        return uniqueAppId;
+        return uniqueGroupId;
     }
 
     /**
-     * Create an {@code ExecutableConsumerProducerApp} using the provided {@link RuntimeConfiguration}
+     * Create an {@link ExecutableConsumerProducerApp} using the provided {@link RuntimeConfiguration}
      *
-     * @return {@code ExecutableConsumerProducerApp}
+     * @return {@link ExecutableConsumerProducerApp}
      */
     @Override
     public ExecutableConsumerProducerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
@@ -124,7 +130,7 @@ public record ConfiguredConsumerProducerApp<T extends ConsumerProducerApp>(
                 .producerProperties(properties)
                 .app(this.app)
                 .topics(this.getTopics())
-                .groupId(this.getUniqueAppId())
+                .groupId(this.getUniqueGroupId())
                 .build();
     }
 

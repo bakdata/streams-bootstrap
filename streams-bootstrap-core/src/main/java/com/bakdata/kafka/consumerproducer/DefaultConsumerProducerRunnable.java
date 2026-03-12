@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,41 +25,37 @@
 package com.bakdata.kafka.consumerproducer;
 
 import com.bakdata.kafka.consumer.ConsumerRunnable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
-@AllArgsConstructor
+
+/**
+ * Creates a {@link ConsumerProducerRunnable} using the provided {@link ConsumerRunnable} and {@link Producer}.
+ *
+ * @param <KOut> type of keys produced by this runnable
+ * @param <VOut> type of values produced by this runnable
+ */
+@RequiredArgsConstructor
 @Slf4j
 public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
 
     private final Producer<KOut, VOut> producer;
-    @Getter
     private final ConsumerRunnable consumerRunnable;
 
     @Override
-    public void run(final ConsumerConfig consumerConfig, final ProducerConfig producerConfig) {
+    public void run(final ConsumerConfig consumerConfig) {
         this.consumerRunnable.run(consumerConfig);
     }
 
     @Override
     public void close() {
-        try {
-            log.debug("Closing consumer runnable");
-            this.consumerRunnable.close();
-        } catch (final RuntimeException e) {
-            log.warn("Error closing consumer runnable", e);
-        }
+        log.debug("Closing consumer runnable");
+        this.consumerRunnable.close();
 
-        try {
-            log.debug("Closing producer");
-            this.producer.close();
-        } catch (final RuntimeException e) {
-            log.warn("Error closing producer", e);
-        }
+        log.debug("Closing producer");
+        this.producer.close();
 
         log.info("ConsumerProducer was shut down gracefully");
     }

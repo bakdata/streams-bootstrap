@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,65 +24,53 @@
 
 package com.bakdata.kafka.consumer;
 
-import com.bakdata.kafka.CleanUpException;
 import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient.ConsumerGroupClient;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.ConsumerGroupDescription;
-import org.apache.kafka.clients.admin.ListOffsetsResult;
 import org.apache.kafka.clients.admin.OffsetSpec;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.GroupState;
-import org.apache.kafka.common.KafkaFuture;
-import org.apache.kafka.common.TopicPartition;
 
 /**
- * Clean up all topics specified by a {@link ConsumerTopicConfig}
+ * Runner to {@link #clean()} or {@link #reset()} a {@link ConsumerApp}
+ *
+ * {@link #clean()} deletes the consumer group specified in the constructor. {@link #reset()} resets the consumer group
+ * to the earliest offset. Both methods also run hooks registered in a {@link ConsumerCleanUpConfiguration}.
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConsumerCleanUpRunner implements CleanUpRunner {
-    private final @NonNull ConsumerTopicConfig topics;
     private final @NonNull Map<String, Object> kafkaProperties;
     private final @NonNull String groupId;
-    private final @NonNull ConsumerCleanUpConfiguration cleanHooks;
+    private final @NonNull ConsumerCleanUpConfiguration cleanUpConfig;
 
     /**
      * Create a new {@code ConsumerCleanUpRunner} with default {@link ConsumerCleanUpConfiguration}
      *
-     * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId consumer group id to clean up
      * @return {@code ConsumerCleanUpRunner}
      */
-    public static ConsumerCleanUpRunner create(@NonNull final ConsumerTopicConfig topics,
-            @NonNull final Map<String, Object> kafkaProperties,
+    public static ConsumerCleanUpRunner create(@NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId) {
-        return create(topics, kafkaProperties, groupId, new ConsumerCleanUpConfiguration());
+        return create(kafkaProperties, groupId, new ConsumerCleanUpConfiguration());
     }
 
     /**
      * Create a new {@code ConsumerCleanUpRunner}
      *
-     * @param topics topic configuration
      * @param kafkaProperties configuration to connect to Kafka admin tools
      * @param groupId consumer group id to clean up
      * @param configuration configuration for hooks that are called when running {@link #clean()}
      * @return {@code ConsumerCleanUpRunner}
      */
-    public static ConsumerCleanUpRunner create(@NonNull final ConsumerTopicConfig topics,
-            @NonNull final Map<String, Object> kafkaProperties,
+    public static ConsumerCleanUpRunner create(@NonNull final Map<String, Object> kafkaProperties,
             @NonNull final String groupId,
             @NonNull final ConsumerCleanUpConfiguration configuration) {
-        return new ConsumerCleanUpRunner(topics, kafkaProperties, groupId, configuration);
+        return new ConsumerCleanUpRunner(kafkaProperties, groupId, configuration);
     }
 
     @Override
@@ -120,46 +108,14 @@ public final class ConsumerCleanUpRunner implements CleanUpRunner {
         private void reset() {
             final ConsumerGroupClient groupClient = this.adminClient.consumerGroups()
                     .group(ConsumerCleanUpRunner.this.groupId);
-            final Optional<ConsumerGroupDescription> groupDescription = groupClient.describe();
-            if (groupDescription.isEmpty()) {
-                return;
-            }
-            if (groupDescription.get().groupState() != GroupState.EMPTY) {
-                throw new CleanUpException("Error resetting application, consumer group is not empty");
-            }
+            groupClient.reset(OffsetSpec.earliest());
 
-            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = groupClient.listOffsets();
-
-            final Map<TopicPartition, OffsetSpec> request = groupOffsets.keySet().stream()
-                    .collect(Collectors.toMap(tp -> tp, tp -> OffsetSpec.earliest()));
-            final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> earliestOffsets =
-                    runAdminFuture(this.adminClient.admin().listOffsets(request).all(),
-                            "Error resetting application, beginning consumer group offset could not be found");
-
-            final Map<TopicPartition, OffsetAndMetadata> resetOffsets = earliestOffsets.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey,
-                            e -> new OffsetAndMetadata(e.getValue().offset())));
-            runAdminFuture(
-                    this.adminClient.admin().alterConsumerGroupOffsets(ConsumerCleanUpRunner.this.groupId, resetOffsets)
-                            .all(), "Error resetting application, could not alter consumer group offsets");
-
-            ConsumerCleanUpRunner.this.cleanHooks.runResetHooks();
-        }
-
-        private static <T> T runAdminFuture(final KafkaFuture<T> action, final String errorMessage) {
-            try {
-                return action.get();
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new CleanUpException(errorMessage, e);
-            } catch (final ExecutionException e) {
-                throw new CleanUpException(errorMessage, e);
-            }
+            ConsumerCleanUpRunner.this.cleanUpConfig.runResetHooks();
         }
 
         private void clean() {
             this.deleteConsumerGroup();
-            ConsumerCleanUpRunner.this.cleanHooks.runCleanHooks();
+            ConsumerCleanUpRunner.this.cleanUpConfig.runCleanHooks();
         }
 
         private void deleteConsumerGroup() {

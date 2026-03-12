@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,7 +73,9 @@ public abstract class KafkaProducerApplication<T extends ProducerApp> extends
 
     @Override
     public final Optional<ProducerExecutionOptions> createExecutionOptions() {
-        return Optional.empty();
+        final ProducerExecutionOptions executionOptions = ProducerExecutionOptions.builder()
+                .build();
+        return Optional.of(executionOptions);
     }
 
     @Override

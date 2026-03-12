@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 /**
@@ -49,15 +48,15 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
     private final @NonNull T app;
 
     /**
-     * Create {@code ConsumerCleanUpRunner} in order to clean application
+     * Create {@link ConsumerCleanUpRunner} in order to clean application
      *
-     * @return {@code ConsumerCleanUpRunner}
+     * @return {@link ConsumerCleanUpRunner}
      */
     @Override
     public ConsumerCleanUpRunner createCleanUpRunner() {
         final AppConfiguration<ConsumerTopicConfig> configuration = this.createConfiguration();
         final ConsumerCleanUpConfiguration configurer = this.app.setupCleanUp(configuration);
-        return ConsumerCleanUpRunner.create(this.topics, this.kafkaProperties, this.groupId, configurer);
+        return ConsumerCleanUpRunner.create(this.kafkaProperties, this.groupId, configurer);
     }
 
     /**
@@ -75,7 +74,7 @@ public class ExecutableConsumerApp<T extends ConsumerApp>
         final ConsumerBuilder consumerBuilder = new ConsumerBuilder(this.topics, this.kafkaProperties, options);
         final AppConfiguration<ConsumerTopicConfig> configuration = this.createConfiguration();
         this.app.setup(configuration);
-        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder), this.getConfig(), options);
+        return new ConsumerRunner(this.app.buildRunnable(consumerBuilder), this.getConfig());
     }
 
     @Override
