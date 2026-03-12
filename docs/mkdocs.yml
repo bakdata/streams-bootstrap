@@ -31,6 +31,8 @@ nav:
           - Common concepts: user/concepts/common.md
           - Streams concepts: user/concepts/streams.md
           - Producer concepts: user/concepts/producer.md
+          - Consumer concepts: user/concepts/consumer.md
+          - Consumer-Producer concepts: user/concepts/consumer-producer.md
       - Testing: user/testing.md
       - Monitoring: user/monitoring.md
       - Extensions:
