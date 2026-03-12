@@ -362,7 +362,9 @@ backoffLimit: {{ .Values.backoffLimit }}
 
 {{- define "kafka-app.deployment-spec" -}}
   {{- if .Values.statefulSet }}
+  {{- if or (semverCompare "< 1.33" .Capabilities.KubeVersion.Version) .Values.service.enabled }}
   serviceName: {{ include "kafka-app.fullname" . }}
+  {{- end }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}
