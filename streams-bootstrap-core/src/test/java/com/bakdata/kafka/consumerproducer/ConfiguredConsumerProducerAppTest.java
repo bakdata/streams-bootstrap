@@ -129,7 +129,7 @@ class ConfiguredConsumerProducerAppTest {
     }
 
     @Test
-    void shouldThrowIfAppIdHasBeenConfiguredDifferently() {
+    void shouldThrowIfGroupIdHasBeenConfiguredDifferently() {
         final ConfiguredConsumerProducerApp<ConsumerProducerApp> configuredApp =
                 new ConfiguredConsumerProducerApp<>(new TestApplication(), emptyTopicConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
