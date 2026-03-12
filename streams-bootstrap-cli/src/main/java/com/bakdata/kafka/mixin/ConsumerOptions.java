@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,15 @@
 
 package com.bakdata.kafka.mixin;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.Duration;
+import lombok.Data;
 import picocli.CommandLine;
+import picocli.CommandLine.Option;
 
 /**
  * Shared CLI options to configure Kafka Consumer applications.
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class ConsumerOptions {
     @CommandLine.Option(names = "--volatile-group-instance-id", arity = "0..1",
             description = "Whether the group instance id is volatile, i.e., it will change on a Streams shutdown.")
@@ -42,4 +40,7 @@ public class ConsumerOptions {
     @CommandLine.Option(names = "--group-id",
             description = "Unique identifier for the Kafka Consumer applications, used as 'group.id'.")
     private String groupId;
+    @Option(names = {"--poll-timeout"},
+            description = "The maximum time to block in the consumer poll loop. Examples: 'PT0.1S', 'PT2S', 'PT1M'.")
+    private Duration pollTimeout = Duration.ofSeconds(10L);
 }

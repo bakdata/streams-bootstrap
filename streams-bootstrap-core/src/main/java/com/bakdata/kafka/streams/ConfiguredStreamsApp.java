@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,6 +62,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         // compression
         kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG),
                 CompressionType.GZIP.toString());
+
+        kafkaConfig.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
 
         return kafkaConfig;
     }

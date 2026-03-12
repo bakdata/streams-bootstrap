@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,18 +31,14 @@ import com.bakdata.kafka.StringListConverter;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import picocli.CommandLine;
 import picocli.CommandLine.UseDefaultConverter;
 
 /**
  * Shared CLI options to configure Kafka applications that consume input data.
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class InputOptions {
     @CommandLine.Option(names = "--input-topics", description = "Input topics", split = ",")
     private List<String> inputTopics = emptyList();

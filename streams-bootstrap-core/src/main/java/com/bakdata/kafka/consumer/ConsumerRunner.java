@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,6 @@ public class ConsumerRunner implements Runner {
 
     private final @NonNull ConsumerRunnable runnable;
     private final @NonNull ConsumerConfig config;
-    private final @NonNull ConsumerExecutionOptions executionOptions;
 
     @Override
     public void close() {
@@ -49,17 +48,7 @@ public class ConsumerRunner implements Runner {
 
     @Override
     public void run() {
-        log.info("Starting consumer");
-        this.runConsumer();
-    }
-
-    private void runConsumer() {
-        log.info("Starting Kafka Consumer and calling start hook");
-        final RunningConsumer runningConsumer = RunningConsumer.builder()
-                .consumerRunnable(this.runnable)
-                .config(this.config)
-                .build();
-        this.executionOptions.onStart(runningConsumer);
+        log.info("Starting Kafka Consumer");
         // Run Kafka consumer until it shuts down
         this.runnable.run(this.config);
     }

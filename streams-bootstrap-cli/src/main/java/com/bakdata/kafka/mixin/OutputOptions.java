@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,17 +27,13 @@ package com.bakdata.kafka.mixin;
 import static java.util.Collections.emptyMap;
 
 import java.util.Map;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import picocli.CommandLine;
 
 /**
  * Shared CLI options to configure Kafka applications that produce output data.
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class OutputOptions {
     @CommandLine.Option(names = "--output-topic", description = "Output topic")
     private String outputTopic;

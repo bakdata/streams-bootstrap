@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.consumerproducer.apps.StringConsumerProducer;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -49,8 +50,8 @@ class ConsumerProducerRunnerTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {
-        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = createStringConsumerProducer();
-                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+        try (final ConfiguredConsumerProducerApp<StringConsumerProducer> app = createStringConsumerProducer();
+                final ExecutableConsumerProducerApp<StringConsumerProducer> executableApp = createExecutableApp(app,
                         this.createConfig());
                 final ConsumerProducerRunner runner = executableApp.createRunner()) {
             final KafkaTestClient testClient = this.newTestClient();

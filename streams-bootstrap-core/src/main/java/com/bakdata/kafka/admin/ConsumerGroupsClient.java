@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,18 +28,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.DeleteConsumerGroupsResult;
 import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
+import org.apache.kafka.clients.admin.GroupListing;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
-import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
+import org.apache.kafka.clients.admin.ListGroupsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
+import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.GroupState;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
@@ -61,8 +66,8 @@ public final class ConsumerGroupsClient {
      *
      * @return consumer groups
      */
-    public Collection<ConsumerGroupListing> list() {
-        final ListConsumerGroupsResult result = this.adminClient.listConsumerGroups();
+    public Collection<GroupListing> list() {
+        final ListGroupsResult result = this.adminClient.listGroups();
         return this.timeout.get(result.all(), () -> "Failed to list consumer groups");
     }
 
@@ -142,7 +147,7 @@ public final class ConsumerGroupsClient {
          * @return whether a Kafka consumer group with the specified name exists or not
          */
         public boolean exists() {
-            final Collection<ConsumerGroupListing> consumerGroups = ConsumerGroupsClient.this.list();
+            final Collection<GroupListing> consumerGroups = ConsumerGroupsClient.this.list();
             return consumerGroups.stream()
                     .anyMatch(this::isThisGroup);
         }
@@ -161,6 +166,42 @@ public final class ConsumerGroupsClient {
         }
 
         /**
+         * Reset consumer group offset.
+         *
+         * @param offsetSpec specification where offsets should be reset to
+         */
+        public void reset(final OffsetSpec offsetSpec) {
+            final Optional<ConsumerGroupDescription> groupDescription = this.describe();
+            if (groupDescription.isEmpty()) {
+                return;
+            }
+            if (groupDescription.get().groupState() != GroupState.EMPTY) {
+                throw new KafkaAdminException(
+                        "Failed to reset offsets for consumer group %s: consumer group is not empty".formatted(
+                                this.groupName));
+            }
+
+            final Map<TopicPartition, OffsetAndMetadata> groupOffsets = this.listOffsets();
+
+            final Map<TopicPartition, OffsetSpec> request = groupOffsets.keySet().stream()
+                    .collect(Collectors.toMap(tp -> tp, tp -> offsetSpec));
+            final KafkaFuture<Map<TopicPartition, ListOffsetsResultInfo>> offsetsFuture =
+                    ConsumerGroupsClient.this.adminClient.listOffsets(request).all();
+            final Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> offsets =
+                    ConsumerGroupsClient.this.timeout.get(offsetsFuture,
+                            () -> "Failed to reset offsets for consumer group %s: could not find offsets for spec %s"
+                                    .formatted(this.groupName, offsetSpec));
+
+            final Map<TopicPartition, OffsetAndMetadata> resetOffsets = offsets.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new OffsetAndMetadata(e.getValue().offset())));
+            final KafkaFuture<Void> alterOffsetResult =
+                    ConsumerGroupsClient.this.adminClient.alterConsumerGroupOffsets(this.groupName, resetOffsets).all();
+            ConsumerGroupsClient.this.timeout.get(alterOffsetResult,
+                    () -> "Failed to reset offsets for consumer group %s: could not alter offsets".formatted(
+                            this.groupName));
+        }
+
+        /**
          * Create a client for the configuration of this consumer group.
          *
          * @return config client
@@ -170,7 +211,7 @@ public final class ConsumerGroupsClient {
                     new ConfigResource(Type.GROUP, this.groupName));
         }
 
-        private boolean isThisGroup(final ConsumerGroupListing listing) {
+        private boolean isThisGroup(final GroupListing listing) {
             return listing.groupId().equals(this.groupName);
         }
 

@@ -50,6 +50,12 @@ commandLine: {}
 env: {}
 #  MY_ENV_VARIABLE: foo-bar
 
+# Downward API values
+envValueFrom: {}
+#  NODE_NAME:
+#    fieldRef:
+#      fieldPath: spec.nodeName
+
 secrets: {}
 #  MY_SECRET: fo-bar
 secretRefs: {}
@@ -143,8 +149,8 @@ prometheus:
   ## ref: https://github.com/prometheus/jmx_exporter
   jmx:
     enabled: false
-    image: bitnami/jmx-exporter
-    imageTag: 1.1.0
+    image: bitnamilegacy/jmx-exporter
+    imageTag: 1.4.0
     imagePullPolicy: Always
     port: 5556
     metricRules:

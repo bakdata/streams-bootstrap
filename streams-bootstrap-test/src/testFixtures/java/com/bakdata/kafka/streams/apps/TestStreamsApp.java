@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,19 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.consumerproducer;
+package com.bakdata.kafka.streams.apps;
 
-import com.bakdata.kafka.consumer.ConsumerRunnable;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import com.bakdata.kafka.streams.StreamsApp;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.kafka.streams.StreamsConfig;
 
-/**
- * A running {@link KafkaConsumer} instance along with its {@link ConsumerConfig} and
- * {@link ConsumerRunnable}
- *
- * @see ConsumerProducerExecutionOptions#onStart(RunningConsumerProducer)
- */
-@Builder
-@Value
-public class RunningConsumerProducer {
+public interface TestStreamsApp extends StreamsApp {
 
-    @NonNull
-    ConsumerConfig consumerConfig;
-    @NonNull
-    ProducerConfig producerConfig;
-    @NonNull
-    ConsumerProducerRunnable consumerProducerRunnable;
+    @Override
+    default Map<String, Object> createKafkaProperties() {
+        final Map<String, Object> kafkaProperties = new HashMap<>();
+        kafkaProperties.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, false);
+        return kafkaProperties;
+    }
 }
