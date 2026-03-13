@@ -63,7 +63,8 @@ public class ProducerBuilder {
     }
 
     /**
-     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Serializer Serializers}
+     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Serializer Serializers}. The
+     * serializers will be configured automatically.
      *
      * @param keySerializer {@link Serializer} to use for keys
      * @param valueSerializer {@link Serializer} to use for values
@@ -77,7 +78,18 @@ public class ProducerBuilder {
         return this.createProducer(Preconfigured.create(keySerializer), Preconfigured.create(valueSerializer));
     }
 
-    // TODO: docs
+    /**
+     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Preconfigured} serializers. The
+     * preconfiguration will be resolved to yield configured {@link Serializer Serializers} that are used to create the
+     * new {@link Producer}.
+     *
+     * @param keySerializer {@link Preconfigured} to use for keys
+     * @param valueSerializer {@link Preconfigured} to use for values
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @return {@link Producer}
+     * @see KafkaProducer#KafkaProducer(Map, Serializer, Serializer)
+     */
     public <K, V> Producer<K, V> createProducer(final Preconfigured<Serializer<K>> keySerializer,
             final Preconfigured<Serializer<V>> valueSerializer) {
         final Serializer<K> configuredKeySerializer = keySerializer.configureForKeys(this.kafkaProperties);
