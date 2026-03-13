@@ -100,10 +100,9 @@ public class ConsumerBuilder {
     }
 
     /**
-     * Subscribes the given {@link Consumer} to all input topics and patterns
-     * configured in {@link #topics}.
-     * This includes all topics from {@code getInputTopics()}, {@code getLabeledInputTopics()},
-     * {@code getInputPattern()}, and {@code getLabeledInputPatterns()}.
+     * Subscribes the given {@link Consumer} to all input topics and patterns configured in {@link #topics}. This
+     * includes all topics from {@code getInputTopics()}, {@code getLabeledInputTopics()}, {@code getInputPattern()},
+     * and {@code getLabeledInputPatterns()}.
      *
      * @param <K> type of keys
      * @param <V> type of values
@@ -125,8 +124,8 @@ public class ConsumerBuilder {
     }
 
     /**
-     * Creates a {@link DefaultConsumerRunnable} using the provided consumer, processor,
-     * and {@link ConsumerExecutionOptions}.
+     * Creates a {@link DefaultConsumerRunnable} using the provided consumer, processor, and
+     * {@link ConsumerExecutionOptions}.
      *
      * @param <K> type of keys
      * @param <V> type of values
