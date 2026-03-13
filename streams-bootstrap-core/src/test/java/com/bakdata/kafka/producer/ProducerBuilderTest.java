@@ -123,8 +123,6 @@ class ProducerBuilderTest extends KafkaTest {
 
             @Override
             public SerializerConfig defaultSerializationConfig() {
-                // Important: Do not set StringSerializer as default to test that serializers provided in
-                // createProducer are used
                 return new SerializerConfig(ByteArraySerializer.class, ByteArraySerializer.class);
             }
         };
@@ -157,9 +155,7 @@ class ProducerBuilderTest extends KafkaTest {
 
             @Override
             public SerializerConfig defaultSerializationConfig() {
-                // Important: Do not set SpecificAvroSerializer as default so that schema.registry.url is not yet
-                // configured
-                return new SerializerConfig(StringSerializer.class, StringSerializer.class);
+                return new SerializerConfig(ByteArraySerializer.class, ByteArraySerializer.class);
             }
         };
 
@@ -194,9 +190,7 @@ class ProducerBuilderTest extends KafkaTest {
 
             @Override
             public SerializerConfig defaultSerializationConfig() {
-                // Important: Do not set SpecificAvroSerializer as default so that schema.registry.url is not yet
-                // configured
-                return new SerializerConfig(StringSerializer.class, StringSerializer.class);
+                return new SerializerConfig(ByteArraySerializer.class, ByteArraySerializer.class);
             }
         };
 
