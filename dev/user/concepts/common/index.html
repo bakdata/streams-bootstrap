@@ -1522,12 +1522,14 @@ It can create:</p>
 <li>You implement an <strong>App</strong>.</li>
 <li>The system wraps it in a <strong>ConfiguredApp</strong>, applying the configuration.</li>
 <li>
-<p>Runtime configuration is then applied to create an <strong>ExecutableApp</strong>, which can be:</p>
+<p>Runtime configuration is then applied to create an <strong>ExecutableApp</strong>, which can:</p>
 </li>
 <li>
-<p><strong>run</strong>, or</p>
+<p><strong>run</strong>, i.e., execute the app</p>
 </li>
-<li><strong>cleaned up</strong>.</li>
+<li><strong>clean</strong>, i.e., delete all resources associated with the application</li>
+<li><strong>reset</strong> (only for consuming applications), i.e., reset application state as if it was launched for the first time
+  without deleting any resources</li>
 </ol>
 <hr />
 <h2 id="application-lifecycle">Application lifecycle</h2>
@@ -1651,18 +1653,13 @@ try (Runner runner = producerApp.createRunner()) {
       --output-topic output-topic</code>
 - <strong>Programmatically</strong>:</p>
 <pre><code class="language-java">// For streams applications
-try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()){
-        cleanUpRunner.
-
-clean();
+try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()) {
+    cleanUpRunner.clean();
 }
 
 // For producer applications
-        try(
-CleanUpRunner cleanUpRunner = producerApp.createCleanUpRunner()){
-        cleanUpRunner.
-
-clean();
+try(CleanUpRunner cleanUpRunner = producerApp.createCleanUpRunner()) {
+    cleanUpRunner.clean();
 }
 </code></pre>
 <p>Cleanup operations are idempotent, meaning they can be safely retried without causing

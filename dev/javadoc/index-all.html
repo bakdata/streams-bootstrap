@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="script-dir/jquery-ui.min.css" title="Style">
 <link rel="stylesheet" type="text/css" href="jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="script.js"></script>
-<script type="text/javascript" src="script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="index-page">
@@ -868,8 +868,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/producer/ProducerBuilder.html#createConfigurator()" class="member-name-link">createConfigurator()</a> - Method in class com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerBuilder.html" title="class in com.bakdata.kafka.producer">ProducerBuilder</a></dt>
 <dd>
-<div class="block">Create <code>Configurator</code> to configure <code>Serde</code> and
- <code>Serializer</code> using <code>ProducerBuilder.kafkaProperties</code>.</div>
+<div class="block">Create <code>Configurator</code> to configure <code>Serde</code> and <code>Serializer</code> using <code>ProducerBuilder.kafkaProperties</code>.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/kstream/StreamsBuilderX.html#createConfigurator()" class="member-name-link">createConfigurator()</a> - Method in class com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/StreamsBuilderX.html" title="class in com.bakdata.kafka.streams.kstream">StreamsBuilderX</a></dt>
 <dd>
@@ -900,14 +899,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new <code>Consumer</code> for a Kafka cluster</div>
 </dd>
+<dt><a href="com/bakdata/kafka/consumer/ConsumerBuilder.html#createConsumer(com.bakdata.kafka.Preconfigured,com.bakdata.kafka.Preconfigured)" class="member-name-link">createConsumer(Preconfigured&lt;Deserializer&lt;K&gt;&gt;, Preconfigured&lt;Deserializer&lt;V&gt;&gt;)</a> - Method in class com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerBuilder</a></dt>
+<dd>
+<div class="block">Create a new <code>Consumer</code> using <code>ConsumerBuilder.kafkaProperties</code> and provided <code>Preconfigured</code> deserializers.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/consumer/ConsumerBuilder.html#createConsumer(org.apache.kafka.common.serialization.Deserializer,org.apache.kafka.common.serialization.Deserializer)" class="member-name-link">createConsumer(Deserializer&lt;K&gt;, Deserializer&lt;V&gt;)</a> - Method in class com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerBuilder</a></dt>
 <dd>
-<div class="block">Create a new <code>Consumer</code> using <code>ConsumerBuilder.kafkaProperties</code> and provided <code>Deserializers</code></div>
+<div class="block">Create a new <code>Consumer</code> using <code>ConsumerBuilder.kafkaProperties</code> and provided <code>Deserializer Deserializers</code>.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumer/ConsumerBuilder.html#createDefaultConsumerRunnable(org.apache.kafka.clients.consumer.Consumer,java.util.function.Consumer)" class="member-name-link">createDefaultConsumerRunnable(Consumer&lt;K, V&gt;, Consumer&lt;ConsumerRecords&lt;K, V&gt;&gt;)</a> - Method in class com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerBuilder</a></dt>
 <dd>
-<div class="block">Creates a <a href="com/bakdata/kafka/consumer/DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer"><code>DefaultConsumerRunnable</code></a> using the provided consumer, processor,
- and <a href="com/bakdata/kafka/consumer/ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerExecutionOptions</code></a>.</div>
+<div class="block">Creates a <a href="com/bakdata/kafka/consumer/DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer"><code>DefaultConsumerRunnable</code></a> using the provided consumer, processor, and
+ <a href="com/bakdata/kafka/consumer/ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerExecutionOptions</code></a>.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/KafkaApplication.html#createExecutableApp()" class="member-name-link">createExecutableApp()</a> - Method in class com.bakdata.kafka.<a href="com/bakdata/kafka/KafkaApplication.html" title="class in com.bakdata.kafka">KafkaApplication</a></dt>
 <dd>
@@ -953,9 +956,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new <code>Producer</code> for a Kafka cluster</div>
 </dd>
+<dt><a href="com/bakdata/kafka/producer/ProducerBuilder.html#createProducer(com.bakdata.kafka.Preconfigured,com.bakdata.kafka.Preconfigured)" class="member-name-link">createProducer(Preconfigured&lt;Serializer&lt;K&gt;&gt;, Preconfigured&lt;Serializer&lt;V&gt;&gt;)</a> - Method in class com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerBuilder.html" title="class in com.bakdata.kafka.producer">ProducerBuilder</a></dt>
+<dd>
+<div class="block">Create a new <code>Producer</code> using <code>ProducerBuilder.kafkaProperties</code> and provided <code>Preconfigured</code> serializers.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/producer/ProducerBuilder.html#createProducer(org.apache.kafka.common.serialization.Serializer,org.apache.kafka.common.serialization.Serializer)" class="member-name-link">createProducer(Serializer&lt;K&gt;, Serializer&lt;V&gt;)</a> - Method in class com.bakdata.kafka.producer.<a href="com/bakdata/kafka/producer/ProducerBuilder.html" title="class in com.bakdata.kafka.producer">ProducerBuilder</a></dt>
 <dd>
-<div class="block">Create a new <code>Producer</code> using <code>ProducerBuilder.kafkaProperties</code> and provided <code>Serializers</code></div>
+<div class="block">Create a new <code>Producer</code> using <code>ProducerBuilder.kafkaProperties</code> and provided <code>Serializers</code>.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumerproducer/SerializerDeserializerConfig.html#createProperties()" class="member-name-link">createProperties()</a> - Method in class com.bakdata.kafka.consumerproducer.<a href="com/bakdata/kafka/consumerproducer/SerializerDeserializerConfig.html" title="class in com.bakdata.kafka.consumerproducer">SerializerDeserializerConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -2388,9 +2395,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/streams/kstream/KStreamX.html#merge(org.apache.kafka.streams.kstream.KStream,org.apache.kafka.streams.kstream.Named)" class="member-name-link">merge(KStream&lt;K, V&gt;, Named)</a> - Method in interface com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/KStreamX.html" title="interface in com.bakdata.kafka.streams.kstream">KStreamX</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/bakdata/kafka/streams/kstream/GroupedX.html#modify(java.util.function.BiFunction)" class="member-name-link">modify(BiFunction&lt;? super Grouped&lt;K, V&gt;, ? super Configurator, ? extends Grouped&lt;K, V&gt;&gt;)</a> - Method in class com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="class in com.bakdata.kafka.streams.kstream">GroupedX</a></dt>
+<dt><a href="com/bakdata/kafka/streams/kstream/RepartitionedX.html#modify(java.util.function.BiFunction)" class="member-name-link">modify(BiFunction&lt;? super Repartitioned&lt;K, V&gt;, ? super Configurator, ? extends Repartitioned&lt;K, V&gt;&gt;)</a> - Method in class com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/RepartitionedX.html" title="class in com.bakdata.kafka.streams.kstream">RepartitionedX</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/bakdata/kafka/streams/kstream/GroupedX.html#modify(java.util.function.Function)" class="member-name-link">modify(Function&lt;? super Grouped&lt;K, V&gt;, ? extends Grouped&lt;K, V&gt;&gt;)</a> - Method in class com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/GroupedX.html" title="class in com.bakdata.kafka.streams.kstream">GroupedX</a></dt>
+<dt><a href="com/bakdata/kafka/streams/kstream/RepartitionedX.html#modify(java.util.function.Function)" class="member-name-link">modify(Function&lt;? super Repartitioned&lt;K, V&gt;, ? extends Repartitioned&lt;K, V&gt;&gt;)</a> - Method in class com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/RepartitionedX.html" title="class in com.bakdata.kafka.streams.kstream">RepartitionedX</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:N">N</h2>
@@ -3310,8 +3317,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/consumer/ConsumerBuilder.html#subscribeToAllTopics(org.apache.kafka.clients.consumer.Consumer)" class="member-name-link">subscribeToAllTopics(Consumer&lt;K, V&gt;)</a> - Method in class com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/ConsumerBuilder.html" title="class in com.bakdata.kafka.consumer">ConsumerBuilder</a></dt>
 <dd>
-<div class="block">Subscribes the given <code>Consumer</code> to all input topics and patterns
- configured in <code>ConsumerBuilder.topics</code>.</div>
+<div class="block">Subscribes the given <code>Consumer</code> to all input topics and patterns configured in <code>ConsumerBuilder.topics</code>.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/kstream/KTableX.html#suppress(org.apache.kafka.streams.kstream.Suppressed)" class="member-name-link">suppress(Suppressed&lt;? super K&gt;)</a> - Method in interface com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/KTableX.html" title="interface in com.bakdata.kafka.streams.kstream">KTableX</a></dt>
 <dd>&nbsp;</dd>
