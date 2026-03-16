@@ -8,12 +8,6 @@ This page describes dependency setup, configuration options, commands, and Helm-
 ### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '7.0.0'
-```
-
-With Kotlin DSL:
-
-```gradle
 implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "7.0.0")
 ```
 

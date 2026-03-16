@@ -55,10 +55,12 @@ It can create:
 
 1. You implement an **App**.
 2. The system wraps it in a **ConfiguredApp**, applying the configuration.
-3. Runtime configuration is then applied to create an **ExecutableApp**, which can be:
+3. Runtime configuration is then applied to create an **ExecutableApp**, which can:
 
-- **run**, or
-- **cleaned up**.
+- **run**, i.e., execute the app
+- **clean**, i.e., delete all resources associated with the application
+- **reset** (only for consuming applications), i.e., reset application state as if it was launched for the first time
+  without deleting any resources
 
 ---
 

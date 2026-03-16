@@ -3,7 +3,8 @@
 `streams-bootstrap` is a Java library that standardizes the development and operation of Kafka-based applications (Kafka
 Streams and plain Kafka clients).
 
-The framework supports Apache Kafka 4.1 and Java 17. Its modules are published to Maven Central for straightforward
+The library supports Java 17+ and is built using Kafka 4.2.0. Its modules are published to Maven Central for
+straightforward
 integration into existing projects.
 
 ## Why use it?

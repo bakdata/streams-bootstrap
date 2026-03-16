@@ -26,13 +26,7 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '5.0.1'
-```
-
-With Kotlin DSL
-
-```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "5.0.1")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "7.0.0")
 ```
 
 #### Maven
@@ -42,7 +36,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>5.0.1</version>
+  <version>7.0.0</version>
 </dependency>
 ```
 
@@ -67,7 +61,7 @@ import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
-    public static void main(final String[] args) {
+    static void main(final String[] args) {
       new MyStreamsApplication().startApplication(args);
     }
 
@@ -158,7 +152,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class MyProducerApplication extends KafkaProducerApplication<ProducerApp> {
-    public static void main(final String[] args) {
+    static void main(final String[] args) {
       new MyProducerApplication().startApplication(args);
     }
 
@@ -221,7 +215,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class MyConsumerApplication extends KafkaConsumerApplication<ConsumerApp> {
-    public static void main(final String[] args) {
+    static void main(final String[] args) {
         new MyConsumerApplication().startApplication(args);
     }
 
@@ -308,7 +302,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class MyConsumerProducerApplication extends KafkaConsumerProducerApplication<ConsumerProducerApp> {
-    public static void main(final String[] args) {
+    static void main(final String[] args) {
         new MyConsumerProducerApplication().startApplication(args);
     }
 
