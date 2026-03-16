@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../script-dir/jquery-ui.min.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
-<script type="text/javascript" src="../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -110,8 +110,8 @@ loadScripts(document, 'script');</script>
 <h2>Method Summary</h2>
 <div id="method-summary-table">
 <div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
-<div id="method-summary-table.tabpanel" role="tabpanel">
-<div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
@@ -123,8 +123,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.bakdata.kafka.Configurator</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createConfigurator()" class="member-name-link">createConfigurator</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Create <code>Configurator</code> to configure <code>Serde</code> and
- <code>Serializer</code> using <code>kafkaProperties</code>.</div>
+<div class="block">Create <code>Configurator</code> to configure <code>Serde</code> and <code>Serializer</code> using <code>kafkaProperties</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
 V&gt;&nbsp;org.apache.kafka.clients.producer.Producer&lt;K,<wbr>V&gt;</code></div>
@@ -134,26 +133,33 @@ V&gt;&nbsp;org.apache.kafka.clients.producer.Producer&lt;K,<wbr>V&gt;</code></di
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
 V&gt;&nbsp;org.apache.kafka.clients.producer.Producer&lt;K,<wbr>V&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createProducer(org.apache.kafka.common.serialization.Serializer,org.apache.kafka.common.serialization.Serializer)" class="member-name-link">createProducer</a><wbr>(org.apache.kafka.common.serialization.Serializer&lt;K&gt;&nbsp;keySerializer,
- org.apache.kafka.common.serialization.Serializer&lt;V&gt;&nbsp;valueSerializer)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createProducer(com.bakdata.kafka.Preconfigured,com.bakdata.kafka.Preconfigured)" class="member-name-link">createProducer</a><wbr>(com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Serializer&lt;K&gt;&gt;&nbsp;keySerializer,
+ com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Serializer&lt;V&gt;&gt;&nbsp;valueSerializer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Create a new <code>Producer</code> using <code>kafkaProperties</code> and provided <code>Serializers</code></div>
+<div class="block">Create a new <code>Producer</code> using <code>kafkaProperties</code> and provided <code>Preconfigured</code> serializers.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKafkaProperties()" class="member-name-link">getKafkaProperties</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
+V&gt;&nbsp;org.apache.kafka.clients.producer.Producer&lt;K,<wbr>V&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createProducer(org.apache.kafka.common.serialization.Serializer,org.apache.kafka.common.serialization.Serializer)" class="member-name-link">createProducer</a><wbr>(org.apache.kafka.common.serialization.Serializer&lt;K&gt;&nbsp;keySerializer,
+ org.apache.kafka.common.serialization.Serializer&lt;V&gt;&nbsp;valueSerializer)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Create a new <code>Producer</code> using <code>kafkaProperties</code> and provided <code>Serializers</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ProducerTopicConfig.html" title="class in com.bakdata.kafka.producer">ProducerTopicConfig</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTopics()" class="member-name-link">getTopics</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKafkaProperties()" class="member-name-link">getKafkaProperties</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ProducerTopicConfig.html" title="class in com.bakdata.kafka.producer">ProducerTopicConfig</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTopics()" class="member-name-link">getTopics</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -217,7 +223,8 @@ V&gt;</span>
 V&gt;</span>
 <span class="return-type">org.apache.kafka.clients.producer.Producer&lt;K,<wbr>V&gt;</span>&nbsp;<span class="element-name">createProducer</span><wbr><span class="parameters">(org.apache.kafka.common.serialization.Serializer&lt;K&gt;&nbsp;keySerializer,
  org.apache.kafka.common.serialization.Serializer&lt;V&gt;&nbsp;valueSerializer)</span></div>
-<div class="block">Create a new <code>Producer</code> using <code>kafkaProperties</code> and provided <code>Serializers</code></div>
+<div class="block">Create a new <code>Producer</code> using <code>kafkaProperties</code> and provided <code>Serializers</code>. The
+ serializers will be configured automatically.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>K</code> - type of keys</dd>
@@ -237,11 +244,38 @@ V&gt;</span>
 </section>
 </li>
 <li>
+<section class="detail" id="createProducer(com.bakdata.kafka.Preconfigured,com.bakdata.kafka.Preconfigured)">
+<h3>createProducer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;K,<wbr>
+V&gt;</span>
+<span class="return-type">org.apache.kafka.clients.producer.Producer&lt;K,<wbr>V&gt;</span>&nbsp;<span class="element-name">createProducer</span><wbr><span class="parameters">(com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Serializer&lt;K&gt;&gt;&nbsp;keySerializer,
+ com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Serializer&lt;V&gt;&gt;&nbsp;valueSerializer)</span></div>
+<div class="block">Create a new <code>Producer</code> using <code>kafkaProperties</code> and provided <code>Preconfigured</code> serializers. The
+ preconfiguration will be resolved to yield configured <code>Serializers</code> that are used to create the
+ new <code>Producer</code>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>K</code> - type of keys</dd>
+<dd><code>V</code> - type of values</dd>
+<dt>Parameters:</dt>
+<dd><code>keySerializer</code> - <code>Preconfigured</code> to use for keys</dd>
+<dd><code>valueSerializer</code> - <code>Preconfigured</code> to use for values</dd>
+<dt>Returns:</dt>
+<dd><code>Producer</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><code>KafkaProducer(Map, Serializer, Serializer)</code></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="createConfigurator()">
 <h3>createConfigurator</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.bakdata.kafka.Configurator</span>&nbsp;<span class="element-name">createConfigurator</span>()</div>
-<div class="block">Create <code>Configurator</code> to configure <code>Serde</code> and
- <code>Serializer</code> using <code>kafkaProperties</code>.</div>
+<div class="block">Create <code>Configurator</code> to configure <code>Serde</code> and <code>Serializer</code> using <code>kafkaProperties</code>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd><code>Configurator</code></dd>

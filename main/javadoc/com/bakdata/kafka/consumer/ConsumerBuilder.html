@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../script-dir/jquery-ui.min.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
-<script type="text/javascript" src="../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -111,8 +111,8 @@ loadScripts(document, 'script');</script>
 <h2>Method Summary</h2>
 <div id="method-summary-table">
 <div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
-<div id="method-summary-table.tabpanel" role="tabpanel">
-<div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
@@ -134,44 +134,50 @@ V&gt;&nbsp;org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;</code></di
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
 V&gt;&nbsp;org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createConsumer(org.apache.kafka.common.serialization.Deserializer,org.apache.kafka.common.serialization.Deserializer)" class="member-name-link">createConsumer</a><wbr>(org.apache.kafka.common.serialization.Deserializer&lt;K&gt;&nbsp;keyDeserializer,
- org.apache.kafka.common.serialization.Deserializer&lt;V&gt;&nbsp;valueDeserializer)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createConsumer(com.bakdata.kafka.Preconfigured,com.bakdata.kafka.Preconfigured)" class="member-name-link">createConsumer</a><wbr>(com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Deserializer&lt;K&gt;&gt;&nbsp;keyDeserializer,
+ com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Deserializer&lt;V&gt;&gt;&nbsp;valueDeserializer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Create a new <code>Consumer</code> using <code>kafkaProperties</code> and provided <code>Deserializers</code></div>
+<div class="block">Create a new <code>Consumer</code> using <code>kafkaProperties</code> and provided <code>Preconfigured</code> deserializers.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
+V&gt;&nbsp;org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createConsumer(org.apache.kafka.common.serialization.Deserializer,org.apache.kafka.common.serialization.Deserializer)" class="member-name-link">createConsumer</a><wbr>(org.apache.kafka.common.serialization.Deserializer&lt;K&gt;&nbsp;keyDeserializer,
+ org.apache.kafka.common.serialization.Deserializer&lt;V&gt;&nbsp;valueDeserializer)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Create a new <code>Consumer</code> using <code>kafkaProperties</code> and provided <code>Deserializer Deserializers</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
 V&gt;&nbsp;<a href="DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer">DefaultConsumerRunnable</a>&lt;K,<wbr>V&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createDefaultConsumerRunnable(org.apache.kafka.clients.consumer.Consumer,java.util.function.Consumer)" class="member-name-link">createDefaultConsumerRunnable</a><wbr>(org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;&nbsp;consumer,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createDefaultConsumerRunnable(org.apache.kafka.clients.consumer.Consumer,java.util.function.Consumer)" class="member-name-link">createDefaultConsumerRunnable</a><wbr>(org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;&nbsp;consumer,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;org.apache.kafka.clients.consumer.ConsumerRecords&lt;K,<wbr>V&gt;&gt;&nbsp;recordProcessor)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Creates a <a href="DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer"><code>DefaultConsumerRunnable</code></a> using the provided consumer, processor,
- and <a href="ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerExecutionOptions</code></a>.</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a <a href="DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer"><code>DefaultConsumerRunnable</code></a> using the provided consumer, processor, and
+ <a href="ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerExecutionOptions</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExecutionOptions()" class="member-name-link">getExecutionOptions</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKafkaProperties()" class="member-name-link">getKafkaProperties</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer">ConsumerExecutionOptions</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExecutionOptions()" class="member-name-link">getExecutionOptions</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTopics()" class="member-name-link">getTopics</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKafkaProperties()" class="member-name-link">getKafkaProperties</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ConsumerTopicConfig.html" title="class in com.bakdata.kafka.consumer">ConsumerTopicConfig</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTopics()" class="member-name-link">getTopics</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;K,<wbr>
 V&gt;&nbsp;void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeToAllTopics(org.apache.kafka.clients.consumer.Consumer)" class="member-name-link">subscribeToAllTopics</a><wbr>(org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;&nbsp;consumer)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Subscribes the given <code>Consumer</code> to all input topics and patterns
- configured in <code>topics</code>.</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeToAllTopics(org.apache.kafka.clients.consumer.Consumer)" class="member-name-link">subscribeToAllTopics</a><wbr>(org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;&nbsp;consumer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Subscribes the given <code>Consumer</code> to all input topics and patterns configured in <code>topics</code>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -237,7 +243,8 @@ V&gt;</span>
 V&gt;</span>
 <span class="return-type">org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;</span>&nbsp;<span class="element-name">createConsumer</span><wbr><span class="parameters">(org.apache.kafka.common.serialization.Deserializer&lt;K&gt;&nbsp;keyDeserializer,
  org.apache.kafka.common.serialization.Deserializer&lt;V&gt;&nbsp;valueDeserializer)</span></div>
-<div class="block">Create a new <code>Consumer</code> using <code>kafkaProperties</code> and provided <code>Deserializers</code></div>
+<div class="block">Create a new <code>Consumer</code> using <code>kafkaProperties</code> and provided <code>Deserializer Deserializers</code>. The
+ deserializers will be configured automatically.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>K</code> - type of keys</dd>
@@ -245,6 +252,34 @@ V&gt;</span>
 <dt>Parameters:</dt>
 <dd><code>keyDeserializer</code> - <code>Deserializer</code> to use for keys</dd>
 <dd><code>valueDeserializer</code> - <code>Deserializer</code> to use for values</dd>
+<dt>Returns:</dt>
+<dd><code>Consumer</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><code>KafkaConsumer(Map, Deserializer, Deserializer)</code></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createConsumer(com.bakdata.kafka.Preconfigured,com.bakdata.kafka.Preconfigured)">
+<h3>createConsumer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;K,<wbr>
+V&gt;</span>
+<span class="return-type">org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;</span>&nbsp;<span class="element-name">createConsumer</span><wbr><span class="parameters">(com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Deserializer&lt;K&gt;&gt;&nbsp;keyDeserializer,
+ com.bakdata.kafka.Preconfigured&lt;org.apache.kafka.common.serialization.Deserializer&lt;V&gt;&gt;&nbsp;valueDeserializer)</span></div>
+<div class="block">Create a new <code>Consumer</code> using <code>kafkaProperties</code> and provided <code>Preconfigured</code> deserializers.
+ The preconfiguration will be resolved to yield configured <code>Deserializers</code> that are used to
+ create the new <code>Consumer</code>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>K</code> - type of keys</dd>
+<dd><code>V</code> - type of values</dd>
+<dt>Parameters:</dt>
+<dd><code>keyDeserializer</code> - <code>Preconfigured</code> to use for keys</dd>
+<dd><code>valueDeserializer</code> - <code>Preconfigured</code> to use for values</dd>
 <dt>Returns:</dt>
 <dd><code>Consumer</code></dd>
 <dt>See Also:</dt>
@@ -283,10 +318,9 @@ V&gt;</span>
 <h3>subscribeToAllTopics</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;K,<wbr>
 V&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">subscribeToAllTopics</span><wbr><span class="parameters">(org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;&nbsp;consumer)</span></div>
-<div class="block">Subscribes the given <code>Consumer</code> to all input topics and patterns
- configured in <code>topics</code>.
- This includes all topics from <code>getInputTopics()</code>, <code>getLabeledInputTopics()</code>,
- <code>getInputPattern()</code>, and <code>getLabeledInputPatterns()</code>.</div>
+<div class="block">Subscribes the given <code>Consumer</code> to all input topics and patterns configured in <code>topics</code>. This
+ includes all topics from <code>getInputTopics()</code>, <code>getLabeledInputTopics()</code>, <code>getInputPattern()</code>,
+ and <code>getLabeledInputPatterns()</code>.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>K</code> - type of keys</dd>
@@ -302,8 +336,8 @@ V&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="elemen
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;K,<wbr>
 V&gt;</span>&nbsp;<span class="return-type"><a href="DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer">DefaultConsumerRunnable</a>&lt;K,<wbr>V&gt;</span>&nbsp;<span class="element-name">createDefaultConsumerRunnable</span><wbr><span class="parameters">(org.apache.kafka.clients.consumer.Consumer&lt;K,<wbr>V&gt;&nbsp;consumer,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;org.apache.kafka.clients.consumer.ConsumerRecords&lt;K,<wbr>V&gt;&gt;&nbsp;recordProcessor)</span></div>
-<div class="block">Creates a <a href="DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer"><code>DefaultConsumerRunnable</code></a> using the provided consumer, processor,
- and <a href="ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerExecutionOptions</code></a>.</div>
+<div class="block">Creates a <a href="DefaultConsumerRunnable.html" title="class in com.bakdata.kafka.consumer"><code>DefaultConsumerRunnable</code></a> using the provided consumer, processor, and
+ <a href="ConsumerExecutionOptions.html" title="class in com.bakdata.kafka.consumer"><code>ConsumerExecutionOptions</code></a>.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>K</code> - type of keys</dd>
