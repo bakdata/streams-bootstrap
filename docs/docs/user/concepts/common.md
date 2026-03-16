@@ -135,18 +135,13 @@ Cleanup can be triggered:
 
 ```java
 // For streams applications
-try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()){
-        cleanUpRunner.
-
-clean();
+try(StreamsCleanUpRunner cleanUpRunner = streamsApp.createCleanUpRunner()) {
+    cleanUpRunner.clean();
 }
 
 // For producer applications
-        try(
-CleanUpRunner cleanUpRunner = producerApp.createCleanUpRunner()){
-        cleanUpRunner.
-
-clean();
+try(CleanUpRunner cleanUpRunner = producerApp.createCleanUpRunner()) {
+    cleanUpRunner.clean();
 }
 ```
 

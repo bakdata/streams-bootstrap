@@ -61,7 +61,7 @@ import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
-    static void main(final String[] args) {
+    public static void main(final String[] args) {
       new MyStreamsApplication().startApplication(args);
     }
 
@@ -152,7 +152,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class MyProducerApplication extends KafkaProducerApplication<ProducerApp> {
-    static void main(final String[] args) {
+    public static void main(final String[] args) {
       new MyProducerApplication().startApplication(args);
     }
 
@@ -215,7 +215,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class MyConsumerApplication extends KafkaConsumerApplication<ConsumerApp> {
-    static void main(final String[] args) {
+    public static void main(final String[] args) {
         new MyConsumerApplication().startApplication(args);
     }
 
@@ -302,7 +302,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class MyConsumerProducerApplication extends KafkaConsumerProducerApplication<ConsumerProducerApp> {
-    static void main(final String[] args) {
+    public static void main(final String[] args) {
         new MyConsumerProducerApplication().startApplication(args);
     }
 
