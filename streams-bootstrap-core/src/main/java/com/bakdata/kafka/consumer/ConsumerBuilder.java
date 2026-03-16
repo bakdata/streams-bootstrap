@@ -26,6 +26,7 @@ package com.bakdata.kafka.consumer;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
+import com.bakdata.kafka.Preconfigured;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,8 @@ public class ConsumerBuilder {
     }
 
     /**
-     * Create a new {@code Consumer} using {@link #kafkaProperties} and provided {@code Deserializers}
+     * Create a new {@code Consumer} using {@link #kafkaProperties} and provided {@code Deserializer Deserializers}. The
+     * deserializers will be configured automatically.
      *
      * @param keyDeserializer {@code Deserializer} to use for keys
      * @param valueDeserializer {@code Deserializer} to use for values
@@ -76,7 +78,28 @@ public class ConsumerBuilder {
      */
     public <K, V> Consumer<K, V> createConsumer(final Deserializer<K> keyDeserializer,
             final Deserializer<V> valueDeserializer) {
-        return new KafkaConsumer<>(this.kafkaProperties, keyDeserializer, valueDeserializer);
+        return this.createConsumer(Preconfigured.create(keyDeserializer), Preconfigured.create(valueDeserializer));
+    }
+
+
+    /**
+     * Create a new {@code Consumer} using {@link #kafkaProperties} and provided {@code Preconfigured} deserializers.
+     * The preconfiguration will be resolved to yield configured {@link Deserializer Deserializers} that are used to
+     * create the new {@link Consumer}.
+     *
+     * @param keyDeserializer {@code Preconfigured} to use for keys
+     * @param valueDeserializer {@code Preconfigured} to use for values
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @return {@code Consumer}
+     * @see KafkaConsumer#KafkaConsumer(Map, Deserializer, Deserializer)
+     */
+    public <K, V> Consumer<K, V> createConsumer(final Preconfigured<Deserializer<K>> keyDeserializer,
+            final Preconfigured<Deserializer<V>> valueDeserializer) {
+        final Deserializer<K> configuredKeyDeserializer = keyDeserializer.configureForKeys(this.kafkaProperties);
+        final Deserializer<V> configuredValueDeserializer = valueDeserializer.configureForKeys(this.kafkaProperties);
+
+        return new KafkaConsumer<>(this.kafkaProperties, configuredKeyDeserializer, configuredValueDeserializer);
     }
 
     /**
@@ -98,10 +121,9 @@ public class ConsumerBuilder {
     }
 
     /**
-     * Subscribes the given {@link Consumer} to all input topics and patterns
-     * configured in {@link #topics}.
-     * This includes all topics from {@code getInputTopics()}, {@code getLabeledInputTopics()},
-     * {@code getInputPattern()}, and {@code getLabeledInputPatterns()}.
+     * Subscribes the given {@link Consumer} to all input topics and patterns configured in {@link #topics}. This
+     * includes all topics from {@code getInputTopics()}, {@code getLabeledInputTopics()}, {@code getInputPattern()},
+     * and {@code getLabeledInputPatterns()}.
      *
      * @param <K> type of keys
      * @param <V> type of values
@@ -123,8 +145,8 @@ public class ConsumerBuilder {
     }
 
     /**
-     * Creates a {@link DefaultConsumerRunnable} using the provided consumer, processor,
-     * and {@link ConsumerExecutionOptions}.
+     * Creates a {@link DefaultConsumerRunnable} using the provided consumer, processor, and
+     * {@link ConsumerExecutionOptions}.
      *
      * @param <K> type of keys
      * @param <V> type of values
