@@ -184,7 +184,7 @@ class KafkaConsumerProducerApplicationCliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorCodeOnInconsistentAppId() {
+    void shouldExitWithErrorCodeOnInconsistentGroupId() {
         new KafkaConsumerProducerApplication<>() {
             @Override
             public ConsumerProducerApp createApp() {
