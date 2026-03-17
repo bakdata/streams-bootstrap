@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0](https://github.com/bakdata/streams-bootstrap/tree/7.0.0) - 2026-03-17
+### What's changed
+
+* Fix default jmx exporter image by @philipp94831 in [#412](https://github.com/bakdata/streams-bootstrap/pull/412)
+
+* Fix CI for external PRs by @philipp94831 in [#415](https://github.com/bakdata/streams-bootstrap/pull/415)
+
+* Upgrade to testcontainers 2.0 by @philipp94831 in [#416](https://github.com/bakdata/streams-bootstrap/pull/416)
+
+* Support Downward API in Helm charts by @disrvptor in [#414](https://github.com/bakdata/streams-bootstrap/pull/414)
+
+* Support topology optimization by @philipp94831 in [#418](https://github.com/bakdata/streams-bootstrap/pull/418)
+
+* Support topology config by @philipp94831 in [#419](https://github.com/bakdata/streams-bootstrap/pull/419)
+
+* Bump the ci-templates group with 4 updates by @dependabot[bot] in [#422](https://github.com/bakdata/streams-bootstrap/pull/422)
+
+* Bump actions/upload-artifact from 6 to 7 by @dependabot[bot] in [#424](https://github.com/bakdata/streams-bootstrap/pull/424)
+
+* Bump actions/download-artifact from 7 to 8 by @dependabot[bot] in [#423](https://github.com/bakdata/streams-bootstrap/pull/423)
+
+* Enforce internal resource naming by default by @philipp94831 in [#420](https://github.com/bakdata/streams-bootstrap/pull/420)
+
+* Clean up Consumer/ConsumerProducer by @philipp94831 in [#421](https://github.com/bakdata/streams-bootstrap/pull/421)
+
+* Upgrade to Kafka 4.2 by @philipp94831 in [#426](https://github.com/bakdata/streams-bootstrap/pull/426)
+
+* Fix consumer producer app example in readme by @jkbe in [#427](https://github.com/bakdata/streams-bootstrap/pull/427)
+
+* Refactor ConsumerProducer cleanup into dedicated classes, clean up error topic by @jkbe in [#417](https://github.com/bakdata/streams-bootstrap/pull/417)
+
+* Improve naming of clean up configuration instances by @jkbe in [#429](https://github.com/bakdata/streams-bootstrap/pull/429)
+
+* Make StatefulSet service name optional by @philipp94831 in [#425](https://github.com/bakdata/streams-bootstrap/pull/425)
+
+* Use groupId for bare consumers instead of KStreams appId by @jkbe in [#430](https://github.com/bakdata/streams-bootstrap/pull/430)
+
+* Allow SerDe preconfiguration in consumer and producer builders by @jkbe in [#428](https://github.com/bakdata/streams-bootstrap/pull/428)
+
+* Document streams-bootstrap by @philipp94831 in [#365](https://github.com/bakdata/streams-bootstrap/pull/365)
+
+
+### New Contributors
+* @disrvptor made their first contribution in [#414](https://github.com/bakdata/streams-bootstrap/pull/414)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/6.2.0...7.0.0
+
 ## [6.2.0](https://github.com/bakdata/streams-bootstrap/tree/6.2.0) - 2026-02-02
 ### What's changed
 
