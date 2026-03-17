@@ -1,0 +1,2212 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://bakdata.github.io/streams-bootstrap/7.0/user/testing/">
+      
+      
+        <link rel="prev" href="../concepts/consumer-producer/">
+      
+      
+        <link rel="next" href="../monitoring/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>Testing - streams-bootstrap</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="streams-bootstrap" class="md-header__button md-logo" aria-label="streams-bootstrap" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            streams-bootstrap
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bakdata/streams-bootstrap" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    streams-bootstrap
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  
+  User guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../javadoc/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Javadoc
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="streams-bootstrap" class="md-nav__button md-logo" aria-label="streams-bootstrap" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    streams-bootstrap
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bakdata/streams-bootstrap" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    streams-bootstrap
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is streams-bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_3" id="__nav_1_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/common/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Common concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/producer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/consumer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/consumer-producer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-Producer concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#testapplicationrunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestApplicationRunner
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typical-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Typical Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-kafka-for-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring Kafka for Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring Kafka for Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kafka-streamsspecific-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka Streams–Specific Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kafka Streams–Specific Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-state-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure State Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disable-state-store-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disable State Store Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumer-specific-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer-Specific Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consumer-Specific Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-session-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure Session Timeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-registry-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Registry Support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Registry Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-a-test-schema-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable a Test Schema Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-a-custom-testschemaregistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use a Custom TestSchemaRegistry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runnable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runnable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-and-resetting-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning and Resetting Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleaning and Resetting Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumer-group-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer Group Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-test-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating Test Clients
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testapplicationtopologyfactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestApplicationTopologyFactory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TestApplicationTopologyFactory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#typical-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-registry-support_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Registry Support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Registry Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-schema-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Schema Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-schema-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Schema Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modifying-kafka-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying Kafka Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-testtopology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a TestTopology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#junit-5-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JUnit 5 Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing Kafka Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_7" id="__nav_1_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Extensions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extensions/large-messages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Large messages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_8" id="__nav_1_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/local/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_9" id="__nav_1_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/word-count/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Word count
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/interactive-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive queries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../javadoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Javadoc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#testapplicationrunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestApplicationRunner
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typical-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Typical Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-kafka-for-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring Kafka for Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring Kafka for Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kafka-streamsspecific-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka Streams–Specific Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kafka Streams–Specific Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-state-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure State Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disable-state-store-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disable State Store Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumer-specific-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer-Specific Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consumer-Specific Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-session-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure Session Timeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-registry-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Registry Support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Registry Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-a-test-schema-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable a Test Schema Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-a-custom-testschemaregistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use a Custom TestSchemaRegistry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runnable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runnable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-and-resetting-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning and Resetting Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleaning and Resetting Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumer-group-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer Group Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-test-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating Test Clients
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testapplicationtopologyfactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestApplicationTopologyFactory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TestApplicationTopologyFactory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#typical-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-registry-support_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Registry Support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Registry Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-schema-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Schema Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-schema-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Schema Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modifying-kafka-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying Kafka Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-testtopology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a TestTopology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#junit-5-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JUnit 5 Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-kafka-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing Kafka Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="testing">Testing</h1>
+<p>The <code>streams-bootstrap</code> testing tools provide utilities for testing Kafka Streams, Consumer, Producer and Consumer-Producer
+applications, covering both unit-level and integration-style scenarios.</p>
+<p>They abstract common test concerns such as Kafka infrastructure setup, Schema Registry integration, application
+lifecycle handling, and consumer group verification, and are designed to work with real Kafka clusters as well as
+schema-aware test environments.</p>
+<h2 id="testapplicationrunner">TestApplicationRunner</h2>
+<p><code>TestApplicationRunner</code> is a test utility for running, configuring, and verifying Kafka applications in integration and system tests.</p>
+<p>It abstracts away repetitive setup such as:
+- bootstrap servers
+- Schema Registry
+- Kafka client configuration
+- CLI argument wiring
+- lifecycle commands (<code>run</code>, <code>clean</code>, <code>reset</code>)</p>
+<p>Typical use cases:
+- end-to-end tests
+- containerized test environments
+- embedded Kafka setups
+- CI pipelines</p>
+<h2 id="typical-usage">Typical Usage</h2>
+<pre><code class="language-java">TestApplicationRunner runner =
+        TestApplicationRunner.create(&quot;localhost:9092&quot;)
+                .withSchemaRegistry()
+                .withStateDir(tempDir)
+                .withNoStateStoreCaching();
+</code></pre>
+<p>All applications executed via this runner automatically inherit this configuration.</p>
+<p>Bootstrap Servers
+- Passed via <code>--bootstrap-servers</code>
+- Also set directly on the application instance</p>
+<p>Kafka Configuration
+- All provided Kafka properties are injected
+- Passed via <code>--kafka-config key=value</code>
+- Also merged into <code>app.setKafkaConfig(...)</code></p>
+<p>Schema Registry (optional)
+- Passed via <code>--schema-registry-url</code>
+- Only configured when explicitly enabled</p>
+<hr />
+<h3 id="configuring-kafka-for-tests">Configuring Kafka for Tests</h3>
+<pre><code class="language-java">runner = runner.withKafkaConfig(Map.of(&quot;auto.offset.reset&quot;, &quot;earliest&quot;));
+</code></pre>
+<p>Behavior:
+- merged with existing configuration
+- immutable after creation
+- overrides application defaults</p>
+<hr />
+<h4 id="kafka-streamsspecific-helpers">Kafka Streams–Specific Helpers</h4>
+<h5 id="configure-state-directory">Configure State Directory</h5>
+<pre><code class="language-java">runner = runner.withStateDir(tempDir);
+</code></pre>
+<p>Sets:</p>
+<pre><code>state.dir = &lt;tempDir&gt;
+</code></pre>
+<p>Use this to:
+- isolate test runs
+- avoid state leakage between tests</p>
+<hr />
+<h5 id="disable-state-store-caching">Disable State Store Caching</h5>
+<pre><code class="language-java">runner = runner.withNoStateStoreCaching();
+</code></pre>
+<p>Sets:</p>
+<pre><code>statestore.cache.max.bytes = 0
+</code></pre>
+<p>Useful when:
+- asserting exact record counts
+- debugging processor behavior
+- avoiding cache-related timing issues</p>
+<hr />
+<h4 id="consumer-specific-helpers">Consumer-Specific Helpers</h4>
+<h5 id="configure-session-timeout">Configure Session Timeout</h5>
+<pre><code class="language-java">runner = runner.withSessionTimeout(Duration.ofSeconds(5));
+</code></pre>
+<p>Sets:</p>
+<pre><code>session.timeout.ms = 5000
+</code></pre>
+<p>Useful for:
+- fast consumer group rebalancing
+- deterministic failure testing</p>
+<hr />
+<h3 id="schema-registry-support">Schema Registry Support</h3>
+<h4 id="enable-a-test-schema-registry">Enable a Test Schema Registry</h4>
+<pre><code class="language-java">runner = runner.withSchemaRegistry();
+</code></pre>
+<p>Creates:
+- isolated in-memory Schema Registry
+- random scope to avoid collisions
+- transparent integration for the application</p>
+<hr />
+<h4 id="use-a-custom-testschemaregistry">Use a Custom TestSchemaRegistry</h4>
+<pre><code class="language-java">TestSchemaRegistry registry = new TestSchemaRegistry();
+runner = runner.withSchemaRegistry(registry);
+</code></pre>
+<p>Use this when:
+- sharing schemas across applications
+- inspecting registered schemas during tests</p>
+<hr />
+<h3 id="running-applications">Running Applications</h3>
+<h4 id="cli">CLI</h4>
+<pre><code class="language-java">CompletableFuture&lt;Integer&gt; exitCode =
+        runner.run(app, &quot;--some-flag&quot;);
+</code></pre>
+<ul>
+<li>invokes <code>startApplicationWithoutExit</code></li>
+<li>returns application exit code</li>
+</ul>
+<hr />
+<h4 id="runnable">Runnable</h4>
+<pre><code class="language-java">CompletableFuture&lt;Void&gt; execution = runner.run(app);
+</code></pre>
+<ul>
+<li>calls <code>onApplicationStart()</code></li>
+<li>runs application directly</li>
+<li>suitable for long-running tests</li>
+</ul>
+<hr />
+<h3 id="cleaning-and-resetting-applications">Cleaning and Resetting Applications</h3>
+<h4 id="clean">Clean</h4>
+<pre><code class="language-java">runner.clean(app);
+</code></pre>
+<p>or</p>
+<pre><code class="language-java">runner.clean(app, &quot;--custom-arg&quot;);
+</code></pre>
+<p>Used to:
+- delete Kafka topics
+- clean local state
+- execute cleanup hooks</p>
+<hr />
+<h4 id="reset">Reset</h4>
+<p>Supported for:
+- Streams applications
+- Consumer applications
+- Consumer–Producer applications</p>
+<pre><code class="language-java">runner.reset(streamsApp);
+</code></pre>
+<hr />
+<h3 id="consumer-group-verification">Consumer Group Verification</h3>
+<pre><code class="language-java">ConsumerGroupVerifier verifier = runner.verify(streamsApp);
+</code></pre>
+<p>Allows you to:
+- assert consumer group existence
+- check stability
+- inspect committed offsets</p>
+<hr />
+<h3 id="creating-test-clients">Creating Test Clients</h3>
+<pre><code class="language-java">KafkaTestClient client = runner.newTestClient();
+</code></pre>
+<p>Provides:
+- AdminClient access
+- Producer/Consumer helpers
+- runtime-aware configuration</p>
+<hr />
+<h2 id="testapplicationtopologyfactory">TestApplicationTopologyFactory</h2>
+<p><code>TestApplicationTopologyFactory</code> is a test helper for Kafka Streams applications that integrates with Fluent Kafka Streams Tests.</p>
+<p>It allows you to:
+- derive a <code>TestTopology</code> from a real application
+- reuse production topology and configuration
+- inject test-specific runtime settings</p>
+<hr />
+<h3 id="typical-usage_1">Typical Usage</h3>
+<pre><code class="language-java">TestApplicationTopologyFactory factory =
+        TestApplicationTopologyFactory.withSchemaRegistry();
+</code></pre>
+<p>or without Schema Registry:</p>
+<pre><code class="language-java">TestApplicationTopologyFactory factory = new TestApplicationTopologyFactory();
+</code></pre>
+<hr />
+<h3 id="schema-registry-support_1">Schema Registry Support</h3>
+<h4 id="automatic-schema-registry">Automatic Schema Registry</h4>
+<pre><code class="language-java">TestApplicationTopologyFactory factory =
+        TestApplicationTopologyFactory.withSchemaRegistry();
+</code></pre>
+<ul>
+<li>random isolated scope</li>
+<li>no cross-test collisions</li>
+<li>safe for parallel execution</li>
+</ul>
+<hr />
+<h4 id="custom-schema-registry">Custom Schema Registry</h4>
+<pre><code class="language-java">TestSchemaRegistry registry = new TestSchemaRegistry();
+TestApplicationTopologyFactory factory =
+        TestApplicationTopologyFactory.withSchemaRegistry(registry);
+</code></pre>
+<hr />
+<h3 id="modifying-kafka-configuration">Modifying Kafka Configuration</h3>
+<pre><code class="language-java">factory = factory.with(Map.of(&quot;commit.interval.ms&quot;, 100));
+</code></pre>
+<ul>
+<li>merged into runtime configuration</li>
+<li>applies only to tests</li>
+<li>does not mutate application</li>
+</ul>
+<hr />
+<h3 id="creating-a-testtopology">Creating a TestTopology</h3>
+<pre><code class="language-java">TestTopology&lt;String, MyValue&gt; topology = factory.createTopology(app);
+</code></pre>
+<p>Execution flow:
+1. application prepared
+2. runtime configuration injected
+3. topology extracted
+4. <code>TestTopology</code> created</p>
+<hr />
+<h3 id="junit-5-integration">JUnit 5 Integration</h3>
+<pre><code class="language-java">TestTopologyExtension&lt;String, MyValue&gt; extension = factory.createTopologyExtension(app);
+</code></pre>
+<hr />
+<h3 id="accessing-kafka-properties">Accessing Kafka Properties</h3>
+<pre><code class="language-java">Map&lt;String, Object&gt; props = factory.getKafkaProperties(app);
+</code></pre>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 bakdata
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "versioning"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.bakdata.kafka"},{"l":"com.bakdata.kafka.admin"},{"l":"com.bakdata.kafka.consumer"},{"l":"com.bakdata.kafka.consumerproducer"},{"l":"com.bakdata.kafka.mixin"},{"l":"com.bakdata.kafka.producer"},{"l":"com.bakdata.kafka.streams"},{"l":"com.bakdata.kafka.streams.kstream"}];updateSearchResults();
