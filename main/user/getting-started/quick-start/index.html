@@ -8,9 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://bakdata.github.io/streams-bootstrap/main/javadoc/legal/jquery/">
+        <link rel="canonical" href="https://bakdata.github.io/streams-bootstrap/main/user/getting-started/quick-start/">
       
       
+        <link rel="prev" href="../setup/">
+      
+      
+        <link rel="next" href="../../concepts/common/">
       
       
         
@@ -21,7 +25,7 @@
     
     
       
-        <title>Jquery - streams-bootstrap</title>
+        <title>Quick start - streams-bootstrap</title>
       
     
     
@@ -62,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#jquery-v371" class="md-skip">
+        <a href="#quick-start" class="md-skip">
           Skip to content
         </a>
       
@@ -100,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Jquery
+              Quick start
             
           </span>
         </div>
@@ -183,10 +187,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../../.." class="md-tabs__link">
           
   
@@ -205,7 +211,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../" class="md-tabs__link">
+      <a href="../../../javadoc/" class="md-tabs__link">
         
   
   
@@ -267,26 +273,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
             
   
   
@@ -304,7 +315,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -350,7 +361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/changelog.md" class="md-nav__link">
+      <a href="../../changelog.md" class="md-nav__link">
         
   
   
@@ -375,26 +386,31 @@
                 
   
   
+    
   
   
+  
     
     
     
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" >
         
           
-          <label class="md-nav__link" for="__nav_1_3" id="__nav_1_3_label" tabindex="0">
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1_3" id="__nav_1_3_label" tabindex="">
             
   
   
@@ -412,7 +428,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -430,7 +446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/getting-started/setup/" class="md-nav__link">
+      <a href="../setup/" class="md-nav__link">
         
   
   
@@ -455,10 +471,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../user/getting-started/quick-start/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -474,6 +517,87 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-kafka-streams-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimal Kafka Streams Application
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running the Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#via-command-line-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via Command Line Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-the-main-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the main Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -500,17 +624,20 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
         
           
-          <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="">
             
   
   
@@ -546,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/concepts/common/" class="md-nav__link">
+      <a href="../../concepts/common/" class="md-nav__link">
         
   
   
@@ -574,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/concepts/streams/" class="md-nav__link">
+      <a href="../../concepts/streams/" class="md-nav__link">
         
   
   
@@ -602,7 +729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/concepts/producer/" class="md-nav__link">
+      <a href="../../concepts/producer/" class="md-nav__link">
         
   
   
@@ -630,7 +757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/concepts/consumer/" class="md-nav__link">
+      <a href="../../concepts/consumer/" class="md-nav__link">
         
   
   
@@ -658,7 +785,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/concepts/consumer-producer/" class="md-nav__link">
+      <a href="../../concepts/consumer-producer/" class="md-nav__link">
         
   
   
@@ -694,7 +821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/testing/" class="md-nav__link">
+      <a href="../../testing/" class="md-nav__link">
         
   
   
@@ -722,7 +849,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/monitoring/" class="md-nav__link">
+      <a href="../../monitoring/" class="md-nav__link">
         
   
   
@@ -756,17 +883,20 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_7" >
         
           
-          <label class="md-nav__link" for="__nav_1_7" id="__nav_1_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_1_7" id="__nav_1_7_label" tabindex="">
             
   
   
@@ -802,7 +932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/extensions/large-messages/" class="md-nav__link">
+      <a href="../../extensions/large-messages/" class="md-nav__link">
         
   
   
@@ -844,17 +974,20 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_8" >
         
           
-          <label class="md-nav__link" for="__nav_1_8" id="__nav_1_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_1_8" id="__nav_1_8_label" tabindex="">
             
   
   
@@ -890,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/deployment/local/" class="md-nav__link">
+      <a href="../../deployment/local/" class="md-nav__link">
         
   
   
@@ -918,7 +1051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/deployment/kubernetes/" class="md-nav__link">
+      <a href="../../deployment/kubernetes/" class="md-nav__link">
         
   
   
@@ -960,17 +1093,20 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9" >
         
           
-          <label class="md-nav__link" for="__nav_1_9" id="__nav_1_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_1_9" id="__nav_1_9_label" tabindex="">
             
   
   
@@ -1006,7 +1142,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/examples/word-count/" class="md-nav__link">
+      <a href="../../examples/word-count/" class="md-nav__link">
         
   
   
@@ -1034,7 +1170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user/examples/interactive-queries/" class="md-nav__link">
+      <a href="../../examples/interactive-queries/" class="md-nav__link">
         
   
   
@@ -1077,7 +1213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../../../javadoc/" class="md-nav__link">
         
   
   
@@ -1114,6 +1250,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1122,22 +1260,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#jquery-v371" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        jQuery v3.7.1
+        Prerequisites
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="jQuery v3.7.1">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-kafka-streams-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimal Kafka Streams Application
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running the Application">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jquery-license" class="md-nav__link">
+  <a href="#via-command-line-interface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        jQuery License
+        Via Command Line Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-the-main-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the main Method
       
     </span>
   </a>
@@ -1169,32 +1340,73 @@
   
 
 
-  <h1>Jquery</h1>
+<h1 id="quick-start">Quick Start</h1>
+<p>This page shows how to add <code>streams-bootstrap</code> to a project and how to create and run a minimal application.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Java 17</li>
+<li>Apache Kafka cluster (brokers reachable from the application)</li>
+<li><code>streams-bootstrap-cli</code> dependency (see <a href="../setup/">Setup</a> for Gradle/Maven snippets)</li>
+</ul>
+<h2 id="minimal-kafka-streams-application">Minimal Kafka Streams Application</h2>
+<p>Create a subclass of <code>KafkaStreamsApplication</code> and implement the required methods.</p>
+<pre><code class="language-java">import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
+import java.util.Map;
+import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
-<h2 id="jquery-v371">jQuery v3.7.1</h2>
-<h3 id="jquery-license">jQuery License</h3>
-<pre><code>jQuery v 3.7.1
-Copyright OpenJS Foundation and other contributors, https://openjsf.org/
+public class MyStreamsApplication extends KafkaStreamsApplication&lt;StreamsApp&gt; {
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+    public static void main(final String[] args) {
+        new MyStreamsApplication().startApplication(args);
+    }
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+    @Override
+    public StreamsApp createApp() {
+        return new StreamsApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX&lt;String, String&gt; input = builder.streamInput();
+                // topology definition
+                input.toOutputTopic();
+            }
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            @Override
+            public String getUniqueAppId(final StreamsTopicConfig topics) {
+                return &quot;streams-bootstrap-app-&quot; + topics.getOutputTopic();
+            }
+
+            @Override
+            public SerdeConfig defaultSerializationConfig() {
+                return new SerdeConfig(StringSerde.class, StringSerde.class);
+            }
+        };
+    }
+}
 </code></pre>
+<h2 id="running-the-application">Running the Application</h2>
+<h3 id="via-command-line-interface">Via Command Line Interface</h3>
+<p>When packaged as a runnable JAR (for example, in a container), the <code>run</code> command is the default entrypoint:</p>
+<pre><code class="language-bash">java -jar my-streams-app.jar \
+    run \
+    --bootstrap-servers kafka:9092 \
+    --input-topics input-topic \
+    --output-topic output-topic \
+    --schema-registry-url http://schema-registry:8081
+</code></pre>
+<p>Additional subcommands such as <code>clean</code> and <code>reset</code> are available for lifecycle management.</p>
+<h3 id="from-the-main-method">From the <code>main</code> Method</h3>
+<p>In the <code>main</code> method, the application subclass starts up via:</p>
+<pre><code class="language-java">public static void main(final String[] args) {
+    new MyStreamsApplication().startApplication(args);
+}
+</code></pre>
+<p>This delegates configuration loading, lifecycle handling, and shutdown to <code>streams-bootstrap</code>.</p>
+<hr />
 
 
 
