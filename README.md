@@ -26,13 +26,7 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '5.0.1'
-```
-
-With Kotlin DSL
-
-```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "5.0.1")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "7.0.0")
 ```
 
 #### Maven
@@ -42,7 +36,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>5.0.1</version>
+  <version>7.0.0</version>
 </dependency>
 ```
 
