@@ -116,7 +116,7 @@ jobs:
 
       - name: Check for docs changes (PR)
         if: ${{ github.event_name == 'pull_request' }}
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: docs-changes
         with:
           filters: |
