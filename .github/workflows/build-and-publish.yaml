@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.81.0
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.81.1
     with:
       java-version: 17
     secrets:
@@ -116,7 +116,7 @@ jobs:
 
       - name: Check for docs changes (PR)
         if: ${{ github.event_name == 'pull_request' }}
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: docs-changes
         with:
           filters: |
