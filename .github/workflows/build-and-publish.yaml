@@ -107,7 +107,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "tag=dev" >> "$GITHUB_OUTPUT"
-          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
+          elif [[ "${{ github.event_name }}" == "merge_group" ]]; then
             echo "tag=dev" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
