@@ -6,6 +6,7 @@ on:
     branches:
       - master
   pull_request:
+  merge_group:
 
 jobs:
   get-gradle-version:
@@ -20,10 +21,6 @@ jobs:
       - name: Set up Gradle with version ${{ inputs.gradle-version }}
         uses: bakdata/ci-templates/actions/java-gradle-setup@1.81.1
         with:
-          java-distribution: "microsoft"
-          java-version: "17"
-          gradle-version: "wrapper"
-          gradle-cache: "true"
           gradle-cache-read-only: "true"
 
       - name: Get version
