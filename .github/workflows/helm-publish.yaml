@@ -2,6 +2,11 @@ name: Publish Helm Charts
 
 on:
   push:
+    tags: [ "**" ]
+    branches:
+      - master
+  pull_request:
+  merge_group:
 
 jobs:
   get-gradle-version:
@@ -11,16 +16,12 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Check out repository
-        uses: bakdata/ci-templates/actions/checkout@1.70.2
+        uses: bakdata/ci-templates/actions/checkout@1.81.2
 
       - name: Set up Gradle with version ${{ inputs.gradle-version }}
-        uses: bakdata/ci-templates/actions/java-gradle-setup@1.70.2
+        uses: bakdata/ci-templates/actions/java-gradle-setup@1.81.2
         with:
-          java-distribution: "microsoft"
-          java-version: "11"
-          gradle-version: "wrapper"
-          gradle-cache: "true"
-          gradle-cache-read-only: "false"
+          gradle-cache-read-only: "true"
 
       - name: Get version
         id: get-version
@@ -32,7 +33,7 @@ jobs:
 
   helm-publish:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.70.2
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@1.81.2
     needs: get-gradle-version
     with:
       charts-path: "./charts"

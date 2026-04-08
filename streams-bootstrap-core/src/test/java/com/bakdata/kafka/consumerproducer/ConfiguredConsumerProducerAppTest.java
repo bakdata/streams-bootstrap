@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -129,7 +129,7 @@ class ConfiguredConsumerProducerAppTest {
     }
 
     @Test
-    void shouldThrowIfAppIdHasBeenConfiguredDifferently() {
+    void shouldThrowIfGroupIdHasBeenConfiguredDifferently() {
         final ConfiguredConsumerProducerApp<ConsumerProducerApp> configuredApp =
                 new ConfiguredConsumerProducerApp<>(new TestApplication(), emptyTopicConfig());
         final RuntimeConfiguration runtimeConfiguration = RuntimeConfiguration.create("fake")
@@ -183,7 +183,7 @@ class ConfiguredConsumerProducerAppTest {
         }
 
         @Override
-        public String getUniqueAppId(final ConsumerProducerAppConfiguration topics) {
+        public String getUniqueGroupId(final ConsumerProducerAppConfiguration topics) {
             return "app-id";
         }
 

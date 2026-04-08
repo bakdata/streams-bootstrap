@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,14 @@ package com.bakdata.kafka.producer;
 
 import com.bakdata.kafka.AppConfiguration;
 import com.bakdata.kafka.Configurator;
+import com.bakdata.kafka.Preconfigured;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
 /**
@@ -50,9 +52,10 @@ public class ProducerBuilder {
 
     /**
      * Create a new {@link Producer} using {@link #kafkaProperties}
-     * @return {@link Producer}
+     *
      * @param <K> type of keys
      * @param <V> type of values
+     * @return {@link Producer}
      * @see KafkaProducer#KafkaProducer(Map)
      */
     public <K, V> Producer<K, V> createProducer() {
@@ -60,22 +63,44 @@ public class ProducerBuilder {
     }
 
     /**
-     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Serializer Serializers}
+     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Serializer Serializers}. The
+     * serializers will be configured automatically.
+     *
      * @param keySerializer {@link Serializer} to use for keys
      * @param valueSerializer {@link Serializer} to use for values
-     * @return {@link Producer}
      * @param <K> type of keys
      * @param <V> type of values
+     * @return {@link Producer}
      * @see KafkaProducer#KafkaProducer(Map, Serializer, Serializer)
      */
     public <K, V> Producer<K, V> createProducer(final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer) {
-        return new KafkaProducer<>(this.kafkaProperties, keySerializer, valueSerializer);
+        return this.createProducer(Preconfigured.create(keySerializer), Preconfigured.create(valueSerializer));
     }
 
     /**
-     * Create {@link Configurator} to configure {@link org.apache.kafka.common.serialization.Serde} and
-     * {@link Serializer} using {@link #kafkaProperties}.
+     * Create a new {@link Producer} using {@link #kafkaProperties} and provided {@link Preconfigured} serializers. The
+     * preconfiguration will be resolved to yield configured {@link Serializer Serializers} that are used to create the
+     * new {@link Producer}.
+     *
+     * @param keySerializer {@link Preconfigured} to use for keys
+     * @param valueSerializer {@link Preconfigured} to use for values
+     * @param <K> type of keys
+     * @param <V> type of values
+     * @return {@link Producer}
+     * @see KafkaProducer#KafkaProducer(Map, Serializer, Serializer)
+     */
+    public <K, V> Producer<K, V> createProducer(final Preconfigured<Serializer<K>> keySerializer,
+            final Preconfigured<Serializer<V>> valueSerializer) {
+        final Serializer<K> configuredKeySerializer = keySerializer.configureForKeys(this.kafkaProperties);
+        final Serializer<V> configuredValueSerializer = valueSerializer.configureForValues(this.kafkaProperties);
+
+        return new KafkaProducer<>(this.kafkaProperties, configuredKeySerializer, configuredValueSerializer);
+    }
+
+    /**
+     * Create {@link Configurator} to configure {@link Serde} and {@link Serializer} using {@link #kafkaProperties}.
+     *
      * @return {@link Configurator}
      */
     public Configurator createConfigurator() {
@@ -84,6 +109,7 @@ public class ProducerBuilder {
 
     /**
      * Create {@link AppConfiguration} used by this app
+     *
      * @return {@link AppConfiguration}
      */
     public AppConfiguration<ProducerTopicConfig> createConfiguration() {

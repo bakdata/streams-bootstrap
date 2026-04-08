@@ -37,6 +37,7 @@ import java.time.Duration;
 import java.util.function.Function;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Named;
@@ -1835,7 +1836,8 @@ class KTableXTest {
 
     @Test
     void shouldHaveQueryableStoreName() {
-        final StreamsBuilderX builder = new StreamsBuilderX(StreamsTopicConfig.builder().build(), emptyMap());
+        final StreamsBuilderX builder =
+                new StreamsBuilderX(new StreamsBuilder(), StreamsTopicConfig.builder().build(), emptyMap());
         final KTableX<Object, Object> table = builder.stream("input").toTable(Materialized.as("store"));
         this.softly.assertThat(table.queryableStoreName()).isEqualTo("store");
     }

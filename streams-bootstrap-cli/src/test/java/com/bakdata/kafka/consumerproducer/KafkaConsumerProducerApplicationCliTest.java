@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -97,7 +97,7 @@ class KafkaConsumerProducerApplicationCliTest {
             }
 
             @Override
-            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                 throw new UnsupportedOperationException();
             }
 
@@ -125,7 +125,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -161,7 +161,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -184,18 +184,18 @@ class KafkaConsumerProducerApplicationCliTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void shouldExitWithErrorCodeOnInconsistentAppId() {
+    void shouldExitWithErrorCodeOnInconsistentGroupId() {
         new KafkaConsumerProducerApplication<>() {
             @Override
             public ConsumerProducerApp createApp() {
                 return new ConsumerProducerApp() {
                     @Override
                     public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                        return (consumerConfig, producerConfig) -> {};
+                        return consumerConfig -> {};
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         return "my-id";
                     }
 
@@ -223,13 +223,13 @@ class KafkaConsumerProducerApplicationCliTest {
                         () -> new ConsumerProducerApp() {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                                return (consumerConfig, producerConfig) -> {
+                                return consumerConfig -> {
                                     throw new RuntimeException("Error building runnable");
                                 };
                             }
 
                             @Override
-                            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                                 return "app";
                             }
 
@@ -264,8 +264,8 @@ class KafkaConsumerProducerApplicationCliTest {
                         () -> new ConsumerProducerApp() {
                             @Override
                             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                                return (consumerConfig, producerConfig) -> {
-                                    try (final Producer<String, String> producer = builder.producerBuilder()
+                                return consumerConfig -> {
+                                    try (final Producer<String, String> producer = builder.getProducerBuilder()
                                             .createProducer()) {
                                         final ProducerRecord<String, String> producerRecord =
                                                 new ProducerRecord<>(output, "foo", "bar");
@@ -275,7 +275,7 @@ class KafkaConsumerProducerApplicationCliTest {
                             }
 
                             @Override
-                            public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                            public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                                 return "app";
                             }
 
@@ -321,7 +321,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 
@@ -351,7 +351,7 @@ class KafkaConsumerProducerApplicationCliTest {
                     }
 
                     @Override
-                    public String getUniqueAppId(final ConsumerProducerAppConfiguration configuration) {
+                    public String getUniqueGroupId(final ConsumerProducerAppConfiguration configuration) {
                         throw new UnsupportedOperationException();
                     }
 

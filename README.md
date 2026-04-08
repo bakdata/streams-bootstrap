@@ -26,13 +26,7 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '5.0.1'
-```
-
-With Kotlin DSL
-
-```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "5.0.1")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "7.0.0")
 ```
 
 #### Maven
@@ -42,7 +36,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>5.0.1</version>
+  <version>7.0.0</version>
 </dependency>
 ```
 
@@ -317,14 +311,14 @@ public class MyConsumerProducerApplication extends KafkaConsumerProducerApplicat
         return new ConsumerProducerApp() {
             @Override
             public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
-                final Consumer<String, String> yourConsumer = builder.consumerBuilder().createConsumer();
-                builder.consumerBuilder().subscribeToAllTopics(yourConsumer);
-                final Producer<String, String> yourProducer = builder.producerBuilder().createProducer();
-                final ConsumerRunnable consumerRunnable = builder.consumerBuilder()
+                final Consumer<String, String> yourConsumer = builder.getConsumerBuilder().createConsumer();
+                builder.getConsumerBuilder().subscribeToAllTopics(yourConsumer);
+                final Producer<String, String> yourProducer = builder.getProducerBuilder().createProducer();
+                final ConsumerRunnable consumerRunnable = builder.getConsumerBuilder()
                         .createDefaultConsumerRunnable(yourConsumer, records -> records.forEach(
                                 // your logic
                                 consumerRecord -> yourProducer.send(
-                                        new ProducerRecord<>(builder.topics().getOutputTopic(), 
+                                        new ProducerRecord<>(builder.getTopics().getOutputTopic(), 
                                                 consumerRecord.key(),
                                                 consumerRecord.value()))));
                 return new DefaultConsumerProducerRunnable<>(yourProducer, consumerRunnable);

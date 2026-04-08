@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,23 +31,40 @@ import com.bakdata.kafka.RuntimeConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
+import org.apache.kafka.common.IsolationLevel;
 
 /**
  * A {@link ConsumerApp} with a corresponding {@link ConsumerAppConfiguration}
  *
  * @param <T> type of {@link ConsumerApp}
  */
-public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
-                                                           @NonNull ConsumerAppConfiguration configuration)
-        implements ConfiguredApp<ExecutableConsumerApp<T>> {
+@RequiredArgsConstructor
+public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredApp<ExecutableConsumerApp<T>> {
+    @Getter
+    private final @NonNull T app;
+    private final @NonNull ConsumerAppConfiguration configuration;
+
+    /**
+     * Base configuration for all consumer apps which includes
+     * <pre>
+     * auto.offset.reset=earliest
+     * enable.auto.commit=false
+     * isolation.level=read_committed
+     * </pre>
+     *
+     * @return base configuration
+     */
     public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
-        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        kafkaConfig.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.type().toString());
+        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        kafkaConfig.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString());
 
         return kafkaConfig;
     }
@@ -57,10 +74,10 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      * Configuration is created in the following order
      * <ul>
      *     <li>
-     *         Offset management:
      * <pre>
      * auto.offset.reset=earliest
      * enable.auto.commit=false
+     * isolation.level=read_committed
      * </pre>
      *     </li>
      *     <li>
@@ -94,8 +111,8 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
      * Get unique group identifier of {@link ConsumerApp}
      *
      * @return unique group identifier
-     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from
-     * provided group identifier in {@link ConsumerAppConfiguration}
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from provided
+     * group identifier in {@link ConsumerAppConfiguration}
      * @see ConsumerApp#getUniqueGroupId(ConsumerAppConfiguration)
      */
     public String getUniqueGroupId() {
@@ -109,9 +126,9 @@ public record ConfiguredConsumerApp<T extends ConsumerApp>(@NonNull T app,
     }
 
     /**
-     * Create an {@code ExecutableConsumerApp} using the provided {@link RuntimeConfiguration}
+     * Create an {@link ExecutableConsumerApp} using the provided {@link RuntimeConfiguration}
      *
-     * @return {@code ExecutableConsumerApp}
+     * @return {@link ExecutableConsumerApp}
      */
     @Override
     public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {

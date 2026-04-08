@@ -24,8 +24,23 @@
 
 package com.bakdata.kafka.streams.kstream;
 
+import static com.bakdata.kafka.KafkaTest.POLL_TIMEOUT;
+import static com.bakdata.kafka.KafkaTest.SESSION_TIMEOUT;
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
+import com.bakdata.kafka.KafkaTest;
+import com.bakdata.kafka.KafkaTestClient;
 import com.bakdata.kafka.Preconfigured;
+import com.bakdata.kafka.RuntimeConfiguration;
+import com.bakdata.kafka.SenderBuilder;
+import com.bakdata.kafka.SenderBuilder.SimpleProducerRecord;
+import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.admin.TopicsClient;
+import com.bakdata.kafka.streams.ConfiguredStreamsApp;
+import com.bakdata.kafka.streams.ExecutableStreamsApp;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsRunner;
 import com.bakdata.kafka.streams.StreamsTopicConfig;
 import com.bakdata.kafka.streams.TopologyConfigX;
 import com.bakdata.kafka.streams.apps.DoubleApp;
@@ -37,7 +52,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.errors.TopologyException;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
@@ -50,6 +70,7 @@ import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.kafka.KafkaContainer;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class StreamsBuilderXTest {
@@ -654,9 +675,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
-                );
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                return kafkaProperties;
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -719,9 +740,9 @@ class StreamsBuilderXTest {
 
             @Override
             public Map<String, Object> createKafkaProperties() {
-                return Map.of(
-                        TopologyConfigX.LINEAGE_ENABLED_CONFIG, true
-                );
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                return kafkaProperties;
             }
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
@@ -771,6 +792,93 @@ class StreamsBuilderXTest {
                         this.softly.assertThat(rekord.headers().toArray()).isEmpty();
                     });
         }
+    }
+
+    @Test
+    void shouldOptimizeTopology() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KTableX<String, String> left =
+                        builder.table("left", Consumed.as("left"), Materialized.as("left"));
+                final KTableX<String, String> right =
+                        builder.table("right", Consumed.as("right"), Materialized.as("right"));
+                final KTableX<String, String> joined = left.join(right, (l, r) -> l + r);
+                joined.toStream().to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(StreamsConfig.TOPOLOGY_OPTIMIZATION_CONFIG, StreamsConfig.OPTIMIZE);
+                return kafkaProperties;
+            }
+        };
+        try (final KafkaContainer kafkaCluster = KafkaTest.newCluster()) {
+            kafkaCluster.start();
+            final RuntimeConfiguration configuration = RuntimeConfiguration.create(kafkaCluster.getBootstrapServers())
+                    .withNoStateStoreCaching()
+                    .withSessionTimeout(SESSION_TIMEOUT);
+            final KafkaTestClient testClient = new KafkaTestClient(configuration);
+            testClient.createTopic("left");
+            testClient.createTopic("right");
+            testClient.createTopic("output");
+            try (final ConfiguredStreamsApp<StreamsApp> configuredApp = app.configureApp();
+                    final ExecutableStreamsApp<StreamsApp> executableApp = configuredApp
+                            .withRuntimeConfiguration(configuration);
+                    final StreamsRunner runner = executableApp.createRunner()) {
+                final SenderBuilder<String, String> send = testClient.send()
+                        .withKeySerializer(new StringSerializer())
+                        .withValueSerializer(new StringSerializer());
+                send.to("left", List.of(
+                        new SimpleProducerRecord<>("foo", "bar")
+                ));
+                send.to("right", List.of(
+                        new SimpleProducerRecord<>("foo", "baz")
+                ));
+                runAsync(runner);
+                KafkaTest.awaitProcessing(executableApp);
+                this.softly.assertThat(testClient.read()
+                                .withKeyDeserializer(new StringDeserializer())
+                                .withValueDeserializer(new StringDeserializer())
+                                .from("output", POLL_TIMEOUT))
+                        .hasSize(1)
+                        .anySatisfy(outputRecord -> {
+                            this.softly.assertThat(outputRecord.key()).isEqualTo("foo");
+                            this.softly.assertThat(outputRecord.value()).isEqualTo("barbaz");
+                        });
+                try (final AdminClientX admin = testClient.admin()) {
+                    final TopicsClient topics = admin.topics();
+                    this.softly.assertThat(topics.list())
+                            .noneSatisfy(topic -> this.softly.assertThat(topic).endsWith("-changelog"));
+                }
+            }
+        }
+    }
+
+    @Test
+    void shouldUseTopologyConfig() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final KGroupedStreamX<String, String> grouped = input.groupByKey();
+                final KTableX<String, Long> counted = grouped.count();
+                counted.toStream().to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
+                return kafkaProperties;
+            }
+        };
+        this.softly.assertThatThrownBy(app::startApp)
+                .isInstanceOf(TopologyException.class)
+                .hasMessageStartingWith("Invalid topology:")
+                .hasMessageContaining("Following changelog topic(s) has not been named")
+                .hasMessageContaining("Following state store(s) has not been named");
     }
 
 }

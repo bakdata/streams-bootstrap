@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka.streams;
 
+import com.bakdata.kafka.CloseExecutionOptions;
 import com.bakdata.kafka.KafkaApplication;
 import com.bakdata.kafka.mixin.ErrorOptions;
 import com.bakdata.kafka.mixin.InputOptions;
@@ -116,7 +117,9 @@ public abstract class KafkaStreamsApplication<T extends StreamsApp> extends
     @Override
     public final Optional<StreamsExecutionOptions> createExecutionOptions() {
         final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                .closeExecutionOptions(CloseExecutionOptions.builder()
+                        .volatileGroupInstanceId(this.isVolatileGroupInstanceId())
+                        .build())
                 .uncaughtExceptionHandler(this::createUncaughtExceptionHandler)
                 .stateListener(this::createStateListener)
                 .onStart(this::onStreamsStart)

@@ -45,6 +45,13 @@ commandLine: {}
 env: {}
 #  MY_ENV_VARIABLE: foo-bar
 #
+
+# Downward API values
+envValueFrom: {}
+#  NODE_NAME:
+#    fieldRef:
+#      fieldPath: spec.nodeName
+
 secrets: {}
 #  MY_SECRET: fo-bar
 secretRefs: {}

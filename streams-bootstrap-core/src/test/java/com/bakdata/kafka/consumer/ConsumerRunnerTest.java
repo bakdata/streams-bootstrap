@@ -50,8 +50,9 @@ class ConsumerRunnerTest extends KafkaTest {
 
     @Test
     void shouldRunApp() {
-        try (final ConfiguredConsumerApp<ConsumerApp> app = createStringApplication();
-                final ExecutableConsumerApp<ConsumerApp> executableApp = createExecutableApp(app, this.createConfig());
+        try (final ConfiguredConsumerApp<StringConsumer> app = createStringApplication();
+                final ExecutableConsumerApp<StringConsumer> executableApp = createExecutableApp(app,
+                        this.createConfig());
                 final ConsumerRunner runner = executableApp.createRunner()) {
 
             runAsync(runner);
@@ -60,7 +61,7 @@ class ConsumerRunnerTest extends KafkaTest {
             final SimpleProducerRecord<String, String> simpleProducerRecord = new SimpleProducerRecord<>("foo", "bar");
             this.writeInputTopic(app.getTopics().getInputTopics().get(0), simpleProducerRecord);
 
-            final StringConsumer stringConsumer = (StringConsumer) app.app();
+            final StringConsumer stringConsumer = app.getApp();
 
             awaitProcessing(executableApp);
 

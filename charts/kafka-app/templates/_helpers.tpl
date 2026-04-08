@@ -88,6 +88,13 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
 {{- $root := . -}}
 - name: ENV_PREFIX
   value: {{ .Values.configurationEnvPrefix }}_
+{{- if .Values.envValueFrom }}
+{{- range $key, $value := .Values.envValueFrom }}
+- name: {{ $key | quote }}
+  valueFrom:
+{{ toYaml $value | indent 4 }}
+{{- end }}
+{{- end }}
 {{- range $key, $value := .Values.kafka.config }}
 - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
   value: {{ $value | quote }}
@@ -355,7 +362,9 @@ backoffLimit: {{ .Values.backoffLimit }}
 
 {{- define "kafka-app.deployment-spec" -}}
   {{- if .Values.statefulSet }}
+  {{- if or (semverCompare "< 1.33" .Capabilities.KubeVersion.Version) .Values.service.enabled }}
   serviceName: {{ include "kafka-app.fullname" . }}
+  {{- end }}
   podManagementPolicy: Parallel
   {{- end }}
   {{- if (not .Values.autoscaling.enabled) }}

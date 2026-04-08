@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0](https://github.com/bakdata/streams-bootstrap/tree/7.0.0) - 2026-03-17
+### What's changed
+
+* Fix default jmx exporter image by @philipp94831 in [#412](https://github.com/bakdata/streams-bootstrap/pull/412)
+
+* Fix CI for external PRs by @philipp94831 in [#415](https://github.com/bakdata/streams-bootstrap/pull/415)
+
+* Upgrade to testcontainers 2.0 by @philipp94831 in [#416](https://github.com/bakdata/streams-bootstrap/pull/416)
+
+* Support Downward API in Helm charts by @disrvptor in [#414](https://github.com/bakdata/streams-bootstrap/pull/414)
+
+* Support topology optimization by @philipp94831 in [#418](https://github.com/bakdata/streams-bootstrap/pull/418)
+
+* Support topology config by @philipp94831 in [#419](https://github.com/bakdata/streams-bootstrap/pull/419)
+
+* Bump the ci-templates group with 4 updates by @dependabot[bot] in [#422](https://github.com/bakdata/streams-bootstrap/pull/422)
+
+* Bump actions/upload-artifact from 6 to 7 by @dependabot[bot] in [#424](https://github.com/bakdata/streams-bootstrap/pull/424)
+
+* Bump actions/download-artifact from 7 to 8 by @dependabot[bot] in [#423](https://github.com/bakdata/streams-bootstrap/pull/423)
+
+* Enforce internal resource naming by default by @philipp94831 in [#420](https://github.com/bakdata/streams-bootstrap/pull/420)
+
+* Clean up Consumer/ConsumerProducer by @philipp94831 in [#421](https://github.com/bakdata/streams-bootstrap/pull/421)
+
+* Upgrade to Kafka 4.2 by @philipp94831 in [#426](https://github.com/bakdata/streams-bootstrap/pull/426)
+
+* Fix consumer producer app example in readme by @jkbe in [#427](https://github.com/bakdata/streams-bootstrap/pull/427)
+
+* Refactor ConsumerProducer cleanup into dedicated classes, clean up error topic by @jkbe in [#417](https://github.com/bakdata/streams-bootstrap/pull/417)
+
+* Improve naming of clean up configuration instances by @jkbe in [#429](https://github.com/bakdata/streams-bootstrap/pull/429)
+
+* Make StatefulSet service name optional by @philipp94831 in [#425](https://github.com/bakdata/streams-bootstrap/pull/425)
+
+* Use groupId for bare consumers instead of KStreams appId by @jkbe in [#430](https://github.com/bakdata/streams-bootstrap/pull/430)
+
+* Allow SerDe preconfiguration in consumer and producer builders by @jkbe in [#428](https://github.com/bakdata/streams-bootstrap/pull/428)
+
+* Document streams-bootstrap by @philipp94831 in [#365](https://github.com/bakdata/streams-bootstrap/pull/365)
+
+
+### New Contributors
+* @disrvptor made their first contribution in [#414](https://github.com/bakdata/streams-bootstrap/pull/414)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/6.2.0...7.0.0
+
+## [6.2.0](https://github.com/bakdata/streams-bootstrap/tree/6.2.0) - 2026-02-02
+### What's changed
+
+* Provide lineage information via headers by @philipp94831 in [#380](https://github.com/bakdata/streams-bootstrap/pull/380)
+
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in [#369](https://github.com/bakdata/streams-bootstrap/pull/369)
+
+* Bump actions/upload-artifact from 4 to 5 by @dependabot[bot] in [#388](https://github.com/bakdata/streams-bootstrap/pull/388)
+
+* Bump actions/download-artifact from 4 to 6 by @dependabot[bot] in [#384](https://github.com/bakdata/streams-bootstrap/pull/384)
+
+* Bump actions/setup-python from 4 to 6 by @dependabot[bot] in [#378](https://github.com/bakdata/streams-bootstrap/pull/378)
+
+* Bump abatilo/actions-poetry from 2 to 4 by @dependabot[bot] in [#360](https://github.com/bakdata/streams-bootstrap/pull/360)
+
+* Add toString and hash code to common CLI options by @philipp94831 in [#393](https://github.com/bakdata/streams-bootstrap/pull/393)
+
+* Group updates for CI templates by @philipp94831 in [#398](https://github.com/bakdata/streams-bootstrap/pull/398)
+
+* Bump the kafka-dependencies group with 2 updates by @dependabot[bot] in [#399](https://github.com/bakdata/streams-bootstrap/pull/399)
+
+* Bump the test-dependencies group with 6 updates by @dependabot[bot] in [#402](https://github.com/bakdata/streams-bootstrap/pull/402)
+
+* Bump org.apache.logging.log4j:log4j-slf4j2-impl from 2.25.1 to 2.25.3 in the log-dependencies group by @dependabot[bot] in [#400](https://github.com/bakdata/streams-bootstrap/pull/400)
+
+* Fix Gradle setup for Helm build by @philipp94831 in [#405](https://github.com/bakdata/streams-bootstrap/pull/405)
+
+* Bump the ci-templates group with 4 updates by @dependabot[bot] in [#401](https://github.com/bakdata/streams-bootstrap/pull/401)
+
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#403](https://github.com/bakdata/streams-bootstrap/pull/403)
+
+* Bump the freefair-plugins group with 2 updates by @dependabot[bot] in [#404](https://github.com/bakdata/streams-bootstrap/pull/404)
+
+* Bump the plugins group with 3 updates by @dependabot[bot] in [#408](https://github.com/bakdata/streams-bootstrap/pull/408)
+
+* Bump the ci-templates group with 4 updates by @dependabot[bot] in [#406](https://github.com/bakdata/streams-bootstrap/pull/406)
+
+* Bump the kafka-dependencies group with 3 updates by @dependabot[bot] in [#407](https://github.com/bakdata/streams-bootstrap/pull/407)
+
+* Upgrade to Gradle 9.3 by @philipp94831 in [#410](https://github.com/bakdata/streams-bootstrap/pull/410)
+
+* Use new consumer group admin APIs by @philipp94831 in [#411](https://github.com/bakdata/streams-bootstrap/pull/411)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/6.1.0...6.2.0
+
 ## [6.1.0](https://github.com/bakdata/streams-bootstrap/tree/6.1.0) - 2026-01-26
 ### What's changed
 
