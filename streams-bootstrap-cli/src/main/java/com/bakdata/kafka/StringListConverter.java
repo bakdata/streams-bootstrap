@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 bakdata
+ * Copyright (c) 2025 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.bakdata.kafka;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import picocli.CommandLine.ITypeConverter;
 
 /**
@@ -40,6 +39,6 @@ public class StringListConverter implements ITypeConverter<List<String>> {
         return Arrays.stream(split)
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
+                .toList();
     }
 }

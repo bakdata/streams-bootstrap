@@ -24,9 +24,14 @@
 
 package com.bakdata.kafka;
 
-import com.bakdata.kafka.util.ConsumerGroupClient;
-import com.bakdata.kafka.util.ImprovedAdminClient;
-import com.bakdata.kafka.util.TopicClient;
+import com.bakdata.kafka.admin.AdminClientX;
+import com.bakdata.kafka.admin.ConsumerGroupsClient;
+import com.bakdata.kafka.admin.TopicsClient;
+import com.bakdata.kafka.consumer.ExecutableConsumerApp;
+import com.bakdata.kafka.consumerproducer.ConfiguredConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ExecutableConsumerProducerApp;
+import com.bakdata.kafka.streams.ExecutableStreamsApp;
+import com.bakdata.kafka.streams.StreamsConfigX;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -36,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.ConsumerGroupState;
+import org.apache.kafka.common.GroupState;
 import org.apache.kafka.common.TopicPartition;
 
 /**
@@ -47,47 +52,72 @@ import org.apache.kafka.common.TopicPartition;
 public class ConsumerGroupVerifier {
 
     private final @NonNull String group;
-    private final @NonNull Supplier<ImprovedAdminClient> adminClientSupplier;
+    private final @NonNull Supplier<AdminClientX> adminClientSupplier;
 
     /**
-     * Create a new verifier from an {@code ExecutableStreamsApp}
+     * Create a new verifier from an {@link ExecutableStreamsApp}
      * @param app app to create verifier from
      * @return verifier
      */
     public static ConsumerGroupVerifier verify(final ExecutableStreamsApp<?> app) {
-        final EffectiveAppConfiguration<StreamsTopicConfig> config = app.getEffectiveConfig();
-        final ImprovedStreamsConfig streamsConfig = new ImprovedStreamsConfig(app.getConfig());
-        return new ConsumerGroupVerifier(streamsConfig.getAppId(), config::createAdminClient);
+        final Map<String, Object> kafkaProperties = app.getKafkaProperties();
+        final StreamsConfigX streamsConfig = new StreamsConfigX(app.getConfig());
+        return new ConsumerGroupVerifier(streamsConfig.getAppId(), () -> AdminClientX.create(kafkaProperties));
     }
 
     /**
-     * Check whether consumer group has state {@link ConsumerGroupState#STABLE}
-     * @return true if consumer group has state {@link ConsumerGroupState#STABLE}
+     * Create a new verifier from an {@code ExecutableConsumerApp}
+     * @param app app to create verifier from
+     * @return verifier
+     */
+    public static ConsumerGroupVerifier verify(final ExecutableConsumerApp<?> app) {
+        final Map<String, Object> kafkaProperties = app.getKafkaProperties();
+        return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
+    }
+
+    /**
+     * Create a new verifier from an {@code ExecutableConsumerProducerApp}
+     * @param app app to create verifier from
+     * @return verifier
+     */
+    public static ConsumerGroupVerifier verify(final ExecutableConsumerProducerApp<?> app) {
+        final Map<String, Object> kafkaProperties = app.getConsumerProperties();
+        return new ConsumerGroupVerifier(app.getGroupId(), () -> AdminClientX.create(kafkaProperties));
+    }
+
+    /**
+     * Check whether consumer group has state {@link GroupState#STABLE}
+     * @return true if consumer group has state {@link GroupState#STABLE}
      */
     public boolean isActive() {
-        return this.getState() == ConsumerGroupState.STABLE;
+        return this.getState().filter(s -> s == GroupState.STABLE).isPresent();
     }
 
     /**
-     * Check whether consumer group has state {@link ConsumerGroupState#EMPTY}
-     * @return true if consumer group has state {@link ConsumerGroupState#EMPTY}
+     * Check whether consumer group has state {@link GroupState#EMPTY}
+     * @return true if consumer group has state {@link GroupState#EMPTY}
      */
     public boolean isClosed() {
-        return this.getState() == ConsumerGroupState.EMPTY;
+        return this.getState().filter(s -> s == GroupState.EMPTY).isPresent();
     }
 
     /**
      * Get current state of consumer group
+     *
      * @return current state of consumer group
      */
-    public ConsumerGroupState getState() {
-        try (final ImprovedAdminClient admin = this.adminClientSupplier.get();
-                final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient()) {
-            final ConsumerGroupDescription description = consumerGroupClient.describe(this.group);
-            final ConsumerGroupState state = description.state();
-            log.debug("Consumer group '{}' has state {}", this.group, state);
-            return state;
+    public Optional<GroupState> getState() {
+        try (final AdminClientX admin = this.adminClientSupplier.get()) {
+            final ConsumerGroupsClient groups = admin.consumerGroups();
+            return groups.group(this.group).describe()
+                    .map(this::getState);
         }
+    }
+
+    private GroupState getState(final ConsumerGroupDescription description) {
+        final GroupState state = description.groupState();
+        log.debug("Consumer group '{}' has state {}", this.group, state);
+        return state;
     }
 
     /**
@@ -100,20 +130,20 @@ public class ConsumerGroupVerifier {
 
     /**
      * Compute lag of consumer group
-     * @return lag of consumer group. If no partitions are assigned, an empty {@code Optional} is returned
+     * @return lag of consumer group. If no partitions are assigned, an empty {@link Optional} is returned
      */
     public Optional<Long> computeLag() {
-        try (final ImprovedAdminClient admin = this.adminClientSupplier.get();
-                final ConsumerGroupClient consumerGroupClient = admin.getConsumerGroupClient();
-                final TopicClient topicClient = admin.getTopicClient()) {
+        try (final AdminClientX admin = this.adminClientSupplier.get()) {
+            final ConsumerGroupsClient groups = admin.consumerGroups();
             final Map<TopicPartition, OffsetAndMetadata> consumerOffsets =
-                    consumerGroupClient.listOffsets(this.group);
+                    groups.group(this.group).listOffsets();
             log.debug("Consumer group '{}' has {} subscribed partitions", this.group, consumerOffsets.size());
             if (consumerOffsets.isEmpty()) {
                 return Optional.empty();
             }
+            final TopicsClient topics = admin.topics();
             final Map<TopicPartition, ListOffsetsResultInfo> partitionOffsets =
-                    topicClient.listOffsets(consumerOffsets.keySet());
+                    topics.listOffsets(consumerOffsets.keySet());
             final long lag = consumerOffsets.entrySet().stream()
                     .mapToLong(e -> {
                         final TopicPartition topicPartition = e.getKey();

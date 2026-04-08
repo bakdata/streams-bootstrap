@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger additivity="false" level="debug" name="com.bakdata">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="io.confluent.kafka.serializers">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.streams.StreamsConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.consumer.ConsumerConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.producer.ProducerConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="kafka.server.KafkaConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.admin.AdminClientConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.common.config.AbstractConfig">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.admin.internals.AdminMetadataManager">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger additivity="false" level="warn" name="org.apache.kafka.clients.Metadata">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

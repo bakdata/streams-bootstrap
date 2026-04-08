@@ -1,8 +1,11 @@
+import io.freefair.gradle.plugins.lombok.LombokExtension
+
 plugins {
     alias(libs.plugins.release)
     alias(libs.plugins.sonar)
     alias(libs.plugins.sonatype)
     alias(libs.plugins.lombok)
+    alias(libs.plugins.aggregate.javadoc)
 }
 
 allprojects {
@@ -11,7 +14,16 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://packages.confluent.io/maven/")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
+        maven(url = "https://central.sonatype.com/repository/maven-snapshots")
+    }
+
+    dependencies {
+        subprojects {
+            plugins.withId("java") {
+                javadoc(this@subprojects)
+            }
+            javadocClasspath("org.projectlombok:lombok:${LombokExtension.LOMBOK_VERSION}")
+        }
     }
 }
 
@@ -22,7 +34,7 @@ subprojects {
 
         configure<JavaPluginExtension> {
             toolchain {
-                languageVersion = JavaLanguageVersion.of(11)
+                languageVersion = JavaLanguageVersion.of(17)
             }
         }
     }
@@ -71,4 +83,9 @@ subprojects {
             }
         }
     }
+}
+
+// Build aggregated Javadoc. Not wired automatically in Gradle 9.3
+tasks.named("build") {
+    finalizedBy(tasks.named("javadocJar"))
 }

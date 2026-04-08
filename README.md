@@ -26,13 +26,7 @@ You can add streams-bootstrap via Maven Central.
 #### Gradle
 
 ```gradle
-implementation group: 'com.bakdata.kafka', name: 'streams-bootstrap-cli', version: '3.1.0'
-```
-
-With Kotlin DSL
-
-```gradle
-implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "3.1.0")
+implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", version = "7.0.0")
 ```
 
 #### Maven
@@ -42,7 +36,7 @@ implementation(group = "com.bakdata.kafka", name = "streams-bootstrap-cli", vers
 <dependency>
     <groupId>com.bakdata.kafka</groupId>
   <artifactId>streams-bootstrap-cli</artifactId>
-  <version>3.1.0</version>
+  <version>7.0.0</version>
 </dependency>
 ```
 
@@ -57,18 +51,18 @@ Create a subclass of `KafkaStreamsApplication` and implement the abstract method
 and `getUniqueAppId()`. You can define the topology of your application in `buildTopology()`.
 
 ```java
-import com.bakdata.kafka.KStreamX;
-import com.bakdata.kafka.KafkaStreamsApplication;
-import com.bakdata.kafka.SerdeConfig;
-import com.bakdata.kafka.StreamsApp;
-import com.bakdata.kafka.StreamsTopicConfig;
-import com.bakdata.kafka.StreamsBuilderX;
+import com.bakdata.kafka.streams.kstream.KStreamX;
+import com.bakdata.kafka.streams.KafkaStreamsApplication;
+import com.bakdata.kafka.streams.SerdeConfig;
+import com.bakdata.kafka.streams.StreamsApp;
+import com.bakdata.kafka.streams.StreamsTopicConfig;
+import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes.StringSerde;
 
 public class MyStreamsApplication extends KafkaStreamsApplication<StreamsApp> {
     public static void main(final String[] args) {
-      startApplication(new MyStreamsApplication(), args);
+      new MyStreamsApplication().startApplication(args);
     }
 
     @Override
@@ -148,18 +142,18 @@ Additionally, the following commands are available:
 Create a subclass of `KafkaProducerApplication`.
 
 ```java
-import com.bakdata.kafka.KafkaProducerApplication;
-import com.bakdata.kafka.ProducerApp;
-import com.bakdata.kafka.ProducerBuilder;
-import com.bakdata.kafka.ProducerRunnable;
-import com.bakdata.kafka.SerializerConfig;
+import com.bakdata.kafka.producer.KafkaProducerApplication;
+import com.bakdata.kafka.producer.ProducerApp;
+import com.bakdata.kafka.producer.ProducerBuilder;
+import com.bakdata.kafka.producer.ProducerRunnable;
+import com.bakdata.kafka.producer.SerializerConfig;
 import java.util.Map;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class MyProducerApplication extends KafkaProducerApplication<ProducerApp> {
     public static void main(final String[] args) {
-      startApplication(new MyProducerApplication(), args);
+      new MyProducerApplication().startApplication(args);
     }
 
     @Override
@@ -206,6 +200,184 @@ The following configuration options are available:
 Additionally, the following commands are available:
 
 - `clean`: Delete all output topics associated with the Kafka Producer application.
+
+#### Kafka consumer
+
+Create a subclass of `KafkaConsumerApplication`.
+
+```java
+import com.bakdata.kafka.consumer.ConsumerApp;
+import com.bakdata.kafka.consumer.ConsumerBuilder;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumer.KafkaConsumerApplication;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+public class MyConsumerApplication extends KafkaConsumerApplication<ConsumerApp> {
+    public static void main(final String[] args) {
+        new MyConsumerApplication().startApplication(args);
+    }
+
+    @Override
+    public ConsumerApp createApp() {
+        return new ConsumerApp() {
+            @Override
+            public ConsumerRunnable buildRunnable(final ConsumerBuilder builder) {
+                return () -> {
+                    try (final Consumer<Object, Object> consumer = builder.createConsumer()) {
+                        // your consumer
+                    }
+                };
+            }
+
+            @Override
+            public DeserializerConfig defaultSerializationConfig() {
+                return new DeserializerConfig(StringDeserializer.class, StringDeserializer.class);
+            }
+
+            // Optionally you can define custom Kafka properties
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        // your config
+                );
+            }
+        };
+    }
+}
+```
+
+The following configuration options are available:
+
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
+
+- `--schema-registry-url`: The URL of the Schema Registry
+
+- `--kafka-config`: Kafka consumer configuration (`<String=String>[,<String=String>...]`)
+
+- `--input-topics`: List of input topics (comma-separated)
+
+- `--input-pattern`: Pattern of input topics
+
+- `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
+  implementing `ConsumerApp#getUniqueGroupId()`
+
+- `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Consumer shutdown.
+
+Additionally, the following commands are available:
+
+- `clean`: Reset the Kafka consumer application. Additionally, delete the consumer group.
+
+- `reset`: Clear all state stores, consumer group offsets associated with the Kafka consumer application.
+
+#### Kafka ConsumerProducer
+
+In contrast to Kafka Streams, the Consumer-Producer application combines a Consumer and Producer to enable efficient 
+batch processing. While this offers lower overhead for simple transformations, it lacks built-in support for stateful 
+processing and does not support intermediate topics out of the box
+
+
+Create a subclass of `KafkaConsumerProducerApplication`.
+
+```java
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerApp;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerBuilder;
+import com.bakdata.kafka.consumerproducer.ConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.DefaultConsumerProducerRunnable;
+import com.bakdata.kafka.consumerproducer.KafkaConsumerProducerApplication;
+import com.bakdata.kafka.consumerproducer.SerializerDeserializerConfig;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+public class MyConsumerProducerApplication extends KafkaConsumerProducerApplication<ConsumerProducerApp> {
+    public static void main(final String[] args) {
+        new MyConsumerProducerApplication().startApplication(args);
+    }
+
+    @Override
+    public ConsumerProducerApp createApp() {
+        return new ConsumerProducerApp() {
+            @Override
+            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+                final Consumer<String, String> yourConsumer = builder.getConsumerBuilder().createConsumer();
+                builder.getConsumerBuilder().subscribeToAllTopics(yourConsumer);
+                final Producer<String, String> yourProducer = builder.getProducerBuilder().createProducer();
+                final ConsumerRunnable consumerRunnable = builder.getConsumerBuilder()
+                        .createDefaultConsumerRunnable(yourConsumer, records -> records.forEach(
+                                // your logic
+                                consumerRecord -> yourProducer.send(
+                                        new ProducerRecord<>(builder.getTopics().getOutputTopic(), 
+                                                consumerRecord.key(),
+                                                consumerRecord.value()))));
+                return new DefaultConsumerProducerRunnable<>(yourProducer, consumerRunnable);
+            }
+
+            @Override
+            public SerializerDeserializerConfig defaultSerializationConfig() {
+                return new SerializerDeserializerConfig(StringSerializer.class, StringSerializer.class,
+                        StringDeserializer.class, StringDeserializer.class);
+            }
+
+            // Optionally you can define custom Kafka properties
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                return Map.of(
+                        // your config
+                );
+            }
+        };
+    }
+}
+```
+
+The following configuration options are available:
+
+- `--bootstrap-servers`, `--bootstrap-server`: List of Kafka bootstrap servers (comma-separated) (**required**)
+
+- `--schema-registry-url`: The URL of the Schema Registry
+
+- `--kafka-config`: Kafka Consumer and Producer configuration (`<String=String>[,<String=String>...]`)
+
+- `--input-topics`: List of input topics (comma-separated)
+
+- `--input-pattern`: Pattern of input topics
+
+- `--output-topic`: The output topic
+
+- `--error-topic`: A topic to write errors to
+
+- `--labeled-input-topics`: Additional labeled input topics if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-input-patterns`: Additional labeled input patterns if you need to specify multiple topics with different
+  message types (`<String=String>[,<String=String>...]`)
+
+- `--labeled-output-topics`: Additional labeled output topics if you need to specify multiple topics with different
+  message types (`String=String>[,<String=String>...]`)
+
+- `--group-id`: Unique group ID to use for the Kafka consumer. Can also be provided by
+  implementing `ConsumerProducerApp#getUniqueGroupId()`
+
+- `--volatile-group-instance-id`: Whether the group instance id is volatile, i.e., it will change on a Consumer shutdown.
+
+Additionally, the following commands are available:
+
+- `clean`: Reset the Kafka ConsumerProducer application. Additionally, delete the consumer group and all output 
+- associated with the Kafka ConsumerProducer application.
+
+- `reset`: Clear all state stores, consumer group offsets associated with the Kafka ConsumerProducer application.
 
 ### Helm Charts
 

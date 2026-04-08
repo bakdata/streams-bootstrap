@@ -1,0 +1,46 @@
+site_name: streams-bootstrap
+site_url: https://bakdata.github.io/streams-bootstrap/
+repo_name: streams-bootstrap
+repo_url: https://github.com/bakdata/streams-bootstrap
+remote_branch: gh-pages
+copyright: Copyright &copy; 2025 bakdata
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - versioning
+extra:
+  version:
+    provider: mike
+plugins:
+  - search
+  - mike:
+      alias_type: symlink
+markdown_extensions:
+  - attr_list
+nav:
+  - User guide:
+      - What is streams-bootstrap: index.md
+      - Changelog: user/changelog.md
+      - Getting Started:
+          - Setup: user/getting-started/setup.md
+          - Quick start: user/getting-started/quick-start.md
+      - Concepts:
+          - Common concepts: user/concepts/common.md
+          - Streams concepts: user/concepts/streams.md
+          - Producer concepts: user/concepts/producer.md
+          - Consumer concepts: user/concepts/consumer.md
+          - Consumer-Producer concepts: user/concepts/consumer-producer.md
+      - Testing: user/testing.md
+      - Monitoring: user/monitoring.md
+      - Extensions:
+          - Large messages: user/extensions/large-messages.md
+      - Deployment:
+          - Local deployment: user/deployment/local.md
+          - Kubernetes: user/deployment/kubernetes.md
+      - Examples:
+          - Word count: user/examples/word-count.md
+          - Interactive queries: user/examples/interactive-queries.md
+  - Javadoc: javadoc/index.html

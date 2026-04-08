@@ -50,13 +50,11 @@ import picocli.CommandLine.ParseResult;
  * This class provides the following configuration options:
  * <ul>
  *     <li>{@link #bootstrapServers}</li>
- *     <li>{@link #outputTopic}</li>
- *     <li>{@link #labeledOutputTopics}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
- * To implement your Kafka application inherit from this class and add your custom options. Run it by calling
- * {@link #startApplication(KafkaApplication, String[])} with a instance of your class from your main.
+ * To implement your Kafka application inherit from this class and add your custom options. Run it by creating an
+ * instance of your class and calling {@link #startApplication(String[])} from your main.
  *
  * @param <R> type of {@link Runner} used by this app
  * @param <CR> type of {@link CleanUpRunner} used by this app
@@ -65,6 +63,7 @@ import picocli.CommandLine.ParseResult;
  * @param <CA> type of {@link ConfiguredApp} used by this app
  * @param <T> type of topic config used by this app
  * @param <A> type of app
+ * @param <AC> type of configuration used by this app
  */
 @ToString
 @Getter
@@ -73,7 +72,7 @@ import picocli.CommandLine.ParseResult;
 @Slf4j
 @Command(mixinStandardHelpOptions = true)
 public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunner, O, E extends ExecutableApp<R, CR,
-        O>, CA extends ConfiguredApp<E>, T, A>
+        O>, CA extends ConfiguredApp<E>, T, A, AC>
         implements Runnable, AutoCloseable {
     private static final String ENV_PREFIX = Optional.ofNullable(System.getenv("ENV_PREFIX")).orElse("APP_");
     @ToString.Exclude
@@ -81,11 +80,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     // ConcurrentLinkedDeque required because calling #stop() causes asynchronous #run() calls to finish and thus
     // concurrently iterating and removing from #runners
     private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    private String outputTopic;
-    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
-            description = "Additional labeled output topics")
-    private Map<String, String> labeledOutputTopics = emptyMap();
     @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
             description = "Kafka bootstrap servers to connect to")
     private String bootstrapServers;
@@ -95,32 +89,27 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     private Map<String, String> kafkaConfig = emptyMap();
 
     /**
-     * <p>This method needs to be called in the executable custom application class inheriting from
-     * {@code KafkaApplication}.</p>
+     * <p>This method should be called in the main method of your application</p>
      * <p>This method calls System exit</p>
      *
-     * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
-     * @see #startApplicationWithoutExit(KafkaApplication, String[])
+     * @see #startApplicationWithoutExit(String[])
      */
-    public static void startApplication(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app, final String[] args) {
-        final int exitCode = startApplicationWithoutExit(app, args);
+    public void startApplication(final String[] args) {
+        final int exitCode = this.startApplicationWithoutExit(args);
         System.exit(exitCode);
     }
 
     /**
-     * <p>This method needs to be called in the executable custom application class inheriting from
-     * {@code KafkaApplication}.</p>
+     * <p>This method should be called in the main method of your application</p>
      *
-     * @param app An instance of the custom application class.
      * @param args Arguments passed in by the custom application class.
      * @return Exit code of application
      */
-    public static int startApplicationWithoutExit(final KafkaApplication<?, ?, ?, ?, ?, ?, ?> app,
-            final String[] args) {
+    public int startApplicationWithoutExit(final String[] args) {
         final String[] populatedArgs = addEnvironmentVariablesArguments(args);
-        final CommandLine commandLine = new CommandLine(app)
-                .setExecutionStrategy(app::execute);
+        final CommandLine commandLine = new CommandLine(this)
+                .setExecutionStrategy(this::execute);
         return commandLine.execute(populatedArgs);
     }
 
@@ -138,6 +127,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create options for running the app
+     *
      * @return run options if available
      * @see ExecutableApp#createRunner(Object)
      */
@@ -145,6 +135,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Topics used by app
+     *
      * @return topic configuration
      */
     public abstract T createTopicConfig();
@@ -194,47 +185,48 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
         }
     }
 
-    public KafkaEndpointConfig getEndpointConfig() {
-        return KafkaEndpointConfig.builder()
-                .bootstrapServers(this.bootstrapServers)
-                .schemaRegistryUrl(this.schemaRegistryUrl)
-                .build();
+    public RuntimeConfiguration getRuntimeConfiguration() {
+        final RuntimeConfiguration configuration = RuntimeConfiguration.create(this.bootstrapServers)
+                .with(this.kafkaConfig);
+        return this.schemaRegistryUrl == null ? configuration
+                : configuration.withSchemaRegistryUrl(this.schemaRegistryUrl);
     }
 
     /**
-     * Create a new {@code ExecutableApp} that will be executed according to the requested command.
+     * Create a new {@link ExecutableApp} that will be executed according to the requested command.
      *
-     * @return {@code ExecutableApp}
+     * @return {@link ExecutableApp}
      */
     public final E createExecutableApp() {
         final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
-        final KafkaEndpointConfig endpointConfig = this.getEndpointConfig();
-        return configuredStreamsApp.withEndpoint(endpointConfig);
+        final RuntimeConfiguration runtimeConfiguration = this.getRuntimeConfiguration();
+        return configuredStreamsApp.withRuntimeConfiguration(runtimeConfiguration);
     }
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to this application.
+     * Create a new {@link ConfiguredApp} that will be executed according to this application.
      *
-     * @return {@code ConfiguredApp}
+     * @return {@link ConfiguredApp}
      */
     public final CA createConfiguredApp() {
-        final AppConfiguration<T> configuration = this.createConfiguration();
+        final T topics = this.createTopicConfig();
         final A app = this.createApp();
-        return this.createConfiguredApp(app, configuration);
+        final AC appConfiguration = this.createConfiguration(topics);
+        return this.createConfiguredApp(app, appConfiguration);
     }
 
     /**
      * Create configuration to configure app
+     *
+     * @param topics topic configuration
      * @return configuration
      */
-    public final AppConfiguration<T> createConfiguration() {
-        final T topics = this.createTopicConfig();
-        return new AppConfiguration<>(topics, this.kafkaConfig);
-    }
+    public abstract AC createConfiguration(T topics);
 
     /**
-     * Create a new {@code RunnableApp}
-     * @return {@code RunnableApp}
+     * Create a new {@link RunnableApp}
+     *
+     * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
         final ExecutableApp<R, ?, O> app = this.createExecutableApp();
@@ -246,8 +238,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code CleanableApp}
-     * @return {@code CleanableApp}
+     * Create a new {@link CleanableApp}
+     *
+     * @return {@link CleanableApp}
      */
     public final CleanableApp<CR> createCleanableApp() {
         final ExecutableApp<R, CR, O> executableApp = this.createExecutableApp();
@@ -258,34 +251,34 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Create a new {@code ConfiguredApp} that will be executed according to the given config.
-     *
-     * @param app app to configure.
-     * @param configuration configuration for app
-     * @return {@code ConfiguredApp}
-     */
-    protected abstract CA createConfiguredApp(final A app, AppConfiguration<T> configuration);
-
-    /**
      * Called before starting the application, e.g., invoking {@link #run()}
      */
-    protected void onApplicationStart() {
+    public void onApplicationStart() {
         // do nothing by default
     }
 
     /**
      * Called before running the application, i.e., invoking {@link #run()}
      */
-    protected void prepareRun() {
+    public void prepareRun() {
         // do nothing by default
     }
 
     /**
      * Called before cleaning the application, i.e., invoking {@link #clean()}
      */
-    protected void prepareClean() {
+    public void prepareClean() {
         // do nothing by default
     }
+
+    /**
+     * Create a new {@link ConfiguredApp} that will be executed according to the given config.
+     *
+     * @param app app to configure.
+     * @param configuration configuration for app
+     * @return {@link ConfiguredApp}
+     */
+    protected abstract CA createConfiguredApp(final A app, AC configuration);
 
     private void startApplication() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));

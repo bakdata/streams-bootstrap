@@ -6,18 +6,19 @@ plugins {
 }
 
 dependencies {
+    api(platform(libs.kafka.bom)) // Central repository requires this as a direct dependency to resolve versions
     api(libs.kafka.streams.utils)
-    implementation(libs.kafka.tools) {
-        exclude(group = "org.slf4j", module = "slf4j-reload4j")
-    }
+    implementation(libs.kafka.tools)
 
     api(libs.kafka.streams)
     api(libs.kafka.clients)
     implementation(libs.kafka.schema.serializer) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
     api(libs.kafka.schema.registry.client) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
+        exclude(group = "org.slf4j", module = "slf4j-api") // Conflict with 2.x when used as dependency
     }
     implementation(libs.slf4j)
     implementation(libs.jool)
@@ -25,22 +26,19 @@ dependencies {
     api(platform(libs.errorHandling.bom))
     api(libs.errorHandling.core)
 
-    testRuntimeOnly(libs.junit.engine)
-    testImplementation(libs.junit.api)
-    testImplementation(libs.junit.params)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.pioneer)
     testImplementation(libs.assertj)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.junit)
 
-    testFixturesApi(project(":streams-bootstrap-test"))
-    testFixturesApi(libs.testcontainers.junit)
-    testFixturesApi(libs.testcontainers.kafka)
+    testImplementation(testFixtures(project(":streams-bootstrap-test")))
     testImplementation(libs.kafka.streams.avro.serde) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
     }
+    testImplementation(libs.kafka.group.coordinator)
     testImplementation(libs.log4j.slf4j2)
-    testFixturesApi(libs.awaitility)
 }
 
 tasks.withType<Test> {
