@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package com.bakdata.kafka;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
 import io.confluent.kafka.schemaregistry.SchemaProvider;
@@ -60,7 +61,7 @@ public final class TestSchemaRegistry {
      * @throws NullPointerException if Schema Registry is not configured
      */
     public SchemaRegistryClient getSchemaRegistryClient() {
-        return this.getSchemaRegistryClient(null);
+        return this.getSchemaRegistryClient(emptyList());
     }
 
     /**

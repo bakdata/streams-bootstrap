@@ -14,10 +14,10 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj)
     testImplementation(libs.kafka.streams.avro.serde) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
     }
     testImplementation(libs.kafka.protobuf.provider) {
-        exclude(group = "org.apache.kafka", module = "kafka-clients") // force usage of OSS kafka-clients
+        exclude(group = "org.apache.kafka") // force usage of OSS kafka-clients
     }
     testFixturesApi(libs.testcontainers.junit)
     testFixturesApi(libs.testcontainers.kafka)

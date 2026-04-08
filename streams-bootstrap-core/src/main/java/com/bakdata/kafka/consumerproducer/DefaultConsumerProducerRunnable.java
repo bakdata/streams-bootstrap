@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,41 +22,41 @@
  * SOFTWARE.
  */
 
-package com.bakdata.kafka.streams;
+package com.bakdata.kafka.consumerproducer;
 
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Map;
+import com.bakdata.kafka.consumer.ConsumerRunnable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.junit.jupiter.api.Test;
+import org.apache.kafka.clients.producer.Producer;
 
-class StreamsExecutionOptionsTest {
 
-    @Test
-    void shouldLeaveGroup() {
-        final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .build();
-        assertThat(options.shouldLeaveGroup(emptyMap())).isTrue();
+/**
+ * Creates a {@link ConsumerProducerRunnable} using the provided {@link ConsumerRunnable} and {@link Producer}.
+ *
+ * @param <KOut> type of keys produced by this runnable
+ * @param <VOut> type of values produced by this runnable
+ */
+@RequiredArgsConstructor
+@Slf4j
+public class DefaultConsumerProducerRunnable<KOut, VOut> implements ConsumerProducerRunnable {
+
+    private final Producer<KOut, VOut> producer;
+    private final ConsumerRunnable consumerRunnable;
+
+    @Override
+    public void run(final ConsumerConfig consumerConfig) {
+        this.consumerRunnable.run(consumerConfig);
     }
 
-    @Test
-    void shouldNotLeaveGroup() {
-        final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(false)
-                .build();
-        assertThat(options.shouldLeaveGroup(Map.of(
-                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
-        ))).isFalse();
-    }
+    @Override
+    public void close() {
+        log.debug("Closing consumer runnable");
+        this.consumerRunnable.close();
 
-    @Test
-    void shouldLeaveGroupWithVolatileGroupId() {
-        final StreamsExecutionOptions options = StreamsExecutionOptions.builder()
-                .volatileGroupInstanceId(true)
-                .build();
-        assertThat(options.shouldLeaveGroup(Map.of(
-                ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "foo"
-        ))).isTrue();
+        log.debug("Closing producer");
+        this.producer.close();
+
+        log.info("ConsumerProducer was shut down gracefully");
     }
 }

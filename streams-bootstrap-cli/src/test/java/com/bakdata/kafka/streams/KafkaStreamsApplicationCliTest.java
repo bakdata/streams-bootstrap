@@ -372,6 +372,7 @@ class KafkaStreamsApplicationCliTest {
                     "--labeled-input-patterns", "label1=.+,label2=\\d+",
                     "--output-topic", "output1",
                     "--labeled-output-topics", "label1=output2,label2=output3",
+                    "--error-topic", "errorTopic",
                     "--kafka-config", "foo=1,bar=2",
             });
             assertThat(app.getBootstrapServers()).isEqualTo("bootstrap-servers");
@@ -394,6 +395,7 @@ class KafkaStreamsApplicationCliTest {
                     .hasSize(2)
                     .containsEntry("label1", "output2")
                     .containsEntry("label2", "output3");
+            assertThat(app.getErrorTopic()).isEqualTo("errorTopic");
             assertThat(app.getKafkaConfig())
                     .hasSize(2)
                     .containsEntry("foo", "1")

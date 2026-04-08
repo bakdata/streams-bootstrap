@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 
 package com.bakdata.kafka.streams;
+
 
 import com.bakdata.kafka.HasCleanHook;
 import com.bakdata.kafka.HasTopicHooks;
@@ -60,7 +61,8 @@ public class StreamsCleanUpConfiguration
 
     /**
      * Register a hook that is executed after {@link StreamsCleanUpRunner#reset()} has finished
-     * @param hook factory to create hook from
+     *
+     * @param hook the runnable to execute
      * @return self for chaining
      */
     public StreamsCleanUpConfiguration registerResetHook(final Runnable hook) {

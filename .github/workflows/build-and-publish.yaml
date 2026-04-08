@@ -6,13 +6,12 @@ on:
     branches:
       - master
   pull_request:
+  merge_group:
 
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.68.0
-    with:
-      java-version: 17
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@1.81.2
     secrets:
       sonar-token: ${{ secrets.SONARCLOUD_TOKEN }}
       sonar-organization: ${{ secrets.SONARCLOUD_ORGANIZATION }}
@@ -30,10 +29,10 @@ jobs:
     if: ${{ needs.build-and-publish.result == 'success' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download aggregated Javadoc artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-artifact
           path: build-artifact
@@ -56,7 +55,7 @@ jobs:
           fi
 
       - name: Upload extracted Javadoc
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: javadoc
           path: docs/docs/javadoc
@@ -67,15 +66,15 @@ jobs:
     needs: extract-javadoc
     if: ${{ needs.extract-javadoc.result == 'success' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@v4
         with:
           poetry-version: "1.8.2"
 
@@ -90,13 +89,15 @@ jobs:
     runs-on: ubuntu-24.04
     needs: docs
     if: ${{ needs.docs.result == 'success' }}
+    permissions:
+      contents: write # Explicitly grant write access to allow pushing in this job for dependabot
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Fetch all tags; Required for doc versioning
 
       - name: Download extracted Javadoc
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: javadoc
           path: docs/docs/javadoc
@@ -106,6 +107,8 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "tag=dev" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "merge_group" ]]; then
+            echo "tag=dev" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           elif [[ "${GITHUB_REF_NAME}" == "${{ github.event.repository.default_branch }}" ]]; then
@@ -114,7 +117,7 @@ jobs:
 
       - name: Check for docs changes (PR)
         if: ${{ github.event_name == 'pull_request' }}
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: docs-changes
         with:
           filters: |

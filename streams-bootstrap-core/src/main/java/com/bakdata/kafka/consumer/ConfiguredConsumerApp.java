@@ -1,0 +1,165 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2026 bakdata
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package com.bakdata.kafka.consumer;
+
+import com.bakdata.kafka.ConfiguredApp;
+import com.bakdata.kafka.EnvironmentKafkaConfigParser;
+import com.bakdata.kafka.KafkaPropertiesFactory;
+import com.bakdata.kafka.RuntimeConfiguration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
+import org.apache.kafka.common.IsolationLevel;
+
+/**
+ * A {@link ConsumerApp} with a corresponding {@link ConsumerAppConfiguration}
+ *
+ * @param <T> type of {@link ConsumerApp}
+ */
+@RequiredArgsConstructor
+public class ConfiguredConsumerApp<T extends ConsumerApp> implements ConfiguredApp<ExecutableConsumerApp<T>> {
+    @Getter
+    private final @NonNull T app;
+    private final @NonNull ConsumerAppConfiguration configuration;
+
+    /**
+     * Base configuration for all consumer apps which includes
+     * <pre>
+     * auto.offset.reset=earliest
+     * enable.auto.commit=false
+     * isolation.level=read_committed
+     * </pre>
+     *
+     * @return base configuration
+     */
+    public static Map<String, Object> createBaseConfig() {
+        final Map<String, Object> kafkaConfig = new HashMap<>();
+
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.EARLIEST.type().toString());
+        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        kafkaConfig.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString());
+
+        return kafkaConfig;
+    }
+
+    /**
+     * <p>This method creates the configuration to run a {@link ConsumerApp}.</p>
+     * Configuration is created in the following order
+     * <ul>
+     *     <li>
+     * <pre>
+     * auto.offset.reset=earliest
+     * enable.auto.commit=false
+     * isolation.level=read_committed
+     * </pre>
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link ConsumerApp#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         Configs provided via environment variables (see
+     *         {@link EnvironmentKafkaConfigParser#parseVariables(Map)})
+     *     </li>
+     *     <li>
+     *         Configs provided by {@link RuntimeConfiguration#createKafkaProperties()}
+     *     </li>
+     *     <li>
+     *         {@link ConsumerConfig#KEY_DESERIALIZER_CLASS_CONFIG} and
+     *         {@link ConsumerConfig#VALUE_DESERIALIZER_CLASS_CONFIG} is configured using
+     *         {@link ConsumerApp#defaultSerializationConfig()}
+     *     </li>
+     * </ul>
+     *
+     * @param runtimeConfiguration configuration to run app with
+     * @return Kafka configuration
+     */
+    public Map<String, Object> getKafkaProperties(final RuntimeConfiguration runtimeConfiguration) {
+        final KafkaPropertiesFactory propertiesFactory = this.createPropertiesFactory(runtimeConfiguration);
+        return propertiesFactory.createKafkaProperties(Map.of(
+                ConsumerConfig.GROUP_ID_CONFIG, this.getUniqueGroupId()
+        ));
+    }
+
+    /**
+     * Get unique group identifier of {@link ConsumerApp}
+     *
+     * @return unique group identifier
+     * @throws IllegalArgumentException if unique group identifier of {@link ConsumerApp} is different from provided
+     * group identifier in {@link ConsumerAppConfiguration}
+     * @see ConsumerApp#getUniqueGroupId(ConsumerAppConfiguration)
+     */
+    public String getUniqueGroupId() {
+        final String uniqueGroupId =
+                Objects.requireNonNull(this.app.getUniqueGroupId(this.configuration), "Group ID cannot be null");
+        if (this.configuration.getUniqueGroupId().map(configuredId -> !uniqueGroupId.equals(configuredId))
+                .orElse(false)) {
+            throw new IllegalArgumentException("Provided group ID does not match ConsumerApp#getUniqueGroupId()");
+        }
+        return uniqueGroupId;
+    }
+
+    /**
+     * Create an {@link ExecutableConsumerApp} using the provided {@link RuntimeConfiguration}
+     *
+     * @return {@link ExecutableConsumerApp}
+     */
+    @Override
+    public ExecutableConsumerApp<T> withRuntimeConfiguration(final RuntimeConfiguration runtimeConfiguration) {
+        return ExecutableConsumerApp.<T>builder()
+                .app(this.app)
+                .groupId(this.getUniqueGroupId())
+                .kafkaProperties(this.getKafkaProperties(runtimeConfiguration))
+                .topics(this.getTopics())
+                .build();
+    }
+
+    /**
+     * Get topic configuration
+     *
+     * @return topic configuration
+     */
+    public ConsumerTopicConfig getTopics() {
+        return this.configuration.getTopics();
+    }
+
+    @Override
+    public void close() {
+        this.app.close();
+    }
+
+    private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfiguration) {
+        final Map<String, Object> baseConfig = createBaseConfig();
+        return KafkaPropertiesFactory.builder()
+                .baseConfig(baseConfig)
+                .app(this.app)
+                .runtimeConfig(runtimeConfiguration)
+                .build();
+    }
+}

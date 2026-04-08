@@ -36,6 +36,9 @@ tolerations: []
 #     operator: "Exists"
 #     effect: "NoSchedule"
 
+# priorityClass
+# priorityClassName: ""
+
 ## Affinity for pod assignment (evaluated as template)
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ##
@@ -65,6 +68,12 @@ commandLine: {}
 
 env: {}
 #  MY_ENV_VARIABLE: foo-bar
+
+# Downward API values
+envValueFrom: {}
+#  NODE_NAME:
+#    fieldRef:
+#      fieldPath: spec.nodeName
 
 secrets: {}
 #  MY_SECRET: fo-bar
@@ -119,3 +128,5 @@ readinessProbe: {}
 podAnnotations: {}
 
 podLabels: {}
+
+terminationGracePeriodSeconds: 300

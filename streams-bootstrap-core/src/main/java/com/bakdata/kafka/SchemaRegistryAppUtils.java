@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  */
 
 package com.bakdata.kafka;
+
+import static java.util.Collections.emptyList;
 
 import com.bakdata.kafka.HasTopicHooks.TopicHook;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -79,7 +81,7 @@ public class SchemaRegistryAppUtils {
      */
     public static SchemaRegistryClient createSchemaRegistryClient(@NonNull final Map<String, Object> configs,
             @NonNull final String schemaRegistryUrl) {
-        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, null, configs, null);
+        return SchemaRegistryClientFactory.newClient(schemaRegistryUrl, CACHE_CAPACITY, emptyList(), configs, null);
     }
 
     /**

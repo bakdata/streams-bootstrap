@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,25 @@
 package com.bakdata.kafka.producer;
 
 import com.bakdata.kafka.KafkaApplication;
+import com.bakdata.kafka.mixin.OutputOptions;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 
 
 /**
  * <p>The base class for creating Kafka Producer applications.</p>
- * This class provides all configuration options provided by {@link KafkaApplication}.
+ * This class provides the following configuration options in addition to those provided by {@link KafkaApplication}:
+ * <ul>
+ *     <li>{@link #getOutputTopic()}</li>
+ *     <li>{@link #getLabeledOutputTopics()}</li>
+ * </ul>
  * To implement your Kafka Producer application inherit from this class and add your custom options.  Run it by
  * creating an instance of your class and calling {@link #startApplication(String[])} from your main.
  *
@@ -51,6 +58,9 @@ import picocli.CommandLine.Command;
 public abstract class KafkaProducerApplication<T extends ProducerApp> extends
         KafkaApplication<ProducerRunner, ProducerCleanUpRunner, ProducerExecutionOptions, ExecutableProducerApp<T>,
                 ConfiguredProducerApp<T>, ProducerTopicConfig, T, ProducerAppConfiguration> {
+    @Mixin
+    @Delegate
+    private OutputOptions outputOptions = new OutputOptions();
 
     /**
      * Delete all output topics associated with the Kafka Producer application.
@@ -63,7 +73,9 @@ public abstract class KafkaProducerApplication<T extends ProducerApp> extends
 
     @Override
     public final Optional<ProducerExecutionOptions> createExecutionOptions() {
-        return Optional.empty();
+        final ProducerExecutionOptions executionOptions = ProducerExecutionOptions.builder()
+                .build();
+        return Optional.of(executionOptions);
     }
 
     @Override

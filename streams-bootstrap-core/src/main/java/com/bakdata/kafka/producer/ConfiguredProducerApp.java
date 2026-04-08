@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,17 @@ public class ConfiguredProducerApp<T extends ProducerApp> implements ConfiguredA
     private final @NonNull T app;
     private final @NonNull ProducerAppConfiguration configuration;
 
-    private static Map<String, Object> createBaseConfig() {
+    /**
+     * Base configuration for all producer apps which includes
+     * <pre>
+     * max.in.flight.requests.per.connection=1
+     * acks=all
+     * compression.type=gzip
+     * </pre>
+     *
+     * @return base configuration
+     */
+    public static Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
         kafkaConfig.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);

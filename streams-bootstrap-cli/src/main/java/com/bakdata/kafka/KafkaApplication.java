@@ -50,8 +50,6 @@ import picocli.CommandLine.ParseResult;
  * This class provides the following configuration options:
  * <ul>
  *     <li>{@link #bootstrapServers}</li>
- *     <li>{@link #outputTopic}</li>
- *     <li>{@link #labeledOutputTopics}</li>
  *     <li>{@link #schemaRegistryUrl}</li>
  *     <li>{@link #kafkaConfig}</li>
  * </ul>
@@ -82,11 +80,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     // ConcurrentLinkedDeque required because calling #stop() causes asynchronous #run() calls to finish and thus
     // concurrently iterating and removing from #runners
     private final ConcurrentLinkedDeque<Stoppable> activeApps = new ConcurrentLinkedDeque<>();
-    @CommandLine.Option(names = "--output-topic", description = "Output topic")
-    private String outputTopic;
-    @CommandLine.Option(names = "--labeled-output-topics", split = ",",
-            description = "Additional labeled output topics")
-    private Map<String, String> labeledOutputTopics = emptyMap();
     @CommandLine.Option(names = {"--bootstrap-servers", "--bootstrap-server"}, required = true,
             description = "Kafka bootstrap servers to connect to")
     private String bootstrapServers;
@@ -134,6 +127,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create options for running the app
+     *
      * @return run options if available
      * @see ExecutableApp#createRunner(Object)
      */
@@ -141,6 +135,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Topics used by app
+     *
      * @return topic configuration
      */
     public abstract T createTopicConfig();
@@ -230,6 +225,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create a new {@link RunnableApp}
+     *
      * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
@@ -243,6 +239,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
 
     /**
      * Create a new {@link CleanableApp}
+     *
      * @return {@link CleanableApp}
      */
     public final CleanableApp<CR> createCleanableApp() {
