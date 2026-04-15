@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,7 +84,7 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     public static StreamsCleanUpRunner create(final @NonNull Topology topology,
             final @NonNull StreamsConfig streamsConfig, final @NonNull StreamsCleanUpConfiguration configuration) {
         final StreamsConfigX config = new StreamsConfigX(streamsConfig);
-        final TopologyInformation topologyInformation = new TopologyInformation(topology, config.getAppId());
+        final TopologyInformation topologyInformation = new TopologyInformation(topology, streamsConfig);
         SchemaRegistryAppUtils.createTopicHook(config.getKafkaProperties())
                 .ifPresent(configuration::registerTopicHook);
         return new StreamsCleanUpRunner(topologyInformation, topology, config, configuration);

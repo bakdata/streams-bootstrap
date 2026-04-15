@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,6 +56,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -63,6 +64,7 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -158,6 +160,28 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                 final TopicsClient topics = admin.topics();
                 this.softly.assertThat(topics.topic(app.getTopics().getOutputTopic()).exists())
                         .as("Output topic is deleted")
+                        .isFalse();
+            }
+        }
+    }
+
+    @Test
+    void shouldDeleteDlqTopic() {
+        final String dlqTopic = "dlq";
+        try (final ConfiguredStreamsApp<StreamsApp> app = createWordCountApplication();
+                final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
+                        this.createConfig()
+                                .with(Map.of(
+                                        StreamsConfig.ERRORS_DEAD_LETTER_QUEUE_TOPIC_NAME_CONFIG, dlqTopic
+                                )))) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(dlqTopic);
+            clean(executableApp);
+
+            try (final AdminClientX admin = testClient.admin()) {
+                final TopicsClient topics = admin.topics();
+                this.softly.assertThat(topics.topic(dlqTopic).exists())
+                        .as("Dead letter queue topic is deleted")
                         .isFalse();
             }
         }
