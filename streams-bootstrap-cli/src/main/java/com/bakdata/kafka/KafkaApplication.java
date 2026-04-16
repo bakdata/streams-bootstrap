@@ -200,8 +200,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public final E createExecutableApp() {
         final ConfiguredApp<E> configuredApp = this.createConfiguredApp();
         final RuntimeConfiguration runtimeConfiguration = this.getRuntimeConfiguration();
-        final E executableApp = configuredApp.withRuntimeConfiguration(runtimeConfiguration);
-        return executableApp;
+        return configuredApp.withRuntimeConfiguration(runtimeConfiguration);
     }
 
     /**
