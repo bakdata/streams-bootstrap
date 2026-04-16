@@ -146,6 +146,23 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         return this.configuration.getTopics();
     }
 
+    /**
+     * Create the topology of the Kafka Streams app
+     *
+     * @param kafkaProperties configuration that should be used by clients to configure Kafka utilities
+     * @return topology of the Kafka Streams app
+     */
+    public Topology createTopology(final Map<String, Object> kafkaProperties) {
+        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
+        this.app.buildTopology(streamsBuilder);
+        return streamsBuilder.build();
+    }
+
+    @Override
+    public void close() {
+        this.app.close();
+    }
+
     private Map<String, Object> createBaseConfig() {
         final Map<String, Object> kafkaConfig = new HashMap<>();
 
@@ -170,23 +187,6 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         }
 
         return kafkaConfig;
-    }
-
-    /**
-     * Create the topology of the Kafka Streams app
-     *
-     * @param kafkaProperties configuration that should be used by clients to configure Kafka utilities
-     * @return topology of the Kafka Streams app
-     */
-    public Topology createTopology(final Map<String, Object> kafkaProperties) {
-        final StreamsBuilderX streamsBuilder = new StreamsBuilderX(this.getTopics(), kafkaProperties);
-        this.app.buildTopology(streamsBuilder);
-        return streamsBuilder.build();
-    }
-
-    @Override
-    public void close() {
-        this.app.close();
     }
 
     private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfig) {
