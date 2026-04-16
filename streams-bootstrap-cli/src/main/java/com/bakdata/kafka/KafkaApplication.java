@@ -198,9 +198,10 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@link ExecutableApp}
      */
     public final E createExecutableApp() {
-        final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
+        final ConfiguredApp<E> configuredApp = this.createConfiguredApp();
         final RuntimeConfiguration runtimeConfiguration = this.getRuntimeConfiguration();
-        return configuredStreamsApp.withRuntimeConfiguration(runtimeConfiguration);
+        final E executableApp = configuredApp.withRuntimeConfiguration(runtimeConfiguration);
+        return executableApp;
     }
 
     /**
@@ -211,8 +212,8 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public final CA createConfiguredApp() {
         final T topics = this.createTopicConfig();
         final A app = this.createApp();
+        this.verify(app);
         final AC appConfiguration = this.createConfiguration(topics);
-        this.verify(app, appConfiguration);
         return this.createConfiguredApp(app, appConfiguration);
     }
 
@@ -230,7 +231,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
-        final ExecutableApp<R, ?, O> app = this.createExecutableApp();
+        final E app = this.createExecutableApp();
         final Optional<O> executionOptions = this.createExecutionOptions();
         final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
         final RunnableApp<R> runnableApp = new RunnableApp<>(app, runner, this.activeApps::remove);
@@ -273,13 +274,11 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     }
 
     /**
-     * Hook to verify an app and its configuration. An exception should be thrown if the app or configuration is
-     * invalid. Does nothing by default.
+     * Hook to verify an app. An exception should be thrown if the app is invalid. Does nothing by default.
      *
      * @param app app to verify
-     * @param configuration configuration to verify
      */
-    protected void verify(final A app, final AC configuration) {
+    protected void verify(final A app) {
         // do nothing by default
     }
 

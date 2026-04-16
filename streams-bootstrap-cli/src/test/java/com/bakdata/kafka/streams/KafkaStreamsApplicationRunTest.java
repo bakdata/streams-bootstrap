@@ -84,7 +84,7 @@ class KafkaStreamsApplicationRunTest extends KafkaTest {
             }
 
             @Override
-            protected void verify(final StreamsApp app, final StreamsAppConfiguration configuration) {
+            protected void verify(final StreamsApp app) {
                 throw exception;
             }
         }) {
