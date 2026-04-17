@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,6 +88,18 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     @CommandLine.Option(names = "--kafka-config", split = ",", description = "Additional Kafka properties")
     private Map<String, String> kafkaConfig = emptyMap();
 
+    private static String[] addEnvironmentVariablesArguments(final String[] args) {
+        if (ENV_PREFIX.equals(EnvironmentKafkaConfigParser.PREFIX)) {
+            throw new IllegalArgumentException(
+                    String.format("Prefix '%s' is reserved for Kafka config", EnvironmentKafkaConfigParser.PREFIX));
+        }
+        final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
+                .parseVariables(System.getenv());
+        final Collection<String> allArgs = new ArrayList<>(environmentArguments);
+        allArgs.addAll(Arrays.asList(args));
+        return allArgs.toArray(String[]::new);
+    }
+
     /**
      * <p>This method should be called in the main method of your application</p>
      * <p>This method calls System exit</p>
@@ -111,18 +123,6 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
         final CommandLine commandLine = new CommandLine(this)
                 .setExecutionStrategy(this::execute);
         return commandLine.execute(populatedArgs);
-    }
-
-    private static String[] addEnvironmentVariablesArguments(final String[] args) {
-        if (ENV_PREFIX.equals(EnvironmentKafkaConfigParser.PREFIX)) {
-            throw new IllegalArgumentException(
-                    String.format("Prefix '%s' is reserved for Kafka config", EnvironmentKafkaConfigParser.PREFIX));
-        }
-        final List<String> environmentArguments = new EnvironmentArgumentsParser(ENV_PREFIX)
-                .parseVariables(System.getenv());
-        final Collection<String> allArgs = new ArrayList<>(environmentArguments);
-        allArgs.addAll(Arrays.asList(args));
-        return allArgs.toArray(String[]::new);
     }
 
     /**
@@ -198,9 +198,9 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@link ExecutableApp}
      */
     public final E createExecutableApp() {
-        final ConfiguredApp<E> configuredStreamsApp = this.createConfiguredApp();
+        final ConfiguredApp<E> configuredApp = this.createConfiguredApp();
         final RuntimeConfiguration runtimeConfiguration = this.getRuntimeConfiguration();
-        return configuredStreamsApp.withRuntimeConfiguration(runtimeConfiguration);
+        return configuredApp.withRuntimeConfiguration(runtimeConfiguration);
     }
 
     /**
@@ -211,6 +211,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
     public final CA createConfiguredApp() {
         final T topics = this.createTopicConfig();
         final A app = this.createApp();
+        this.verify(app);
         final AC appConfiguration = this.createConfiguration(topics);
         return this.createConfiguredApp(app, appConfiguration);
     }
@@ -229,7 +230,7 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * @return {@link RunnableApp}
      */
     public final RunnableApp<R> createRunnableApp() {
-        final ExecutableApp<R, ?, O> app = this.createExecutableApp();
+        final E app = this.createExecutableApp();
         final Optional<O> executionOptions = this.createExecutionOptions();
         final R runner = executionOptions.map(app::createRunner).orElseGet(app::createRunner);
         final RunnableApp<R> runnableApp = new RunnableApp<>(app, runner, this.activeApps::remove);
@@ -268,6 +269,15 @@ public abstract class KafkaApplication<R extends Runner, CR extends CleanUpRunne
      * Called before cleaning the application, i.e., invoking {@link #clean()}
      */
     public void prepareClean() {
+        // do nothing by default
+    }
+
+    /**
+     * Hook to verify an app. An exception should be thrown if the app is invalid. Does nothing by default.
+     *
+     * @param app app to verify
+     */
+    protected void verify(final A app) {
         // do nothing by default
     }
 
