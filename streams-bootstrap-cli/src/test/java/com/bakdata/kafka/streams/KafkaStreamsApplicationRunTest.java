@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package com.bakdata.kafka.streams;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bakdata.kafka.KafkaTest;
 import com.bakdata.kafka.KafkaTestClient;
@@ -33,6 +34,9 @@ import com.bakdata.kafka.TestApplicationRunner;
 import com.bakdata.kafka.streams.apps.Mirror;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -65,6 +69,37 @@ class KafkaStreamsApplicationRunTest extends KafkaTest {
                     .withValueDeserializer(new StringDeserializer())
                     .from(output, POLL_TIMEOUT))
                     .hasSize(1);
+        }
+    }
+
+    @Test
+    void shouldVerifyApp() {
+        final String input = "input";
+        final String output = "output";
+        final RuntimeException exception = new RuntimeException("Invalid app");
+        try (final KafkaStreamsApplication<?> app = new KafkaStreamsApplication<>() {
+            @Override
+            public StreamsApp createApp() {
+                return new Mirror();
+            }
+
+            @Override
+            protected void verify(final StreamsApp app) {
+                throw exception;
+            }
+        }) {
+            app.setInputTopics(List.of(input));
+            app.setOutputTopic(output);
+            final TestApplicationRunner runner = TestApplicationRunner.create(this.getBootstrapServers())
+                    .withStateDir(this.stateDir)
+                    .withNoStateStoreCaching()
+                    .withSessionTimeout(SESSION_TIMEOUT);
+            final KafkaTestClient testClient = runner.newTestClient();
+            testClient.createTopic(output);
+            final CompletableFuture<Void> future = runner.run(app);
+            assertThatThrownBy(() -> future.get(10, TimeUnit.SECONDS))
+                    .isInstanceOf(ExecutionException.class)
+                    .hasCause(exception);
         }
     }
 }
