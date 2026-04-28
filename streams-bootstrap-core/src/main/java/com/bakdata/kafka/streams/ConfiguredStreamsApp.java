@@ -25,8 +25,8 @@
 package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.ConfiguredApp;
-import com.bakdata.kafka.DescribingProcessingExceptionHandler;
 import com.bakdata.kafka.EnvironmentKafkaConfigParser;
+import com.bakdata.kafka.FilteringProcessingExceptionHandler;
 import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
@@ -69,7 +69,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      *         Dead letter queue is configured if an error topic is set:
      * <pre>
      * errors.dead.letter.queue.topic.name={@link StreamsTopicConfig#getErrorTopic()}
-     * processing.exception.handler={@link DescribingProcessingExceptionHandler}
+     * processing.exception.handler={@link FilteringProcessingExceptionHandler}
      * </pre>
      *     </li>
      *     <li>
@@ -183,7 +183,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         if (errorTopic != null) {
             kafkaConfig.put(StreamsConfig.ERRORS_DEAD_LETTER_QUEUE_TOPIC_NAME_CONFIG, errorTopic);
             kafkaConfig.put(StreamsConfig.PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG,
-                    DescribingProcessingExceptionHandler.class);
+                    FilteringProcessingExceptionHandler.class);
         }
 
         return kafkaConfig;
