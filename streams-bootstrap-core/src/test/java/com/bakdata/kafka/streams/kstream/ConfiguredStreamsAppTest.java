@@ -27,9 +27,11 @@ package com.bakdata.kafka.streams.kstream;
 import static java.util.Collections.emptyMap;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
+import static org.apache.kafka.streams.StreamsConfig.PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.bakdata.kafka.FilteringProcessingExceptionHandler;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.streams.ConfiguredStreamsApp;
 import com.bakdata.kafka.streams.SerdeConfig;
@@ -241,6 +243,27 @@ class ConfiguredStreamsAppTest {
         assertThatThrownBy(() -> configuredApp.createTopology(kafkaProperties))
                 .isInstanceOf(TopologyException.class)
                 .hasMessageStartingWith("Invalid topology:");
+    }
+
+    @Test
+    void shouldSetProcessingExceptionHandler() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(),
+                        new StreamsAppConfiguration(StreamsTopicConfig.builder()
+                                .errorTopic("error")
+                                .build()));
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
+                .containsEntry(PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG, FilteringProcessingExceptionHandler.class);
+    }
+
+    @Test
+    void shouldNotSetProcessingExceptionHandler() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(),
+                        new StreamsAppConfiguration(StreamsTopicConfig.builder()
+                                .build()));
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
+                .doesNotContainKey(PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG);
     }
 
     @RequiredArgsConstructor

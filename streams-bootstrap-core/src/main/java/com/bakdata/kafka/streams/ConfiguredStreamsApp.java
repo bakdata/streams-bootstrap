@@ -26,6 +26,7 @@ package com.bakdata.kafka.streams;
 
 import com.bakdata.kafka.ConfiguredApp;
 import com.bakdata.kafka.EnvironmentKafkaConfigParser;
+import com.bakdata.kafka.FilteringProcessingExceptionHandler;
 import com.bakdata.kafka.KafkaPropertiesFactory;
 import com.bakdata.kafka.RuntimeConfiguration;
 import com.bakdata.kafka.streams.kstream.StreamsBuilderX;
@@ -42,6 +43,7 @@ import org.apache.kafka.streams.Topology;
 
 /**
  * A {@link StreamsApp} with a corresponding {@link StreamsAppConfiguration}
+ *
  * @param <T> type of {@link StreamsApp}
  */
 @RequiredArgsConstructor
@@ -49,24 +51,6 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     @Getter
     private final @NonNull T app;
     private final @NonNull StreamsAppConfiguration configuration;
-
-    private static Map<String, Object> createBaseConfig() {
-        final Map<String, Object> kafkaConfig = new HashMap<>();
-
-        // exactly once and order
-        kafkaConfig.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
-        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1);
-
-        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
-
-        // compression
-        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG),
-                CompressionType.GZIP.toString());
-
-        kafkaConfig.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
-
-        return kafkaConfig;
-    }
 
     /**
      * <p>This method creates the configuration to run a {@link StreamsApp}.</p>
@@ -79,6 +63,13 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * producer.max.in.flight.requests.per.connection=1
      * producer.acks=all
      * producer.compression.type=gzip
+     * </pre>
+     *     </li>
+     *     <li>
+     *         Dead letter queue is configured if an error topic is set:
+     * <pre>
+     * errors.dead.letter.queue.topic.name={@link StreamsTopicConfig#getErrorTopic()}
+     * processing.exception.handler={@link FilteringProcessingExceptionHandler}
      * </pre>
      *     </li>
      *     <li>
@@ -114,10 +105,11 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
 
     /**
      * Get unique application identifier of {@link StreamsApp}
+     *
      * @return unique application identifier
-     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      * @throws IllegalArgumentException if unique application identifier of {@link StreamsApp} is different from
      * provided application identifier in {@link StreamsAppConfiguration}
+     * @see StreamsApp#getUniqueAppId(StreamsAppConfiguration)
      */
     public String getUniqueAppId() {
         final String uniqueAppId =
@@ -129,16 +121,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
     }
 
     /**
-     * Get topic configuration
-     *
-     * @return topic configuration
-     */
-    public StreamsTopicConfig getTopics() {
-        return this.configuration.getTopics();
-    }
-
-    /**
      * Create an {@link ExecutableStreamsApp} using the provided {@link RuntimeConfiguration}
+     *
      * @return {@link ExecutableStreamsApp}
      */
     @Override
@@ -151,6 +135,15 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
                 .app(this.app)
                 .topics(this.getTopics())
                 .build();
+    }
+
+    /**
+     * Get topic configuration
+     *
+     * @return topic configuration
+     */
+    public StreamsTopicConfig getTopics() {
+        return this.configuration.getTopics();
     }
 
     /**
@@ -170,8 +163,34 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
         this.app.close();
     }
 
+    private Map<String, Object> createBaseConfig() {
+        final Map<String, Object> kafkaConfig = new HashMap<>();
+
+        // exactly once and order
+        kafkaConfig.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
+        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1);
+
+        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
+
+        // compression
+        kafkaConfig.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG),
+                CompressionType.GZIP.toString());
+
+        kafkaConfig.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
+
+        // built-in dead-letter queue
+        final String errorTopic = this.getTopics().getErrorTopic();
+        if (errorTopic != null) {
+            kafkaConfig.put(StreamsConfig.ERRORS_DEAD_LETTER_QUEUE_TOPIC_NAME_CONFIG, errorTopic);
+            kafkaConfig.put(StreamsConfig.PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG,
+                    FilteringProcessingExceptionHandler.class);
+        }
+
+        return kafkaConfig;
+    }
+
     private KafkaPropertiesFactory createPropertiesFactory(final RuntimeConfiguration runtimeConfig) {
-        final Map<String, Object> baseConfig = createBaseConfig();
+        final Map<String, Object> baseConfig = this.createBaseConfig();
         return KafkaPropertiesFactory.builder()
                 .baseConfig(baseConfig)
                 .app(this.app)
