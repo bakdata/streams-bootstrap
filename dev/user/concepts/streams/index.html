@@ -1924,8 +1924,8 @@ application definition and configuration. This is useful for reprocessing input 
 <p>After a reset, the application can be started again and will reprocess all input data.</p>
 <hr />
 <h3 id="cleaning-an-application">Cleaning an application</h3>
-<p>The <code>clean</code> command performs everything that <code>reset</code> does and additionally removes the Kafka group (consumer group or
-streams group, depending on the configured <code>group.protocol</code>) and output topics created by the application.</p>
+<p>The <code>clean</code> command performs everything that <code>reset</code> does and additionally removes the Kafka consumer groups and output
+topics created by the application.</p>
 <pre><code class="language-bash">java -jar my-streams-app.jar clean
 </code></pre>
 <hr />

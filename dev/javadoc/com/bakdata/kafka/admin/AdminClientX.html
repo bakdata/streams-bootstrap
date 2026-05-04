@@ -109,7 +109,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#consumerGroups()" class="member-name-link">consumerGroups</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Create a <a href="ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>ConsumerGroupsClient</code></a> to perform administrative actions related to classic consumer groups</div>
+<div class="block">Create a <a href="ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>ConsumerGroupsClient</code></a> to perform consumer group-related administrative actions</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.Map)" class="member-name-link">create</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;properties)</code></div>
@@ -127,14 +127,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a <code>SchemaRegistryClient</code> if schema registry is configured.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#streamsGroups()" class="member-name-link">streamsGroups</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TopicsClient.html" title="class in com.bakdata.kafka.admin">TopicsClient</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#topics()" class="member-name-link">topics</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Create a <a href="StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>StreamsGroupsClient</code></a> to perform administrative actions related to streams groups</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TopicsClient.html" title="class in com.bakdata.kafka.admin">TopicsClient</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#topics()" class="member-name-link">topics</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a <a href="TopicsClient.html" title="class in com.bakdata.kafka.admin"><code>TopicsClient</code></a> to perform topic-related administrative actions.</div>
 </div>
 </div>
@@ -222,21 +217,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="detail" id="consumerGroups()">
 <h3>consumerGroups</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient</a></span>&nbsp;<span class="element-name">consumerGroups</span>()</div>
-<div class="block">Create a <a href="ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>ConsumerGroupsClient</code></a> to perform administrative actions related to classic consumer groups</div>
+<div class="block">Create a <a href="ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>ConsumerGroupsClient</code></a> to perform consumer group-related administrative actions</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>consumer group client</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="streamsGroups()">
-<h3>streamsGroups</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient</a></span>&nbsp;<span class="element-name">streamsGroups</span>()</div>
-<div class="block">Create a <a href="StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>StreamsGroupsClient</code></a> to perform administrative actions related to streams groups</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>streams group client</dd>
 </dl>
 </section>
 </li>
