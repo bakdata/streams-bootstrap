@@ -24,19 +24,26 @@
 
 package com.bakdata.kafka.admin;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
+import org.apache.kafka.clients.admin.DeleteStreamsGroupsResult;
 import org.apache.kafka.clients.admin.DescribeStreamsGroupsResult;
+import org.apache.kafka.clients.admin.GroupListing;
+import org.apache.kafka.clients.admin.ListGroupsOptions;
+import org.apache.kafka.clients.admin.ListGroupsResult;
 import org.apache.kafka.clients.admin.ListStreamsGroupOffsetsResult;
 import org.apache.kafka.clients.admin.ListStreamsGroupOffsetsSpec;
 import org.apache.kafka.clients.admin.StreamsGroupDescription;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.GroupType;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.GroupIdNotFoundException;
@@ -50,6 +57,18 @@ public final class StreamsGroupsClient {
 
     private final @NonNull Admin adminClient;
     private final @NonNull Timeout timeout;
+
+    /**
+     * List streams groups.
+     *
+     * @return streams groups
+     */
+    public Collection<GroupListing> list() {
+        final ListGroupsOptions options = new ListGroupsOptions()
+                .withTypes(Set.of(GroupType.STREAMS));
+        final ListGroupsResult result = this.adminClient.listGroups(options);
+        return this.timeout.get(result.all(), () -> "Failed to list streams groups");
+    }
 
     /**
      * Create a client for a specific streams group.
@@ -67,6 +86,18 @@ public final class StreamsGroupsClient {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public final class StreamsGroupClient {
         private final @NonNull String groupName;
+
+        /**
+         * Delete a streams group.
+         */
+        public void delete() {
+            log.info("Deleting streams group '{}'", this.groupName);
+            final DeleteStreamsGroupsResult result =
+                    StreamsGroupsClient.this.adminClient.deleteStreamsGroups(List.of(this.groupName));
+            StreamsGroupsClient.this.timeout.get(result.all(),
+                    () -> "Failed to delete streams group " + this.groupName);
+            log.info("Deleted streams group '{}'", this.groupName);
+        }
 
         /**
          * Describe a streams group.
@@ -108,6 +139,34 @@ public final class StreamsGroupsClient {
                             () -> "Failed to list offsets for streams group " + this.groupName);
             log.debug("Listed offsets for streams group '{}'", this.groupName);
             return offsets;
+        }
+
+        /**
+         * Checks whether a Kafka streams group exists.
+         *
+         * @return whether a Kafka streams group with the specified name exists or not
+         */
+        public boolean exists() {
+            final Collection<GroupListing> groups = StreamsGroupsClient.this.list();
+            return groups.stream()
+                    .anyMatch(this::isThisGroup);
+        }
+
+        /**
+         * Delete a streams group only if it exists.
+         */
+        public void deleteIfExists() {
+            if (this.exists()) {
+                try {
+                    this.delete();
+                } catch (final GroupIdNotFoundException e) {
+                    // do nothing
+                }
+            }
+        }
+
+        private boolean isThisGroup(final GroupListing listing) {
+            return listing.groupId().equals(this.groupName);
         }
     }
 }

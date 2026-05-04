@@ -29,6 +29,7 @@ import com.bakdata.kafka.CleanUpRunner;
 import com.bakdata.kafka.SchemaRegistryAppUtils;
 import com.bakdata.kafka.admin.AdminClientX;
 import com.bakdata.kafka.admin.ConsumerGroupsClient;
+import com.bakdata.kafka.admin.StreamsGroupsClient;
 import com.bakdata.kafka.util.TopologyInformation;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +48,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.tools.StreamsResetter;
+import org.apache.kafka.tools.streams.StreamsGroupCommand;
 
 
 /**
@@ -91,8 +93,14 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
     }
 
     /**
-     * Run the <a href="https://docs.confluent.io/platform/current/streams/developer-guide/app-reset-tool.html">Kafka
-     * Streams Reset Tool</a>
+     * Run the appropriate Kafka Streams reset tool based on the group protocol.
+     * <p>
+     * For apps backed by a classic consumer group, runs the <a
+     * href="https://kafka.apache.org/42/streams/developer-guide/app-reset-tool">
+     * bin/kafka-streams-application-reset.sh</a> tool. For apps backed by a streams group
+     * ({@code group.protocol=streams}), runs the <a
+     * href="https://kafka.apache.org/42/streams/developer-guide/kafka-streams-group-sh/">
+     * bin/kafka-streams-groups.sh</a> equivalent.
      *
      * @param inputTopics list of input topics of the streams app
      * @param allTopics list of all topics that exists in the Kafka cluster
@@ -100,12 +108,21 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      */
     public static void runResetter(final Collection<String> inputTopics,
             final Collection<String> allTopics, final StreamsConfigX streamsAppConfig) {
+        if (streamsAppConfig.isStreamsGroupProtocol()) {
+            runStreamsGroupResetter(inputTopics, allTopics, streamsAppConfig);
+        } else {
+            runClassicResetter(inputTopics, allTopics, streamsAppConfig);
+        }
+    }
+
+    private static void runClassicResetter(final Collection<String> inputTopics,
+            final Collection<String> allTopics, final StreamsConfigX streamsAppConfig) {
         // StreamsResetter's internal AdminClient can only be configured with a properties file
         final String appId = streamsAppConfig.getAppId();
         final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
         final Collection<String> argList = new ArrayList<>(List.of(
-                "--application-id", appId,
                 "--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()),
+                "--application-id", appId,
                 "--config-file", tempFile.toString()
         ));
         final Collection<String> existingInputTopics = filterExistingTopics(inputTopics, allTopics);
@@ -115,13 +132,46 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         final String[] args = argList.toArray(String[]::new);
         final StreamsResetter resetter = new StreamsResetter();
         final int returnCode = resetter.execute(args);
+        deleteTempFile(tempFile);
+        if (returnCode != EXIT_CODE_SUCCESS) {
+            throw new CleanUpException("Error running streams resetter. Exit code " + returnCode);
+        }
+    }
+
+    private static void runStreamsGroupResetter(final Collection<String> inputTopics,
+            final Collection<String> allTopics, final StreamsConfigX streamsAppConfig) {
+        final String appId = streamsAppConfig.getAppId();
+        // If the streams group does not exist yet (e.g., app was never started), there is nothing to reset
+        try (final AdminClientX adminClient = AdminClientX.create(streamsAppConfig.getKafkaProperties())) {
+            if (!adminClient.streamsGroups().group(appId).exists()) {
+                log.info("Streams group '{}' does not exist, skipping reset", appId);
+                return;
+            }
+        }
+        final File tempFile = createTemporaryPropertiesFile(appId, streamsAppConfig.getKafkaProperties());
+        final Collection<String> argList = new ArrayList<>(List.of(
+                "--bootstrap-server", String.join(",", streamsAppConfig.getBoostrapServers()),
+                "--group", appId,
+                "--reset-offsets",
+                "--to-earliest",
+                "--all-input-topics",
+                "--delete-all-internal-topics",
+                "--execute",
+                "--command-config", tempFile.toString()
+        ));
+        final String[] args = argList.toArray(String[]::new);
+        final int returnCode = StreamsGroupCommand.execute(args);
+        deleteTempFile(tempFile);
+        if (returnCode != EXIT_CODE_SUCCESS) {
+            throw new CleanUpException("Error running streams group command. Exit code " + returnCode);
+        }
+    }
+
+    private static void deleteTempFile(final File tempFile) {
         try {
             Files.delete(tempFile.toPath());
         } catch (final IOException e) {
             log.warn("Error deleting temporary property file", e);
-        }
-        if (returnCode != EXIT_CODE_SUCCESS) {
-            throw new CleanUpException("Error running streams resetter. Exit code " + returnCode);
         }
     }
 
@@ -258,8 +308,13 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
 
         private void deleteConsumerGroup() {
-            final ConsumerGroupsClient groups = this.adminClient.consumerGroups();
-            groups.group(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
+            if (StreamsCleanUpRunner.this.config.isStreamsGroupProtocol()) {
+                final StreamsGroupsClient streamsGroups = this.adminClient.streamsGroups();
+                streamsGroups.group(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
+            } else {
+                final ConsumerGroupsClient groups = this.adminClient.consumerGroups();
+                groups.group(StreamsCleanUpRunner.this.config.getAppId()).deleteIfExists();
+            }
         }
     }
 
