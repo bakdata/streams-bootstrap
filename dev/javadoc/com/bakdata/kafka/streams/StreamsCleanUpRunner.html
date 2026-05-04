@@ -130,8 +130,7 @@ implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;allTopics,
  <a href="StreamsConfigX.html" title="class in com.bakdata.kafka.streams">StreamsConfigX</a>&nbsp;streamsAppConfig)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Run the <a href="https://docs.confluent.io/platform/current/streams/developer-guide/app-reset-tool.html">Kafka
- Streams Reset Tool</a></div>
+<div class="block">Run the appropriate Kafka Streams reset tool based on the group protocol.</div>
 </div>
 </div>
 </div>
@@ -193,8 +192,12 @@ implements <a href="../CleanUpRunner.html" title="interface in com.bakdata.kafka
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">runResetter</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;inputTopics,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;allTopics,
  <a href="StreamsConfigX.html" title="class in com.bakdata.kafka.streams">StreamsConfigX</a>&nbsp;streamsAppConfig)</span></div>
-<div class="block">Run the <a href="https://docs.confluent.io/platform/current/streams/developer-guide/app-reset-tool.html">Kafka
- Streams Reset Tool</a></div>
+<div class="block">Run the appropriate Kafka Streams reset tool based on the group protocol.
+ <p>
+ For apps backed by a classic consumer group, runs the <a href="https://kafka.apache.org/42/streams/developer-guide/app-reset-tool">
+ bin/kafka-streams-application-reset.sh</a> tool. For apps backed by a streams group
+ (<code>group.protocol=streams</code>), runs the <a href="https://kafka.apache.org/42/streams/developer-guide/kafka-streams-group-sh/">
+ bin/kafka-streams-groups.sh</a> equivalent.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>inputTopics</code> - list of input topics of the streams app</dd>
