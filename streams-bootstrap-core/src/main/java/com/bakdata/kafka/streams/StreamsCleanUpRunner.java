@@ -105,11 +105,13 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
      * @param inputTopics list of input topics of the streams app
      * @param allTopics list of all topics that exists in the Kafka cluster
      * @param streamsAppConfig configuration properties of the streams app
+     * @param internalTopics list of internal topics (changelogs, repartitions) of the streams app
      */
     public static void runResetter(final Collection<String> inputTopics,
-            final Collection<String> allTopics, final StreamsConfigX streamsAppConfig) {
+            final Collection<String> allTopics, final StreamsConfigX streamsAppConfig,
+            final Collection<String> internalTopics) {
         if (streamsAppConfig.isStreamsGroupProtocol()) {
-            runStreamsGroupResetter(inputTopics, allTopics, streamsAppConfig);
+            runStreamsGroupResetter(streamsAppConfig, internalTopics);
         } else {
             runClassicResetter(inputTopics, allTopics, streamsAppConfig);
         }
@@ -138,10 +140,12 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         }
     }
 
-    private static void runStreamsGroupResetter(final Collection<String> inputTopics,
-            final Collection<String> allTopics, final StreamsConfigX streamsAppConfig) {
+    private static void runStreamsGroupResetter(final StreamsConfigX streamsAppConfig,
+            final Collection<String> internalTopics) {
         final String appId = streamsAppConfig.getAppId();
-        // If the streams group does not exist yet (e.g., app was never started), there is nothing to reset
+        // If the streams group does not exist yet (e.g., app was never started), there is nothing to reset.
+        // Unlike StreamsResetter which gracefully handles a missing consumer group,
+        // StreamsGroupCommand fails when the group does not exist.
         try (final AdminClientX adminClient = AdminClientX.create(streamsAppConfig.getKafkaProperties())) {
             if (!adminClient.streamsGroups().group(appId).exists()) {
                 log.info("Streams group '{}' does not exist, skipping reset", appId);
@@ -155,10 +159,15 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
                 "--reset-offsets",
                 "--to-earliest",
                 "--all-input-topics",
-                "--delete-all-internal-topics",
                 "--execute",
                 "--command-config", tempFile.toString()
         ));
+        // Use --delete-internal-topic for each known internal topic instead of --delete-all-internal-topics
+        // because StreamsGroupCommand (Kafka 4.2.0) throws a NullPointerException with
+        // --delete-all-internal-topics when the group has no internal topics (e.g., stateless apps).
+        for (final String internalTopic : internalTopics) {
+            argList.addAll(List.of("--delete-internal-topic", internalTopic));
+        }
         final String[] args = argList.toArray(String[]::new);
         final int returnCode = StreamsGroupCommand.execute(args);
         deleteTempFile(tempFile);
@@ -258,10 +267,11 @@ public final class StreamsCleanUpRunner implements CleanUpRunner {
         private void reset(final Collection<String> allTopics) {
             final List<String> inputTopics =
                     StreamsCleanUpRunner.this.topologyInformation.getInputTopics(allTopics);
-            runResetter(inputTopics, allTopics, StreamsCleanUpRunner.this.config);
+            final List<String> internalTopics =
+                    StreamsCleanUpRunner.this.topologyInformation.getInternalTopics();
+            runResetter(inputTopics, allTopics, StreamsCleanUpRunner.this.config, internalTopics);
             // the StreamsResetter is responsible for deleting internal topics
-            StreamsCleanUpRunner.this.topologyInformation.getInternalTopics()
-                    .forEach(this::resetInternalTopic);
+            internalTopics.forEach(this::resetInternalTopic);
             this.deleteIntermediateTopics(allTopics);
             try (final KafkaStreams kafkaStreams = this.createStreams()) {
                 kafkaStreams.cleanUp();
