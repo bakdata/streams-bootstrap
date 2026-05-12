@@ -476,7 +476,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/ConsumerGroupVerifier.html#computeLag()" class="member-name-link">computeLag()</a> - Method in class com.bakdata.kafka.<a href="com/bakdata/kafka/ConsumerGroupVerifier.html" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></dt>
 <dd>
-<div class="block">Compute lag of consumer group</div>
+<div class="block">Compute lag of consumer group or streams group</div>
 </dd>
 <dt><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html#config()" class="member-name-link">config()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient.ConsumerGroupClient</a></dt>
 <dd>
@@ -582,7 +582,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/admin/AdminClientX.html#consumerGroups()" class="member-name-link">consumerGroups()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a></dt>
 <dd>
-<div class="block">Create a <a href="com/bakdata/kafka/admin/ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>ConsumerGroupsClient</code></a> to perform consumer group-related administrative actions</div>
+<div class="block">Create a <a href="com/bakdata/kafka/admin/ConsumerGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>ConsumerGroupsClient</code></a> to perform administrative actions related to classic consumer groups</div>
 </dd>
 <dt><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.html" class="type-name-link" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient</a> - Class in <a href="com/bakdata/kafka/admin/package-summary.html">com.bakdata.kafka.admin</a></dt>
 <dd>
@@ -594,9 +594,13 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/ConsumerGroupVerifier.html" class="type-name-link" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a> - Class in <a href="com/bakdata/kafka/package-summary.html">com.bakdata.kafka</a></dt>
 <dd>
-<div class="block">Utility class to verify the state of a Kafka consumer group</div>
+<div class="block">Utility class to verify the state of a Kafka consumer group or streams group</div>
 </dd>
 <dt><a href="com/bakdata/kafka/ConsumerGroupVerifier.html#%3Cinit%3E(java.lang.String,java.util.function.Supplier)" class="member-name-link">ConsumerGroupVerifier(String, Supplier&lt;AdminClientX&gt;)</a> - Constructor for class com.bakdata.kafka.<a href="com/bakdata/kafka/ConsumerGroupVerifier.html" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></dt>
+<dd>
+<div class="block">Create a new verifier for a classic consumer group.</div>
+</dd>
+<dt><a href="com/bakdata/kafka/ConsumerGroupVerifier.html#%3Cinit%3E(java.lang.String,java.util.function.Supplier,boolean)" class="member-name-link">ConsumerGroupVerifier(String, Supplier&lt;AdminClientX&gt;, boolean)</a> - Constructor for class com.bakdata.kafka.<a href="com/bakdata/kafka/ConsumerGroupVerifier.html" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/mixin/ConsumerOptions.html" class="type-name-link" title="class in com.bakdata.kafka.mixin">ConsumerOptions</a> - Class in <a href="com/bakdata/kafka/mixin/package-summary.html">com.bakdata.kafka.mixin</a></dt>
 <dd>
@@ -1143,6 +1147,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Delete a consumer group.</div>
 </dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html#delete()" class="member-name-link">delete()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient.StreamsGroupClient</a></dt>
+<dd>
+<div class="block">Delete a streams group.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html#delete()" class="member-name-link">delete()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html" title="class in com.bakdata.kafka.admin">TopicsClient.TopicClient</a></dt>
 <dd>
 <div class="block">Delete a Kafka topic.</div>
@@ -1155,6 +1163,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Delete a consumer group only if it exists.</div>
 </dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html#deleteIfExists()" class="member-name-link">deleteIfExists()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient.StreamsGroupClient</a></dt>
+<dd>
+<div class="block">Delete a streams group only if it exists.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html#deleteIfExists()" class="member-name-link">deleteIfExists()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html" title="class in com.bakdata.kafka.admin">TopicsClient.TopicClient</a></dt>
 <dd>
 <div class="block">Delete a Kafka topic only if it exists.</div>
@@ -1166,6 +1178,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html#describe()" class="member-name-link">describe()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient.ConsumerGroupClient</a></dt>
 <dd>
 <div class="block">Describe a consumer group.</div>
+</dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html#describe()" class="member-name-link">describe()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient.StreamsGroupClient</a></dt>
+<dd>
+<div class="block">Describe a streams group.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html#describe()" class="member-name-link">describe()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html" title="class in com.bakdata.kafka.admin">TopicsClient.TopicClient</a></dt>
 <dd>
@@ -1279,6 +1295,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html#exists()" class="member-name-link">exists()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient.ConsumerGroupClient</a></dt>
 <dd>
 <div class="block">Checks whether a Kafka consumer group exists.</div>
+</dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html#exists()" class="member-name-link">exists()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient.StreamsGroupClient</a></dt>
+<dd>
+<div class="block">Checks whether a Kafka streams group exists.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html#exists()" class="member-name-link">exists()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/TopicsClient.TopicClient.html" title="class in com.bakdata.kafka.admin">TopicsClient.TopicClient</a></dt>
 <dd>
@@ -1722,7 +1742,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/ConsumerGroupVerifier.html#getState()" class="member-name-link">getState()</a> - Method in class com.bakdata.kafka.<a href="com/bakdata/kafka/ConsumerGroupVerifier.html" title="class in com.bakdata.kafka">ConsumerGroupVerifier</a></dt>
 <dd>
-<div class="block">Get current state of consumer group</div>
+<div class="block">Get current state of consumer group or streams group</div>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/RunningStreams.html#getStreams()" class="member-name-link">getStreams()</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/RunningStreams.html" title="class in com.bakdata.kafka.streams">RunningStreams</a></dt>
 <dd>&nbsp;</dd>
@@ -1836,6 +1856,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a client for a specific consumer group.</div>
 </dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.html#group(java.lang.String)" class="member-name-link">group(String)</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient</a></dt>
+<dd>
+<div class="block">Create a client for a specific streams group.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/streams/kstream/KTableX.html#groupBy(org.apache.kafka.streams.kstream.KeyValueMapper)" class="member-name-link">groupBy(KeyValueMapper&lt;? super K, ? super V, ? extends KeyValue&lt;? extends KR, ? extends VR&gt;&gt;)</a> - Method in interface com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/KTableX.html" title="interface in com.bakdata.kafka.streams.kstream">KTableX</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/bakdata/kafka/streams/kstream/KTableX.html#groupBy(org.apache.kafka.streams.kstream.KeyValueMapper,com.bakdata.kafka.streams.kstream.GroupedX)" class="member-name-link">groupBy(KeyValueMapper&lt;? super K, ? super V, ? extends KeyValue&lt;? extends KR, ? extends VR&gt;&gt;, GroupedX&lt;KR, VR&gt;)</a> - Method in interface com.bakdata.kafka.streams.kstream.<a href="com/bakdata/kafka/streams/kstream/KTableX.html" title="interface in com.bakdata.kafka.streams.kstream">KTableX</a></dt>
@@ -1945,6 +1969,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/bakdata/kafka/streams/TopologyConfigX.html#isLineageEnabled()" class="member-name-link">isLineageEnabled()</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/TopologyConfigX.html" title="class in com.bakdata.kafka.streams">TopologyConfigX</a></dt>
 <dd>
 <div class="block">Check if adding lineage headers is enabled.</div>
+</dd>
+<dt><a href="com/bakdata/kafka/streams/StreamsConfigX.html#isStreamsGroupProtocol()" class="member-name-link">isStreamsGroupProtocol()</a> - Method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsConfigX.html" title="class in com.bakdata.kafka.streams">StreamsConfigX</a></dt>
+<dd>
+<div class="block">Check if the streams app is using the streams group protocol.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/consumer/KafkaConsumerApplication.html#isVolatileGroupInstanceId()" class="member-name-link">isVolatileGroupInstanceId()</a> - Method in class com.bakdata.kafka.consumer.<a href="com/bakdata/kafka/consumer/KafkaConsumerApplication.html" title="class in com.bakdata.kafka.consumer">KafkaConsumerApplication</a></dt>
 <dd>&nbsp;</dd>
@@ -2288,6 +2316,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">List consumer groups.</div>
 </dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.html#list()" class="member-name-link">list()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient</a></dt>
+<dd>
+<div class="block">List streams groups.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/admin/TopicsClient.html#list()" class="member-name-link">list()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/TopicsClient.html" title="class in com.bakdata.kafka.admin">TopicsClient</a></dt>
 <dd>
 <div class="block">List Kafka topics.</div>
@@ -2295,6 +2327,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html#listOffsets()" class="member-name-link">listOffsets()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/ConsumerGroupsClient.ConsumerGroupClient.html" title="class in com.bakdata.kafka.admin">ConsumerGroupsClient.ConsumerGroupClient</a></dt>
 <dd>
 <div class="block">List offsets for a consumer group.</div>
+</dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html#listOffsets()" class="member-name-link">listOffsets()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html" title="class in com.bakdata.kafka.admin">StreamsGroupsClient.StreamsGroupClient</a></dt>
+<dd>
+<div class="block">List offsets for a streams group.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/admin/TopicsClient.html#listOffsets(java.lang.Iterable)" class="member-name-link">listOffsets(Iterable&lt;TopicPartition&gt;)</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/TopicsClient.html" title="class in com.bakdata.kafka.admin">TopicsClient</a></dt>
 <dd>
@@ -2865,10 +2901,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/RunningStreams.RunningStreamsBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.streams">RunningStreams.RunningStreamsBuilder</a> - Class in <a href="com/bakdata/kafka/streams/package-summary.html">com.bakdata.kafka.streams</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html#runResetter(java.util.Collection,java.util.Collection,com.bakdata.kafka.streams.StreamsConfigX)" class="member-name-link">runResetter(Collection&lt;String&gt;, Collection&lt;String&gt;, StreamsConfigX)</a> - Static method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpRunner</a></dt>
+<dt><a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html#runResetter(java.util.Collection,java.util.Collection,com.bakdata.kafka.streams.StreamsConfigX,java.util.Collection)" class="member-name-link">runResetter(Collection&lt;String&gt;, Collection&lt;String&gt;, StreamsConfigX, Collection&lt;String&gt;)</a> - Static method in class com.bakdata.kafka.streams.<a href="com/bakdata/kafka/streams/StreamsCleanUpRunner.html" title="class in com.bakdata.kafka.streams">StreamsCleanUpRunner</a></dt>
 <dd>
-<div class="block">Run the <a href="https://docs.confluent.io/platform/current/streams/developer-guide/app-reset-tool.html">Kafka
- Streams Reset Tool</a></div>
+<div class="block">Run the appropriate Kafka Streams reset tool based on the group protocol.</div>
 </dd>
 <dt><a href="com/bakdata/kafka/KafkaPropertiesFactory.KafkaPropertiesFactoryBuilder.html#runtimeConfig(com.bakdata.kafka.RuntimeConfiguration)" class="member-name-link">runtimeConfig(RuntimeConfiguration)</a> - Method in class com.bakdata.kafka.<a href="com/bakdata/kafka/KafkaPropertiesFactory.KafkaPropertiesFactoryBuilder.html" title="class in com.bakdata.kafka">KafkaPropertiesFactory.KafkaPropertiesFactoryBuilder</a></dt>
 <dd>&nbsp;</dd>
@@ -3291,6 +3326,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/bakdata/kafka/streams/StreamsExecutionOptions.StreamsExecutionOptionsBuilder.html" class="type-name-link" title="class in com.bakdata.kafka.streams">StreamsExecutionOptions.StreamsExecutionOptionsBuilder</a> - Class in <a href="com/bakdata/kafka/streams/package-summary.html">com.bakdata.kafka.streams</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/bakdata/kafka/admin/AdminClientX.html#streamsGroups()" class="member-name-link">streamsGroups()</a> - Method in class com.bakdata.kafka.admin.<a href="com/bakdata/kafka/admin/AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a></dt>
+<dd>
+<div class="block">Create a <a href="com/bakdata/kafka/admin/StreamsGroupsClient.html" title="class in com.bakdata.kafka.admin"><code>StreamsGroupsClient</code></a> to perform administrative actions related to streams groups</div>
+</dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.html" class="type-name-link" title="class in com.bakdata.kafka.admin">StreamsGroupsClient</a> - Class in <a href="com/bakdata/kafka/admin/package-summary.html">com.bakdata.kafka.admin</a></dt>
+<dd>
+<div class="block">This class offers helpers to interact with Kafka streams groups.</div>
+</dd>
+<dt><a href="com/bakdata/kafka/admin/StreamsGroupsClient.StreamsGroupClient.html" class="type-name-link" title="class in com.bakdata.kafka.admin">StreamsGroupsClient.StreamsGroupClient</a> - Class in <a href="com/bakdata/kafka/admin/package-summary.html">com.bakdata.kafka.admin</a></dt>
+<dd>
+<div class="block">A client for a specific streams group.</div>
+</dd>
 <dt><a href="com/bakdata/kafka/streams/StreamsRunner.html" class="type-name-link" title="class in com.bakdata.kafka.streams">StreamsRunner</a> - Class in <a href="com/bakdata/kafka/streams/package-summary.html">com.bakdata.kafka.streams</a></dt>
 <dd>
 <div class="block">Runs a Kafka Streams application</div>

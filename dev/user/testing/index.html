@@ -2078,10 +2078,12 @@ runner = runner.withSchemaRegistry(registry);
 <h3 id="consumer-group-verification">Consumer Group Verification</h3>
 <pre><code class="language-java">ConsumerGroupVerifier verifier = runner.verify(streamsApp);
 </code></pre>
-<p>Allows you to:
-- assert consumer group existence
-- check stability
-- inspect committed offsets</p>
+<p>Allows you to:</p>
+<ul>
+<li>assert group existence (classic consumer group or streams group)</li>
+<li>check stability</li>
+<li>inspect committed offsets</li>
+</ul>
 <hr />
 <h3 id="creating-test-clients">Creating Test Clients</h3>
 <pre><code class="language-java">KafkaTestClient client = runner.newTestClient();
