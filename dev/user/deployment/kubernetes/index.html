@@ -1606,6 +1606,7 @@ helm repo update
 <li>Enabled when <code>statefulSet: true</code></li>
 <li>Required when <code>persistence.enabled: true</code></li>
 <li>If persistence is enabled each pod receives a dedicated <code>PersistentVolumeClaim</code> for RocksDB state</li>
+<li>Consider <code>statefulSet: true</code> when <code>staticMembership: true</code>, because the chart sets <code>group.instance.id</code> to the pod name. With a Deployment, static membership still helps for pods that restart in place and keep their name, but recreated or rescheduled pods may get a new name and be treated as new static group members</li>
 </ul>
 </li>
 </ul>

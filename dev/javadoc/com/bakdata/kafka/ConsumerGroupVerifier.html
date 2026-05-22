@@ -78,7 +78,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ConsumerGroupVerifier</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">Utility class to verify the state of a Kafka consumer group or streams group</div>
+<div class="block">Utility class to verify the state of a Kafka consumer group</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -92,13 +92,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.util.function.Supplier)" class="member-name-link">ConsumerGroupVerifier</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;group,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="admin/AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a>&gt;&nbsp;adminClientSupplier)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Create a new verifier for a classic consumer group.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.util.function.Supplier,boolean)" class="member-name-link">ConsumerGroupVerifier</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;group,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="admin/AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a>&gt;&nbsp;adminClientSupplier,
- boolean&nbsp;streamsGroupProtocol)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -116,12 +110,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#computeLag()" class="member-name-link">computeLag</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Compute lag of consumer group or streams group</div>
+<div class="block">Compute lag of consumer group</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;org.apache.kafka.common.GroupState&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getState()" class="member-name-link">getState</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get current state of consumer group or streams group</div>
+<div class="block">Get current state of consumer group</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasFinishedProcessing()" class="member-name-link">hasFinishedProcessing</a>()</code></div>
@@ -177,17 +171,6 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;group,
  @NonNull
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="admin/AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a>&gt;&nbsp;adminClientSupplier)</span></div>
-<div class="block">Create a new verifier for a classic consumer group.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,java.util.function.Supplier,boolean)">
-<h3>ConsumerGroupVerifier</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ConsumerGroupVerifier</span><wbr><span class="parameters">(@NonNull
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;group,
- @NonNull
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="admin/AdminClientX.html" title="class in com.bakdata.kafka.admin">AdminClientX</a>&gt;&nbsp;adminClientSupplier,
- boolean&nbsp;streamsGroupProtocol)</span></div>
 </section>
 </li>
 </ul>
@@ -263,10 +246,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getState()">
 <h3>getState</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;org.apache.kafka.common.GroupState&gt;</span>&nbsp;<span class="element-name">getState</span>()</div>
-<div class="block">Get current state of consumer group or streams group</div>
+<div class="block">Get current state of consumer group</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>current state of the group</dd>
+<dd>current state of consumer group</dd>
 </dl>
 </section>
 </li>
@@ -285,10 +268,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="computeLag()">
 <h3>computeLag</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">computeLag</span>()</div>
-<div class="block">Compute lag of consumer group or streams group</div>
+<div class="block">Compute lag of consumer group</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>lag of the group. If no partitions are assigned, an empty <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> is returned</dd>
+<dd>lag of consumer group. If no partitions are assigned, an empty <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> is returned</dd>
 </dl>
 </section>
 </li>
