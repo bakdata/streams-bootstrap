@@ -60,6 +60,7 @@ Streams, consumer and consumer–producer applications support both stateless an
     - Enabled when `statefulSet: true`
     - Required when `persistence.enabled: true`
     - If persistence is enabled each pod receives a dedicated `PersistentVolumeClaim` for RocksDB state
+    - Consider `statefulSet: true` when `staticMembership: true`, because the chart sets `group.instance.id` to the pod name. With a Deployment, static membership still helps for pods that restart in place and keep their name, but recreated or rescheduled pods may get a new name and be treated as new static group members
 
 ---
 
