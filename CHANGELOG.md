@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.0](https://github.com/bakdata/streams-bootstrap/tree/7.1.0) - 2026-06-23
+### What's changed
+
+* Use new Avro plugin by @philipp94831 in [#432](https://github.com/bakdata/streams-bootstrap/pull/432)
+
+* Upgrade actions using deprecated Node.js 20 by @philipp94831 in [#433](https://github.com/bakdata/streams-bootstrap/pull/433)
+
+* Setup multi-ecosystem Dependabot group by @philipp94831 in [#435](https://github.com/bakdata/streams-bootstrap/pull/435)
+
+* Bump org.apache.logging.log4j:log4j-slf4j2-impl from 2.25.3 to 2.25.4 in the log-dependencies group by @dependabot[bot] in [#436](https://github.com/bakdata/streams-bootstrap/pull/436)
+
+* Bump the test-dependencies group with 5 updates by @dependabot[bot] in [#437](https://github.com/bakdata/streams-bootstrap/pull/437)
+
+* Bump the "build" group with 2 updates across multiple ecosystems by @dependabot[bot] in [#438](https://github.com/bakdata/streams-bootstrap/pull/438)
+
+* Format README by @philipp94831 in [#376](https://github.com/bakdata/streams-bootstrap/pull/376)
+
+* Define repositories in dependencyResolutionManagement by @philipp94831 in [#375](https://github.com/bakdata/streams-bootstrap/pull/375)
+
+* Support Kafka Streams built-in dead letter queue in clean up by @philipp94831 in [#439](https://github.com/bakdata/streams-bootstrap/pull/439)
+
+* Add verification hook by @philipp94831 in [#441](https://github.com/bakdata/streams-bootstrap/pull/441)
+
+* Fix Awaitility imports by @philipp94831 in [#443](https://github.com/bakdata/streams-bootstrap/pull/443)
+
+* Bump the test-dependencies group with 2 updates by @dependabot[bot] in [#445](https://github.com/bakdata/streams-bootstrap/pull/445)
+
+* Bump the "build" group with 2 updates across multiple ecosystems by @dependabot[bot] in [#446](https://github.com/bakdata/streams-bootstrap/pull/446)
+
+* Bump com.bakdata.kafka:error-handling-bom from 2.1.2 to 2.2.0 in the kafka-dependencies group by @dependabot[bot] in [#444](https://github.com/bakdata/streams-bootstrap/pull/444)
+
+* docs: Add note about connection between StatefulSet and `staticMembership` by @jkbe in [#448](https://github.com/bakdata/streams-bootstrap/pull/448)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#450](https://github.com/bakdata/streams-bootstrap/pull/450)
+
+* Upgrade to Kafka 4.3 by @philipp94831 in [#451](https://github.com/bakdata/streams-bootstrap/pull/451)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.0.0...7.1.0
+
 ## [7.0.0](https://github.com/bakdata/streams-bootstrap/tree/7.0.0) - 2026-03-17
 ### What's changed
 
