@@ -29,7 +29,7 @@ jobs:
     if: ${{ needs.build-and-publish.result == 'success' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download aggregated Javadoc artifact
         uses: actions/download-artifact@v8
@@ -66,7 +66,7 @@ jobs:
     needs: extract-javadoc
     if: ${{ needs.extract-javadoc.result == 'success' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -92,7 +92,7 @@ jobs:
     permissions:
       contents: write # Explicitly grant write access to allow pushing in this job for dependabot
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Fetch all tags; Required for doc versioning
 
