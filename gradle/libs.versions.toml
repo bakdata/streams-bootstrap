@@ -1,5 +1,5 @@
 [versions]
-junit = "6.0.3"
+junit = "6.1.0"
 mockito = "5.23.0"
 testcontainers = "2.0.5"
 kafkaUtils = "1.6.0"
