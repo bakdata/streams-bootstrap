@@ -20,7 +20,7 @@ largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
 errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "2.2.0" }
 errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
 picocli = { group = "info.picocli", name = "picocli", version = "4.7.7" }
-slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.17" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.18" }
 jool = { group = "org.jooq", name = "jool", version = "0.9.15" }
 resilience4j-retry = { group = "io.github.resilience4j", name = "resilience4j-retry", version = "2.3.0" }
 
@@ -34,7 +34,7 @@ mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version
 testcontainers-junit = { group = "org.testcontainers", name = "testcontainers-junit-jupiter", version.ref = "testcontainers" }
 testcontainers-kafka = { group = "org.testcontainers", name = "testcontainers-kafka", version.ref = "testcontainers" }
 fluentKafkaStreamsTests = { group = "com.bakdata.fluent-kafka-streams-tests", name = "fluent-kafka-streams-tests-junit5", version = "3.6.0" }
-log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.25.4" }
+log4j-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.26.0" }
 awaitility = { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
 
 [plugins]
