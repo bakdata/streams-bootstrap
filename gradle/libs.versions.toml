@@ -2,7 +2,7 @@
 junit = "6.1.0"
 mockito = "5.23.0"
 testcontainers = "2.0.5"
-kafkaUtils = "1.6.0"
+kafkaUtils = "1.6.1"
 
 [libraries]
 kafka-bom = { group = "com.bakdata.kafka", name = "kafka-bom", version.ref = "kafkaUtils" }
