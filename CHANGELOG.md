@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.2](https://github.com/bakdata/streams-bootstrap/tree/7.1.2) - 2026-07-02
+### What's changed
+
+* Bump the "build" group with 2 updates across multiple ecosystems by @dependabot[bot] in [#456](https://github.com/bakdata/streams-bootstrap/pull/456)
+
+* Bump the kafka-dependencies group with 2 updates by @dependabot[bot] in [#457](https://github.com/bakdata/streams-bootstrap/pull/457)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.1.1...7.1.2
+
 ## [7.1.1](https://github.com/bakdata/streams-bootstrap/tree/7.1.1) - 2026-07-01
 ### What's changed
 
