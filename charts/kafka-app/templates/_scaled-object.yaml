@@ -8,7 +8,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "kafka-app.scaled-object-name" . }}
+  name: {{ include "kafka-app.fullname" . }}
   {{- include "kafka-app.annotations" . }}
   labels:
     {{- include "kafka-app.labels" . | nindent 4 }}
@@ -83,5 +83,8 @@ spec:
   {{- if .Values.autoscaling.additionalTriggers }}
   {{- .Values.autoscaling.additionalTriggers | toYaml | nindent 4 }}
   {{- end }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      name: {{ include "kafka-app.fullname" . }}
 {{ end }}
 {{- end -}}

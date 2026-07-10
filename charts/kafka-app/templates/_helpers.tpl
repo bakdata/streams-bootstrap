@@ -426,14 +426,3 @@ metadata:
     {{ $key | quote }}: {{ $value | quote }}
     {{- end }}
 {{- end }}
-
-{{- define "kafka-app.scaled-object-name" -}}
-{{/*
-KEDA adds prefix keda-hpa- to HPA and name of HPA must not exceed 63 characters
-*/}}
-{{- if ge (len (include "kafka-app.fullname" .)) 54 }}
-{{- printf "%s-%s" (include "kafka-app.fullname" . | trunc 48 | trimSuffix "-") (include "kafka-app.fullname" . | sha1sum | trunc 5) }}
-{{- else}}
-{{- include "kafka-app.fullname" . }}
-{{- end }}
-{{- end }}
