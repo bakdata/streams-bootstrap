@@ -8,8 +8,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  # KEDA adds prefix keda-hpa- to HPA and name of HPA must not exceed 63 characters
-  name: {{ include "kafka-app.fullname" . | trunc 54 | trimSuffix "-" }}
+  name: {{ include "kafka-app.scaled-object-name" . }}
   {{- include "kafka-app.annotations" . }}
   labels:
     {{- include "kafka-app.labels" . | nindent 4 }}
