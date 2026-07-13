@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.0](https://github.com/bakdata/streams-bootstrap/tree/7.2.0) - 2026-07-13
+### What's changed
+
+* Fix KEDA HPA names by @philipp94831 in [#458](https://github.com/bakdata/streams-bootstrap/pull/458)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.1.2...7.2.0
+
 ## [7.1.2](https://github.com/bakdata/streams-bootstrap/tree/7.1.2) - 2026-07-02
 ### What's changed
 
