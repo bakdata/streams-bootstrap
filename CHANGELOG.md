@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.1](https://github.com/bakdata/streams-bootstrap/tree/7.2.1) - 2026-07-17
+### What's changed
+
+* Bump org.apache.logging.log4j:log4j-slf4j2-impl from 2.26.0 to 2.26.1 in the log-dependencies group by @dependabot[bot] in [#460](https://github.com/bakdata/streams-bootstrap/pull/460)
+
+* Bump com.bakdata.kafka:large-message-bom from 3.2.0 to 3.2.1 in the kafka-dependencies group by @dependabot[bot] in [#459](https://github.com/bakdata/streams-bootstrap/pull/459)
+
+* Bump org.junit.jupiter:junit-jupiter from 6.1.0 to 6.1.1 in the test-dependencies group by @dependabot[bot] in [#461](https://github.com/bakdata/streams-bootstrap/pull/461)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.2.0...7.2.1
+
 ## [7.2.0](https://github.com/bakdata/streams-bootstrap/tree/7.2.0) - 2026-07-13
 ### What's changed
 
