@@ -127,7 +127,7 @@ autoscaling:
 #        targetValue: "2"
 #        url: "http://custom-metrics-api"
 #        valueLocation: "some.json.path"
-  ## requires KEDA 2.12+ and explicit triggers
+  ## requires explicit triggers
   # scalingModifiers:
   #   formula: "trigger_a + trigger_b"
   #   target: "2"
