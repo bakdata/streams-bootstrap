@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.3.0](https://github.com/bakdata/streams-bootstrap/tree/7.3.0) - 2026-07-31
+### What's changed
+
+* Upgrade to fluent-kafka 4.0 by @philipp94831 in [#462](https://github.com/bakdata/streams-bootstrap/pull/462)
+
+* Bump com.ginsberg:junit5-system-exit from 2.0.2 to 2.0.3 by @dependabot[bot] in [#470](https://github.com/bakdata/streams-bootstrap/pull/470)
+
+* Bump io.github.resilience4j:resilience4j-retry from 2.3.0 to 2.4.0 by @dependabot[bot] in [#471](https://github.com/bakdata/streams-bootstrap/pull/471)
+
+* Bump com.bakdata.kafka:error-handling-bom from 2.2.0 to 3.0.0 by @dependabot[bot] in [#469](https://github.com/bakdata/streams-bootstrap/pull/469)
+
+* Bump org.junit.jupiter:junit-jupiter from 6.1.1 to 6.1.2 by @dependabot[bot] in [#468](https://github.com/bakdata/streams-bootstrap/pull/468)
+
+* Bump actions/setup-python from 6 to 7 by @dependabot[bot] in [#465](https://github.com/bakdata/streams-bootstrap/pull/465)
+
+* Bump gradle-wrapper from 9.6.0 to 9.6.1 in the build group by @dependabot[bot] in [#467](https://github.com/bakdata/streams-bootstrap/pull/467)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.2.1...7.3.0
+
 ## [7.2.1](https://github.com/bakdata/streams-bootstrap/tree/7.2.1) - 2026-07-17
 ### What's changed
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 package com.bakdata.kafka.streams;
 
 import com.bakdata.fluent_kafka_streams_tests.TestTopology;
-import com.bakdata.fluent_kafka_streams_tests.junit5.TestTopologyExtension;
+import com.bakdata.fluent_kafka_streams_tests.junitjupiter.TestTopologyExtension;
 import com.bakdata.kafka.TestRecord;
 import com.bakdata.kafka.streams.apps.SimpleStreamsApp;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
