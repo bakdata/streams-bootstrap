@@ -124,8 +124,7 @@ autoscaling:
   ## fully replaces automatically generated Kafka lag triggers when non-empty;
   ## mutually exclusive with additionalTriggers
   triggers: []
-  ## appended to automatically generated Kafka lag triggers in managed Kafka mode;
-  ## cannot be used without a Kafka topic source
+  ## appended to automatically generated Kafka lag triggers, or used as the sole trigger source
   additionalTriggers: []
 #    - type: metrics-api
 #      metadata:
