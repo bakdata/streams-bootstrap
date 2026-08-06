@@ -382,6 +382,9 @@ backoffLimit: {{ .Values.backoffLimit }}
         resources:
           requests:
             storage: "{{ .Values.persistence.size }}"
+        {{- if .Values.persistence.volumeAttributesClassName }}
+        volumeAttributesClassName: "{{ .Values.persistence.volumeAttributesClassName }}"
+        {{- end }}
         {{- if .Values.persistence.storageClass }}
         {{- if (eq "-" .Values.persistence.storageClass) }}
         storageClassName: ""

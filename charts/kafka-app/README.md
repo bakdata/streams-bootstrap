@@ -96,11 +96,12 @@ Renders a `ConfigMap` for the Prometheus JMX exporter sidecar.
 
 ### Storage
 
-| Parameter                  | Description                                                                                                                       | Default |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `persistence.enabled`      | Use a [persistent volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) to store the state of the streams app. | `false` |
-| `persistence.size`         | Size of the persistent volume.                                                                                                    | `1Gi`   |
-| `persistence.storageClass` | Storage class to use for the persistent volume.                                                                                   |         |
+| Parameter                               | Description                                                                                                                       | Default |
+|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|---------|
+| `persistence.enabled`                   | Use a [persistent volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) to store the state of the streams app. | `false` |
+| `persistence.size`                      | Size of the persistent volume.                                                                                                    | `1Gi`   |
+| `persistence.storageClass`              | Storage class to use for the persistent volume.                                                                                   |         |
+| `persistence.volumeAttributesClassName` | Volume attributes class for the persistent volume.                                                                                |         |
 
 ### Image
 
