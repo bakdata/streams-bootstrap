@@ -197,6 +197,7 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: ""
+  # volumeAttributesClassName: "my-volume-attributes-class"
 
 podAnnotations: {}
 
