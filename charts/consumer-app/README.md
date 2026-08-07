@@ -122,6 +122,8 @@ podAnnotations:
 | `autoscaling.idleReplicas`       | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                           |            |
 | `autoscaling.topics`             | List of topics used by the consumer app.                                                                           | `[]`       |
 | `autoscaling.additionalTriggers` | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                                         | `[]`       |
+| `autoscaling.triggers`           | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                            | `[]`       |
+| `autoscaling.scalingModifiers`   | KEDA composite scaling configuration. Requires explicit triggers.                                                  |            |
 
 ### JVM
 

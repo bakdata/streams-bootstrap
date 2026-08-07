@@ -177,7 +177,7 @@ podAnnotations:
 ### Auto-Scaling
 
 | Parameter                        | Description                                                                                                        | Default    |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------- |
+| -------------------------------- |--------------------------------------------------------------------------------------------------------------------| ---------- |
 | `autoscaling.enabled`            | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                    | `false`    |
 | `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                                   |            |
 | `autoscaling.pollingInterval`    | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                            | `30`       |
@@ -189,6 +189,8 @@ podAnnotations:
 | `autoscaling.internalTopics`     | List of auto-generated Kafka Streams topics used by the streams app. Consumer group prefix is added automatically. | `[]`       |
 | `autoscaling.topics`             | List of topics used by the streams app.                                                                            | `[]`       |
 | `autoscaling.additionalTriggers` | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                                         | `[]`       |
+| `autoscaling.triggers`           | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                            | `[]`       |
+| `autoscaling.scalingModifiers`   | KEDA composite scaling configuration. Requires explicit triggers.                                                  |            |
 
 ### JVM
 

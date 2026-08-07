@@ -112,12 +112,22 @@ autoscaling:
   topics: []
   #   - bar
   #   - baz
+  ## fully replaces automatically generated Kafka lag triggers when non-empty;
+  ## mutually exclusive with additionalTriggers
+  triggers: []
+  ## appended to automatically generated Kafka lag triggers, or used as the sole trigger source
   additionalTriggers: []
 #    - type: metrics-api
 #      metadata:
 #        targetValue: "2"
 #        url: "http://custom-metrics-api"
 #        valueLocation: "some.json.path"
+  ## requires explicit triggers
+  # scalingModifiers:
+  #   formula: "trigger_a + trigger_b"
+  #   target: "2"
+  #   activationTarget: "0"
+  #   metricType: AverageValue
 
 # serviceAccountName: foo
 

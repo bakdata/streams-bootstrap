@@ -1,8 +1,23 @@
 {{- define "kafka-app.scaled-object" -}}
 {{ if .Values.autoscaling.enabled }}
   {{- $uniqueId := coalesce .Values.kafka.applicationId .Values.kafka.groupId -}}
-  {{- if not (and $uniqueId .Values.autoscaling.lagThreshold) }}
-  {{- fail "When autoscaling is enabled, you must set both .Values.kafka.applicationId (or .Values.kafka.groupId) and .Values.autoscaling.lagThreshold" }}
+  {{- $explicitTriggers := .Values.autoscaling.triggers | default list -}}
+  {{- $additionalTriggers := .Values.autoscaling.additionalTriggers | default list -}}
+  {{- $scalingModifiers := .Values.autoscaling.scalingModifiers | default dict -}}
+  {{- $hasTopicSources := or .Values.kafka.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.kafka.labeledInputTopics -}}
+  {{- if and $explicitTriggers $additionalTriggers }}
+  {{- fail "autoscaling.triggers and autoscaling.additionalTriggers cannot be used together" }}
+  {{- end }}
+  {{- if and $scalingModifiers (not $explicitTriggers) }}
+  {{- fail "autoscaling.scalingModifiers requires autoscaling.triggers" }}
+  {{- end }}
+  {{- if not $explicitTriggers }}
+    {{- if not (or $hasTopicSources $additionalTriggers) }}
+    {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.labeledInputTopics, or .Values.autoscaling.additionalTriggers, or use autoscaling.triggers to define fully custom triggers" }}
+    {{- end }}
+    {{- if not (and $uniqueId .Values.autoscaling.lagThreshold) }}
+    {{- fail "When autoscaling is enabled, you must set both .Values.kafka.applicationId (or .Values.kafka.groupId) and .Values.autoscaling.lagThreshold" }}
+    {{- end }}
   {{- end }}
   {{- $root := . -}}
 apiVersion: keda.sh/v1alpha1
@@ -37,9 +52,9 @@ spec:
   idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
   {{- end }}
   triggers:
-    {{- if not (or .Values.kafka.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.kafka.labeledInputTopics .Values.autoscaling.additionalTriggers) }}
-    {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.labeledInputTopics or .Values.autoscaling.additionalTriggers" }}
-    {{- end}}
+    {{- if $explicitTriggers }}
+    {{- $explicitTriggers | toYaml | nindent 4 }}
+    {{- else }}
     # todo: concat .Values.kafka.inputTopics and .Values.autoscaling.topics to
     # minimize number of loops when we don't need to support helm 2 anymore
     {{- range .Values.kafka.inputTopics }}
@@ -80,11 +95,16 @@ spec:
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- end }}
-  {{- if .Values.autoscaling.additionalTriggers }}
-  {{- .Values.autoscaling.additionalTriggers | toYaml | nindent 4 }}
+  {{- if $additionalTriggers }}
+  {{- $additionalTriggers | toYaml | nindent 4 }}
   {{- end }}
+    {{- end }}
   advanced:
     horizontalPodAutoscalerConfig:
       name: {{ include "kafka-app.fullname" . }}
+    {{- with $scalingModifiers }}
+    scalingModifiers:
+      {{- . | toYaml | nindent 6 }}
+    {{- end }}
 {{ end }}
 {{- end -}}
