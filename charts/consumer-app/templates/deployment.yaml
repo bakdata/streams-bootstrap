@@ -15,10 +15,8 @@ spec:
           env:
           {{- include "kafka-app.common-env" . | nindent 12 }}
           {{- include "kafka-app.group-instance-id-env" . | indent 12 }}
-          {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: KAFKA_STATE_DIR
               value: {{ .Values.kafka.stateDir | quote }}
-          {{- end }}
           {{- include "kafka-app.input-env" . | indent 12 }}
           {{- include "kafka-app.group-id-env" . | indent 12 }}
             - name: JAVA_TOOL_OPTIONS
