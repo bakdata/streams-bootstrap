@@ -789,7 +789,7 @@ class StreamsBuilderXTest {
             public Map<String, Object> createKafkaProperties() {
                 final Map<String, Object> kafkaProperties = super.createKafkaProperties();
                 kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
-                kafkaProperties.put(TopologyConfigX.LINEAGE_ONLY_LATEST_HEADER, false);
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ONLY_LATEST_HEADER_CONFIG, false);
                 return kafkaProperties;
             }
         };
