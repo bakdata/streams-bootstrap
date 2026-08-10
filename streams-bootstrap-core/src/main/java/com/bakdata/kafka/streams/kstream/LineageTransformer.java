@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,14 @@
 
 package com.bakdata.kafka.streams.kstream;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
-@NoArgsConstructor
+@RequiredArgsConstructor
 class LineageTransformer<K, V> implements ValueTransformerWithKey<K, V, V> {
 
+    private final boolean onlyLatestHeader;
     private ProcessorContext context;
 
     @Override
@@ -40,7 +41,7 @@ class LineageTransformer<K, V> implements ValueTransformerWithKey<K, V, V> {
 
     @Override
     public V transform(final K readOnlyKey, final V value) {
-        new LineageHeaders(this.context.headers())
+        new LineageHeaders(this.context.headers(), this.onlyLatestHeader)
                 .addTopicHeader(this.context.topic())
                 .addPartitionHeader(this.context.partition())
                 .addOffsetHeader(this.context.offset());

@@ -517,7 +517,7 @@ public class StreamsBuilderX {
     private <K, V> KStreamX<K, V> initialize(final KStreamX<K, V> stream) {
         final TopologyConfigX config = new TopologyConfigX(this.kafkaProperties);
         if (config.isLineageEnabled()) {
-            return stream.processValues(LineageProcessor::new);
+            return stream.processValues(() -> new LineageProcessor<>(config.isOnlyLatestLineageHeader()));
         }
         return stream;
     }
@@ -525,7 +525,7 @@ public class StreamsBuilderX {
     private <K, V> KTableX<K, V> initialize(final KTableX<K, V> table) {
         final TopologyConfigX config = new TopologyConfigX(this.kafkaProperties);
         if (config.isLineageEnabled()) {
-            return table.transformValues(LineageTransformer::new);
+            return table.transformValues(() -> new LineageTransformer<>(config.isOnlyLatestLineageHeader()));
         }
         return table;
     }

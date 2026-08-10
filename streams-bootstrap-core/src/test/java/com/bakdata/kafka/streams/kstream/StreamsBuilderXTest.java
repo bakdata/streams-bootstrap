@@ -730,6 +730,102 @@ class StreamsBuilderXTest {
     }
 
     @Test
+    void shouldOnlyRetainLatestLineage() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.to("intermediate");
+                final KStreamX<String, String> intermediate = builder.stream("intermediate");
+                intermediate.to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                return kafkaProperties;
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input").add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput("output").toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(3)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("intermediate");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getInt()).isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getLong()).isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
+    @Test
+    void shouldFullLineage() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                input.to("intermediate");
+                final KStreamX<String, String> intermediate = builder.stream("intermediate");
+                intermediate.to("output");
+            }
+
+            @Override
+            public Map<String, Object> createKafkaProperties() {
+                final Map<String, Object> kafkaProperties = super.createKafkaProperties();
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ENABLED_CONFIG, true);
+                kafkaProperties.put(TopologyConfigX.LINEAGE_ONLY_LATEST_HEADER, false);
+                return kafkaProperties;
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("input").add("foo", "bar");
+            final List<ProducerRecord<String, String>> records = topology.streamOutput("output").toList();
+            this.softly.assertThat(records)
+                    .hasSize(1)
+                    .anySatisfy(rekord -> {
+                        this.softly.assertThat(rekord.key()).isEqualTo("foo");
+                        this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().toArray())
+                                .hasSize(6)
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("intermediate");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.TOPIC_HEADER);
+                                    this.softly.assertThat(new String(header.value(), StandardCharsets.UTF_8))
+                                            .isEqualTo("input");
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.PARTITION_HEADER);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getInt()).isEqualTo(0);
+                                })
+                                .anySatisfy(header -> {
+                                    this.softly.assertThat(header.key()).isEqualTo(LineageHeaders.OFFSET_HEADER);
+                                    this.softly.assertThat(ByteBuffer.wrap(header.value()).getLong()).isEqualTo(0L);
+                                });
+                    });
+        }
+    }
+
+    @Test
     void shouldAddLineageToTable() {
         final StringApp app = new StringApp() {
             @Override
