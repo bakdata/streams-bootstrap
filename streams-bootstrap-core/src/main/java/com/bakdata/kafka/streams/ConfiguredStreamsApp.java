@@ -64,6 +64,7 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
                 CompressionType.GZIP.toString());
 
         kafkaConfig.put(StreamsConfig.ENSURE_EXPLICIT_INTERNAL_RESOURCE_NAMING_CONFIG, true);
+        kafkaConfig.put(StreamsConfig.PROCESSING_EXCEPTION_HANDLER_GLOBAL_ENABLED_CONFIG, true);
 
         return kafkaConfig;
     }
