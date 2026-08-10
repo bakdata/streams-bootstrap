@@ -16,7 +16,7 @@ spec:
           {{- include "kafka-app.common-env" . | nindent 12 }}
           {{- include "kafka-app.group-instance-id-env" . | indent 12 }}
             - name: KAFKA_STATE_DIR
-              value: {{ .Values.kafka.stateDir }}
+              value: {{ .Values.kafka.stateDir | quote }}
           {{- include "kafka-app.input-env" . | indent 12 }}
           {{- include "kafka-app.group-id-env" . | indent 12 }}
             - name: JAVA_TOOL_OPTIONS
@@ -27,7 +27,7 @@ spec:
             {{- include "kafka-app.volume-mounts" . | indent 12 }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
-              mountPath: {{ .Values.kafka.stateDir }}
+              mountPath: {{ .Values.kafka.stateDir | quote }}
             {{- end }}
         {{- end }}
         {{- if or (.Values.jmx.enabled) (.Values.ports) }}
