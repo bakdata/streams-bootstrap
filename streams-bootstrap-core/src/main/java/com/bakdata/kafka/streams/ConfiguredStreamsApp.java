@@ -82,6 +82,8 @@ public class ConfiguredStreamsApp<T extends StreamsApp> implements ConfiguredApp
      * producer.compression.type=gzip
      * </pre>
      *     </li>
+     *     <li>Explicit internal resource naming is enforced</li>
+     *     <li>Global processing exception handler is enabled</li>
      *     <li>
      *         Configs provided by {@link StreamsApp#createKafkaProperties()}
      *     </li>
