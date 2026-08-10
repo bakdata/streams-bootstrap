@@ -25,6 +25,8 @@ spec:
             {{- end }}
           {{- end }}
           {{- include "kafka-app.group-instance-id-env" . | indent 12 }}
+            - name: KAFKA_STATE_DIR
+              value: {{ .Values.kafka.stateDir }}
           {{- include "kafka-app.input-env" . | indent 12 }}
           {{- include "kafka-app.output-env" . | indent 12 }}
           {{- include "kafka-app.error-env" . | indent 12 }}
@@ -37,7 +39,7 @@ spec:
             {{- include "kafka-app.volume-mounts" . | indent 12 }}
             {{- if and .Values.persistence.enabled .Values.statefulSet }}
             - name: datadir
-              mountPath: /tmp/kafka-streams
+              mountPath: {{ .Values.kafka.stateDir }}
             {{- end }}
         {{- end }}
         {{- if or (.Values.jmx.enabled) (.Values.ports) }}

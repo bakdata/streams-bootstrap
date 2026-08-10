@@ -52,17 +52,18 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ### Kafka
 
-| Parameter                    | Description                                                                                                                                                                      | Default |
-|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `kafka.bootstrapServers`     | Comma separated list of Kafka bootstrap servers to connect to.                                                                                                                   |         |
-| `kafka.schemaRegistryUrl`    | URL of Schema Registry to connect to.                                                                                                                                            | `null`  |
-| `kafka.staticMembership`     | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false` |
-| `kafka.config`               | Configurations for your [Kafka Consumer app](https://kafka.apache.org/documentation/#consumerconfigs).                                                                           | `{}`    |
-| `kafka.inputTopics`          | List of input topics for your consumer application.                                                                                                                              | `[]`    |
-| `kafka.labeledInputTopics`   | Map of additional labeled input topics if you need to specify multiple topics with different message types.                                                                      | `{}`    |
-| `kafka.inputPattern`         | Input pattern of topics for your consumer application.                                                                                                                           |         |
-| `kafka.labeledInputPatterns` | Map of additional labeled input patterns if you need to specify multiple topics with different message types.                                                                    | `{}`    |
-| `kafka.groupId`              | Unique group ID for Kafka Consumer. Required for auto-scaling                                                                                                                    |         |
+| Parameter                    | Description                                                                                                                                                                      | Default                 |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
+| `kafka.bootstrapServers`     | Comma separated list of Kafka bootstrap servers to connect to.                                                                                                                   |                         |
+| `kafka.schemaRegistryUrl`    | URL of Schema Registry to connect to.                                                                                                                                            | `null`                  |
+| `kafka.staticMembership`     | Whether to use [Kafka Static Group Membership](https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances). | `false`                 |
+| `kafka.stateDir`             | Directory for app state.                                                                                                                                                         | `/state/kafka-consumer` |
+| `kafka.config`               | Configurations for your [Kafka Consumer app](https://kafka.apache.org/documentation/#consumerconfigs).                                                                           | `{}`                    |
+| `kafka.inputTopics`          | List of input topics for your consumer application.                                                                                                                              | `[]`                    |
+| `kafka.labeledInputTopics`   | Map of additional labeled input topics if you need to specify multiple topics with different message types.                                                                      | `{}`                    |
+| `kafka.inputPattern`         | Input pattern of topics for your consumer application.                                                                                                                           |                         |
+| `kafka.labeledInputPatterns` | Map of additional labeled input patterns if you need to specify multiple topics with different message types.                                                                    | `{}`                    |
+| `kafka.groupId`              | Unique group ID for Kafka Consumer. Required for auto-scaling                                                                                                                    |                         |
 
 ### Other
 
