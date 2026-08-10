@@ -775,7 +775,7 @@ class StreamsBuilderXTest {
     }
 
     @Test
-    void shouldFullLineage() {
+    void shouldRetainFullLineage() {
         final StringApp app = new StringApp() {
             @Override
             public void buildTopology(final StreamsBuilderX builder) {
@@ -801,6 +801,10 @@ class StreamsBuilderXTest {
                     .anySatisfy(rekord -> {
                         this.softly.assertThat(rekord.key()).isEqualTo("foo");
                         this.softly.assertThat(rekord.value()).isEqualTo("bar");
+                        this.softly.assertThat(rekord.headers().headers(LineageHeaders.PARTITION_HEADER))
+                                .hasSize(2);
+                        this.softly.assertThat(rekord.headers().headers(LineageHeaders.OFFSET_HEADER))
+                                .hasSize(2);
                         this.softly.assertThat(rekord.headers().toArray())
                                 .hasSize(6)
                                 .anySatisfy(header -> {
