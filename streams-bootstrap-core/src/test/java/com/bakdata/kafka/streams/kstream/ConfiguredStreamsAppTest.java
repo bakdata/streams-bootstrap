@@ -243,6 +243,14 @@ class ConfiguredStreamsAppTest {
                 .hasMessageStartingWith("Invalid topology:");
     }
 
+    @Test
+    void shouldEnableGlobalProcessingExceptionHandler() {
+        final ConfiguredStreamsApp<StreamsApp> configuredApp =
+                new ConfiguredStreamsApp<>(new TestApplication(), newAppConfiguration());
+        assertThat(configuredApp.getKafkaProperties(RuntimeConfiguration.create("fake")))
+                .containsEntry(StreamsConfig.PROCESSING_EXCEPTION_HANDLER_GLOBAL_ENABLED_CONFIG, true);
+    }
+
     @RequiredArgsConstructor
     private static class TestApplication implements StreamsApp {
 
