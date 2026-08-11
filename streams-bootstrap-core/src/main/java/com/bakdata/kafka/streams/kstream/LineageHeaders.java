@@ -55,27 +55,34 @@ public class LineageHeaders {
     @Getter(AccessLevel.PACKAGE)
     @Accessors(fluent = true)
     private final @NonNull Headers headers;
+    private final boolean onlyLatestHeader;
 
     LineageHeaders addTopicHeader(final String topic) {
         if (topic == null) {
             return this;
         }
-        return new LineageHeaders(this.headers.add(TOPIC_HEADER, topic.getBytes(StandardCharsets.UTF_8)));
+        final Headers newHeaders = this.onlyLatestHeader ? this.headers.remove(TOPIC_HEADER) : this.headers;
+        return new LineageHeaders(newHeaders.add(TOPIC_HEADER, topic.getBytes(StandardCharsets.UTF_8)),
+                this.onlyLatestHeader);
     }
 
     LineageHeaders addPartitionHeader(final int partition) {
         if (partition < 0) {
             return this;
         }
+        final Headers newHeaders = this.onlyLatestHeader ? this.headers.remove(PARTITION_HEADER) : this.headers;
         return new LineageHeaders(
-                this.headers.add(PARTITION_HEADER, ByteBuffer.allocate(Integer.BYTES).putInt(partition).array()));
+                newHeaders.add(PARTITION_HEADER, ByteBuffer.allocate(Integer.BYTES).putInt(partition).array()),
+                this.onlyLatestHeader);
     }
 
     LineageHeaders addOffsetHeader(final long offset) {
         if (offset < 0) {
             return this;
         }
+        final Headers newHeaders = this.onlyLatestHeader ? this.headers.remove(OFFSET_HEADER) : this.headers;
         return new LineageHeaders(
-                this.headers.add(OFFSET_HEADER, ByteBuffer.allocate(Long.BYTES).putLong(offset).array()));
+                newHeaders.add(OFFSET_HEADER, ByteBuffer.allocate(Long.BYTES).putLong(offset).array()),
+                this.onlyLatestHeader);
     }
 }

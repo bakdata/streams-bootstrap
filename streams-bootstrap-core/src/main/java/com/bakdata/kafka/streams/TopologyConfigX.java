@@ -38,10 +38,16 @@ public class TopologyConfigX extends AbstractConfig {
 
     private static final String PREFIX = "streams.bootstrap.";
     public static final String LINEAGE_ENABLED_CONFIG = PREFIX + "lineage.enabled";
+    public static final String LINEAGE_ONLY_LATEST_HEADER_CONFIG = PREFIX + "lineage.only.latest";
     private static final String LINEAGE_ENABLED_DOC =
             "Add headers containing lineage information to each record read from a topic";
+    private static final String LINEAGE_ONLY_LATEST_HEADER_DOC =
+            "Only keep the latest lineage header for each record. Previous lineage headers are available in the "
+                    + "referenced records headers";
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
-            .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC);
+            .define(LINEAGE_ENABLED_CONFIG, Type.BOOLEAN, false, Importance.LOW, LINEAGE_ENABLED_DOC)
+            .define(LINEAGE_ONLY_LATEST_HEADER_CONFIG, Type.BOOLEAN, true, Importance.LOW,
+                    LINEAGE_ONLY_LATEST_HEADER_DOC);
 
     /**
      * Create a new {@code StreamsBuilderXConfig} using the given properties.
@@ -59,5 +65,15 @@ public class TopologyConfigX extends AbstractConfig {
      */
     public boolean isLineageEnabled() {
         return this.getBoolean(LINEAGE_ENABLED_CONFIG);
+    }
+
+    /**
+     * Check if only the latest lineage header should be kept. This is controlled by
+     * {@link #LINEAGE_ONLY_LATEST_HEADER_CONFIG}
+     *
+     * @return true if only the latest lineage header is kept for each record
+     */
+    public boolean isOnlyLatestLineageHeader() {
+        return this.getBoolean(LINEAGE_ONLY_LATEST_HEADER_CONFIG);
     }
 }
