@@ -28,6 +28,7 @@ kafka:
   # bootstrapServers: "test:9092"
   # schemaRegistryUrl: "url:1234"
   staticMembership: false
+  stateDir: /state/kafka-consumer-producer
   config: {}
   #   max.poll.records: 500
   #   Note that YAML may convert large integers to scientific notation. Use Strings to avoid this.
