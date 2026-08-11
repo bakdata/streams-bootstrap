@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.4.0](https://github.com/bakdata/streams-bootstrap/tree/7.4.0) - 2026-08-11
+### What's changed
+
+* Support volumeAttributesClassName for PVCs by @philipp94831 in [#473](https://github.com/bakdata/streams-bootstrap/pull/473)
+
+* Add explicit KEDA triggers and scaling modifiers by @raphala in [#472](https://github.com/bakdata/streams-bootstrap/pull/472)
+
+* Enable global processing exception handler by default by @philipp94831 in [#475](https://github.com/bakdata/streams-bootstrap/pull/475)
+
+* Mount state to non-temporary directory by @philipp94831 in [#474](https://github.com/bakdata/streams-bootstrap/pull/474)
+
+* Configure lineage to only retain last header by @philipp94831 in [#477](https://github.com/bakdata/streams-bootstrap/pull/477)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.3.0...7.4.0
+
 ## [7.3.0](https://github.com/bakdata/streams-bootstrap/tree/7.3.0) - 2026-07-31
 ### What's changed
 
