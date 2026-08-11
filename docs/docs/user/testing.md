@@ -215,7 +215,8 @@ ConsumerGroupVerifier verifier = runner.verify(streamsApp);
 ```
 
 Allows you to:
-- assert consumer group existence
+
+- assert group existence (classic consumer group or streams group)
 - check stability
 - inspect committed offsets
 
