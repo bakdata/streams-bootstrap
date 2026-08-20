@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.5.0](https://github.com/bakdata/streams-bootstrap/tree/7.5.0) - 2026-08-20
+### What's changed
+
+* Bump the build group with 4 updates by @dependabot[bot] in [#479](https://github.com/bakdata/streams-bootstrap/pull/479)
+
+* Bump com.bakdata.kafka:large-message-bom from 3.2.1 to 4.0.0 by @dependabot[bot] in [#482](https://github.com/bakdata/streams-bootstrap/pull/482)
+
+* Bump org.junit.jupiter:junit-jupiter from 6.1.2 to 6.1.3 in the test-dependencies group by @dependabot[bot] in [#481](https://github.com/bakdata/streams-bootstrap/pull/481)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.4.0...7.5.0
+
 ## [7.4.0](https://github.com/bakdata/streams-bootstrap/tree/7.4.0) - 2026-08-11
 ### What's changed
 
