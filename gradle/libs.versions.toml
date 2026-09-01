@@ -42,5 +42,5 @@ release = { id = "com.bakdata.release", version = "2.2.1" }
 sonar = { id = "com.bakdata.sonar", version = "2.2.1" }
 sonatype = { id = "com.bakdata.sonatype", version = "2.2.1" }
 lombok = { id = "io.freefair.lombok", version = "9.5.0" }
-avro = { id = "com.bakdata.gradle.avro", version = "2.0.0" }
+avro = { id = "com.bakdata.gradle.avro", version = "2.0.1" }
 aggregate-javadoc = { id = "io.freefair.aggregate-javadoc", version = "9.5.0" }
