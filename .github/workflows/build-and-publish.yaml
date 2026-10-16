@@ -11,7 +11,7 @@ on:
 jobs:
   build-and-publish:
     name: Java Gradle
-    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@feature/self-reference
+    uses: bakdata/ci-templates/.github/workflows/java-gradle-library.yaml@6a97ae255090bdd725bfbb21d0eb05d46a9abd59 # https://github.com/bakdata/ci-templates/releases/tag/1.83.0
     secrets:
       sonar-token: ${{ secrets.SONARCLOUD_TOKEN }}
       sonar-organization: ${{ secrets.SONARCLOUD_ORGANIZATION }}
