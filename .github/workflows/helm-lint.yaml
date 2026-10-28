@@ -12,6 +12,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Lint Helm chart
-        uses: bakdata/ci-templates/actions/helm-lint@6a97ae255090bdd725bfbb21d0eb05d46a9abd59 # https://github.com/bakdata/ci-templates/releases/tag/1.83.0
+        uses: bakdata/ci-templates/actions/helm-lint@b63a0925eccbdbf69dcf2c990c15cae4a1a8e9f7 # https://github.com/bakdata/ci-templates/releases/tag/2.1.0
         with:
           lint-config-path: ".github/lint-config.yaml"
