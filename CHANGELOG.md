@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.5.1](https://github.com/bakdata/streams-bootstrap/tree/7.5.1) - 2026-10-28
+### What's changed
+
+* Bump com.bakdata.gradle.avro from 2.0.0 to 2.0.1 by @dependabot[bot] in [#484](https://github.com/bakdata/streams-bootstrap/pull/484)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#485](https://github.com/bakdata/streams-bootstrap/pull/485)
+
+* Bump the kafka-dependencies group with 2 updates by @dependabot[bot] in [#483](https://github.com/bakdata/streams-bootstrap/pull/483)
+
+* Pin workflows to SHA by @philipp94831 in [#486](https://github.com/bakdata/streams-bootstrap/pull/486)
+
+* Bump the build group with 6 updates by @dependabot[bot] in [#488](https://github.com/bakdata/streams-bootstrap/pull/488)
+
+* Bump the build group with 3 updates by @dependabot[bot] in [#489](https://github.com/bakdata/streams-bootstrap/pull/489)
+
+* Upgrade to Kafka 4.3.2/Confluent 8.3.2 by @dependabot[bot] in [#494](https://github.com/bakdata/streams-bootstrap/pull/494)
+
+* Bump the test-dependencies group with 2 updates by @dependabot[bot] in [#496](https://github.com/bakdata/streams-bootstrap/pull/496)
+
+* Bump org.slf4j:slf4j-api from 2.0.18 to 2.0.20 in the log-dependencies group by @dependabot[bot] in [#495](https://github.com/bakdata/streams-bootstrap/pull/495)
+
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.5.0...7.5.1
+
 ## [7.5.0](https://github.com/bakdata/streams-bootstrap/tree/7.5.0) - 2026-08-20
 ### What's changed
 
