@@ -67,6 +67,9 @@ This will be used across resources.
 {{/*
 Define annotations helper for Deployment.
 Includes default annotations and conditionally adds consumerGroup if applicable.
+The consumerGroup annotation represents the Kafka group identifier (application.id for Kafka Streams
+or group.id for Kafka Consumers). It applies regardless of whether the app uses the classic consumer
+group protocol or the streams group protocol (group.protocol=streams).
 */}}
 {{- define "kafka-app.deployment-annotations" -}}
 {{/* Use applicationId for Kafka Streams, otherwise use groupId for Kafka Consumers */}}
@@ -77,7 +80,7 @@ Includes default annotations and conditionally adds consumerGroup if applicable.
     {{ $key | quote }}: {{ $value | quote }}
 {{- end }}
 
-  {{- /* Conditionally add the consumerGroup annotation if needed */ -}}
+  {{- /* Conditionally add the consumerGroup annotation (represents the Kafka group regardless of protocol) */ -}}
   {{- if and $uniqueId (not .Values.annotations.consumerGroup) }}
     consumerGroup: {{ $uniqueId | quote }}
   {{- end }}
