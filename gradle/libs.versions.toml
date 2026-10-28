@@ -20,7 +20,7 @@ largeMessage-core = { group = "com.bakdata.kafka", name = "large-message-core" }
 errorHandling-bom = { group = "com.bakdata.kafka", name = "error-handling-bom", version = "3.0.0" }
 errorHandling-core = { group = "com.bakdata.kafka", name = "error-handling-core" }
 picocli = { group = "info.picocli", name = "picocli", version = "4.7.7" }
-slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.18" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.20" }
 jool = { group = "org.jooq", name = "jool", version = "0.9.15" }
 resilience4j-retry = { group = "io.github.resilience4j", name = "resilience4j-retry", version = "2.4.0" }
 
