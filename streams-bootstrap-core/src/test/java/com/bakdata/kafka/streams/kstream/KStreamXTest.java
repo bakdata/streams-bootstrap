@@ -3644,7 +3644,7 @@ class KStreamXTest {
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
-                input.join(otherInput, (k, v) -> "baz",
+                input.join(otherInput, (k, v) -> v,
                         (streamKey, mappedKey, streamValue, tableValue) ->
                                 streamKey + mappedKey + streamValue + tableValue)
                         .to("output");
@@ -3652,13 +3652,13 @@ class KStreamXTest {
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input("table_input")
-                    .add("baz", "qux");
+                    .add("bar", "baz");
             topology.input("input")
                     .add("foo", "bar");
             topology.streamOutput()
                     .expectNextRecord()
                     .hasKey("foo")
-                    .hasValue("foobazbarqux")
+                    .hasValue("foobarbarbaz")
                     .expectNoMoreRecord();
         }
     }
@@ -3670,7 +3670,7 @@ class KStreamXTest {
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
-                input.join(otherInput, (k, v) -> "baz",
+                input.join(otherInput, (k, v) -> v,
                         (streamKey, mappedKey, streamValue, tableValue) ->
                                 streamKey + mappedKey + streamValue + tableValue, Named.as("join"))
                         .to("output");
@@ -3678,13 +3678,13 @@ class KStreamXTest {
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input("table_input")
-                    .add("baz", "qux");
+                    .add("bar", "baz");
             topology.input("input")
                     .add("foo", "bar");
             topology.streamOutput()
                     .expectNextRecord()
                     .hasKey("foo")
-                    .hasValue("foobazbarqux")
+                    .hasValue("foobarbarbaz")
                     .expectNoMoreRecord();
         }
     }
@@ -3696,7 +3696,7 @@ class KStreamXTest {
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
-                input.leftJoin(otherInput, (k, v) -> "baz",
+                input.leftJoin(otherInput, (k, v) -> v,
                         (streamKey, mappedKey, streamValue, tableValue) ->
                                 streamKey + mappedKey + streamValue + tableValue)
                         .to("output");
@@ -3704,13 +3704,13 @@ class KStreamXTest {
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input("table_input")
-                    .add("baz", "qux");
+                    .add("bar", "baz");
             topology.input("input")
                     .add("foo", "bar");
             topology.streamOutput()
                     .expectNextRecord()
                     .hasKey("foo")
-                    .hasValue("foobazbarqux")
+                    .hasValue("foobarbarbaz")
                     .expectNoMoreRecord();
         }
     }
@@ -3722,7 +3722,7 @@ class KStreamXTest {
             public void buildTopology(final StreamsBuilderX builder) {
                 final KStreamX<String, String> input = builder.stream("input");
                 final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
-                input.leftJoin(otherInput, (k, v) -> "baz",
+                input.leftJoin(otherInput, (k, v) -> v,
                         (streamKey, mappedKey, streamValue, tableValue) ->
                                 streamKey + mappedKey + streamValue + tableValue, Named.as("join"))
                         .to("output");
@@ -3730,13 +3730,13 @@ class KStreamXTest {
         };
         try (final TestTopology<String, String> topology = app.startApp()) {
             topology.input("table_input")
-                    .add("baz", "qux");
+                    .add("bar", "baz");
             topology.input("input")
                     .add("foo", "bar");
             topology.streamOutput()
                     .expectNextRecord()
                     .hasKey("foo")
-                    .hasValue("foobazbarqux")
+                    .hasValue("foobarbarbaz")
                     .expectNoMoreRecord();
         }
     }
