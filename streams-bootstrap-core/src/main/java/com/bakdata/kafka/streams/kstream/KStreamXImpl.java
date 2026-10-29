@@ -788,6 +788,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
+    @Deprecated
     @Override
     public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -796,12 +797,11 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
-    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> join(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+    public <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> join(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
             final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
                     extends VOut> joiner) {
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
     @Override
@@ -811,6 +811,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
+    @Deprecated
     @Override
     public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -819,13 +820,12 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
-    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> join(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+    public <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> join(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
             final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
                     extends VOut> joiner,
             final Named named) {
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
     @Override
@@ -835,6 +835,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
     }
 
+    @Deprecated
     @Override
     public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -843,12 +844,12 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
-    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> leftJoin(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+    public <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> leftJoin(
+            final GlobalKTable<GlobalKey, GlobalValue> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
             final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
                     extends VOut> joiner) {
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, joiner));
     }
 
     @Override
@@ -858,6 +859,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
     }
 
+    @Deprecated
     @Override
     public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -866,13 +868,13 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
-    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> leftJoin(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+    public <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> leftJoin(
+            final GlobalKTable<GlobalKey, GlobalValue> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
             final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
                     extends VOut> joiner,
             final Named named) {
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, joiner, named));
     }
 
     @Override
