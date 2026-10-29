@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,6 +57,7 @@ import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.kstream.StreamJoined;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.kstream.ValueJoinerWithKey;
+import org.apache.kafka.streams.kstream.ValueJoinerWithStreamAndMappedKey;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.processor.TopicNameExtractor;
@@ -795,6 +796,15 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
+    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> join(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner) {
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> joiner, final Named named) {
@@ -806,6 +816,16 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner, final Named named) {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
+    }
+
+    @Override
+    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> join(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner,
+            final Named named) {
+        //TODO
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -823,6 +843,15 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
     }
 
     @Override
+    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> leftJoin(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner) {
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
@@ -834,6 +863,16 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             final ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, final Named named) {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
+    }
+
+    @Override
+    public <GlobalKey, GlobalValue, VOut> KStream<K, VOut> leftJoin(final GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            final KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            final ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner,
+            final Named named) {
+        //TODO
+        throw new UnsupportedOperationException();
     }
 
     @Override
