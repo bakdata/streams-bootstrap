@@ -16,10 +16,10 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Check out repository
-        uses: bakdata/ci-templates/actions/checkout@b63a0925eccbdbf69dcf2c990c15cae4a1a8e9f7 # https://github.com/bakdata/ci-templates/releases/tag/2.1.0
+        uses: bakdata/ci-templates/actions/checkout@37079c092c50f7e75c206269b4388bf79f2a7a72 # https://github.com/bakdata/ci-templates/releases/tag/2.1.1
 
       - name: Set up Gradle with version ${{ inputs.gradle-version }}
-        uses: bakdata/ci-templates/actions/java-gradle-setup@b63a0925eccbdbf69dcf2c990c15cae4a1a8e9f7 # https://github.com/bakdata/ci-templates/releases/tag/2.1.0
+        uses: bakdata/ci-templates/actions/java-gradle-setup@37079c092c50f7e75c206269b4388bf79f2a7a72 # https://github.com/bakdata/ci-templates/releases/tag/2.1.1
         with:
           gradle-cache-read-only: "true"
 
@@ -33,7 +33,7 @@ jobs:
 
   helm-publish:
     name: Publish Helm chart
-    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@b63a0925eccbdbf69dcf2c990c15cae4a1a8e9f7 # https://github.com/bakdata/ci-templates/releases/tag/2.1.0
+    uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@37079c092c50f7e75c206269b4388bf79f2a7a72 # https://github.com/bakdata/ci-templates/releases/tag/2.1.1
     needs: get-gradle-version
     with:
       charts-path: "./charts"
