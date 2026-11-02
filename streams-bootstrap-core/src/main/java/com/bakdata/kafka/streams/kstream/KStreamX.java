@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,7 @@ import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.kstream.StreamJoined;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.kstream.ValueJoinerWithKey;
+import org.apache.kafka.streams.kstream.ValueJoinerWithStreamAndMappedKey;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.apache.kafka.streams.kstream.ValueMapperWithKey;
 import org.apache.kafka.streams.processor.TopicNameExtractor;
@@ -813,40 +814,82 @@ public interface KStreamX<K, V> extends KStream<K, V> {
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> joiner);
 
+    /**
+     * @deprecated Use {@link #join(GlobalKTable, KeyValueMapper, ValueJoinerWithStreamAndMappedKey)}
+     */
+    @Deprecated(since = "7.6.0")
     @Override
     <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner);
 
     @Override
+    <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> join(GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner);
+
+    @Override
     <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> joiner, Named named);
 
+    /**
+     * @deprecated Use {@link #join(GlobalKTable, KeyValueMapper, ValueJoinerWithStreamAndMappedKey, Named)}
+     */
+    @Deprecated(since = "7.6.0")
     @Override
     <GK, GV, RV> KStreamX<K, RV> join(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> joiner, Named named);
 
     @Override
+    <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> join(GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner,
+            Named named);
+
+    @Override
     <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner);
 
+    /**
+     * @deprecated Use {@link #leftJoin(GlobalKTable, KeyValueMapper, ValueJoinerWithStreamAndMappedKey)}
+     */
+    @Deprecated(since = "7.6.0")
     @Override
     <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner);
 
     @Override
-    <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
-            KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
-            ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner, Named named);
+    <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> leftJoin(GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner);
 
     @Override
     <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
             KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
+            ValueJoiner<? super V, ? super GV, ? extends RV> valueJoiner, Named named);
+
+    /**
+     * @deprecated Use {@link #leftJoin(GlobalKTable, KeyValueMapper, ValueJoinerWithStreamAndMappedKey, Named)}
+     */
+    @Deprecated(since = "7.6.0")
+    @Override
+    <GK, GV, RV> KStreamX<K, RV> leftJoin(GlobalKTable<GK, GV> globalTable,
+            KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
             ValueJoinerWithKey<? super K, ? super V, ? super GV, ? extends RV> valueJoiner, Named named);
+
+    @Override
+    <GlobalKey, GlobalValue, VOut> KStreamX<K, VOut> leftJoin(GlobalKTable<GlobalKey, GlobalValue> globalTable,
+            KeyValueMapper<? super K, ? super V, ? extends GlobalKey> keySelector,
+            ValueJoinerWithStreamAndMappedKey<? super K, ? super GlobalKey, ? super V, ? super GlobalValue, ?
+                    extends VOut> joiner,
+            Named named);
 
     @Override
     <KOut, VOut> KStreamX<KOut, VOut> process(

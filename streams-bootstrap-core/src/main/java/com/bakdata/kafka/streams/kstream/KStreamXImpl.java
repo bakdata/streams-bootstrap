@@ -788,7 +788,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner));
     }
 
-    @Deprecated
+    @Deprecated(since = "7.6.0")
     @Override
     public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -811,7 +811,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.join(globalTable, keySelector, joiner, named));
     }
 
-    @Deprecated
+    @Deprecated(since = "7.6.0")
     @Override
     public <GK, GV, RV> KStreamX<K, RV> join(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -835,7 +835,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner));
     }
 
-    @Deprecated
+    @Deprecated(since = "7.6.0")
     @Override
     public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
@@ -859,7 +859,7 @@ class KStreamXImpl<K, V> implements KStreamX<K, V> {
         return this.context.wrap(this.wrapped.leftJoin(globalTable, keySelector, valueJoiner, named));
     }
 
-    @Deprecated
+    @Deprecated(since = "7.6.0")
     @Override
     public <GK, GV, RV> KStreamX<K, RV> leftJoin(final GlobalKTable<GK, GV> globalTable,
             final KeyValueMapper<? super K, ? super V, ? extends GK> keySelector,
