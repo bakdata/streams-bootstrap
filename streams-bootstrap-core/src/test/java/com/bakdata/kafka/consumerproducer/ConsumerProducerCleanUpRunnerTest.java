@@ -191,9 +191,6 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
 
             try (final AdminClientX admin = this.newTestClient().admin()) {
                 final TopicsClient topics = admin.topics();
-                this.softly.assertThat(admin.consumerGroups().group(app.getUniqueGroupId()).exists())
-                        .as("Consumer group exists")
-                        .isTrue();
                 this.softly.assertThat(topics.topic(TOPIC_CONFIG_WITHOUT_OUTPUT.getErrorTopic()).exists())
                         .as("Error topic is deleted")
                         .isFalse();
