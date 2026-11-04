@@ -21,17 +21,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up Python
-      uses: actions/setup-python@v6
+    - name: Install uv
+      uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
       with:
-        python-version: 3.11
-    - name: Install Poetry
-      uses: abatilo/actions-poetry@v2
-      with:
-        poetry-version: 1.8.2
-    - name: Install docs dependencies with Poetry
-      shell: bash
-      run: poetry install --no-root
+        version-file: .tool-versions
     - name: Update documentation branch with mike
       shell: bash
       run: |
@@ -44,7 +37,7 @@ runs:
       shell: bash
       if: ${{ inputs.release == 'false' }}
       run: |
-        poetry run mike deploy ${{ inputs.tag }} --push --config-file ./docs/mkdocs.yml
+        uv run --frozen mike deploy ${{ inputs.tag }} --push --config-file ./docs/mkdocs.yml
 
     - name: Deploy ${{ inputs.tag }} version (latest) of the documentation with mike
       shell: bash
@@ -52,4 +45,4 @@ runs:
       run: |
         sem_version=${{ inputs.tag }}
         major_minor_version=${sem_version%.*}
-        poetry run mike deploy "$major_minor_version" latest --update-aliases --push --config-file ./docs/mkdocs.yml
+        uv run --frozen mike deploy "$major_minor_version" latest --update-aliases --push --config-file ./docs/mkdocs.yml

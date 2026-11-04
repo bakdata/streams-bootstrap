@@ -93,3 +93,14 @@ updates:
       ci-templates:
         patterns:
           - "bakdata/ci-templates*"
+
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    groups:
+      docs-dependencies:
+        patterns:
+          - "*"
