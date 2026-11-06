@@ -68,21 +68,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          python-version: "3.11"
+          version-file: .tool-versions
 
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v4
-        with:
-          poetry-version: "1.8.2"
-
-      - name: Install docs dependencies
-        run: poetry install --no-root
+      - name: Check uv.lock
+        run: uv lock --check
 
       - name: Build docs
-        run: poetry run mkdocs build -f docs/mkdocs.yml
+        run: uv run --frozen --no-build mkdocs build -f docs/mkdocs.yml
 
   publish-docs:
     name: Publish Docs

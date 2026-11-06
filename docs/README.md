@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - [just 1.5.0+](https://github.com/casey/just)
-- [Poetry 1.8+](https://python-poetry.org/docs/#installation)
+- [uv](https://docs.astral.sh/uv/)
 
 ## Serve the docs
 
