@@ -77,7 +77,7 @@ jobs:
         run: uv lock --check
 
       - name: Build docs
-        run: uv run --frozen mkdocs build -f docs/mkdocs.yml
+        run: uv run --frozen --no-build mkdocs build -f docs/mkdocs.yml
 
   publish-docs:
     name: Publish Docs
