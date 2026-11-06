@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -109,11 +109,20 @@ public final class AdminClientX implements AutoCloseable {
     }
 
     /**
-     * Create a {@link ConsumerGroupsClient} to perform consumer group-related administrative actions
+     * Create a {@link ConsumerGroupsClient} to perform administrative actions related to classic consumer groups
+     *
      * @return consumer group client
      */
     public ConsumerGroupsClient consumerGroups() {
         return new ConsumerGroupsClient(this.adminClient, this.timeout);
+    }
+
+    /**
+     * Create a {@link StreamsGroupsClient} to perform administrative actions related to streams groups
+     * @return streams group client
+     */
+    public StreamsGroupsClient streamsGroups() {
+        return new StreamsGroupsClient(this.adminClient, this.timeout);
     }
 
     @Override

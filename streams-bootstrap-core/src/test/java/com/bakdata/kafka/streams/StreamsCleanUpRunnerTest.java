@@ -392,7 +392,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
 
             run(executableApp);
             this.assertContent(app.getTopics().getOutputTopic(), expectedValues,
-                    "All entries are once in the input topic after the 1st run");
+                    "All entries appear once in the output topic after the 1st run");
 
             awaitClosed(executableApp);
             reset(executableApp);
@@ -402,7 +402,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
                     .flatMap(entry -> Stream.of(entry, entry))
                     .toList();
             this.assertContent(app.getTopics().getOutputTopic(), entriesTwice,
-                    "All entries are twice in the input topic after the 2nd run");
+                    "All entries appear twice in the output topic after the 2nd run");
         }
     }
 
@@ -615,7 +615,7 @@ class StreamsCleanUpRunnerTest extends KafkaTest {
     }
 
     @Test
-    void shouldThrowExceptionOnResetterError() {
+    void shouldThrowExceptionOnResetError() {
         try (final ConfiguredStreamsApp<StreamsApp> app = createMirrorApplication();
                 final ExecutableStreamsApp<StreamsApp> executableApp = this.createExecutableApp(app,
                         this.createConfig());
