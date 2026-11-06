@@ -146,7 +146,7 @@ public final class ConsumerProducerCleanUpRunner implements CleanUpRunner {
 
         private Iterable<String> getAllOutputTopics() {
             final String errorTopic = ConsumerProducerCleanUpRunner.this.topics.getErrorTopic();
-            return Seq.of(ConsumerProducerCleanUpRunner.this.topics.getOutputTopic())
+            return Seq.seq(Optional.ofNullable(ConsumerProducerCleanUpRunner.this.topics.getOutputTopic()))
                     .concat(ConsumerProducerCleanUpRunner.this.topics.getLabeledOutputTopics().values())
                     .append(Optional.ofNullable(errorTopic));
         }
