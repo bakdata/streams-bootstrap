@@ -44,7 +44,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Image
 
 | Parameter          | Description                                | Default      |
-|--------------------|--------------------------------------------|--------------|
+| ------------------ | ------------------------------------------ | ------------ |
 | `image`            | Docker image of the Kafka Streams app.     | `streamsApp` |
 | `imageTag`         | Docker image tag of the Kafka Streams app. | `latest`     |
 | `imagePullPolicy`  | Docker image pull policy.                  | `Always`     |
@@ -115,7 +115,7 @@ podAnnotations:
 ### Auto-Scaling
 
 | Parameter                            | Description                                                                                                        | Default    |
-|--------------------------------------|--------------------------------------------------------------------------------------------------------------------|------------|
+| ------------------------------------ |--------------------------------------------------------------------------------------------------------------------| ---------- |
 | `autoscaling.enabled`                | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                    | `false`    |
 | `autoscaling.lagThreshold`           | Average target value to trigger scaling actions.                                                                   |            |
 | `autoscaling.activationLagThreshold` | Target value for activating the scaler.                                                                            | `0`        |
@@ -134,7 +134,7 @@ podAnnotations:
 ### JVM
 
 | Parameter                      | Description                                                                                                                                  | Default |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `javaOptions.maxRAMPercentage` | https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#:~:text=is%20set%20ergonomically.-,%2DXX%3AMaxRAMPercentage,-%3Dpercent | `true`  |
 | `javaOptions.others`           | List of Java VM options passed to the streams app.                                                                                           | `[]`    |
 
