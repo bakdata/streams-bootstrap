@@ -2,11 +2,13 @@
 
 This is a **library chart** used to provide common, reusable templates for Kafka applications.
 
-As a library chart, it cannot be deployed on its own. It is designed to be included as a dependency in an "application" chart (like `streams-app`), which then provides the necessary values to render the templates.
+As a library chart, it cannot be deployed on its own. It is designed to be included as a dependency in an "application"
+chart (like `streams-app`), which then provides the necessary values to render the templates.
 
 To use this library, you must include it as a dependency in your application's `Chart.yaml`:
 
 **`Chart.yaml`**
+
 ```yaml
 apiVersion: v2
 name: my-streams-app
@@ -18,50 +20,58 @@ dependencies:
     version: "0.1.0"
     repository: "file://../kafka-app" # Or an HTTP repository
 ```
-You can then include the library's templates in your own templates/ files. The library templates will be rendered using the values from your application's values.yaml file.
+
+You can then include the library's templates in your own templates/ files. The library templates will be rendered using
+the values from your application's values.yaml file.
 
 ## Available Templates
 
 You can include any of the following templates in your application chart.
 
 ### `kafka-app.service`
+
 Renders a `Service` to expose the application.
+
 * **Enabled by:** `.Values.service.enabled: true`.
 * **Usage (`templates/service.yaml`):**
     ```yaml
     {{- include "kafka-app.service" . -}}
     ```
 
-
 ### `kafka-app.scaled-object`
+
 Renders a KEDA `ScaledObject` for autoscaling.
+
 * **Enabled by:** `.Values.autoscaling.enabled: true`.
 * **Usage (`templates/scaled-object.yaml`):**
     ```yaml
     {{- include "kafka-app.scaled-object" . -}}
     ```
 
-
 ### `kafka-app.configmap`
+
 Renders a `ConfigMap` for mounting files specified in `.Values.files`.
+
 * **Enabled by:** Providing values under the `.Values.files` key.
 * **Usage (`templates/configmap.yaml`):**
     ```yaml
     {{- include "kafka-app.configmap" . -}}
     ```
 
-
 ### `kafka-app.secrets`
+
 Renders a `Secret` for populating environment variables from `.Values.secrets`.
+
 * **Enabled by:** Providing values under the `.Values.secrets` key.
 * **Usage (`templates/secrets.yaml`):**
     ```yaml
     {{- include "kafka-app.secrets" . -}}
     ```
 
-
 ### `kafka-app.jmx-configmap`
+
 Renders a `ConfigMap` for the Prometheus JMX exporter sidecar.
+
 * **Enabled by:** `.Values.prometheus.jmx.enabled: true`.
 * **Usage (`templates/jmx-configmap.yaml`):**
     ```yaml
@@ -106,7 +116,7 @@ Renders a `ConfigMap` for the Prometheus JMX exporter sidecar.
 ### Image
 
 | Parameter          | Description                                | Default      |
-| ------------------ | ------------------------------------------ | ------------ |
+|--------------------|--------------------------------------------|--------------|
 | `image`            | Docker image of the Kafka Streams app.     | `streamsApp` |
 | `imageTag`         | Docker image tag of the Kafka Streams app. | `latest`     |
 | `imagePullPolicy`  | Docker image pull policy.                  | `Always`     |
@@ -176,26 +186,27 @@ podAnnotations:
 
 ### Auto-Scaling
 
-| Parameter                        | Description                                                                                                        | Default    |
-| -------------------------------- |--------------------------------------------------------------------------------------------------------------------| ---------- |
-| `autoscaling.enabled`            | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                    | `false`    |
-| `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                                   |            |
-| `autoscaling.pollingInterval`    | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                            | `30`       |
-| `autoscaling.cooldownPeriod`     | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                             | `300`      |
-| `autoscaling.offsetResetPolicy`  | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition.           | `earliest` |
-| `autoscaling.minReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                            | `0`        |
-| `autoscaling.maxReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                            | `1`        |
-| `autoscaling.idleReplicas`       | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                           |            |
-| `autoscaling.internalTopics`     | List of auto-generated Kafka Streams topics used by the streams app. Consumer group prefix is added automatically. | `[]`       |
-| `autoscaling.topics`             | List of topics used by the streams app.                                                                            | `[]`       |
-| `autoscaling.additionalTriggers` | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                                         | `[]`       |
-| `autoscaling.triggers`           | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                            | `[]`       |
-| `autoscaling.scalingModifiers`   | KEDA composite scaling configuration. Requires explicit triggers.                                                  |            |
+| Parameter                            | Description                                                                                                        | Default    |
+|--------------------------------------|--------------------------------------------------------------------------------------------------------------------|------------|
+| `autoscaling.enabled`                | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                    | `false`    |
+| `autoscaling.lagThreshold`           | Average target value to trigger scaling actions.                                                                   |            |
+| `autoscaling.activationLagThreshold` | Target value for activating the scaler.                                                                            | `0`        |
+| `autoscaling.pollingInterval`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                            | `30`       |
+| `autoscaling.cooldownPeriod`         | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                             | `300`      |
+| `autoscaling.offsetResetPolicy`      | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition.           | `earliest` |
+| `autoscaling.minReplicas`            | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                            | `0`        |
+| `autoscaling.maxReplicas`            | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                            | `1`        |
+| `autoscaling.idleReplicas`           | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                           |            |
+| `autoscaling.internalTopics`         | List of auto-generated Kafka Streams topics used by the streams app. Consumer group prefix is added automatically. | `[]`       |
+| `autoscaling.topics`                 | List of topics used by the streams app.                                                                            | `[]`       |
+| `autoscaling.additionalTriggers`     | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                                         | `[]`       |
+| `autoscaling.triggers`               | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                            | `[]`       |
+| `autoscaling.scalingModifiers`       | KEDA composite scaling configuration. Requires explicit triggers.                                                  |            |
 
 ### JVM
 
 | Parameter                      | Description                                                                                                                                  | Default |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `javaOptions.maxRAMPercentage` | https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#:~:text=is%20set%20ergonomically.-,%2DXX%3AMaxRAMPercentage,-%3Dpercent | `true`  |
 | `javaOptions.others`           | List of Java VM options passed to the streams app.                                                                                           | `[]`    |
 

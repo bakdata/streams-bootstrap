@@ -64,6 +64,7 @@ spec:
         consumerGroup: {{ $uniqueId }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        activationLagThreshold: {{ $root.Values.autoscaling.activationLagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- range .Values.autoscaling.internalTopics }}
@@ -73,6 +74,7 @@ spec:
         consumerGroup: {{ $uniqueId }}
         topic: {{ printf "%s-%s" $uniqueId . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        activationLagThreshold: {{ $root.Values.autoscaling.activationLagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- range .Values.autoscaling.topics }}
@@ -82,6 +84,7 @@ spec:
         consumerGroup: {{ $uniqueId }}
         topic: {{ . | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        activationLagThreshold: {{ $root.Values.autoscaling.activationLagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- range $key, $value := .Values.kafka.labeledInputTopics }}
@@ -92,6 +95,7 @@ spec:
         consumerGroup: {{ $uniqueId }}
         topic: {{ $topic | quote }}
         lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
+        activationLagThreshold: {{ $root.Values.autoscaling.activationLagThreshold | quote }}
         offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
     {{- end }}
     {{- end }}

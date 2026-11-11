@@ -107,6 +107,7 @@ jmx:
 autoscaling:
   enabled: false
   # lagThreshold: "1000"
+  activationLagThreshold: 0
   pollingInterval: 30
   cooldownPeriod: 300
   offsetResetPolicy: earliest

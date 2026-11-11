@@ -44,7 +44,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ### Image
 
 | Parameter          | Description                                 | Default       |
-| ------------------ |---------------------------------------------|---------------|
+|--------------------|---------------------------------------------|---------------|
 | `image`            | Docker image of the Kafka Consumer app.     | `consumerApp` |
 | `imageTag`         | Docker image tag of the Kafka Consumer app. | `latest`      |
 | `imagePullPolicy`  | Docker image pull policy.                   | `Always`      |
@@ -111,25 +111,26 @@ podAnnotations:
 
 ### Auto-Scaling
 
-| Parameter                        | Description                                                                                                        | Default    |
-| -------------------------------- |--------------------------------------------------------------------------------------------------------------------| ---------- |
-| `autoscaling.enabled`            | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                    | `false`    |
-| `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                                   |            |
-| `autoscaling.pollingInterval`    | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                            | `30`       |
-| `autoscaling.cooldownPeriod`     | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                             | `300`      |
-| `autoscaling.offsetResetPolicy`  | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition.           | `earliest` |
-| `autoscaling.minReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                            | `0`        |
-| `autoscaling.maxReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                            | `1`        |
-| `autoscaling.idleReplicas`       | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                           |            |
-| `autoscaling.topics`             | List of topics used by the consumer app.                                                                           | `[]`       |
-| `autoscaling.additionalTriggers` | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                                         | `[]`       |
-| `autoscaling.triggers`           | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                            | `[]`       |
-| `autoscaling.scalingModifiers`   | KEDA composite scaling configuration. Requires explicit triggers.                                                  |            |
+| Parameter                            | Description                                                                                              | Default    |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------|------------|
+| `autoscaling.enabled`                | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).          | `false`    |
+| `autoscaling.lagThreshold`           | Average target value to trigger scaling actions.                                                         |            |
+| `autoscaling.activationLagThreshold` | Target value for activating the scaler.                                                                  | `0`        |
+| `autoscaling.pollingInterval`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                  | `30`       |
+| `autoscaling.cooldownPeriod`         | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                   | `300`      |
+| `autoscaling.offsetResetPolicy`      | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition. | `earliest` |
+| `autoscaling.minReplicas`            | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                  | `0`        |
+| `autoscaling.maxReplicas`            | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                  | `1`        |
+| `autoscaling.idleReplicas`           | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                 |            |
+| `autoscaling.topics`                 | List of topics used by the consumer app.                                                                 | `[]`       |
+| `autoscaling.additionalTriggers`     | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                               | `[]`       |
+| `autoscaling.triggers`               | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                  | `[]`       |
+| `autoscaling.scalingModifiers`       | KEDA composite scaling configuration. Requires explicit triggers.                                        |            |
 
 ### JVM
 
 | Parameter                      | Description                                                                                                                                  | Default |
-| ------------------------------ |----------------------------------------------------------------------------------------------------------------------------------------------| ------- |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `javaOptions.maxRAMPercentage` | https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#:~:text=is%20set%20ergonomically.-,%2DXX%3AMaxRAMPercentage,-%3Dpercent | `true`  |
 | `javaOptions.others`           | List of Java VM options passed to the consumer app.                                                                                          | `[]`    |
 
