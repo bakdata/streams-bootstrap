@@ -151,7 +151,8 @@ autoscaling:
 #        targetValue: "2"
 #        url: "http://custom-metrics-api"
 #        valueLocation: "some.json.path"
-  ## requires explicit triggers
+  ## formulas reference triggers by name; automatically generated Kafka lag triggers are named after their topic
+  ## with every character other than letters, digits and _ replaced by _, e.g., my-topic.v1 becomes my_topic_v1
   # scalingModifiers:
   #   formula: "trigger_a + trigger_b"
   #   target: "2"

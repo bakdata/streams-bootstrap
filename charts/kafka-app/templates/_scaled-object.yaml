@@ -22,11 +22,18 @@
   {{- if and $autoscaling.triggers $autoscaling.additionalTriggers }}
   {{- fail "autoscaling.triggers and autoscaling.additionalTriggers cannot be used together" }}
   {{- end }}
-  {{- if and $autoscaling.scalingModifiers (not $autoscaling.triggers) }}
-  {{- fail "autoscaling.scalingModifiers requires autoscaling.triggers" }}
+  {{- /* scaling formulas reference triggers by name, which must be an identifier */}}
+  {{- $triggerNames := list -}}
+  {{- if $autoscaling.scalingModifiers }}
+  {{- range $topics }}
+  {{- $triggerNames = append $triggerNames (regexReplaceAll "[^A-Za-z0-9_]" . "_") -}}
   {{- end }}
-  {{- range $key, $_ := omit $kafkaTrigger "metadata" "authenticationRef" "metricType" "useCachedMetrics" }}
-  {{- fail (printf "autoscaling.kafkaTrigger.%s is not supported, use one of metadata, authenticationRef, metricType, useCachedMetrics" $key) }}
+  {{- if ne (len $triggerNames) (len (uniq $triggerNames)) }}
+  {{- fail "autoscaling.scalingModifiers requires unique trigger names, but several topics result in the same name" }}
+  {{- end }}
+  {{- end }}
+  {{- if omit $kafkaTrigger "metadata" "authenticationRef" "metricType" "useCachedMetrics" }}
+  {{- fail "autoscaling.kafkaTrigger only supports metadata, authenticationRef, metricType and useCachedMetrics" }}
   {{- end }}
   {{- if hasKey $metadata "topic" }}
   {{- fail "autoscaling.kafkaTrigger.metadata.topic cannot be set, as one trigger is generated per topic" }}
@@ -72,13 +79,16 @@ spec:
     {{- if $autoscaling.triggers }}
     {{- toYaml $autoscaling.triggers | nindent 4 }}
     {{- else }}
-    {{- range $topics }}
+    {{- range $index, $topic := $topics }}
     - type: kafka
+      {{- with $triggerNames }}
+      name: {{ index . $index }}
+      {{- end }}
       {{- with omit $kafkaTrigger "metadata" }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
       metadata:
-        topic: {{ . | quote }}
+        topic: {{ $topic | quote }}
         {{- range $key, $value := $metadata }}
         {{- if not (kindIs "invalid" $value) }}
         {{- /* KEDA expects strings; toJson avoids scientific notation for large numbers */}}

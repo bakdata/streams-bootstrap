@@ -115,44 +115,41 @@ When enabled, the chart creates a KEDA `ScaledObject` and omits a fixed `replica
 For details on the scaling behavior, please refer to
 the [official KEDA documentation for the Kafka scaler](https://keda.sh/docs/scalers/apache-kafka/).
 
-### Customizing the ScaledObject
+### Customizing triggers
 
-The chart generates one Kafka lag trigger per input topic. Any KEDA option can be set on top of the generated
-configuration:
+The chart generates one Kafka lag trigger per input topic. `kafkaTrigger` is applied to each of them:
 
 ```yaml
 autoscaling:
   enabled: true
   lagThreshold: "1000"
-  # ScaledObject options
-  initialCooldownPeriod: 60
-  fallback:
-    failureThreshold: 3
-    replicas: 2
-  restoreToOriginalReplicaCount: true
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: 300
-  # applied to every generated Kafka lag trigger
   kafkaTrigger:
     authenticationRef:
       name: kafka-auth
     metadata:
       activationLagThreshold: "100"
-  # appended to the generated triggers
-  additionalTriggers:
-    - type: cpu
-      metricType: Utilization
-      metadata:
-        value: "80"
 ```
 
-`kafkaTrigger` supports the trigger fields `authenticationRef`, `metricType` and `useCachedMetrics`. Its `metadata` accepts
-any option of the [Kafka scaler](https://keda.sh/docs/scalers/apache-kafka/) except `topic` and takes precedence over the
-values set by the chart, such as `lagThreshold` and `offsetResetPolicy`. `behavior` configures the
-[scaling behavior](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior)
-of the HPA managed by KEDA. To replace the generated triggers entirely, use `autoscaling.triggers` instead; `kafkaTrigger`
-does not apply to those.
+`metadata` accepts any option of the Kafka scaler except `topic` and overrides the values set by the chart.
+`additionalTriggers` appends further triggers, whereas `triggers` replaces the generated ones.
+
+### Scaling modifiers
+
+When `scalingModifiers` is set, each generated trigger is named after its topic, with every character other than
+letters, digits and `_` replaced by `_`:
+
+```yaml
+kafka:
+  inputTopics:
+    - orders-v1
+    - payments.eu
+autoscaling:
+  enabled: true
+  lagThreshold: "1000"
+  scalingModifiers:
+    formula: "orders_v1 + payments_eu"
+    target: "1000"
+```
 
 ### Integration with persistence
 
