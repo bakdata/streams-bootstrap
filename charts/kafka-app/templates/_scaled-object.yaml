@@ -1,25 +1,51 @@
 {{- define "kafka-app.scaled-object" -}}
 {{ if .Values.autoscaling.enabled }}
+  {{- $autoscaling := .Values.autoscaling -}}
   {{- $uniqueId := coalesce .Values.kafka.applicationId .Values.kafka.groupId -}}
-  {{- $explicitTriggers := .Values.autoscaling.triggers | default list -}}
-  {{- $additionalTriggers := .Values.autoscaling.additionalTriggers | default list -}}
-  {{- $scalingModifiers := .Values.autoscaling.scalingModifiers | default dict -}}
-  {{- $hasTopicSources := or .Values.kafka.inputTopics .Values.autoscaling.internalTopics .Values.autoscaling.topics .Values.kafka.labeledInputTopics -}}
-  {{- if and $explicitTriggers $additionalTriggers }}
+  {{- $kafkaTrigger := $autoscaling.kafkaTrigger | default dict -}}
+  {{- $topics := concat (.Values.kafka.inputTopics | default list) -}}
+  {{- range $autoscaling.internalTopics }}
+  {{- $topics = append $topics (printf "%s-%s" $uniqueId .) -}}
+  {{- end }}
+  {{- $topics = concat $topics ($autoscaling.topics | default list) -}}
+  {{- range $_, $labeledTopics := .Values.kafka.labeledInputTopics }}
+  {{- $topics = concat $topics $labeledTopics -}}
+  {{- end }}
+  {{- $metadata := dict
+      "bootstrapServers" .Values.kafka.bootstrapServers
+      "consumerGroup" $uniqueId
+      "lagThreshold" $autoscaling.lagThreshold
+      "offsetResetPolicy" $autoscaling.offsetResetPolicy -}}
+  {{- range $key, $value := $kafkaTrigger.metadata }}
+  {{- $_ := set $metadata $key $value -}}
+  {{- end }}
+  {{- if and $autoscaling.triggers $autoscaling.additionalTriggers }}
   {{- fail "autoscaling.triggers and autoscaling.additionalTriggers cannot be used together" }}
   {{- end }}
-  {{- if and $scalingModifiers (not $explicitTriggers) }}
-  {{- fail "autoscaling.scalingModifiers requires autoscaling.triggers" }}
+  {{- /* scaling formulas reference triggers by name, which must be an identifier */}}
+  {{- $triggerNames := list -}}
+  {{- if $autoscaling.scalingModifiers }}
+  {{- range $topics }}
+  {{- $triggerNames = append $triggerNames (regexReplaceAll "[^A-Za-z0-9_]" . "_") -}}
   {{- end }}
-  {{- if not $explicitTriggers }}
-    {{- if not (or $hasTopicSources $additionalTriggers) }}
-    {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.labeledInputTopics, or .Values.autoscaling.additionalTriggers, or use autoscaling.triggers to define fully custom triggers" }}
-    {{- end }}
-    {{- if not (and $uniqueId .Values.autoscaling.lagThreshold) }}
-    {{- fail "When autoscaling is enabled, you must set both .Values.kafka.applicationId (or .Values.kafka.groupId) and .Values.autoscaling.lagThreshold" }}
-    {{- end }}
+  {{- if ne (len $triggerNames) (len (uniq $triggerNames)) }}
+  {{- fail "autoscaling.scalingModifiers requires unique trigger names, but several topics result in the same name" }}
   {{- end }}
-  {{- $root := . -}}
+  {{- end }}
+  {{- if omit $kafkaTrigger "metadata" "authenticationRef" "metricType" "useCachedMetrics" }}
+  {{- fail "autoscaling.kafkaTrigger only supports metadata, authenticationRef, metricType and useCachedMetrics" }}
+  {{- end }}
+  {{- if hasKey $metadata "topic" }}
+  {{- fail "autoscaling.kafkaTrigger.metadata.topic cannot be set, as one trigger is generated per topic" }}
+  {{- end }}
+  {{- if not $autoscaling.triggers }}
+  {{- if not (or $topics $autoscaling.additionalTriggers) }}
+  {{- fail "To use autoscaling, you must define one of .Values.kafka.inputTopics, .Values.autoscaling.internalTopics, .Values.autoscaling.topics, .Values.kafka.labeledInputTopics, or .Values.autoscaling.additionalTriggers, or use autoscaling.triggers to define fully custom triggers" }}
+  {{- end }}
+  {{- if and $topics (not (and $metadata.consumerGroup $metadata.lagThreshold)) }}
+  {{- fail "When autoscaling Kafka topics, you must set both .Values.kafka.applicationId (or .Values.kafka.groupId) and .Values.autoscaling.lagThreshold" }}
+  {{- end }}
+  {{- end }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -32,79 +58,61 @@ metadata:
     {{- end }}
 spec:
   scaleTargetRef:
-    {{- if .Capabilities.APIVersions.Has "apps/v1" }}
     apiVersion: apps/v1
-    {{- else }}
-    apiVersion: apps/v1beta1
-    {{- end }}
-    {{- if .Values.statefulSet }}
-    kind: StatefulSet
-    {{- else }}
-    kind: Deployment
-    {{- end }}
+    kind: {{ ternary "StatefulSet" "Deployment" (.Values.statefulSet | default false) }}
     name: {{ include "kafka-app.fullname" . }}
-  pollingInterval: {{ .Values.autoscaling.pollingInterval }}
-  cooldownPeriod:  {{ .Values.autoscaling.cooldownPeriod }}
-  minReplicaCount: {{ .Values.autoscaling.minReplicas }}
-  maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
-  {{- if hasKey .Values.autoscaling "idleReplicas" }}
-  # Only available from KEDA 2.4 onwards
-  idleReplicaCount: {{ .Values.autoscaling.idleReplicas }}
+  pollingInterval: {{ $autoscaling.pollingInterval }}
+  cooldownPeriod: {{ $autoscaling.cooldownPeriod }}
+  {{- with $autoscaling.initialCooldownPeriod }}
+  initialCooldownPeriod: {{ . }}
+  {{- end }}
+  minReplicaCount: {{ $autoscaling.minReplicas }}
+  maxReplicaCount: {{ $autoscaling.maxReplicas }}
+  {{- if hasKey $autoscaling "idleReplicas" }}
+  idleReplicaCount: {{ $autoscaling.idleReplicas }}
+  {{- end }}
+  {{- with $autoscaling.fallback }}
+  fallback:
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   triggers:
-    {{- if $explicitTriggers }}
-    {{- $explicitTriggers | toYaml | nindent 4 }}
+    {{- if $autoscaling.triggers }}
+    {{- toYaml $autoscaling.triggers | nindent 4 }}
     {{- else }}
-    # todo: concat .Values.kafka.inputTopics and .Values.autoscaling.topics to
-    # minimize number of loops when we don't need to support helm 2 anymore
-    {{- range .Values.kafka.inputTopics }}
+    {{- range $index, $topic := $topics }}
     - type: kafka
+      {{- with $triggerNames }}
+      name: {{ index . $index }}
+      {{- end }}
+      {{- with omit $kafkaTrigger "metadata" }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       metadata:
-        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
-        consumerGroup: {{ $uniqueId }}
-        topic: {{ . | quote }}
-        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
-        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
-    {{- end }}
-    {{- range .Values.autoscaling.internalTopics }}
-    - type: kafka
-      metadata:
-        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
-        consumerGroup: {{ $uniqueId }}
-        topic: {{ printf "%s-%s" $uniqueId . | quote }}
-        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
-        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
-    {{- end }}
-    {{- range .Values.autoscaling.topics }}
-    - type: kafka
-      metadata:
-        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
-        consumerGroup: {{ $uniqueId }}
-        topic: {{ . | quote }}
-        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
-        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
-    {{- end }}
-    {{- range $key, $value := .Values.kafka.labeledInputTopics }}
-    {{- range $topic := $value }}
-    - type: kafka
-      metadata:
-        bootstrapServers: {{ $root.Values.kafka.bootstrapServers }}
-        consumerGroup: {{ $uniqueId }}
         topic: {{ $topic | quote }}
-        lagThreshold: {{ $root.Values.autoscaling.lagThreshold | quote }}
-        offsetResetPolicy: {{ $root.Values.autoscaling.offsetResetPolicy }}
+        {{- range $key, $value := $metadata }}
+        {{- if not (kindIs "invalid" $value) }}
+        {{- /* KEDA expects strings; toJson avoids scientific notation for large numbers */}}
+        {{ $key }}: {{ ternary $value (toJson $value) (kindIs "string" $value) | quote }}
+        {{- end }}
+        {{- end }}
     {{- end }}
+    {{- with $autoscaling.additionalTriggers }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- if $additionalTriggers }}
-  {{- $additionalTriggers | toYaml | nindent 4 }}
-  {{- end }}
     {{- end }}
   advanced:
+    {{- with $autoscaling.restoreToOriginalReplicaCount }}
+    restoreToOriginalReplicaCount: {{ . }}
+    {{- end }}
     horizontalPodAutoscalerConfig:
       name: {{ include "kafka-app.fullname" . }}
-    {{- with $scalingModifiers }}
+      {{- with $autoscaling.behavior }}
+      behavior:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with $autoscaling.scalingModifiers }}
     scalingModifiers:
-      {{- . | toYaml | nindent 6 }}
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 {{ end }}
 {{- end -}}

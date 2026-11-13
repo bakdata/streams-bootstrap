@@ -113,10 +113,29 @@ autoscaling:
   minReplicas: 0
   maxReplicas: 1
   # idleReplicas: 0
+  # initialCooldownPeriod: 0
+  ## replicas to fall back to when a trigger fails, see https://keda.sh/docs/latest/reference/scaledobject-spec/#fallback
+  fallback: {}
+  #   failureThreshold: 3
+  #   replicas: 2
+  restoreToOriginalReplicaCount: false
+  ## HPA scaling behavior, see https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior
+  behavior: {}
+  #   scaleDown:
+  #     stabilizationWindowSeconds: 300
   ## use the 'topics' option for adding more topics, e.g., intermediate topics
   topics: []
   #   - bar
   #   - baz
+  ## applied to every automatically generated Kafka lag trigger; supports authenticationRef, metricType,
+  ## useCachedMetrics and metadata. metadata takes any option of https://keda.sh/docs/latest/scalers/apache-kafka/
+  ## except topic and overrides the values set by the chart, e.g., lagThreshold
+  kafkaTrigger: {}
+  #   authenticationRef:
+  #     name: kafka-auth
+  #   metadata:
+  #     activationLagThreshold: "100"
+  #     excludePersistentLag: "true"
   ## fully replaces automatically generated Kafka lag triggers when non-empty;
   ## mutually exclusive with additionalTriggers
   triggers: []
@@ -127,7 +146,8 @@ autoscaling:
 #        targetValue: "2"
 #        url: "http://custom-metrics-api"
 #        valueLocation: "some.json.path"
-  ## requires explicit triggers
+  ## formulas reference triggers by name; automatically generated Kafka lag triggers are named after their topic
+  ## with every character other than letters, digits and _ replaced by _, e.g., my-topic.v1 becomes my_topic_v1
   # scalingModifiers:
   #   formula: "trigger_a + trigger_b"
   #   target: "2"
