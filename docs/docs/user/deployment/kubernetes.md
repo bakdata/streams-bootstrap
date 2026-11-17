@@ -115,6 +115,42 @@ When enabled, the chart creates a KEDA `ScaledObject` and omits a fixed `replica
 For details on the scaling behavior, please refer to
 the [official KEDA documentation for the Kafka scaler](https://keda.sh/docs/scalers/apache-kafka/).
 
+### Customizing triggers
+
+The chart generates one Kafka lag trigger per input topic. `kafkaTrigger` is applied to each of them:
+
+```yaml
+autoscaling:
+  enabled: true
+  lagThreshold: "1000"
+  kafkaTrigger:
+    authenticationRef:
+      name: kafka-auth
+    metadata:
+      activationLagThreshold: "100"
+```
+
+`metadata` accepts any option of the Kafka scaler except `topic` and overrides the values set by the chart.
+`additionalTriggers` appends further triggers, whereas `triggers` replaces the generated ones.
+
+### Scaling modifiers
+
+When `scalingModifiers` is set, each generated trigger is named after its topic, with every character other than
+letters, digits and `_` replaced by `_`:
+
+```yaml
+kafka:
+  inputTopics:
+    - orders-v1
+    - payments.eu
+autoscaling:
+  enabled: true
+  lagThreshold: "1000"
+  scalingModifiers:
+    formula: "orders_v1 + payments_eu"
+    target: "1000"
+```
+
 ### Integration with persistence
 
 When persistence is enabled for Streams applications, autoscaling targets a `StatefulSet`. Each replica receives its own

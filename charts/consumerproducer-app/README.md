@@ -114,20 +114,25 @@ podAnnotations:
 
 ### Auto-Scaling
 
-| Parameter                        | Description                                                                                              | Default    |
-| -------------------------------- |----------------------------------------------------------------------------------------------------------| ---------- |
-| `autoscaling.enabled`            | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).          | `false`    |
-| `autoscaling.lagThreshold`       | Average target value to trigger scaling actions.                                                         |            |
-| `autoscaling.pollingInterval`    | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                  | `30`       |
-| `autoscaling.cooldownPeriod`     | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                   | `300`      |
-| `autoscaling.offsetResetPolicy`  | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition. | `earliest` |
-| `autoscaling.minReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                  | `0`        |
-| `autoscaling.maxReplicas`        | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                  | `1`        |
-| `autoscaling.idleReplicas`       | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                 |            |
-| `autoscaling.topics`             | List of topics used by the consumerproducer app.                                                         | `[]`       |
-| `autoscaling.additionalTriggers` | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                               | `[]`       |
-| `autoscaling.triggers`           | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                  | `[]`       |
-| `autoscaling.scalingModifiers`   | KEDA composite scaling configuration. Requires explicit triggers.                                        |            |
+| Parameter                                   | Description                                                                                                      | Default    |
+| ------------------------------------------- |------------------------------------------------------------------------------------------------------------------| ---------- |
+| `autoscaling.enabled`                       | Whether to enable auto-scaling using [KEDA](https://keda.sh/docs/latest/scalers/apache-kafka/).                  | `false`    |
+| `autoscaling.lagThreshold`                  | Average target value to trigger scaling actions.                                                                 |            |
+| `autoscaling.pollingInterval`               | https://keda.sh/docs/2.10/concepts/scaling-deployments/#pollinginterval                                          | `30`       |
+| `autoscaling.cooldownPeriod`                | https://keda.sh/docs/2.10/concepts/scaling-deployments/#cooldownperiod                                           | `300`      |
+| `autoscaling.offsetResetPolicy`             | The offset reset policy for the consumer if the the consumer group is not yet subscribed to a partition.         | `earliest` |
+| `autoscaling.minReplicas`                   | https://keda.sh/docs/2.10/concepts/scaling-deployments/#minreplicacount                                          | `0`        |
+| `autoscaling.maxReplicas`                   | https://keda.sh/docs/2.10/concepts/scaling-deployments/#maxreplicacount                                          | `1`        |
+| `autoscaling.idleReplicas`                  | https://keda.sh/docs/2.10/concepts/scaling-deployments/#idlereplicacount                                         |            |
+| `autoscaling.initialCooldownPeriod`         | https://keda.sh/docs/latest/reference/scaledobject-spec/#initialcooldownperiod                                   |            |
+| `autoscaling.fallback`                      | https://keda.sh/docs/latest/reference/scaledobject-spec/#fallback                                                | `{}`       |
+| `autoscaling.restoreToOriginalReplicaCount` | https://keda.sh/docs/latest/reference/scaledobject-spec/#advanced                                                | `false`    |
+| `autoscaling.behavior`                      | HPA scaling behavior, see https://keda.sh/docs/latest/reference/scaledobject-spec/#advanced                      | `{}`       |
+| `autoscaling.topics`                        | List of topics used by the consumerproducer app.                                                                 | `[]`       |
+| `autoscaling.additionalTriggers`            | List of additional KEDA triggers, see https://keda.sh/docs/latest/scalers/                                       | `[]`       |
+| `autoscaling.kafkaTrigger`                  | Applied to every generated Kafka lag trigger: `metadata`, `authenticationRef`, `metricType`, `useCachedMetrics`. | `{}`       |
+| `autoscaling.triggers`                      | Complete KEDA trigger list. A non-empty list replaces all generated Kafka lag triggers.                          | `[]`       |
+| `autoscaling.scalingModifiers`              | KEDA composite scaling configuration. Formulas reference generated triggers by sanitized topic name.             |            |
 
 ### JVM
 
