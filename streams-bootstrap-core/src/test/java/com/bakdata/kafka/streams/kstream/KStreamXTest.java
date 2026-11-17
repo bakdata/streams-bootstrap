@@ -3637,4 +3637,108 @@ class KStreamXTest {
         }
     }
 
+    @Test
+    void shouldGlobalTableJoinWithStreamAndMappedKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                input.join(otherInput, (k, v) -> v,
+                        (streamKey, mappedKey, streamValue, tableValue) ->
+                                streamKey + mappedKey + streamValue + tableValue)
+                        .to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("bar", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("foobarbarbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableJoinWithStreamAndMappedKeyNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                input.join(otherInput, (k, v) -> v,
+                        (streamKey, mappedKey, streamValue, tableValue) ->
+                                streamKey + mappedKey + streamValue + tableValue, Named.as("join"))
+                        .to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("bar", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("foobarbarbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableLeftJoinWithStreamAndMappedKey() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                input.leftJoin(otherInput, (k, v) -> v,
+                        (streamKey, mappedKey, streamValue, tableValue) ->
+                                streamKey + mappedKey + streamValue + tableValue)
+                        .to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("bar", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("foobarbarbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
+    @Test
+    void shouldGlobalTableLeftJoinWithStreamAndMappedKeyNamed() {
+        final StringApp app = new StringApp() {
+            @Override
+            public void buildTopology(final StreamsBuilderX builder) {
+                final KStreamX<String, String> input = builder.stream("input");
+                final GlobalKTable<String, String> otherInput = builder.globalTable("table_input");
+                input.leftJoin(otherInput, (k, v) -> v,
+                        (streamKey, mappedKey, streamValue, tableValue) ->
+                                streamKey + mappedKey + streamValue + tableValue, Named.as("join"))
+                        .to("output");
+            }
+        };
+        try (final TestTopology<String, String> topology = app.startApp()) {
+            topology.input("table_input")
+                    .add("bar", "baz");
+            topology.input("input")
+                    .add("foo", "bar");
+            topology.streamOutput()
+                    .expectNextRecord()
+                    .hasKey("foo")
+                    .hasValue("foobarbarbaz")
+                    .expectNoMoreRecord();
+        }
+    }
+
 }
