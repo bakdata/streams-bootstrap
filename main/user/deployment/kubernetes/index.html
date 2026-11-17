@@ -1120,6 +1120,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#customizing-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing triggers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaling-modifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaling modifiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#integration-with-persistence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1471,6 +1493,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#customizing-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customizing triggers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaling-modifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaling modifiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#integration-with-persistence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1658,6 +1702,33 @@ lag and adjusts the number of replicas accordingly.</p>
 <h3 id="scaling-behavior">Scaling behavior</h3>
 <p>For details on the scaling behavior, please refer to
 the <a href="https://keda.sh/docs/scalers/apache-kafka/">official KEDA documentation for the Kafka scaler</a>.</p>
+<h3 id="customizing-triggers">Customizing triggers</h3>
+<p>The chart generates one Kafka lag trigger per input topic. <code>kafkaTrigger</code> is applied to each of them:</p>
+<pre><code class="language-yaml">autoscaling:
+  enabled: true
+  lagThreshold: &quot;1000&quot;
+  kafkaTrigger:
+    authenticationRef:
+      name: kafka-auth
+    metadata:
+      activationLagThreshold: &quot;100&quot;
+</code></pre>
+<p><code>metadata</code> accepts any option of the Kafka scaler except <code>topic</code> and overrides the values set by the chart.
+<code>additionalTriggers</code> appends further triggers, whereas <code>triggers</code> replaces the generated ones.</p>
+<h3 id="scaling-modifiers">Scaling modifiers</h3>
+<p>When <code>scalingModifiers</code> is set, each generated trigger is named after its topic, with every character other than
+letters, digits and <code>_</code> replaced by <code>_</code>:</p>
+<pre><code class="language-yaml">kafka:
+  inputTopics:
+    - orders-v1
+    - payments.eu
+autoscaling:
+  enabled: true
+  lagThreshold: &quot;1000&quot;
+  scalingModifiers:
+    formula: &quot;orders_v1 + payments_eu&quot;
+    target: &quot;1000&quot;
+</code></pre>
 <h3 id="integration-with-persistence">Integration with persistence</h3>
 <p>When persistence is enabled for Streams applications, autoscaling targets a <code>StatefulSet</code>. Each replica receives its own
 <code>PersistentVolumeClaim</code>.</p>
