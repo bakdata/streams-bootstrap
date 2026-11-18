@@ -35,6 +35,10 @@ jobs:
     name: Publish Helm chart
     uses: bakdata/ci-templates/.github/workflows/helm-multi-release.yaml@dcb4d9d45060d891da1bc59f0657dceec112527c # https://github.com/bakdata/ci-templates/releases/tag/2.3.0
     needs: get-gradle-version
+    concurrency:
+      group: ${{ github.repository }}-helm-publish-gh-pages
+      cancel-in-progress: false
+      queue: max
     with:
       charts-path: "./charts"
       subdirs: |
