@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.Value;
+import org.apache.kafka.streams.GroupProtocol;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.state.HostInfo;
 
@@ -74,6 +75,21 @@ public class StreamsConfigX {
      */
     public Map<String, Object> getKafkaProperties() {
         return Collections.unmodifiableMap(this.streamsConfig.originals());
+    }
+
+    /**
+     * Check if the streams app is using the streams group protocol.
+     *
+     * @return {@code true} if {@code group.protocol} is set to {@code "streams"}, {@code false} otherwise
+     * @see <a
+     * href="https://kafka.apache.org/42/streams/developer-guide/config-streams/#groupprotocol">group.protocol</a>
+     */
+    public boolean isStreamsGroupProtocol() {
+        final Object groupProtocol = this.streamsConfig.originals().get(StreamsConfig.GROUP_PROTOCOL_CONFIG);
+        if (groupProtocol == null) {
+            return false;
+        }
+        return GroupProtocol.STREAMS.name().equalsIgnoreCase(groupProtocol.toString());
     }
 
     /**

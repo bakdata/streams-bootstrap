@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -113,6 +113,35 @@ class StreamsConfigXTest {
                         StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
         this.softly.assertThat(new StreamsConfigX(config).getApplicationServer())
                 .isNotPresent();
+    }
+
+    @Test
+    void shouldDetectStreamsGroupProtocol() {
+        final StreamsConfig config = new StreamsConfig(
+                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092",
+                        StreamsConfig.GROUP_PROTOCOL_CONFIG, "streams"));
+        this.softly.assertThat(new StreamsConfigX(config).isStreamsGroupProtocol())
+                .isTrue();
+    }
+
+    @Test
+    void shouldDetectClassicGroupProtocolWhenNotSet() {
+        final StreamsConfig config = new StreamsConfig(
+                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092"));
+        this.softly.assertThat(new StreamsConfigX(config).isStreamsGroupProtocol())
+                .isFalse();
+    }
+
+    @Test
+    void shouldDetectClassicGroupProtocolWhenExplicitlySet() {
+        final StreamsConfig config = new StreamsConfig(
+                Map.of(StreamsConfig.APPLICATION_ID_CONFIG, "test-app",
+                        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092",
+                        StreamsConfig.GROUP_PROTOCOL_CONFIG, "classic"));
+        this.softly.assertThat(new StreamsConfigX(config).isStreamsGroupProtocol())
+                .isFalse();
     }
 
 }

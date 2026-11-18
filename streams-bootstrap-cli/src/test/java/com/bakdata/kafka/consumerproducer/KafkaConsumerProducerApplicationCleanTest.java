@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 bakdata
+ * Copyright (c) 2026 bakdata
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,7 +89,8 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
                     new KeyValue<>("bla", "bla"),
                     new KeyValue<>("blub", "blub")
             );
-            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
+            this.runAndAssertContent(expectedValues, "All entries appear once in the output topic after the 1st run",
+                    app);
 
             // Wait until all applications are completely stopped before triggering cleanup
             awaitClosed(app.createExecutableApp());
@@ -102,7 +103,8 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
             }
 
             testClient.createTopic(app.getOutputTopic());
-            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 2nd run", app);
+            this.runAndAssertContent(expectedValues, "All entries appear once in the output topic after the 2nd run",
+                    app);
         }
     }
 
@@ -125,7 +127,8 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
                     new KeyValue<>("bla", "bla"),
                     new KeyValue<>("blub", "blub")
             );
-            this.runAndAssertContent(expectedValues, "All entries are once in the input topic after the 1st run", app);
+            this.runAndAssertContent(expectedValues, "All entries appear once in the output topic after the 1st run",
+                    app);
 
             // Wait until all applications are completely stopped before triggering cleanup
             awaitClosed(app.createExecutableApp());
@@ -140,7 +143,8 @@ class KafkaConsumerProducerApplicationCleanTest extends KafkaTest {
             final List<KeyValue<String, String>> entriesTwice = expectedValues.stream()
                     .flatMap(entry -> Stream.of(entry, entry))
                     .toList();
-            this.runAndAssertContent(entriesTwice, "All entries are twice in the input topic after the 2nd run", app);
+            this.runAndAssertContent(entriesTwice, "All entries appear twice in the output topic after the 2nd run",
+                    app);
         }
     }
 
