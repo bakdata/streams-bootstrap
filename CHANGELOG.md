@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.6.0](https://github.com/bakdata/streams-bootstrap/tree/7.6.0) - 2026-11-18
+### What's changed
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#498](https://github.com/bakdata/streams-bootstrap/pull/498)
+
+* Migrate docs dependencies from Poetry to uv by @disrupted in [#500](https://github.com/bakdata/streams-bootstrap/pull/500)
+
+* Support all KEDA options in autoscaling by @raphala in [#504](https://github.com/bakdata/streams-bootstrap/pull/504)
+
+* Bump org.jooq:jool from 0.9.15 to 0.9.16 by @dependabot[bot] in [#503](https://github.com/bakdata/streams-bootstrap/pull/503)
+
+* Bump astral-sh/setup-uv from 10.3.0 to 10.3.3 by @dependabot[bot] in [#501](https://github.com/bakdata/streams-bootstrap/pull/501)
+
+* Bump the "build" group with 1 update across multiple ecosystems by @dependabot[bot] in [#502](https://github.com/bakdata/streams-bootstrap/pull/502)
+
+* fix(*-producer-app): accept null output topic by @jnsrnhld in [#499](https://github.com/bakdata/streams-bootstrap/pull/499)
+
+* Bump com.bakdata.kafka:error-handling-bom from 3.0.0 to 3.0.1 by @dependabot[bot] in [#506](https://github.com/bakdata/streams-bootstrap/pull/506)
+
+* Bump the build group with 3 updates by @dependabot[bot] in [#505](https://github.com/bakdata/streams-bootstrap/pull/505)
+
+* Fix concurrent Helm publications by @philipp94831 in [#507](https://github.com/bakdata/streams-bootstrap/pull/507)
+
+
+### New Contributors
+* @jnsrnhld made their first contribution in [#499](https://github.com/bakdata/streams-bootstrap/pull/499)
+
+**Full Changelog**: https://github.com/bakdata/streams-bootstrap/compare/7.5.1...7.6.0
+
 ## [7.5.1](https://github.com/bakdata/streams-bootstrap/tree/7.5.1) - 2026-10-28
 ### What's changed
 
