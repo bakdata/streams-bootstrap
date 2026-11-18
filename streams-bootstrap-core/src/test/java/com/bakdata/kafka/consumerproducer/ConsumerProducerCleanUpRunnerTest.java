@@ -55,7 +55,9 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -77,6 +79,10 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
     private static final ConsumerProducerTopicConfig TOPIC_CONFIG = ConsumerProducerTopicConfig.builder()
             .inputTopics(List.of("input"))
             .outputTopic("output")
+            .errorTopic("error")
+            .build();
+    private static final ConsumerProducerTopicConfig TOPIC_CONFIG_WITHOUT_OUTPUT = ConsumerProducerTopicConfig.builder()
+            .inputTopics(List.of("input"))
             .errorTopic("error")
             .build();
     @InjectSoftAssertions
@@ -135,6 +141,96 @@ class ConsumerProducerCleanUpRunnerTest extends KafkaTest {
                         .registerTopicHook(ConsumerProducerCleanUpRunnerTest.this.topicHook);
             }
         }, new ConsumerProducerAppConfiguration(TOPIC_CONFIG));
+    }
+
+    private ConfiguredConsumerProducerApp<ConsumerProducerApp> createAppWithoutOutputTopic() {
+        return new ConfiguredConsumerProducerApp<>(new StringConsumerProducer() {
+            @Override
+            public ConsumerProducerRunnable buildRunnable(final ConsumerProducerBuilder builder) {
+                // consume only, the producer exists for dead letters
+                final Producer<String, String> producer = builder.getProducerBuilder().createProducer();
+                final Consumer<String, String> consumer = builder.getConsumerBuilder().createConsumer();
+                builder.getConsumerBuilder().subscribeToAllTopics(consumer);
+                return new DefaultConsumerProducerRunnable<>(producer,
+                        builder.getConsumerBuilder().createDefaultConsumerRunnable(consumer, records -> {}));
+            }
+
+            @Override
+            public ConsumerProducerCleanUpConfiguration setupCleanUp(
+                    final AppConfiguration<ConsumerProducerTopicConfig> configuration) {
+                return super.setupCleanUp(configuration)
+                        .registerTopicHook(ConsumerProducerCleanUpRunnerTest.this.topicHook);
+            }
+        }, new ConsumerProducerAppConfiguration(TOPIC_CONFIG_WITHOUT_OUTPUT));
+    }
+
+    @Test
+    void shouldCleanWithoutOutputTopic() {
+        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = this.createAppWithoutOutputTopic();
+                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+                        this.createConfig())) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(TOPIC_CONFIG_WITHOUT_OUTPUT.getInputTopics().get(0));
+            testClient.createTopic(TOPIC_CONFIG_WITHOUT_OUTPUT.getErrorTopic());
+
+            testClient.send()
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
+                    .to(TOPIC_CONFIG_WITHOUT_OUTPUT.getInputTopics().get(0), List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+
+            run(executableApp);
+            awaitClosed(executableApp);
+
+            this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
+
+            verify(this.topicHook).deleted(TOPIC_CONFIG_WITHOUT_OUTPUT.getErrorTopic());
+            verify(this.topicHook).close();
+            verifyNoMoreInteractions(this.topicHook);
+
+            try (final AdminClientX admin = this.newTestClient().admin()) {
+                final TopicsClient topics = admin.topics();
+                this.softly.assertThat(topics.topic(TOPIC_CONFIG_WITHOUT_OUTPUT.getErrorTopic()).exists())
+                        .as("Error topic is deleted")
+                        .isFalse();
+                this.softly.assertThat(topics.topic(TOPIC_CONFIG_WITHOUT_OUTPUT.getInputTopics().get(0)).exists())
+                        .as("Input topic is kept")
+                        .isTrue();
+                this.softly.assertThat(admin.consumerGroups().group(app.getUniqueGroupId()).exists())
+                        .as("Consumer group is deleted")
+                        .isFalse();
+            }
+        }
+    }
+
+    @Test
+    void shouldResetWithoutOutputTopic() {
+        try (final ConfiguredConsumerProducerApp<ConsumerProducerApp> app = this.createAppWithoutOutputTopic();
+                final ExecutableConsumerProducerApp<ConsumerProducerApp> executableApp = createExecutableApp(app,
+                        this.createConfig())) {
+            final KafkaTestClient testClient = this.newTestClient();
+            testClient.createTopic(TOPIC_CONFIG_WITHOUT_OUTPUT.getInputTopics().get(0));
+            testClient.createTopic(TOPIC_CONFIG_WITHOUT_OUTPUT.getErrorTopic());
+
+            testClient.send()
+                    .withKeySerializer(new StringSerializer())
+                    .withValueSerializer(new StringSerializer())
+                    .to(TOPIC_CONFIG_WITHOUT_OUTPUT.getInputTopics().get(0), List.of(
+                            new SimpleProducerRecord<>("foo", "bar")
+                    ));
+
+            run(executableApp);
+            awaitClosed(executableApp);
+
+            this.softly.assertThatCode(() -> reset(executableApp)).doesNotThrowAnyException();
+
+            try (final AdminClientX admin = this.newTestClient().admin()) {
+                this.softly.assertThat(admin.topics().topic(TOPIC_CONFIG_WITHOUT_OUTPUT.getErrorTopic()).exists())
+                        .as("Error topic is kept")
+                        .isTrue();
+            }
+        }
     }
 
     @Test

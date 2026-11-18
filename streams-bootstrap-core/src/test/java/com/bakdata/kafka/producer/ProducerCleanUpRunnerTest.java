@@ -43,6 +43,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.KeyValue;
@@ -156,6 +157,27 @@ class ProducerCleanUpRunnerTest extends KafkaTest {
                         .withRuntimeConfiguration(this.createConfig())) {
             clean(executableApp);
             verify(this.topicHook).deleted(app.getTopics().getOutputTopic());
+            verifyNoMoreInteractions(this.topicHook);
+        }
+    }
+
+    @Test
+    void shouldCleanWithoutOutputTopic() {
+        final ProducerTopicConfig topics = ProducerTopicConfig.builder()
+                .labeledOutputTopics(Map.of("label", "labeled-output"))
+                .build();
+        try (final ConfiguredProducerApp<ProducerApp> app = new ConfiguredProducerApp<>(new StringProducer() {
+            @Override
+            public ProducerCleanUpConfiguration setupCleanUp(
+                    final AppConfiguration<ProducerTopicConfig> configuration) {
+                return super.setupCleanUp(configuration)
+                        .registerTopicHook(ProducerCleanUpRunnerTest.this.topicHook);
+            }
+        }, new ProducerAppConfiguration(topics));
+                final ExecutableProducerApp<ProducerApp> executableApp = app
+                        .withRuntimeConfiguration(this.createConfig())) {
+            this.softly.assertThatCode(() -> clean(executableApp)).doesNotThrowAnyException();
+            verify(this.topicHook).deleted("labeled-output");
             verifyNoMoreInteractions(this.topicHook);
         }
     }
